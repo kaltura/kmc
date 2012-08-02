@@ -54,8 +54,12 @@
 			import com.hillelcoren.components.autoComplete.interfaces.iComboItem;
 			import com.hillelcoren.utils.KeyboardUtil;
 			import com.hillelcoren.utils.StringUtils;
+			import com.kaltura.autocomplete.itemRenderers.selection.base.IEditableSelection;
 			import com.kaltura.autocomplete.itemRenderers.selection.base.ISelectionItemRenderer;
 			import com.kaltura.autocomplete.itemRenderers.selection.base.SelectionItemBase;
+			
+			import flash.desktop.Clipboard;
+			import flash.desktop.ClipboardFormats;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.ListCollectionView;
@@ -825,6 +829,12 @@
 							}
 						}
 						
+						if (target is IEditableSelection){
+							if (IEditableSelection(target).isEditing){
+								return;
+							}
+						}
+						
 						if (focused is IconButton)
 						{							
 							_selectedItems.removeItemAt( index );
@@ -989,6 +999,10 @@
 						{
 							textInput.setFocus();
 						}
+					} else if (event.keyCode == 67 && event.ctrlKey){
+						if (target is ISelectionItemRenderer){
+							Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, ISelectionItemRenderer(target).text);
+						}
 					}
 				}
 			}
@@ -1088,6 +1102,7 @@
 						selectedItem.allowMultipleSelection = _allowMultipleSelection;
 						selectedItem.showRemoveIcon = _showRemoveIcon;
 						selectedItem.addEventListener( SelectionItemBase.REMOVE_ITEM, handleItemRemove, false, 0, true );
+						selectedItem.addEventListener( Event.CHANGE, handleEditableItemChange, false, 0, true );
 						selectedItem.addEventListener( TextEvent.TEXT_INPUT, handleItemTextInput );
 						flowBox.addChildAt( selectedItem as Container, flowBox.numChildren - 1 );						
 					}
@@ -1129,16 +1144,16 @@
 			
 			protected function handleEditableItemChange( event:Event ):void
 			{
-				var editableItem:EditableItem = event.currentTarget as EditableItem;
-				var index:int = flowBox.getChildIndex( editableItem );
+				var cmbItem:iComboItem = event.currentTarget as iComboItem;
+				var index:int = flowBox.getChildIndex( cmbItem as DisplayObject);
 				
-				var text:String = editableItem.text;
+				var text:String = cmbItem.text;
 				text = StringUtils.trimCommas( text );
 				
 				if (text.length > 0)
 				{
 					_selectedItems.setItemAt( text, index );
-					editableItem.item = text;				
+					cmbItem.item = text;				
 				}
 				else
 				{
@@ -1147,6 +1162,7 @@
 					var comboItem:iComboItem = flowBox.getChildAt( index ) as iComboItem;
 					comboItem.setTextFocus();
 				}
+				dispatchEvent( new Event( Event.CHANGE ) );
 			}
 			
 			protected function handleDropDownItemClick( event:ListEvent ):void
@@ -1158,6 +1174,8 @@
 			public function handleFlowBoxChange( event:Event ):void
 			{
 				flowBox.invalidateDisplayList();
+				
+				var wasChangeMade:Boolean = false;
 				
 				// Keeping the action in view.
 				verticalScrollPosition = maxVerticalScrollPosition;
@@ -1206,7 +1224,8 @@
 					
 					if (_allowNewValues && parts.length > 1)
 					{
-						_selectedItems.addItem( searchStr );						
+						_selectedItems.addItem( searchStr );			
+						wasChangeMade = true;
 					}					
 				}
 				
@@ -1243,6 +1262,10 @@
 					_dropDown.rowCount = (_dataProvider.length < _dropDownRowCount ? _dataProvider.length : _dropDownRowCount);
 //					callLater( highlightFirstItem );
 					callLater( positionDropDown );									
+				}
+				
+				if (wasChangeMade){
+					dispatchEvent(new Event(Event.CHANGE));
 				}
 			}
 			

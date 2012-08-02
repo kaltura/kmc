@@ -3,6 +3,7 @@ package com.kaltura.autocomplete.controllers
 	import com.hillelcoren.components.AutoComplete;
 	import com.kaltura.KalturaClient;
 	import com.kaltura.autocomplete.controllers.base.KACControllerBase;
+	import com.kaltura.autocomplete.itemRenderers.selection.TagsSelectedItem;
 	import com.kaltura.commands.tag.TagSearch;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.types.KalturaTaggedObjectType;
@@ -11,6 +12,8 @@ package com.kaltura.autocomplete.controllers
 	import com.kaltura.vo.KalturaTagFilter;
 	import com.kaltura.vo.KalturaTagListResponse;
 	
+	import mx.core.ClassFactory;
+	
 	public class KACTagsController extends KACControllerBase
 	{
 		private var _objType:String;
@@ -18,6 +21,9 @@ package com.kaltura.autocomplete.controllers
 		public function KACTagsController(autoComp:AutoComplete, client:KalturaClient, objType:String)
 		{
 			super(autoComp, client);
+//			autoComp.allowEditingSelectedValues = true;
+			autoComp.selectionItemRendererClassFactory = new ClassFactory(TagsSelectedItem);
+//			autoComp.allowEditingNewValues = true;
 			_objType = objType;
 		}
 		

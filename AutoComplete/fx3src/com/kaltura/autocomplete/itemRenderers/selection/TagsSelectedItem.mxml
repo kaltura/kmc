@@ -1,8 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:SelectionItemBase xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:base="com.kaltura.autocomplete.itemRenderers.selection.base.*">
+<base:SelectionItemBase xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:base="com.kaltura.autocomplete.itemRenderers.selection.base.*" xmlns:classes="com.hillelcoren.components.autoComplete.classes.*" implements="com.kaltura.autocomplete.itemRenderers.selection.base.IEditableSelection" >
 	<mx:Script>
 		<![CDATA[
+			import com.hillelcoren.components.autoComplete.classes.ShorterTextInput;
+			
+			import mx.events.FlexEvent;
+			
+			override protected function displayText(text:String):void{
+				super.displayText(text);
+				textEdit.text = text;
+			}
+			
+			private function button_doubleClickHandler(event:MouseEvent):void
+			{
+				textEdit.visible = true;
+				textEdit.setFocus();
+				textEdit.width = button.width;
+				textEdit.height = button.height;
+				textEdit.addEventListener(Event.CHANGE, onTextEdit);
+				textEdit.addEventListener(FocusEvent.FOCUS_OUT, onEndEdit);
+			}
+			
+			private function onTextEdit(event:Event):void
+			{
+				setText(textEdit.text);
+				textEdit.width = button.width;
+				textEdit.height = button.height;
+			}
+			
+			
+			private function onEndEdit(event:FocusEvent):void
+			{
+				textEdit.removeEventListener(Event.CHANGE, onTextEdit);
+				textEdit.removeEventListener(FocusEvent.FOCUS_OUT, onEndEdit);
+				textEdit.visible = false;
+				
+				dispatchEvent(new Event(Event.CHANGE));
+			}
+			
+			public function get isEditing():Boolean{
+				return textEdit.visible;
+			}
 			
 		]]>
 	</mx:Script>
+	
+	<classes:ShorterTextInput id="textInput" />
+	<mx:Canvas>
+		<classes:IconButton id="button" doubleClick="button_doubleClickHandler(event)" doubleClickEnabled="true"/>
+		<mx:TextInput id="textEdit" visible="false" width="0" height="0"/>
+	</mx:Canvas>
+	<mx:Spacer id="spacer"/>
 </base:SelectionItemBase>

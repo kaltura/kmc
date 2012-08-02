@@ -102,7 +102,8 @@ package com.kaltura.autocomplete.itemRenderers.selection.base
 			if (_textChanged)
 			{
 				_textChanged = false;					
-				button.label = _text;
+//				button.label = _text;
+				displayText(_text);
 			}
 			
 			if (_allowMultipleSelectionChanged)
@@ -110,6 +111,10 @@ package com.kaltura.autocomplete.itemRenderers.selection.base
 				_allowMultipleSelectionChanged = false;
 				button.allowMultipleSelection = _allowMultipleSelection;
 			}
+		}
+		
+		protected function displayText(text:String):void{
+			button.label = _text;
 		}
 		
 		override public function styleChanged( styleProp:String ):void
