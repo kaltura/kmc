@@ -46,7 +46,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 			if (!selectedReportData.pager) {
 				selectedReportData.pager = new KalturaFilterPager();
-				selectedReportData.pager.pageSize = 10;
+				selectedReportData.pager.pageSize = ReportData.DEF_PAGER_SIZE;
 				selectedReportData.pager.pageIndex = 1;
 			}
 			

@@ -2,15 +2,16 @@ package com.kaltura.kmc.modules.analytics.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.analytics.control.ReportEvent;
-	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
-	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.media.MediaGet;
 	import com.kaltura.commands.report.ReportGetGraphs;
 	import com.kaltura.commands.report.ReportGetTable;
 	import com.kaltura.commands.report.ReportGetTotal;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.analytics.control.ReportEvent;
+	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
+	import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
+	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaReportInputFilter;
 	
@@ -35,7 +36,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			if(!_model.selectedReportData.pager)
 			{
 				_model.selectedReportData.pager = new KalturaFilterPager();
-				_model.selectedReportData.pager.pageSize = 10;
+				_model.selectedReportData.pager.pageSize = ReportData.DEF_PAGER_SIZE;
 				_model.selectedReportData.pager.pageIndex = 1;
 			}
 			

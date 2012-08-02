@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.analytics.commands
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.analytics.control.ReportEvent;
 	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
+	import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.vo.KalturaEndUserReportInputFilter;
 	import com.kaltura.vo.KalturaFilterPager;
@@ -38,7 +39,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			
 			if (!_model.selectedReportData.pager) {
 				_model.selectedReportData.pager = new KalturaFilterPager();
-				_model.selectedReportData.pager.pageSize = 10;
+				_model.selectedReportData.pager.pageSize = ReportData.DEF_PAGER_SIZE;
 				_model.selectedReportData.pager.pageIndex = 1;
 			}
 			

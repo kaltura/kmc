@@ -26,7 +26,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			var reportData:ReportData = _model.reportDataMap[rdEvt.screenType] as ReportData;
 			if (reportData.pager == null){
 				reportData.pager = new KalturaFilterPager();
-				reportData.pager.pageSize = 10;
+				reportData.pager.pageSize = ReportData.DEF_PAGER_SIZE;
 			}
 			
 			// set all the reportData parameters form the current report view:

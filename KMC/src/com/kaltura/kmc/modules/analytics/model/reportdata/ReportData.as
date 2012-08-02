@@ -8,6 +8,8 @@ package com.kaltura.kmc.modules.analytics.model.reportdata
 	[Bindable]
 	public class ReportData
 	{
+		static public const DEF_PAGER_SIZE:uint = 25;
+		
 		public var type : int;
 		public var title : String;
 		public var message : String;
