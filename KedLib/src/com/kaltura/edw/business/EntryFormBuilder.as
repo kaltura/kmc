@@ -1,47 +1,17 @@
 package com.kaltura.edw.business {
-	import com.kaltura.base.types.MetadataCustomFieldMaxOcuursTypes;
-	import com.kaltura.base.types.MetadataCustomFieldTypes;
-	import com.kaltura.commands.uiConf.UiConfGet;
 	import com.kaltura.dataStructures.HashMap;
-	import com.kaltura.edw.business.KedJSGate;
-	import com.kaltura.edw.business.MetadataDataParser;
 	import com.kaltura.edw.business.base.FormBuilderBase;
-	import com.kaltura.edw.model.DummyModelLocator;
 	import com.kaltura.edw.model.MetadataDataObject;
 	import com.kaltura.edw.model.datapacks.ContextDataPack;
-	import com.kaltura.edw.model.datapacks.CustomDataDataPack;
 	import com.kaltura.edw.model.datapacks.DistributionDataPack;
 	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.model.datapacks.FilterDataPack;
 	import com.kaltura.edw.model.types.CustomMetadataConstantTypes;
-	import com.kaltura.edw.view.customData.ConsistentDateField;
-	import com.kaltura.edw.view.customData.DateFieldWithTime;
 	import com.kaltura.edw.view.customData.EntryIDLinkTable;
-	import com.kaltura.edw.view.customData.MultiComponent;
-	import com.kaltura.edw.vo.CustomMetadataDataVO;
-	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.vo.KMCMetadataProfileVO;
-	import com.kaltura.vo.KalturaUiConf;
-	import com.kaltura.vo.MetadataFieldVO;
 	
-	import flash.display.DisplayObject;
-	import flash.utils.getDefinitionByName;
-	
-	import mx.binding.utils.BindingUtils;
-	import mx.collections.ArrayCollection;
-	import mx.containers.HBox;
-	import mx.containers.VBox;
-	import mx.controls.Alert;
-	import mx.controls.Label;
-	import mx.controls.Spacer;
-	import mx.controls.Text;
-	import mx.core.Container;
 	import mx.core.UIComponent;
-	import mx.resources.IResourceManager;
-	import mx.resources.ResourceManager;
-	import mx.utils.UIDUtil;
-	import mx.utils.object_proxy;
 
 	/**
 	 * This class is used for building UI components according to a given
