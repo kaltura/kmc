@@ -43,6 +43,7 @@ package com.kaltura.kmc.modules.content.commands
 				case WindowsStates.CATEGORIES_LISTING_WINDOW:
 				case WindowsStates.CATEGORIES_ACCESS_WINDOW:
 				case WindowsStates.CATEGORIES_OWNER_WINDOW:
+				case WindowsStates.CATEGORIES_CONTRIBUTION_WINDOW:
 				case WindowsStates.MOVE_CATEGORIES_WINDOW:
 					if(_model.categoriesModel.selectedCategories && _model.categoriesModel.selectedCategories.length > 0)
 						_model.windowState =  newState;
