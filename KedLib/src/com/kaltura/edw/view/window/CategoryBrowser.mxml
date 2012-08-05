@@ -2,7 +2,7 @@
 <containers:ConfinedTitleWindow xmlns:containers="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="470" height="470" 
 				xmlns:cat="com.kaltura.edw.components.fltr.cat.*"
 				creationComplete="creationCompleteHandler(event)" 
-				styleName="TitleWindowType2" showCloseButton="true"
+				styleName="TitleWindowType2" showCloseButton="true" close="clearSelection(event)"
 				title="{resourceManager.getString('drilldown', 'catTree')}">
 	<mx:Metadata>
 		/**
@@ -22,6 +22,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.core.mx_internal;
+			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			
 			[Bindable]
@@ -133,6 +134,12 @@
 					}
 					catTree.filter = catids;
 				}
+			}
+
+
+			private function clearSelection(event:CloseEvent):void {
+				// mark all categories as unselected in the tree (has no effect on actual data)
+				catTree.filter = '';
 			}
 
 		]]>
