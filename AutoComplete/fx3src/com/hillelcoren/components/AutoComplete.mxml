@@ -480,6 +480,7 @@
 				{
 					hideDropDown();
 					
+					var anyAdded:Boolean = false;
 					for each (item in event.items)
 					{
 						if (!item)
@@ -497,7 +498,12 @@
 							continue;
 						}
 						
-						addItem( item );											
+						addItem( item );		
+						anyAdded = true;
+					}
+					
+					if (anyAdded){
+						dispatchEvent(new Event(Event.CHANGE) );
 					}
 					
 					searchText = null;									
@@ -1168,7 +1174,7 @@
 			protected function handleDropDownItemClick( event:ListEvent ):void
 			{
 				_selectedItems.addItem( _dropDown.selectedItem );
-				dispatchEvent( new Event( Event.CHANGE ) );
+//				dispatchEvent( new Event( Event.CHANGE ) );
 			}
 			
 			public function handleFlowBoxChange( event:Event ):void
