@@ -208,13 +208,13 @@ package com.kaltura.edw.components.fltr.cat
 		}
 		
 		
-		/**
-		 * add a category from the autocomplete component
-		 * */
-		public function addFromAutoComplete(event:GeneralNonCairngormEvent):void {
-			var cat:KalturaCategory = event.data as KalturaCategory;
-			addByCatId(cat.id.toString(), true, cat);
-		}
+//		/**
+//		 * add a category from the autocomplete component
+//		 * */
+//		public function addFromAutoComplete(event:GeneralNonCairngormEvent):void {
+//			var cat:KalturaCategory = event.data as KalturaCategory;
+//			addByCatId(cat.id.toString(), true, cat);
+//		}
 		
 		
 		/**

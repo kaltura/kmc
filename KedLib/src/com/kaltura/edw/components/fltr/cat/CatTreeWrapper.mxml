@@ -18,7 +18,11 @@
 			import com.kaltura.edw.components.fltr.IFilterComponent;
 			import com.kaltura.edw.components.fltr.cat.events.CatTreePrefsEvent;
 			import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
+			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.vo.CategoryVO;
+			import com.kaltura.vo.KalturaCategory;
+			
+			import flash.sampler.getInvocationCount;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Button;
@@ -70,6 +74,7 @@
 			 * */
 			private var _attribute:String;
 
+			[Bindable(event="attributeChanged")]
 			/**
 			 * Name of the <code>KalturaFilter</code> attribute this component handles
 			 * when in SINGLE_SELECT mode. <br>
@@ -133,6 +138,15 @@
 			 * @param item	the item that specifies the partial filter to remove
 			 */
 			public function removeItem(item:IndicatorVo):void {
+				if (catsFromAC) {
+					var kCat:KalturaCategory;
+					for (var i:int=0; i<catsFromAC.length; i++) {
+						kCat = catsFromAC.getItemAt(i) as KalturaCategory;
+						if (kCat.id == item.value) {
+							catsFromAC.removeItemAt(i);
+						}
+					}
+				}
 				catTree.removeItem(item);
 			}
 
@@ -222,13 +236,15 @@
 			}
 
 
-			protected function catTree_valueChangeHandler(event:FilterComponentEvent):void {
+			private function catTree_valueChangeHandler(event:FilterComponentEvent):void {
 				if (event.kind == FilterComponentEvent.EVENT_KIND_ADD) {
 					allBtn.selected = false;
 				}
 				else if (event.kind == FilterComponentEvent.EVENT_KIND_REMOVE){
 					if (catTree.getSelectedCategories().length == 0) {
-						allBtn.selected = true;
+						if (!catsFromAC || catsFromAC.length == 0) {
+							allBtn.selected = true;
+						}
 					}
 				}
 				else if (event.kind == FilterComponentEvent.EVENT_KIND_REMOVE_ALL){
@@ -239,6 +255,12 @@
 				var catCollection:ArrayCollection = new ArrayCollection();
 				for each (var catVo:CategoryVO in catTree.getSelectedCategories()){
 					catCollection.addItem(catVo.category);
+				}
+				// add from saved ids
+				if (catsFromAC) {
+					for each (var kCat:KalturaCategory in catsFromAC) {
+						catCollection.addItem(kCat);
+					}
 				}
 				autoCompWrapper.disabledCategories = catCollection;
 				
@@ -261,17 +283,45 @@
 				if (_attribute) {
 					catTree.attribute = _attribute;
 				}
+				else if (selectionMode == CatTreeSelectionMode.MULTIPLE_SELECT_EXACT) {
+					catTree.attribute = exactAttribute;
+				}
+				else if (selectionMode == CatTreeSelectionMode.MULTIPLE_SELECT_PLUS) {
+					catTree.attribute = plusAttribute;
+				}
+				
 				if (_filter) {
 					catTree.filter = _filter;
 					allBtn.selected = false;
 				}
 			}
 
-			protected function allBtn_clickHandler(event:MouseEvent):void {
+			private function allBtn_clickHandler(event:MouseEvent):void {
 				catTree.clearSelection();
+				if (catsFromAC) {
+					catsFromAC = null;
+					autoCompWrapper.disabledCategories = new ArrayCollection();
+				}
 			}
 
+			/**
+			 * KalturaCategory objects which were added via autocomplete search
+			 * */
+			private var catsFromAC:ArrayCollection;
+			
+			
 
+			protected function autoCompWrapper_valueChangeHandler(event:GeneralNonCairngormEvent):void
+			{
+				var cat:KalturaCategory = event.data as KalturaCategory;
+				// remember the category object
+				if (!catsFromAC) {
+					catsFromAC = new ArrayCollection();
+				}
+				catsFromAC.addItem(cat);
+				// add to filter
+				catTree.addByCatId(cat.id.toString(), true, cat);
+			}
 
 		]]>
 	</mx:Script>
@@ -280,6 +330,6 @@
 	<cat:CatTree id="catTree" width="100%" height="100%" styleName="categoriesTree"
 				 dataProvider="{dataProvider}" categories="{categories}" valueChange="catTree_valueChangeHandler(event)"
 				 selectionMode="{selectionMode}" selectionAttribute="{selectionAttribute}"
-				 chunkedData="{chunkedData}"/>
-	<cat:CategoryAutocomplete id="autoCompWrapper" kClient="{kClient}" width="100%" valueChange="{catTree.addFromAutoComplete(event)}" />
+				 chunkedData="{chunkedData}" attribute="{attribute}"/>
+	<cat:CategoryAutocomplete id="autoCompWrapper" kClient="{kClient}" width="100%" valueChange="autoCompWrapper_valueChangeHandler(event)" />
 </mx:VBox>
