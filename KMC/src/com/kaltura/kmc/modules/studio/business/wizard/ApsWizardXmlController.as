@@ -343,7 +343,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				for each (var onscreenXML:XML in onScreenButtonsList) {
 					if (onscreenXML.@k_value.toString() == "true") {
 						contButton = (fullPlayerCopy.descendants().(attribute("id") == (featureXml.@id.toString() + onscreenXML.@id.toString()))[0]);
-						//TODO add buttonType attribute on the checkboxes, with default value for old template (buttonVideoArea)
+						// add buttonType attribute on the checkboxes, with default value for old template (buttonVideoArea)
 						// and for new template (falconButtonVideoArea)
 						if (contButton) {
 							if (onscreenXML.@k_buttonType == "falconButtonVideoArea") {
