@@ -44,7 +44,7 @@ package com.kaltura.kmc.modules.content.commands.cattrack
 							lockFlagFound = true;
 							updateFlagFound = true;
 							break;
-						case KalturaFeatureStatusType.INDEX_CATEGORY:
+						case KalturaFeatureStatusType.CATEGORY:
 							updateFlagFound = true;
 							break;
 					}
