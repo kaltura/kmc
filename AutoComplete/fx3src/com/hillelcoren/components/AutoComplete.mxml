@@ -1986,6 +1986,27 @@
 				_comparisonFunc = value;
 			}
 			
+			override public function set enabled(value:Boolean):void{
+				super.enabled = value;
+				if (flowBox && flowBox.textInput && flowBox.textInput.textInput){
+					setEnabledLook(value);
+				} else {
+					addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete);
+				}
+			}
+			
+			private function onCreationComplete(event:FlexEvent):void
+			{
+				setEnabledLook(enabled);
+			}
+			
+			private function setEnabledLook(isEnabled:Boolean):void{
+				var color:uint = isEnabled ? 0xFFFFFF : 0xAAAAAA;
+				flowBox.setStyle("backgroundColor", color);
+				flowBox.textInput.setStyle("backgroundColor", color);
+				flowBox.textInput.textInput.setStyle("backgroundColor", color);
+			}
+			
 		]]>
 	</mx:Script>
 	
