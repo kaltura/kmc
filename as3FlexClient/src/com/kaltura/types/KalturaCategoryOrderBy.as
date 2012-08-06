@@ -33,6 +33,8 @@ package com.kaltura.types
 		public static const DEPTH_DESC : String = '-depth';
 		public static const NAME_ASC : String = '+name';
 		public static const NAME_DESC : String = '-name';
+		public static const FULL_NAME_ASC : String = '+fullName';
+		public static const FULL_NAME_DESC : String = '-fullName';
 		public static const ENTRIES_COUNT_ASC : String = '+entriesCount';
 		public static const ENTRIES_COUNT_DESC : String = '-entriesCount';
 		public static const CREATED_AT_ASC : String = '+createdAt';

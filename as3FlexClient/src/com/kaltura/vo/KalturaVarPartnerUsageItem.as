@@ -147,6 +147,12 @@ package com.kaltura.vo
 		 **/
 		public var combinedStorageBandwidth : Number = Number.NEGATIVE_INFINITY;
 
+		/**
+		 * TGhe date at which the report was taken - Unix Timestamp
+		 * 
+		 **/
+		public var dateId : String = null;
+
 		/** 
 		 * a list of attributes which may be updated on this object 
 		 **/ 
@@ -173,6 +179,7 @@ package com.kaltura.vo
 			arr.push('peakStorage');
 			arr.push('avgStorage');
 			arr.push('combinedStorageBandwidth');
+			arr.push('dateId');
 			return arr;
 		}
 

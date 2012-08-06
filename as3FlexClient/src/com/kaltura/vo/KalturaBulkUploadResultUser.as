@@ -34,6 +34,10 @@ package com.kaltura.vo
 	{
 		/**
 		 **/
+		public var userId : String = null;
+
+		/**
+		 **/
 		public var screenName : String = null;
 
 		/**
@@ -84,6 +88,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('userId');
 			arr.push('screenName');
 			arr.push('email');
 			arr.push('description');

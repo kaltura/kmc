@@ -25,42 +25,24 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.baseEntry
+package com.kaltura.delegates.partner
 {
-	import com.kaltura.delegates.baseEntry.BaseEntryIndexDelegate;
+	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	/**
-	 * Index an entry by id.
-	 * 
-	 **/
-	public class BaseEntryIndex extends KalturaCall
+	public class PartnerCountDelegate extends WebDelegateBase
 	{
-		public var filterFields : String;
-		
-		/**
-		 * @param id String
-		 * @param shouldUpdate Boolean
-		 **/
-		public function BaseEntryIndex( id : String,shouldUpdate : Boolean=true )
+		public function PartnerCountDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			service= 'baseentry';
-			action= 'index';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			keyArr.push('id');
-			valueArr.push(id);
-			keyArr.push('shouldUpdate');
-			valueArr.push(shouldUpdate);
-			applySchema(keyArr, valueArr);
+			super(call, config);
 		}
 
-		override public function execute() : void
+		override public function parse(result:XML) : *
 		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new BaseEntryIndexDelegate( this , config );
+			return result.result.toString();
 		}
+
 	}
 }

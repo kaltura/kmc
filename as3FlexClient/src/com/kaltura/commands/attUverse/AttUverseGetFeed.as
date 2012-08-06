@@ -25,42 +25,40 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.baseEntry
+package com.kaltura.commands.attUverse
 {
-	import com.kaltura.delegates.baseEntry.BaseEntryIndexDelegate;
+	import com.kaltura.delegates.attUverse.AttUverseGetFeedDelegate;
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Index an entry by id.
-	 * 
 	 **/
-	public class BaseEntryIndex extends KalturaCall
+	public class AttUverseGetFeed extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param id String
-		 * @param shouldUpdate Boolean
+		 * @param distributionProfileId int
+		 * @param hash String
 		 **/
-		public function BaseEntryIndex( id : String,shouldUpdate : Boolean=true )
+		public function AttUverseGetFeed( distributionProfileId : int,hash : String )
 		{
-			service= 'baseentry';
-			action= 'index';
+			service= 'attuversedistribution_attuverse';
+			action= 'getFeed';
 
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push('id');
-			valueArr.push(id);
-			keyArr.push('shouldUpdate');
-			valueArr.push(shouldUpdate);
+			keyArr.push('distributionProfileId');
+			valueArr.push(distributionProfileId);
+			keyArr.push('hash');
+			valueArr.push(hash);
 			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
 			setRequestArgument('filterFields', filterFields);
-			delegate = new BaseEntryIndexDelegate( this , config );
+			delegate = new AttUverseGetFeedDelegate( this , config );
 		}
 	}
 }

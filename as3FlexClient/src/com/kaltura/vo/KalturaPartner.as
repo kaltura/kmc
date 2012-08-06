@@ -190,6 +190,10 @@ package com.kaltura.vo
 		 **/
 		public var additionalParams : Array = null;
 
+		/**
+		 **/
+		public var publishersQuota : int = int.MIN_VALUE;
+
 		/** 
 		 * a list of attributes which may be updated on this object 
 		 **/ 

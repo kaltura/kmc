@@ -25,42 +25,25 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.baseEntry
+package com.kaltura.vo
 {
-	import com.kaltura.delegates.baseEntry.BaseEntryIndexDelegate;
-	import com.kaltura.net.KalturaCall;
+	import com.kaltura.vo.KalturaVarPartnerUsageItem;
 
-	/**
-	 * Index an entry by id.
-	 * 
-	 **/
-	public class BaseEntryIndex extends KalturaCall
+	[Bindable]
+	public dynamic class KalturaVarPartnerUsageTotalItem extends KalturaVarPartnerUsageItem
 	{
-		public var filterFields : String;
-		
-		/**
-		 * @param id String
-		 * @param shouldUpdate Boolean
-		 **/
-		public function BaseEntryIndex( id : String,shouldUpdate : Boolean=true )
+		override public function getUpdateableParamKeys():Array
 		{
-			service= 'baseentry';
-			action= 'index';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			keyArr.push('id');
-			valueArr.push(id);
-			keyArr.push('shouldUpdate');
-			valueArr.push(shouldUpdate);
-			applySchema(keyArr, valueArr);
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			return arr;
 		}
 
-		override public function execute() : void
+		override public function getInsertableParamKeys():Array
 		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new BaseEntryIndexDelegate( this , config );
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
 		}
 	}
 }

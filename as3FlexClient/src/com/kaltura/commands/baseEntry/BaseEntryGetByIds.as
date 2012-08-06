@@ -31,7 +31,7 @@ package com.kaltura.commands.baseEntry
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Get base entry by comma separated entry ids.
+	 * Get an array of KalturaBaseEntry objects by a comma-separated list of ids.
 	 * 
 	 **/
 	public class BaseEntryGetByIds extends KalturaCall

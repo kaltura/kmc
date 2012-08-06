@@ -27,11 +27,17 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
+	import com.kaltura.vo.KalturaVarPartnerUsageItem;
+
 	import com.kaltura.vo.BaseFlexVo;
 
 	[Bindable]
 	public dynamic class KalturaPartnerUsageListResponse extends BaseFlexVo
 	{
+		/**
+		 **/
+		public var total : KalturaVarPartnerUsageItem;
+
 		/**
 		 **/
 		public var objects : Array = null;
@@ -47,6 +53,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
+			arr.push('total');
 			arr.push('objects');
 			arr.push('totalCount');
 			return arr;

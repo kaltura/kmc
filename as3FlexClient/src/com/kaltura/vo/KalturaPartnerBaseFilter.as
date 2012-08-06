@@ -42,6 +42,10 @@ package com.kaltura.vo
 
 		/**
 		 **/
+		public var idNotIn : String = null;
+
+		/**
+		 **/
 		public var nameLike : String = null;
 
 		/**
@@ -87,6 +91,7 @@ package com.kaltura.vo
 			arr = super.getUpdateableParamKeys();
 			arr.push('idEqual');
 			arr.push('idIn');
+			arr.push('idNotIn');
 			arr.push('nameLike');
 			arr.push('nameMultiLikeOr');
 			arr.push('nameMultiLikeAnd');

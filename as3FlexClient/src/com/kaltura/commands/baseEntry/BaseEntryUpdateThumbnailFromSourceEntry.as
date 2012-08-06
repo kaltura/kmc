@@ -31,7 +31,7 @@ package com.kaltura.commands.baseEntry
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Update entry thumbnail from a different entry by a specified time offset (In seconds).
+	 * Update entry thumbnail from a different entry by a specified time offset (in seconds).
 	 * 
 	 **/
 	public class BaseEntryUpdateThumbnailFromSourceEntry extends KalturaCall

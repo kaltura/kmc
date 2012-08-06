@@ -36,5 +36,7 @@ package com.kaltura.types
 		public static const IDETIC : String = 'ideticDistribution.IDETIC';
 		public static const YAHOO : String = 'yahooDistribution.YAHOO';
 		public static const CROSS_KALTURA : String = 'crossKalturaDistribution.CROSS_KALTURA';
+		public static const UVERSE : String = 'uverseDistribution.UVERSE';
+		public static const ATT_UVERSE : String = 'attUverseDistribution.ATT_UVERSE';
 	}
 }

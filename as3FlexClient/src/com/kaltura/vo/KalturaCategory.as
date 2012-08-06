@@ -256,7 +256,6 @@ package com.kaltura.vo
 			arr.push('partnerSortValue');
 			arr.push('partnerData');
 			arr.push('defaultOrderBy');
-			arr.push('directSubCategoriesCount');
 			arr.push('moderation');
 			return arr;
 		}

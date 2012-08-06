@@ -25,42 +25,42 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.baseEntry
+package com.kaltura.commands.varConsole
 {
-	import com.kaltura.delegates.baseEntry.BaseEntryIndexDelegate;
+	import com.kaltura.delegates.varConsole.VarConsoleUpdateStatusDelegate;
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Index an entry by id.
+	 * Function to change a sub-publisher's status
 	 * 
 	 **/
-	public class BaseEntryIndex extends KalturaCall
+	public class VarConsoleUpdateStatus extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param id String
-		 * @param shouldUpdate Boolean
+		 * @param id int
+		 * @param status int
 		 **/
-		public function BaseEntryIndex( id : String,shouldUpdate : Boolean=true )
+		public function VarConsoleUpdateStatus( id : int,status : int )
 		{
-			service= 'baseentry';
-			action= 'index';
+			service= 'varconsole_varconsole';
+			action= 'updateStatus';
 
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
 			keyArr.push('id');
 			valueArr.push(id);
-			keyArr.push('shouldUpdate');
-			valueArr.push(shouldUpdate);
+			keyArr.push('status');
+			valueArr.push(status);
 			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
 			setRequestArgument('filterFields', filterFields);
-			delegate = new BaseEntryIndexDelegate( this , config );
+			delegate = new VarConsoleUpdateStatusDelegate( this , config );
 		}
 	}
 }

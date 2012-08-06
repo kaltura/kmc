@@ -31,7 +31,7 @@ package com.kaltura.commands.partner
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Retrieve partner secret and admin secret
+	 * Retrieve partner object by Id
 	 * 
 	 **/
 	public class PartnerGet extends KalturaCall
@@ -39,9 +39,9 @@ package com.kaltura.commands.partner
 		public var filterFields : String;
 		
 		/**
-		 * @param partnerId int
+		 * @param id int
 		 **/
-		public function PartnerGet( partnerId : int=int.MIN_VALUE )
+		public function PartnerGet( id : int=int.MIN_VALUE )
 		{
 			service= 'partner';
 			action= 'get';
@@ -49,8 +49,8 @@ package com.kaltura.commands.partner
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push('partnerId');
-			valueArr.push(partnerId);
+			keyArr.push('id');
+			valueArr.push(id);
 			applySchema(keyArr, valueArr);
 		}
 

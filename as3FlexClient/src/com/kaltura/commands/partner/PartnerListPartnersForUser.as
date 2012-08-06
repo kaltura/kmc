@@ -27,11 +27,12 @@
 // ===================================================================================================
 package com.kaltura.commands.partner
 {
+	import com.kaltura.vo.KalturaPartnerFilter;
 	import com.kaltura.delegates.partner.PartnerListPartnersForUserDelegate;
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Retrieve a list of partner IDs which the current user is allowed to access.
+	 * Retrieve a list of partner objects which the current user is allowed to access.
 	 * 
 	 **/
 	public class PartnerListPartnersForUser extends KalturaCall
@@ -39,8 +40,9 @@ package com.kaltura.commands.partner
 		public var filterFields : String;
 		
 		/**
+		 * @param partnerFilter KalturaPartnerFilter
 		 **/
-		public function PartnerListPartnersForUser(  )
+		public function PartnerListPartnersForUser( partnerFilter : KalturaPartnerFilter=null )
 		{
 			service= 'partner';
 			action= 'listPartnersForUser';
@@ -48,6 +50,11 @@ package com.kaltura.commands.partner
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
+ 			if (partnerFilter) { 
+ 			keyValArr = kalturaObject2Arrays(partnerFilter, 'partnerFilter');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
 			applySchema(keyArr, valueArr);
 		}
 

@@ -32,7 +32,7 @@ package com.kaltura.commands.baseEntry
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Generic add entry, should be used when the uploaded entry type is not known.
+	 * Attach content resource to entry in status NO_MEDIA
 	 * 
 	 **/
 	public class BaseEntryAddContent extends KalturaCall

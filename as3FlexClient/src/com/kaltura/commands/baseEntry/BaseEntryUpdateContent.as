@@ -32,7 +32,7 @@ package com.kaltura.commands.baseEntry
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Update base entry. Only the properties that were set will be updated.
+	 * Update the content resource associated with the entry.
 	 * 
 	 **/
 	public class BaseEntryUpdateContent extends KalturaCall

@@ -40,9 +40,9 @@ package com.kaltura.commands.category
 		
 		/**
 		 * @param id int
-		 * @param moveEntriesToParetCategory Boolean
+		 * @param moveEntriesToParentCategory int
 		 **/
-		public function CategoryDelete( id : int,moveEntriesToParetCategory : Boolean=true )
+		public function CategoryDelete( id : int,moveEntriesToParentCategory : int=1 )
 		{
 			service= 'category';
 			action= 'delete';
@@ -52,8 +52,8 @@ package com.kaltura.commands.category
 			var keyValArr : Array = new Array();
 			keyArr.push('id');
 			valueArr.push(id);
-			keyArr.push('moveEntriesToParetCategory');
-			valueArr.push(moveEntriesToParetCategory);
+			keyArr.push('moveEntriesToParentCategory');
+			valueArr.push(moveEntriesToParentCategory);
 			applySchema(keyArr, valueArr);
 		}
 

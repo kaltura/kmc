@@ -25,42 +25,43 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.baseEntry
+package com.kaltura.commands.partner
 {
-	import com.kaltura.delegates.baseEntry.BaseEntryIndexDelegate;
+	import com.kaltura.vo.KalturaPartnerFilter;
+	import com.kaltura.delegates.partner.PartnerCountDelegate;
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Index an entry by id.
+	 * Count partner's existing sub-publishers (count includes the partner itself).
 	 * 
 	 **/
-	public class BaseEntryIndex extends KalturaCall
+	public class PartnerCount extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param id String
-		 * @param shouldUpdate Boolean
+		 * @param filter KalturaPartnerFilter
 		 **/
-		public function BaseEntryIndex( id : String,shouldUpdate : Boolean=true )
+		public function PartnerCount( filter : KalturaPartnerFilter=null )
 		{
-			service= 'baseentry';
-			action= 'index';
+			service= 'partner';
+			action= 'count';
 
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push('id');
-			valueArr.push(id);
-			keyArr.push('shouldUpdate');
-			valueArr.push(shouldUpdate);
+ 			if (filter) { 
+ 			keyValArr = kalturaObject2Arrays(filter, 'filter');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
 			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
 			setRequestArgument('filterFields', filterFields);
-			delegate = new BaseEntryIndexDelegate( this , config );
+			delegate = new PartnerCountDelegate( this , config );
 		}
 	}
 }

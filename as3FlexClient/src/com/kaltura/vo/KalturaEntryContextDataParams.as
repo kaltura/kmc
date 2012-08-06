@@ -33,14 +33,20 @@ package com.kaltura.vo
 	public dynamic class KalturaEntryContextDataParams extends KalturaAccessControlScope
 	{
 		/**
+		 * Id of the current flavor.
+		 * 
 		 **/
 		public var flavorAssetId : String = null;
 
 		/**
+		 * Playback streamer type: RTMP, HTTP, appleHttps, rtsp, sl.
+		 * 
 		 **/
 		public var streamerType : String = null;
 
 		/**
+		 * Protocol of the specific media object.
+		 * 
 		 **/
 		public var mediaProtocol : String = null;
 
