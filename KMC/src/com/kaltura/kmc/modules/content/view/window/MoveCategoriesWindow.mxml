@@ -141,6 +141,16 @@
 				catTree.clearSelection();
 			}
 
+
+			private function catComplete_searchChangeHandler(event:Event):void
+			{
+				// handle cases when there was a value selected in AC, then user 
+				// started typing (thus deselecting previously selected value)
+				if (!none.selected && !catTree.getSelectedCategories().length) {
+					none.selected = true;
+				}
+			}
+
 		]]>
 	</mx:Script>
 
@@ -151,6 +161,7 @@
 		<components:AutoComplete id="catComplete" width="70%" labelField="name"
 								 prompt="{resourceManager.getString('drilldown', 'searchCats')}" 
 								 selectedItemStyleName="selectionBox" change="catComplete_changeHandler(event)" 
+								 searchChange="catComplete_searchChangeHandler(event)"
 								 selectionItemRendererClassFactory="{new ClassFactory(CategorySelectedItem)}"/>
 	</mx:HBox>
 	<mx:HRule width="100%" />
