@@ -26,6 +26,19 @@ package com.kaltura.autocomplete.controllers
 			super(autoComp, client);
 			autoComp.dropDownLabelFunction = categoryLabelFunction;
 			autoComp.selectionItemRendererClassFactory = new ClassFactory(CategorySelectedItem);
+			autoComp.comparisonFunction = categoryComparison;
+		}
+		
+		private function categoryComparison(itemA:Object, itemB:Object):Boolean{
+			var categoryA:KalturaCategory = itemA as KalturaCategory;
+			var categoryB:KalturaCategory = itemB as KalturaCategory;
+			
+			if (categoryA == null || categoryB == null){
+				trace ("categoryComparison --> Trying to compare non-category object");
+				return false;
+			}
+			
+			return categoryA.id == categoryB.id;
 		}
 		
 		override protected function createCallHook():KalturaCall{

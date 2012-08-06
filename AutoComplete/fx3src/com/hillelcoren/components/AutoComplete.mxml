@@ -534,7 +534,9 @@
 				
 				for each (var item:Object in _selectedItems.source)
 				{
-					if (item == searchFor || 
+					if (_comparisonFunc != null && _comparisonFunc(item, searchFor)){
+						count++;
+					} else if (item == searchFor || 
 						(item.hasOwnProperty( _keyField )
 							&& searchFor.hasOwnProperty( _keyField )
 							&& item[_keyField] == searchFor[_keyField]))
@@ -554,10 +556,20 @@
 			
 			protected function checkIfUnavailable( item:Object ):Boolean
 			{
-				var index:int = _disabledItems.getItemIndex( item );
+				var doRemove:Boolean = false;
+				if (_comparisonFunc != null){
+					for each (var dItem:Object in _disabledItems){
+						if (_comparisonFunc(item, dItem)){
+							doRemove = true;
+							break;
+						}
+					}
+				} else {
+					var index:int = _disabledItems.getItemIndex( item );
+					doRemove = index >= 0;
+				}
 				
-				if (index >= 0)
-				{
+				if (doRemove){
 					silentlyRemove( item );
 					return true;
 				}
@@ -1894,6 +1906,7 @@
 			private var _isSearching:Boolean;
 			private var _messagePopup:List;
 			private var _selectedItemIdentifier:Object;
+			private var _comparisonFunc:Function;
 			
 			public function notifySearching():void{
 				if (! _isSearching){
@@ -1967,6 +1980,10 @@
 				if (_messagePopup && _messagePopup){
 					hideMessage();
 				}
+			}
+			
+			public function set comparisonFunction(value:Function):void{
+				_comparisonFunc = value;
 			}
 			
 		]]>
