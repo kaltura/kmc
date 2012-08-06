@@ -8,8 +8,10 @@
 			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
 			import com.kaltura.edw.components.fltr.panels.MetadataProfileFilter;
 			import com.kaltura.edw.model.datapacks.ContextDataPack;
+			import com.kaltura.types.KalturaSearchOperatorType;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaFilter;
+			import com.kaltura.vo.KalturaMetadataSearchItem;
 			import com.kaltura.vo.MetadataFieldVO;
 			
 			import mx.collections.ArrayCollection;
@@ -60,22 +62,39 @@
 				var metadataTab:MetadataProfileFilter;
 				var field:MetadataFieldVO;
 				var hasSearchableFields:Boolean = false;
+				var hasSearchableListFields:Boolean = false;
+				
 				for (i = _metadataProfiles.length-1; i>=0; i--) {
 					profileVo = _metadataProfiles.getItemAt(i) as KMCMetadataProfileVO;
 					if (profileVo.metadataFieldVOArray && profileVo.metadataFieldVOArray.length) {
 						// look for searchable fields of type list:
 						hasSearchableFields = false;						
+						hasSearchableListFields = false;						
 						for each (var obj:Object in profileVo.metadataFieldVOArray) {
 							field = obj as MetadataFieldVO;
-							if (field && field.appearInSearch && (field.type == MetadataCustomFieldTypes.LIST)) {
-								hasSearchableFields = true;
-								break;
+							if (field && field.appearInSearch) {
+								if (field.type == MetadataCustomFieldTypes.LIST) {
+									hasSearchableListFields = true;
+									break;
+								}
+								else {
+									hasSearchableFields = true;
+									// don't break, look for LISTs
+								}
 							}
 						}
-						if (hasSearchableFields) {
+						if (hasSearchableListFields) {
+							// build a visual filter
 							metadataTab = buildMetadataProfileFilter(profileVo); 
 							// add the tab after additional filters tab
 							accordion.addChildAt(metadataTab, 2);
+						}
+						else if (hasSearchableFields) {
+							// add item to advanced search
+							var profileSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
+							profileSearchItem.type = KalturaSearchOperatorType.SEARCH_AND;
+							profileSearchItem.metadataProfileId = profileVo.profile.id;
+							handelAdvancedSearchComponent(profileSearchItem, profileVo.profile.id.toString());
 						}
 					}
 				}
