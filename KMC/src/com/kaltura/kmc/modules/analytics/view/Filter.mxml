@@ -140,9 +140,14 @@
 					if (!_filterVo.userIds) {
 						usersComplete.selectedItems = null;
 					}
-//					else {
-//						usersComplete.se
-//					}
+					else {
+						var users:Array = _filterVo.userIds.split(',');
+						for (var i:int = 0; i<users.length; i++) {
+							if (users[i]) {	// avoid empty strings which are valid user ids)
+								usersComplete.selectedItemIdentifier = users[i]; 
+							}
+						}
+					}
 				}
 				_selectedCategoriesArr.addEventListener(CollectionEvent.COLLECTION_CHANGE, onCategoriesChange);
 			}
