@@ -4,12 +4,14 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.analytics.utils.TimeConsts;
+			
 			import mx.charts.HitData;
 			import mx.collections.ArrayCollection;
 			import mx.graphics.Stroke;
 			private var _minHAxisDate : Date;
 			private var _maxHAxisDate : Date;
-			private var day : Number = 1000*60*60*24;
+			
 			
 			[Bindable]
 			public var monthGraph:Boolean = false;
@@ -31,10 +33,10 @@
 				// fill the 0 points from min to max and not using the build in interpolation
 				// first we create all points with correct x and y=0
 				if(_maxHAxisDate && _minHAxisDate) {
-					var minMaxDays : int = (_maxHAxisDate.time - _minHAxisDate.time)/day;
+					var minMaxDays : int = (_maxHAxisDate.time - _minHAxisDate.time)/TimeConsts.DAY;
 					for(var j:int=0; j<=minMaxDays; j++) {
 						var obj : Object = new Object();
-						obj.x = _minHAxisDate.time + (j * day);
+						obj.x = _minHAxisDate.time + (j * TimeConsts.DAY);
 						obj.y = 0;
 						provider.addItem( obj );
 					}
@@ -59,14 +61,14 @@
 					}
 					
 					//if there is only one dot, show the data tip of that dot
-					if(provider.length == 1) {
-						this.showAllDataTips = true;
-						this.showDataTips = false;
-					}
-					else {
+//					if(provider.length == 1) {
+//						this.showAllDataTips = true;
+//						this.showDataTips = false;
+//					}
+//					else {
 						this.showAllDataTips = false;
 						this.showDataTips = true;
-					}
+//					}
 				}
 				
 				super.dataProvider = provider;

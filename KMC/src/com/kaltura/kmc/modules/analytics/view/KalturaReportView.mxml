@@ -17,6 +17,7 @@
 			import com.kaltura.kmc.modules.analytics.model.Context;
 			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
+			import com.kaltura.kmc.modules.analytics.utils.TimeConsts;
 			import com.kaltura.kmc.modules.analytics.view.window.PreviewEntryWin;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 			import com.kaltura.types.KalturaReportInterval;
@@ -167,8 +168,12 @@
 			public var showSearchFilter:Boolean = true;
 			[Bindable]
 			public var generalBarChartFlag:Boolean = false;
+//			[Bindable]
+//			public var isDateBarChart:Boolean = false;
 			[Bindable]
-			public var isMonthGraph:Boolean = false;
+			public var isMonths:Boolean = false;
+			[Bindable]
+			public var isOneDay:Boolean = false;
 			
 			private static var playerLoadedFlag:Boolean = false;
 			private static var playerReadyFlag:Boolean = false;
@@ -178,12 +183,13 @@
 
 			private function init():void {
 				BindingUtils.bindSetter(onReportDataChange, this, "reportData");
-				BindingUtils.bindSetter(onIntervalChanged, filterVo, "interval");
+				BindingUtils.bindSetter(onFilterChanged, this, "filterVo");
 				//BindingUtils.bindSetter( onSelectedMediaEntryChange , this.reportData , "seletedMediaEntry" );
 			}
 			
-			private function onIntervalChanged(interval:String):void{
-				isMonthGraph = showTimeUnits ? interval == KalturaReportInterval.MONTHS : false;
+			private function onFilterChanged(vo:FilterVo):void{
+				isMonths = showTimeUnits ? vo.interval == KalturaReportInterval.MONTHS : false;
+				isOneDay = (vo.toDate.time - vo.fromDate.time) <= TimeConsts.DAY;
 			}
 
 			private function onSelectedMediaEntryChange(selectdEntry:KalturaBaseEntry):void {
@@ -259,8 +265,8 @@
 //					populateFilter( rdtc );
 
 					if (showLineChart){
-						if (isMonthGraph){
-							monthChart.dataProvider = rdtc.chartDp;
+						if (isMonths || isOneDay){
+							dateBarChart.dataProvider = rdtc.chartDp;
 						} else {
 							lineChart.dataProvider = rdtc.chartDp;
 						}
@@ -311,6 +317,9 @@
 			 * ask for needed reports
 			 * */
 			private function getReports(event:Event = null):void {
+				isMonths = showTimeUnits ? filterVo.interval == KalturaReportInterval.MONTHS : false;
+				isOneDay = (filterVo.toDate.time - filterVo.fromDate.time) <= TimeConsts.DAY;
+				
 				var reportSetDataEvent:ReportDataEvent = new ReportDataEvent(ReportDataEvent.SET_REPORT_DATA, reportType, screenType,  label, aggregatedHeaders, tableHeaders);
 				reportSetDataEvent.dispatch();
 				
@@ -519,9 +528,9 @@
 	<charts:KColumnChart id="columnChart" width="100%" enabled="{_isVisibleColumnChart}" visible="{showColumnChart}"
 						 includeInLayout="{showColumnChart}" createColumnsFromDp="{generalBarChartFlag}"/>
 
-	<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}" includeInLayout="{showLineChart &amp;&amp; ! isMonthGraph}"
-					   visible="{showLineChart &amp;&amp; ! isMonthGraph}" minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>
-	<charts:KMonthColumnChart id="monthChart" dimName="{dimCb.selectedItem.label}" width="100%" includeInLayout="{showLineChart &amp;&amp; isMonthGraph}" visible="{showLineChart &amp;&amp; isMonthGraph}" />
+	<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}" includeInLayout="{showLineChart &amp;&amp; ! (isOneDay || isMonths)}"
+					   visible="{showLineChart &amp;&amp; ! (isOneDay || isMonths)}" minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>
+	<charts:KDateColumnChart id="dateBarChart" dimName="{dimCb.selectedItem.label}" width="100%" includeInLayout="{showLineChart &amp;&amp; (isOneDay || isMonths)}" visible="{showLineChart &amp;&amp; (isOneDay || isMonths)}" isMonths="{isMonths}"/>
 
 	<!-- loader -->
 	<mx:VBox width="{this.width-150}" height="200" paddingTop="-150" horizontalAlign="center" clipContent="false"

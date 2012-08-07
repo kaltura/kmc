@@ -11,10 +11,14 @@
 			
 			public var dimName:String;
 			
+			[Bindable]
+			public var isMonths:Boolean;
+			
 			private function getDataTip(data:Object):String
 			{
 				var catAxis:CategoryAxis = colTimeAxis ;
-				return  FormattingUtil.formatMonthString(data.item.x) + '\n' + dimName + ': ' + Number(data.item.y).toFixed(2);
+				var dateString:String = isMonths ? FormattingUtil.formatMonthString(data.item.x) : parseNormalDate(data.item.x as Number);
+				return  dateString + '\n' + dimName + ': ' + Number(data.item.y).toFixed(2);
 			}
 			
 			override public function set dataProvider(value:Object):void{
@@ -25,19 +29,26 @@
 			}
 			
 			private function categoryLabelFunc(categoryValue:Object, previousCategoryValue:Object, axis:CategoryAxis, categoryItem:Object):String{
-				var monthString:String = categoryValue as String;
-				return FormattingUtil.formatMonthString(monthString);
+				if (isMonths){
+					var monthString:String = categoryValue as String;
+					return FormattingUtil.formatMonthString(monthString);
+				} else {
+					return parseNormalDate(categoryValue as Number);
+				}
 			}
 			
-//			private function formatMonth(monthStr:String):String{
-//				var formatter:DateFormatter = new DateFormatter();
-//				formatter.formatString = 
-//			}
+			private function parseNormalDate(value:Number):String{
+				var date:Date = new Date(value);
+				var dateFormatter:DateFormatter = new DateFormatter();
+				dateFormatter.formatString = resourceManager.getString("analytics", "dailyDateMask");
+				return dateFormatter.format(date) ; 
+			}
+			
 		]]>
 	</mx:Script>
 		<mx:horizontalAxis>
 			<mx:CategoryAxis id='colTimeAxis'
-							 categoryField="x" title="{resourceManager.getString('analytics', 'month')}" labelFunction="categoryLabelFunc"/>
+							 categoryField="x" title="{isMonths ? resourceManager.getString('analytics', 'month') : resourceManager.getString('analytics', 'date')}" labelFunction="categoryLabelFunc"/>
 		</mx:horizontalAxis>
 		<mx:series>
 			<mx:ColumnSeries displayName="Usage" yField="y" xField="x">
