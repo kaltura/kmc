@@ -629,6 +629,9 @@ package com.kaltura.edw.components.fltr.cat
 			// save value (assume it was string..)
 			_initialFilter = value.toString();
 			_currentFilter = value.toString();
+			if (_currentFilter.charAt(_currentFilter.length - 1) != ",") {
+				_currentFilter += ",";
+			}
 			
 			if ((dataProvider as ArrayCollection).length > 0) {
 				remarkPreviouslySelected(false);
