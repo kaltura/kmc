@@ -252,7 +252,7 @@
 				
 				_filterVo.selectedDate = dateCb.selectedItem.toString();
 
-				dispatchEvent(new Event('apply')); //apply
+				dispatchEvent(new Event(APPLY)); //apply
 			}
 
 
@@ -344,7 +344,7 @@
 						break;
 				}
 
-				dispatchEvent(new Event('apply'));
+				dispatchEvent(new Event(APPLY));
 			}
 
 
@@ -391,7 +391,7 @@
 
 			private function onCategoriesSelected(event:Event):void {
 //				if ((event.target as CategoriesTreePopUp).selectedCategories.length > 0) {
-					dispatchEvent(new Event('apply'));
+					dispatchEvent(new Event(APPLY));
 //				}
 			}
 
@@ -460,7 +460,7 @@
 				}
 				_filterVo.userIds = usersIds.substr(0, usersIds.length-1);
 				
-				dispatchEvent(new Event('apply')); //apply
+				dispatchEvent(new Event(APPLY)); //apply
 			}
 			
 			protected function changeTimeUnits(event:ListEvent):void
@@ -474,7 +474,7 @@
 						break;
 				}
 				
-				dispatchEvent(new Event('apply')); //apply
+				dispatchEvent(new Event(APPLY)); //apply
 			}
 			
 		]]>
@@ -499,7 +499,7 @@
 		<mx:DateField id="toDate" width="100" buttonMode="true" selectedDate="{_filterVo.toDate}"
 					  change="toDateChanged( event )" enabled="{!isLoading}"/>
 		<!--mx:Button label="{resourceManager.getString('analytics','apply')}" visible="false" includeInLayout="false"
-				   buttonMode="true" click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2"
+				   buttonMode="true" click="{dispatchEvent(new Event(APPLY))}" styleName="buttonType2"
 				   enabled="{!isLoading}"/-->
 	</mx:HBox>
 	<mx:HBox id="categoriesBox" verticalAlign="middle" includeInLayout="{ !dateOnlyFlag || playbackContextFlag }" visible="{!dateOnlyFlag || playbackContextFlag}">
@@ -528,7 +528,7 @@
 		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','searchFilter')}"/>
 		<mx:TextInput id="searchTerm" width="205" text="{_filterVo.keywords}"
 					  change="{_filterVo.keywords = searchTerm.text}"
-					  keyDown="{if(event.keyCode == Keyboard.ENTER)dispatchEvent(new Event('apply'))}"
+					  keyDown="{if(event.keyCode == Keyboard.ENTER)dispatchEvent(new Event(APPLY))}"
 					  enabled="{!isLoading}"/>
 		<!--<mx:Label text="{resourceManager.getString('analytics','in')}:" />-->
 		<!-- user filter -->
@@ -545,14 +545,14 @@
 						visible="false" includeInLayout="false" enabled="{!isLoading}"/>
 		<!--  checkDisableTextField() -->
 		<mx:Button label="{resourceManager.getString('analytics','apply')}" buttonMode="true"
-				   click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2" enabled="{!isLoading}"/>
+				   click="{dispatchEvent(new Event(APPLY))}" styleName="buttonType2" enabled="{!isLoading}"/>
 	</mx:HBox>
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{filterApplicationsFlag}" visible="{filterApplicationsFlag}">
 		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','application')}" />
 		<!-- TODO: CHECK IF WE NEED PROMPT THAT SAID LOADING... -->
 		<mx:ComboBox id="appFilter"  width="{INPUT_WIDTH}" dataProvider="{applicationsList}"
 					 selectedIndex="{_filterVo.application ? (appFilter.dataProvider as ArrayCollection).getItemIndex(_filterVo.application) : 0}" 
-					 change="{_filterVo.application = appFilter.selectedItem.toString(); dispatchEvent(new Event('apply'));}" />
+					 change="{_filterVo.application = appFilter.selectedItem.toString(); dispatchEvent(new Event(APPLY));}" />
 	</mx:HBox>
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{filterUsersFlag}" visible="{filterUsersFlag}">
 		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','searchUser')}" />
