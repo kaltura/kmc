@@ -20,6 +20,7 @@
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
 			import com.kaltura.types.KalturaAppearInListType;
 			import com.kaltura.types.KalturaContributionPolicyType;
+			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.types.KalturaPrivacyType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.KArrayUtil;
@@ -30,21 +31,23 @@
 			import mx.events.CloseEvent;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
-
-			[Bindable]
-			public var rootUrl:String;
-
-			[Bindable]
-			private var _lblWidth:Number = 170;
-			[Bindable]
-			private var _maxWidth:Number = 300;
-			[Bindable]
-			private var _textWidth:Number = 190;
+			import mx.resources.ResourceManager;
+			
+			
+			public static const NAME:String = "integration";
+		
+			private const _lblWidth:Number = 170;
+			
+			private const _maxWidth:Number = 300;
+			
+			private const _textWidth:Number = 190;
+			
 			[Bindable]
 			public var enableNotificationsTable:Boolean = true;
 
 			[Bindable]
 			public var partnerData:PartnerVO;
+			
 			private var _clonedPartnerData:PartnerVO;
 
 			
@@ -54,14 +57,19 @@
 			 * */
 			public var categories:Array;
 			
-			public static const NAME:String = "integration";
-
 			/**
 			 * make sure we have both creationComplete and an external call to init()
 			 * */
 			private var _ready:Boolean = false;
 
+			[Bindable]
+			/**
+			 * default entitlements status in API - user friendly text
+			 * */
+			private var _entitlementsEnabledText:String;
 
+			
+			
 			public function init():void {
 				if (_ready) {
 					BindingUtils.bindSetter(onPartnerDataLoaded, this, "partnerData");
@@ -82,15 +90,15 @@
 				if (pvo) {
 					_clonedPartnerData = pvo.clone();
 
-					if (partnerData.notify)
+					if (partnerData.partner.notify == KalturaNullableBoolean.TRUE_VALUE)
 						yesGetNoti.selected = true;
 					else
 						noGetNoti.selected = true;
 
-					partnerData.allowQuickEdit ? appendEntry.selectedIndex = 0 : appendEntry.selectedIndex = 1;
-					partnerData.mergeEntryLists ? returnListOfUserClips.selectedIndex = 0 : returnListOfUserClips.selectedIndex = 1;
+					partnerData.partner.allowQuickEdit == 1 ? appendEntry.selectedIndex = 0 : appendEntry.selectedIndex = 1;
+					partnerData.partner.mergeEntryLists == 1 ? returnListOfUserClips.selectedIndex = 0 : returnListOfUserClips.selectedIndex = 1;
 
-					switch (partnerData.appearInSearch) {
+					switch (partnerData.partner.appearInSearch) {
 						case 2:
 							appearInUploader.selectedIndex = 0;
 							break;
@@ -100,6 +108,13 @@
 						case 0:
 							appearInUploader.selectedIndex = 2;
 							break;
+					}
+					
+					if (partnerData.partner.defaultEntitlementEnforcement) {
+						_entitlementsEnabledText = ResourceManager.getInstance().getString('account', 'entEnabled');
+					}
+					else {
+						_entitlementsEnabledText = ResourceManager.getInstance().getString('account', 'entDisabled');
 					}
 				}
 			}
@@ -153,13 +168,13 @@
 			private function onAppearInUploaderChange(event:ListEvent):void {
 				switch ((event.target as ComboBox).selectedIndex) {
 					case 0:
-						partnerData.appearInSearch = 2;
+						partnerData.partner.appearInSearch = 2;
 						break;
 					case 1:
-						partnerData.appearInSearch = 1;
+						partnerData.partner.appearInSearch = 1;
 						break;
 					case 2:
-						partnerData.appearInSearch = 0;
+						partnerData.partner.appearInSearch = 0;
 						break;
 				}
 			}
@@ -167,9 +182,9 @@
 
 			private function onNotificationsConfigChange(event:Event):void {
 				if (event.target == yesGetNoti)
-					partnerData.notify = true;
+					partnerData.partner.notify = KalturaNullableBoolean.TRUE_VALUE; 
 				else
-					partnerData.notify = false;
+					partnerData.partner.notify = KalturaNullableBoolean.FALSE_VALUE;
 			}
 
 
@@ -276,7 +291,7 @@
 				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('account', 'partnerIdB')}" width="{_lblWidth}"
 							  styleName="boldLabel"/>
-					<mx:Label text="{partnerData.pId}" selectable="true"/>
+					<mx:Label text="{partnerData.partnerId}" selectable="true"/>
 				</mx:HBox>
 
 				<mx:HBox>
@@ -288,13 +303,13 @@
 				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('account', 'adminSeceretB')}" width="{_lblWidth}"
 							  styleName="boldLabel"/>
-					<mx:Label text="{partnerData.adminSecret}" selectable="true"/>
+					<mx:Label text="{partnerData.partner.adminSecret}" selectable="true"/>
 				</mx:HBox>
 
 				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('account', 'userSeceretB')}" width="{_lblWidth}"
 							  styleName="boldLabel"/>
-					<mx:Label text="{partnerData.secret}" selectable="true"/>
+					<mx:Label text="{partnerData.partner.secret}" selectable="true"/>
 				</mx:HBox>
 
 				<mx:HBox width="100%" height="100%" horizontalAlign="right" verticalAlign="bottom">
@@ -314,8 +329,13 @@
 				<components:EntitlementTable width="100%" dataProvider="{categories}" height="100%"
 											 changeContext="handleEntitlementsTableActions(event)"
 											 removeContext="handleEntitlementsTableActions(event)"/>
-				<mx:LinkButton id="addContextsBtn" label="{resourceManager.getString('account', 'addEntitlement')}"
+				<mx:HBox width="100%">
+					<mx:LinkButton id="addContextsBtn" label="{resourceManager.getString('account', 'addEntitlement')}"
 							   click="openSetEntitlementWindow()" styleName="plusIcon"/>
+					<mx:Spacer width="100%" />
+					<mx:Label styleName="boldLabel" text="{resourceManager.getString('account', 'entDefault')}" />
+					<mx:Label text="{_entitlementsEnabledText}" />
+				</mx:HBox>
 			</mx:VBox>
 
 			<!-- advanced settings -->
@@ -325,7 +345,7 @@
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'appendEntry')}"/>
 					<mx:ComboBox id="appendEntry"
-								 change="{partnerData.allowQuickEdit = appendEntry.selectedIndex == 0 ? true : false}"
+								 change="{partnerData.partner.allowQuickEdit = appendEntry.selectedIndex == 0 ? 1 : 0}"
 								 enabled="{advCont.enabled}">
 						<mx:dataProvider>
 							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>
@@ -347,7 +367,7 @@
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'returnListOfUserClips')}"/>
 					<mx:ComboBox id="returnListOfUserClips"
-								 change="{partnerData.mergeEntryLists = returnListOfUserClips.selectedIndex == 0 ? true : false}"
+								 change="{partnerData.partner.mergeEntryLists = returnListOfUserClips.selectedIndex == 0 ? 1 : 0}"
 								 enabled="{advCont.enabled}">
 						<mx:dataProvider>
 							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>
@@ -358,20 +378,20 @@
 				<mx:Label text="{resourceManager.getString('account', 'misc')}" styleName="expendableButton"/>
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'userPageUrlFormat')}"/>
-					<mx:TextInput id="userLandingPage" text="{partnerData.userLandingPage}"
-								  change="{partnerData.userLandingPage = userLandingPage.text}"
+					<mx:TextInput id="userLandingPage" text="{partnerData.partner.userLandingPage}"
+								  change="{partnerData.partner.userLandingPage = userLandingPage.text}"
 								  enabled="{advCont.enabled}"/>
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'mediaPageUrlFormat')}"/>
-					<mx:TextInput id="landingPage" text="{partnerData.landingPage}"
-								  change="{partnerData.landingPage = landingPage.text}" enabled="{advCont.enabled}"/>
+					<mx:TextInput id="landingPage" text="{partnerData.partner.landingPage}"
+								  change="{partnerData.partner.landingPage = landingPage.text}" enabled="{advCont.enabled}"/>
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'userUploadLimit')}"/>
 					<mx:NumericStepper id="maxUploadSize" minimum="0" maximum="10000"
-									   value="{partnerData.maxUploadSize}"
-									   change="{partnerData.maxUploadSize = maxUploadSize.value}"
+									   value="{partnerData.partner.maxUploadSize}"
+									   change="{partnerData.partner.maxUploadSize = maxUploadSize.value}"
 									   enabled="{advCont.enabled}"/>
 					<mx:Label text="{resourceManager.getString('account', 'mb')}"/>
 				</mx:HBox>
@@ -398,8 +418,8 @@
 
 				<mx:HBox>
 					<mx:Label width="224" text="{resourceManager.getString('account', 'notificationUrl')}:"/>
-					<mx:TextInput id="recieveServerNoti" width="{_textWidth}" text="{partnerData.url2}"
-								  change="{partnerData.url2 = recieveServerNoti.text}"
+					<mx:TextInput id="recieveServerNoti" width="{_textWidth}" text="{partnerData.partner.notificationUrl}"
+								  change="{partnerData.partner.notificationUrl = recieveServerNoti.text}"
 								  enabled="{yesGetNoti.selected &amp;&amp; notifications.enabled}"/>
 					<mx:Button label="{resourceManager.getString('account', 'pingUrl')}" click="{verifyHttp()}"
 							   enabled="{yesGetNoti.selected &amp;&amp; notifications.enabled}" buttonMode="true"/>

@@ -104,12 +104,12 @@
 				if (pvo) {
 					// remove the redundant trailing thing for partners who 
 					// registered from .org (or something)
-					if (pvo.url1) {
-						var i:int = pvo.url1.indexOf(" | Source =") ; 
+					if (pvo.partner.website) {
+						var i:int = pvo.partner.website.indexOf(" | Source =") ; 
 						if (i > -1) {
-							var s:String = pvo.url1;
+							var s:String = pvo.partner.website;
 							s = s.substr(i, 11);
-							pvo.url1 = s;
+							pvo.partner.website = s;
 						}
 					}
 					_clonedPartnerData = pvo.clone();
@@ -128,7 +128,7 @@
 			private function setDescribeYourself():void {
 				var bFound:Boolean = false;
 				for (var i:int = 0; i < dyCB.dataProvider.length; i++) {
-					if (partnerData.describeYourself == dyCB.dataProvider[i]) {
+					if (partnerData.partner.describeYourself == dyCB.dataProvider[i]) {
 						dyCB.selectedIndex = i;
 						bFound = true;
 					}
@@ -195,7 +195,7 @@
 			 * @return id of the account owner in the users (pOwner) data provider array
 			 * */
 			private function getAccountOwner():int {
-				var uid:String = partnerData.accountOwnerId;
+				var uid:String = partnerData.partner.adminUserId;
 				var result:int = -1;
 				for (var i:int = 0; i < _users.length; i++) {
 					if ((_users[i] as KalturaUser).id == uid) {
@@ -211,7 +211,7 @@
 			 * change the account owner on the partner vo
 			 * */
 			protected function changeAccountOwner(event:ListEvent):void {
-				partnerData.accountOwnerId = (event.target.selectedItem as KalturaUser).id;
+				partnerData.partner.adminUserId = (event.target.selectedItem as KalturaUser).id;
 			}
 
 
@@ -250,12 +250,12 @@
 				 text="{resourceManager.getString('account', 'partnerInfoText')}" styleName="pageDescription"/>
 		<mx:HBox>
 			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'partnerIdB')}" styleName="boldLabel"/>
-			<mx:Label width="{TXT_WIDTH}" text="{partnerData.pId}" selectable="true"/>
+			<mx:Label width="{TXT_WIDTH}" text="{partnerData.partnerId}" selectable="true"/>
 		</mx:HBox>
 		<mx:HBox>
 			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'company_name')} *" styleName="boldLabel"/>
-			<mx:TextInput id="pName" width="{TXT_WIDTH}" text="{partnerData.name}"
-						  change="{partnerData.name = pName.text}" enabled="{infoBox.enabled}"/>
+			<mx:TextInput id="pName" width="{TXT_WIDTH}" text="{partnerData.partner.name}"
+						  change="{partnerData.partner.name = pName.text}" enabled="{infoBox.enabled}"/>
 		</mx:HBox>
 		<mx:HBox>
 			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'owner_name')} *" styleName="boldLabel"/>
@@ -268,18 +268,18 @@
 		</mx:HBox>
 		<mx:HBox>
 			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'phone')} *" styleName="boldLabel"/>
-			<mx:TextInput id="pPhone" width="{TXT_WIDTH}" text="{partnerData.phone}"
-						  change="{partnerData.phone = pPhone.text}" enabled="{infoBox.enabled}"/>
+			<mx:TextInput id="pPhone" width="{TXT_WIDTH}" text="{partnerData.partner.phone}"
+						  change="{partnerData.partner.phone = pPhone.text}" enabled="{infoBox.enabled}"/>
 		</mx:HBox>
 		<mx:HBox>
 			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'website')}" styleName="boldLabel"/>
-			<mx:TextInput id="pWebsite" width="{TXT_WIDTH}" text="{partnerData.url1}"
-						  change="{partnerData.url1 = pWebsite.text}" enabled="{infoBox.enabled}"/>
+			<mx:TextInput id="pWebsite" width="{TXT_WIDTH}" text="{partnerData.partner.website}"
+						  change="{partnerData.partner.website = pWebsite.text}" enabled="{infoBox.enabled}"/>
 		</mx:HBox>
 		<mx:HBox id="dyContainer">
 			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'describeYourself')}" styleName="boldLabel"/>
 			<mx:ComboBox id="dyCB" width="{TXT_WIDTH}" dataProvider="{_ctComboBox}"
-						 change="{partnerData.describeYourself = dyCB.selectedItem.toString()}" enabled="{infoBox.enabled}"/>
+						 change="{partnerData.partner.describeYourself = dyCB.selectedItem.toString()}" enabled="{infoBox.enabled}"/>
 		</mx:HBox>
 		<mx:Label text="{resourceManager.getString('account', 'reqF')}" fontSize="9"/>
 		<mx:HBox width="{dyContainer.width}" horizontalAlign="right">

@@ -194,6 +194,11 @@ package com.kaltura.vo
 		 **/
 		public var publishersQuota : int = int.MIN_VALUE;
 
+		/**
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
+		public var defaultEntitlementEnforcement : Boolean;
+
 		/** 
 		 * a list of attributes which may be updated on this object 
 		 **/ 
