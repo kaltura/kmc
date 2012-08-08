@@ -104,7 +104,9 @@ package com.kaltura.edw.components.fltr.cat
 			var savedOpenItems:Array = openItems as Array; // returns a copy of the array
 			super.dataProvider = value;
 			validateNow();
-			if (value && _currentFilter) {
+			if (!value) return;
+			
+			if (_currentFilter) {
 				deselectAllCategories();
 				remarkPreviouslySelected(true);
 			}
