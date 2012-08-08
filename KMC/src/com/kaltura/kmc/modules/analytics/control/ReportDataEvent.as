@@ -11,7 +11,9 @@ package com.kaltura.kmc.modules.analytics.control
 		public var totalHeaders:Array;
 		public var tableHeaders:Array;
 		public var screenType:int;
-		public function ReportDataEvent(type:String, reportType:int, screenType:int, label:String, totalHeaders:Array, tableHeaders:Array)
+		public var pageSize:int;
+		
+		public function ReportDataEvent(type:String, reportType:int, screenType:int, label:String, totalHeaders:Array, tableHeaders:Array, pageSize:int = 25)
 		{
 			super(type);
 			this.reportType = reportType;
@@ -19,6 +21,7 @@ package com.kaltura.kmc.modules.analytics.control
 			this.totalHeaders = totalHeaders;
 			this.tableHeaders = tableHeaders;
 			this.screenType = screenType;
+			this.pageSize = pageSize;
 		}
 	}
 }

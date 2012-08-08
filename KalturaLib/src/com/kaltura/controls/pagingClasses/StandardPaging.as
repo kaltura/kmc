@@ -20,7 +20,7 @@ package com.kaltura.controls.pagingClasses
 		private var _totalCount:int;
 		private var _doubleEnd:Boolean;
 		private var _sideLinkCount:int;
-		private var _visible:Boolean;
+		private var _visible:Boolean = true;
 		private var _pageSize:int = 25;
 		private var _currRowsInPage:int;
 		

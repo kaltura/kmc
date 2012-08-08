@@ -320,7 +320,7 @@
 				isMonths = showTimeUnits ? filterVo.interval == KalturaReportInterval.MONTHS : false;
 				isOneDay = (filterVo.toDate.time - filterVo.fromDate.time) <= TimeConsts.DAY;
 				
-				var reportSetDataEvent:ReportDataEvent = new ReportDataEvent(ReportDataEvent.SET_REPORT_DATA, reportType, screenType,  label, aggregatedHeaders, tableHeaders);
+				var reportSetDataEvent:ReportDataEvent = new ReportDataEvent(ReportDataEvent.SET_REPORT_DATA, reportType, screenType,  label, aggregatedHeaders, tableHeaders, paging.pageSize);
 				reportSetDataEvent.dispatch();
 				
 				var reportTotalEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TOTAL, reportType, screenType);
@@ -530,7 +530,7 @@
 
 	<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}" includeInLayout="{showLineChart &amp;&amp; ! (isOneDay || isMonths)}"
 					   visible="{showLineChart &amp;&amp; ! (isOneDay || isMonths)}" minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>
-	<charts:KDateColumnChart id="dateBarChart" dimName="{dimCb.selectedItem.label}" width="100%" includeInLayout="{showLineChart &amp;&amp; (isOneDay || isMonths)}" visible="{showLineChart &amp;&amp; (isOneDay || isMonths)}" isMonths="{isMonths}"/>
+	<charts:KDateColumnChart id="dateBarChart" dimName="{dimCb.selectedItem.label}" width="100%" includeInLayout="{showLineChart &amp;&amp; (isOneDay || isMonths)}" visible="{showLineChart &amp;&amp; (isOneDay || isMonths)}" oneDayDate="{isOneDay ? filterVo.fromDate : null}"/>
 
 	<!-- loader -->
 	<mx:VBox width="{this.width-150}" height="200" paddingTop="-150" horizontalAlign="center" clipContent="false"
