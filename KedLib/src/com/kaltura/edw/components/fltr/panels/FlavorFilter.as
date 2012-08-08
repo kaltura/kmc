@@ -59,6 +59,7 @@ package com.kaltura.edw.components.fltr.panels
 			}
 			if (str) {
 				str = str.substr(0, str.length - 1);
+				_initialFilter = str;
 				return str;
 			}
 			return null;

@@ -69,6 +69,8 @@ package com.kaltura.edw.components.fltr.panels {
 			}
 			if (str) {
 				str = str.substr(0, str.length - 1);
+				// remember current state so we can re-set if profiles are re-loaded
+				_initialFilter = str;
 				return str;
 			}
 			return null;

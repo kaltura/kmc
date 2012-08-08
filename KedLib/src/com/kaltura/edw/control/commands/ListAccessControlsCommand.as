@@ -39,6 +39,7 @@ package com.kaltura.edw.control.commands {
 				for each (var kac:KalturaAccessControl in response.objects) {
 					var acVo:AccessControlProfileVO = new AccessControlProfileVO();
 					acVo.profile = kac;
+					acVo.id = kac.id;
 					if (kac.restrictions ) {
 						// remove unknown objects
 						// if any restriction is unknown, we remove it from the list.

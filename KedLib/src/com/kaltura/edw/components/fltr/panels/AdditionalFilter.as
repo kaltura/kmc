@@ -176,6 +176,12 @@ package com.kaltura.edw.components.fltr.panels {
 			return null;
 		}
 		
+		
+		/**
+		 * the attribute on the data object used to identify the data object 
+		 */		
+		protected var dataUniqueIdentifier:String = "id";
+		
 		public function removeItem(item:IndicatorVo):void {
 			// item.value is button.data
 			// find correct button, set "selected", dispatch change
@@ -183,6 +189,9 @@ package com.kaltura.edw.components.fltr.panels {
 			for each (var btn:Button in _buttons) {
 				if (btn.data) {
 				 	if (btn.data == item.value) {
+						btn.dispatchEvent(new MouseEvent(MouseEvent.CLICK, true));
+					}
+					else if (btn.data[dataUniqueIdentifier] && item.value[dataUniqueIdentifier] && btn.data[dataUniqueIdentifier] == item.value[dataUniqueIdentifier]) {
 						btn.dispatchEvent(new MouseEvent(MouseEvent.CLICK, true));
 					}
 				}

@@ -21,7 +21,7 @@ package com.kaltura.vo {
 		/**
 		 * id of the wrapped profile 
 		 */		
-		public var id:String;
+		public var id:int;
 
 
 		/**
@@ -29,7 +29,7 @@ package com.kaltura.vo {
 		 *
 		 */
 		public function AccessControlProfileVO() {
-			profile = new KalturaAccessControl();
+//			profile = new KalturaAccessControl();
 		}
 
 

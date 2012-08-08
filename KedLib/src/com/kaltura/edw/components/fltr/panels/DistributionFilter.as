@@ -68,10 +68,12 @@ package com.kaltura.edw.components.fltr.panels
 				}
 				
 				if (distributionSearchOperator.items.length > 0) {
+					_initialFilter = distributionSearchOperator;
 					return distributionSearchOperator;
 				}
 			}
 			// if no buttons or no selected buttons, return null
+			_initialFilter = null;
 			return null;
 		}
 		
