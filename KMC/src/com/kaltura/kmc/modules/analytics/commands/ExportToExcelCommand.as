@@ -58,16 +58,30 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 			
 			var krif:KalturaReportInputFilter;
-			if (_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT || _model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN 
-				|| _model.currentScreenState == ScreenTypes.END_USER_STORAGE || _model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN 
-				|| _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT || _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF
-				|| _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS) {
-				
-				krif = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
+			
+			switch (_model.currentScreenState) {
+				case ScreenTypes.END_USER_ENGAGEMENT:
+				case ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN:
+				case ScreenTypes.END_USER_STORAGE:
+				case ScreenTypes.END_USER_STORAGE_DRILL_DOWN:
+					krif = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
+					break;
+					
+				case ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT:
+				case ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF:
+				case ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS:
+					if (_model.entitlementEnabled) {
+						krif = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
+					}
+					else {
+						krif = ExecuteReportHelper.createFilterFromCurrentReport();
+					}
+					break;
+				default:
+					krif = ExecuteReportHelper.createFilterFromCurrentReport();
+					break;
 			}
-			else {
-				krif = ExecuteReportHelper.createFilterFromCurrentReport();
-			}
+			
 			var export2Csv:ReportGetUrlForReportAsCsv = new ReportGetUrlForReportAsCsv(_model.selectedReportData.title,
 					message2Send, headers, _model.selectedReportData.type, krif, _model.selectedReportData.selectedDim,
 					_model.selectedReportData.pager, _model.selectedReportData.orderBy, _model.selectedReportData.objectIds);
