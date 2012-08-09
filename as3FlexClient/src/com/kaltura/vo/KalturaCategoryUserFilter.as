@@ -39,11 +39,18 @@ package com.kaltura.vo
 		 **/
 		public var categoryDirectMembers : Boolean;
 
+		/**
+		 * Free text search on user id or screen name
+		 * 
+		 **/
+		public var freeText : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('categoryDirectMembers');
+			arr.push('freeText');
 			return arr;
 		}
 
