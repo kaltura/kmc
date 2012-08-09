@@ -148,6 +148,10 @@
 							}
 						}
 					}
+					
+					if (! filterApplicationsFlag){
+						filterVo.application = null;
+					} 
 				}
 				_selectedCategoriesArr.addEventListener(CollectionEvent.COLLECTION_CHANGE, onCategoriesChange);
 			}
@@ -482,6 +486,11 @@
 				dispatchEvent(new Event(APPLY)); //apply
 			}
 			
+			private function onAppCbChange(evt:Event):void{
+				_filterVo.application = appFilter.selectedItem.toString();
+				dispatchEvent(new Event(APPLY));
+			}
+			
 		]]>
 	</mx:Script>
 
@@ -557,7 +566,7 @@
 		<!-- TODO: CHECK IF WE NEED PROMPT THAT SAID LOADING... -->
 		<mx:ComboBox id="appFilter"  width="{INPUT_WIDTH}" dataProvider="{applicationsList}"
 					 selectedIndex="{_filterVo.application ? (appFilter.dataProvider as ArrayCollection).getItemIndex(_filterVo.application) : 0}" 
-					 change="{_filterVo.application = appFilter.selectedItem.toString(); dispatchEvent(new Event(APPLY));}" />
+					 change="onAppCbChange(event)" />
 	</mx:HBox>
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{filterUsersFlag}" visible="{filterUsersFlag}">
 		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','searchUser')}" />
