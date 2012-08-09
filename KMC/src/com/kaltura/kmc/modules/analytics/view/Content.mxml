@@ -209,7 +209,7 @@
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS:
 							if (_model.entitlementEnabled) {
-								if (selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
+								if (selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol.length == 6 && selectedReport.aggregatedDataArrCol[5].value != null) {
 									var sum1:int = int(selectedReport.aggregatedDataArrCol[5].value) + int(selectedReport.aggregatedDataArrCol[1].value) 
 										+ int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) 
 										+ int(selectedReport.aggregatedDataArrCol[4].value);
@@ -228,8 +228,11 @@
 							}
 							else {
 								// no entitlements
-								if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
-									var sum2:int = int(selectedReport.aggregatedDataArrCol[0].value) + int(selectedReport.aggregatedDataArrCol[1].value) + int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) + int(selectedReport.aggregatedDataArrCol[4].value);
+								if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol 
+									&& selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
+									var sum2:int = int(selectedReport.aggregatedDataArrCol[0].value) + int(selectedReport.aggregatedDataArrCol[1].value)
+										+ int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) 
+										+ int(selectedReport.aggregatedDataArrCol[4].value);
 									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsLbl', [selectedReport.seletedMediaEntry.name, sum2]);
 								}
 								else
