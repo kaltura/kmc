@@ -16,7 +16,7 @@
 			import com.kaltura.kmc.modules.analytics.view.dtn.DTNItem;
 			import com.kaltura.types.KalturaReportType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.events.FlexEvent;
 
@@ -38,7 +38,7 @@
 					BindingUtils.bindSetter(onStateChange, _model, "currentScreenState");
 					BindingUtils.bindSetter(selectedReportChange, _model, "selectedReportData");
 					BindingUtils.bindSetter(selectedEntryChange, _model, "selectedEntry");
-					
+
 //					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.TOP_CONTENT)).dispatch();
 					topContet.onShow()
 				}
@@ -110,7 +110,7 @@
 						(contentViewStack.selectedChild as KalturaReportView).onHide();
 				}
 				if (gaEvent) {
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + gaEvent , GoogleAnalyticsConsts.ANALYTICS);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + gaEvent, GoogleAnalyticsConsts.ANALYTICS);
 				}
 			}
 
@@ -150,43 +150,91 @@
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT:
-							if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null)
-							{
-								if(_model.entitlementEnabled)
-									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDefaultEntitlementLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[1].value,selectedReport.aggregatedDataArrCol[0].value]);
-								else
-									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDefaultLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[0].value]);
+							if (_model.entitlementEnabled) {
+								if (selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null) {
+									if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name) {
+										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDefaultEntitlementLbl', 
+											[selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[1].value,
+											selectedReport.aggregatedDataArrCol[0].value]);
+									}
+									else {
+										// if no media entry, it is probably a deleted entry
+										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDefaultDeletedEntitlementLbl',
+											 [selectedReport.objectName, selectedReport.objectIds,
+											selectedReport.aggregatedDataArrCol[1].value, selectedReport.aggregatedDataArrCol[0].value]);
+									}
+								}
+								else {
+									selectedReport.message = '';
+								}
 							}
-							else
-								selectedReport.message = '';
+							else {
+								if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null) {
+									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDefaultLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[0].value]);
+								}
+								else {
+									selectedReport.message = '';
+								}
+							}
+
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF:
-							if(_model.entitlementEnabled){
-								if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[6] && selectedReport.aggregatedDataArrCol[6].value != null){
-									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffEntitlementLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[6].value,selectedReport.aggregatedDataArrCol[0].value]);
+							if (_model.entitlementEnabled) {
+								if (selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[6] && selectedReport.aggregatedDataArrCol[6].value != null) {
+									if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name) {
+										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffEntitlementLbl', 
+											[selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[6].value,
+											selectedReport.aggregatedDataArrCol[0].value]);
+									}
+									else {
+										// if no media entry, it is probably a deleted entry
+										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffDeletedEntitlementLbl', 
+											[selectedReport.objectName, selectedReport.objectIds,
+											selectedReport.aggregatedDataArrCol[6].value, selectedReport.aggregatedDataArrCol[0].value]);
+									}
 								}
 								else
 									selectedReport.message = '';
-							}else{
-								if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[5] && selectedReport.aggregatedDataArrCol[5].value != null){
-									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[5].value]);
+							}
+							else {
+								if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name 
+									&& selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[5] 
+									&& selectedReport.aggregatedDataArrCol[5].value != null) {
+										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffLbl', 
+											[selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[5].value]);
 								}
 								else
 									selectedReport.message = '';
 							}
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS:
-							if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
-								if(_model.entitlementEnabled){
-									var sum1:int = int(selectedReport.aggregatedDataArrCol[5].value) + int(selectedReport.aggregatedDataArrCol[1].value) + int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) + int(selectedReport.aggregatedDataArrCol[4].value);
-									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsEntitlementLbl', [selectedReport.seletedMediaEntry.name, sum1,selectedReport.aggregatedDataArrCol[0].value]);
-								}else{	
+							if (_model.entitlementEnabled) {
+								if (selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
+									var sum1:int = int(selectedReport.aggregatedDataArrCol[5].value) + int(selectedReport.aggregatedDataArrCol[1].value) 
+										+ int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) 
+										+ int(selectedReport.aggregatedDataArrCol[4].value);
+									if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name) {
+										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsEntitlementLbl', 
+											[selectedReport.seletedMediaEntry.name, sum1, selectedReport.aggregatedDataArrCol[0].value]);
+									}
+									else {
+										// if no media entry, it is probably a deleted entry
+										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsDeletedEntitlementLbl', 
+											[selectedReport.objectName, selectedReport.objectIds, sum1, selectedReport.aggregatedDataArrCol[0].value]);
+									}
+								}
+								else
+									selectedReport.message = '';
+							}
+							else {
+								// no entitlements
+								if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
 									var sum2:int = int(selectedReport.aggregatedDataArrCol[0].value) + int(selectedReport.aggregatedDataArrCol[1].value) + int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) + int(selectedReport.aggregatedDataArrCol[4].value);
 									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsLbl', [selectedReport.seletedMediaEntry.name, sum2]);
 								}
+								else
+									selectedReport.message = '';
 							}
-							else
-								selectedReport.message = '';
 							break;
 						case ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN:
 							if (_model.selectedEntry && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null)
@@ -197,8 +245,8 @@
 					}
 				}
 			}
-			
-			
+
+
 			public function help():void {
 				var anchor:String = (contentViewStack.selectedChild as KalturaReportView).helpUrl;
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
@@ -209,12 +257,11 @@
 			 enabled="{!_model.loadingFlag}"
 			 change="{(new StateEvent( StateEvent.STATE_CHANGE , (dtn.selectedIndex+1) )).dispatch()}"/>
 	<mx:ViewStack id="contentViewStack" width="100%" height="{this.height - 15}" styleName="contentViewStack">
-		<view:KalturaReportView id="topContet" width="100%" 
-								context="{_model.context}" loadChart="{_model.loadingChartFlag}"
-								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
-								isLoading="{_model.loadingFlag}" filterVo="{_model.filter}"
-								reportData="{_model.selectedReportData}" orderBy="count_plays"
-								aggregatedHeaders="{ _model.aggregateHeaders.topContent }"
+		<view:KalturaReportView id="topContet" width="100%" context="{_model.context}"
+								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
+								loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
+								filterVo="{_model.filter}" reportData="{_model.selectedReportData}"
+								orderBy="count_plays" aggregatedHeaders="{ _model.aggregateHeaders.topContent }"
 								tableHeaders="{ _model.tableHeaders.topContent }"
 								dimCbDp="{ _model.reportDimension.topContent }" screenType="{ScreenTypes.TOP_CONTENT}"
 								filterUsersFlag="false" filterApplicationsFlag="false"
@@ -222,26 +269,28 @@
 								drillDown="{onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT)}"
 								label="{resourceManager.getString('analytics','topContent')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="contentDropOff" width="100%" height="100%" context="{_model.context}"
-								filterVo="{_model.filter}" loadChart="{_model.loadingChartFlag}"
-								filterUsersFlag="false" filterApplicationsFlag="false"
-								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
-								isLoading="{_model.loadingFlag}" reportData="{_model.selectedReportData}"
-								orderBy="count_plays" showKDP="false" showColumnChart="true" showLineChart="false"
-								showMap="false" showTable="true" showDimention="false"
-								aggregatedHeaders="{ _model.aggregateHeaders.contentDropoff }"
-								tableHeaders="{ _model.tableHeaders.contentDropoff }" helpUrl="{'section_analytics_content_dropoff'}"
-								reportType="{KalturaReportType.CONTENT_DROPOFF}" screenType="{ScreenTypes.CONTENT_DROPOFF}"
+								filterVo="{_model.filter}" loadChart="{_model.loadingChartFlag}" filterUsersFlag="false"
+								filterApplicationsFlag="false" loadTotal="{_model.loadingTotalFlag}"
+								loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
+								reportData="{_model.selectedReportData}" orderBy="count_plays" showKDP="false"
+								showColumnChart="true" showLineChart="false" showMap="false" showTable="true"
+								showDimention="false" aggregatedHeaders="{ _model.aggregateHeaders.contentDropoff }"
+								tableHeaders="{ _model.tableHeaders.contentDropoff }"
+								helpUrl="{'section_analytics_content_dropoff'}"
+								reportType="{KalturaReportType.CONTENT_DROPOFF}"
+								screenType="{ScreenTypes.CONTENT_DROPOFF}"
 								label="{resourceManager.getString('analytics','contentDropOff')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="contentInteractions" width="100%" height="100%" context="{_model.context}"
 								filterVo="{_model.filter}" loadChart="{_model.loadingChartFlag}"
 								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
 								isLoading="{_model.loadingFlag}" reportData="{_model.selectedReportData}"
 								orderBy="count_plays" showKDP="false" showColumnChart="false" showLineChart="true"
-								showMap="false" showTable="true" showDimention="true"
-								filterApplicationsFlag="false" filterUsersFlag="false"
+								showMap="false" showTable="true" showDimention="true" filterApplicationsFlag="false"
+								filterUsersFlag="false"
 								aggregatedHeaders="{ _model.aggregateHeaders.contentInteraction }"
 								tableHeaders="{ _model.tableHeaders.contentInteraction }"
-								dimCbDp="{ _model.reportDimension.contentInteraction }" helpUrl="{'section_analytics_content_interactions'}"
+								dimCbDp="{ _model.reportDimension.contentInteraction }"
+								helpUrl="{'section_analytics_content_interactions'}"
 								reportType="{KalturaReportType.CONTENT_INTERACTIONS}"
 								label="{resourceManager.getString('analytics','contentInteractions')}"
 								styleName="pageStyle" screenType="{ScreenTypes.CONTENT_INTERACTIONS}"/>
@@ -250,8 +299,8 @@
 								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
 								isLoading="{_model.loadingFlag}" reportData="{_model.selectedReportData}"
 								orderBy="count_total" showKDP="false" showColumnChart="false" showLineChart="true"
-								showMap="false" showTable="true" showDimention="true"
-								filterUsersFlag="false" filterApplicationsFlag="false"
+								showMap="false" showTable="true" showDimention="true" filterUsersFlag="false"
+								filterApplicationsFlag="false"
 								aggregatedHeaders="{ _model.aggregateHeaders.contentContributions }"
 								tableHeaders="{ _model.tableHeaders.contentContributions }"
 								dimCbDp="{ _model.reportDimension.contentContributions }"
@@ -262,52 +311,51 @@
 								styleName="pageStyle" screenType="{ScreenTypes.CONTENT_CONTRIBUTIONS}"/>
 		<view:KalturaReportView id="videoDrillDownDefault" width="100%" height="100%" filterVo="{_model.filter}"
 								context="{_model.context}" dateOnlyFlag="{true}" showDrillDownNav="{true}"
-								playbackContextFlag="{_model.entitlementEnabled}"
-								isDrillDown="{true}" 
+								playbackContextFlag="{_model.entitlementEnabled}" isDrillDown="{true}"
 								filterApplicationsFlag="{_model.entitlementEnabled}"
-								filterUsersFlag="{_model.entitlementEnabled}"
-								loadChart="{_model.loadingChartFlag}"
-								loadTotal="{_model.loadingTotalFlag}" 
-								loadEntry="{_model.loadingEntryFlag}"
+								filterUsersFlag="{_model.entitlementEnabled}" loadChart="{_model.loadingChartFlag}"
+								loadTotal="{_model.loadingTotalFlag}" loadEntry="{_model.loadingEntryFlag}"
 								isLoading="{_model.loadingFlag}" screenType="{ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT}"
-								reportData="{_model.selectedReportData}" 
-								showKDP="{!_model.entitlementEnabled}"
-								showTable="{_model.entitlementEnabled}" 
+								reportData="{_model.selectedReportData}" showKDP="{!_model.entitlementEnabled}"
+								showTable="{_model.entitlementEnabled}"
 								tableHeaders="{_model.tableHeaders.topContentPerUser}"
 								aggregatedHeaders="{ _model.entitlementEnabled ? _model.aggregateHeaders.topContentPerUser : _model.aggregateHeaders.topContent }"
 								dimCbDp="{ _model.reportDimension.topContent }"
-								backScreenType="{ScreenTypes.TOP_CONTENT}" 
+								backScreenType="{ScreenTypes.TOP_CONTENT}"
 								helpUrl="{'section_analytics_video_drilldown'}"
 								reportType="{_model.entitlementEnabled ? KalturaReportType.USER_TOP_CONTENT : KalturaReportType.TOP_CONTENT}"
 								label="{resourceManager.getString('analytics','topContent')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="videoDrillDownDropoff" width="100%" height="100%" filterVo="{_model.filter}"
-								playbackContextFlag="{_model.entitlementEnabled}"
-								context="{_model.context}" loadChart="{_model.loadingChartFlag}"
-								loadTotal="{_model.loadingTotalFlag}" loadEntry="{_model.loadingEntryFlag}"
+								playbackContextFlag="{_model.entitlementEnabled}" context="{_model.context}"
+								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
+								loadEntry="{_model.loadingEntryFlag}"
 								filterApplicationsFlag="{_model.entitlementEnabled}"
-								filterUsersFlag="{_model.entitlementEnabled}"
-								isLoading="{_model.loadingFlag}" dateOnlyFlag="{true}" showDrillDownNav="{true}"
-								isDrillDown="{true}" reportData="{_model.selectedReportData}" showColumnChart="true"
-								showLineChart="false" showDimention="false"
-								showKDP="{!_model.entitlementEnabled}" screenType="{ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF}"
+								filterUsersFlag="{_model.entitlementEnabled}" isLoading="{_model.loadingFlag}"
+								dateOnlyFlag="{true}" showDrillDownNav="{true}" isDrillDown="{true}"
+								reportData="{_model.selectedReportData}" showColumnChart="true" showLineChart="false"
+								showDimention="false" showKDP="{!_model.entitlementEnabled}"
+								screenType="{ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF}"
 								showTable="{_model.entitlementEnabled}"
 								aggregatedHeaders="{_model.entitlementEnabled ? _model.aggregateHeaders.contentDropoffPerUser : _model.aggregateHeaders.contentDropoff }"
 								tableHeaders="{_model.tableHeaders.contentDropoffPerUser}"
-								backScreenType="{ScreenTypes.CONTENT_DROPOFF}" helpUrl="{'section_analytics_video_drilldown_dropoff'}"
+								backScreenType="{ScreenTypes.CONTENT_DROPOFF}"
+								helpUrl="{'section_analytics_video_drilldown_dropoff'}"
 								reportType="{_model.entitlementEnabled ? KalturaReportType.USER_CONTENT_DROPOFF : KalturaReportType.CONTENT_DROPOFF}"
 								label="{resourceManager.getString('analytics','contentDropOff')}" styleName="pageStyle"/>
-		<view:KalturaReportView id="videoDrillDownInteractions"
-								filterVo="{_model.filter}" context="{_model.context}"
-								playbackContextFlag="{_model.entitlementEnabled}"
-								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
-								loadEntry="{_model.loadingEntryFlag}" isLoading="{_model.loadingFlag}"
-								showKDP="{!_model.entitlementEnabled}" screenType="{ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS}"
-								showTable="{_model.entitlementEnabled}" filterApplicationsFlag="{_model.entitlementEnabled}" filterUsersFlag="{_model.entitlementEnabled}"
-								dateOnlyFlag="{true}" showDrillDownNav="{true}" isDrillDown="{true}" width="100%"
-								height="100%" reportData="{_model.selectedReportData}"
+		<view:KalturaReportView id="videoDrillDownInteractions" filterVo="{_model.filter}" context="{_model.context}"
+								playbackContextFlag="{_model.entitlementEnabled}" loadChart="{_model.loadingChartFlag}"
+								loadTotal="{_model.loadingTotalFlag}" loadEntry="{_model.loadingEntryFlag}"
+								isLoading="{_model.loadingFlag}" showKDP="{!_model.entitlementEnabled}"
+								screenType="{ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS}"
+								showTable="{_model.entitlementEnabled}"
+								filterApplicationsFlag="{_model.entitlementEnabled}"
+								filterUsersFlag="{_model.entitlementEnabled}" dateOnlyFlag="{true}"
+								showDrillDownNav="{true}" isDrillDown="{true}" width="100%" height="100%"
+								reportData="{_model.selectedReportData}"
 								aggregatedHeaders="{ _model.entitlementEnabled ? _model.aggregateHeaders.contentInteractionPerUser : _model.aggregateHeaders.contentInteraction }"
 								dimCbDp="{ _model.reportDimension.contentInteraction }"
-								backScreenType="{ScreenTypes.CONTENT_INTERACTIONS}" helpUrl="{'section_analytics_video_drilldown_interactions'}"
+								backScreenType="{ScreenTypes.CONTENT_INTERACTIONS}"
+								helpUrl="{'section_analytics_video_drilldown_interactions'}"
 								reportType="{_model.entitlementEnabled ? KalturaReportType.USER_CONTENT_INTERACTIONS : KalturaReportType.CONTENT_INTERACTIONS}"
 								tableHeaders="{_model.tableHeaders.contentInteractionPerUser}"
 								label="{resourceManager.getString('analytics','contentInteractions')}"
@@ -316,7 +364,8 @@
 								context="{_model.context}" loadChart="{_model.loadingChartFlag}"
 								loadTotal="{_model.loadingTotalFlag}" loadEntry="{_model.loadingEntryFlag}"
 								isLoading="{_model.loadingFlag}" dateOnlyFlag="{true}" isDrillDown="{true}"
-								reportData="{_model.selectedReportData}" filterApplicationsFlag="false" filterUsersFlag="false"
+								reportData="{_model.selectedReportData}" filterApplicationsFlag="false"
+								filterUsersFlag="false"
 								creationComplete="{_model.selectedReportData.orderBy='count_total';}" showKDP="false"
 								showColumnChart="false" showLineChart="true" showMap="false" showTable="false"
 								showDimention="true" screenType="{ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN}"
@@ -324,7 +373,8 @@
 								tableHeaders="{ _model.tableHeaders.contentContributions }"
 								dimCbDp="{ _model.reportDimension.contentContributions }"
 								backScreenType="{ScreenTypes.CONTENT_CONTRIBUTIONS}"
-								helpUrl="{'section_analytics_drilldown_contribution'}" reportType="{KalturaReportType.CONTENT_CONTRIBUTIONS}"
+								helpUrl="{'section_analytics_drilldown_contribution'}"
+								reportType="{KalturaReportType.CONTENT_CONTRIBUTIONS}"
 								label="{resourceManager.getString('analytics','contentContributions')}"
 								styleName="pageStyle"/>
 	</mx:ViewStack>
