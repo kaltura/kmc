@@ -28,6 +28,7 @@
 package com.kaltura.commands.partner
 {
 	import com.kaltura.vo.KalturaPartnerFilter;
+	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.delegates.partner.PartnerListPartnersForUserDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -41,8 +42,9 @@ package com.kaltura.commands.partner
 		
 		/**
 		 * @param partnerFilter KalturaPartnerFilter
+		 * @param pager KalturaFilterPager
 		 **/
-		public function PartnerListPartnersForUser( partnerFilter : KalturaPartnerFilter=null )
+		public function PartnerListPartnersForUser( partnerFilter : KalturaPartnerFilter=null,pager : KalturaFilterPager=null )
 		{
 			service= 'partner';
 			action= 'listPartnersForUser';
@@ -52,6 +54,11 @@ package com.kaltura.commands.partner
 			var keyValArr : Array = new Array();
  			if (partnerFilter) { 
  			keyValArr = kalturaObject2Arrays(partnerFilter, 'partnerFilter');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
+ 			if (pager) { 
+ 			keyValArr = kalturaObject2Arrays(pager, 'pager');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
  			} 
