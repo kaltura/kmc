@@ -122,58 +122,45 @@
 
 			private function selectedReportChange(selectedReport:ReportData):void {
 				if (selectedReport) {
+					var message:String = '';
 					switch (_model.currentScreenState) {
 						case ScreenTypes.TOP_CONTENT:
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null)
-								selectedReport.message = resourceManager.getString('analytics', 'topContentLbl', [selectedReport.totalCount, selectedReport.aggregatedDataArrCol[0].value]);
-							else
-								selectedReport.message = '';
+								message = resourceManager.getString('analytics', 'topContentLbl', [selectedReport.totalCount, selectedReport.aggregatedDataArrCol[0].value]);
 							break;
 						case ScreenTypes.CONTENT_DROPOFF:
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[5] && selectedReport.aggregatedDataArrCol[5].value != null)
-								selectedReport.message = resourceManager.getString('analytics', 'contentDropoffLbl', [selectedReport.totalCount, selectedReport.aggregatedDataArrCol[5].value]);
-							else
-								selectedReport.message = '';
+								message = resourceManager.getString('analytics', 'contentDropoffLbl', [selectedReport.totalCount, selectedReport.aggregatedDataArrCol[5].value]);
 							break;
 						case ScreenTypes.CONTENT_INTERACTIONS:
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
 								var sum:int = int(selectedReport.aggregatedDataArrCol[0].value) + int(selectedReport.aggregatedDataArrCol[1].value) + int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) + int(selectedReport.aggregatedDataArrCol[4].value);
-								selectedReport.message = resourceManager.getString('analytics', 'contentInteractionsLbl', [selectedReport.totalCount, sum]);
+								message = resourceManager.getString('analytics', 'contentInteractionsLbl', [selectedReport.totalCount, sum]);
 							}
-							else
-								selectedReport.message = '';
 							break;
 						case ScreenTypes.CONTENT_CONTRIBUTIONS:
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[5] && selectedReport.aggregatedDataArrCol[5].value != null)
-								selectedReport.message = resourceManager.getString('analytics', 'contentContributionsLbl', [selectedReport.totalCount, selectedReport.aggregatedDataArrCol[5].value]);
-							else
-								selectedReport.message = '';
+								message = resourceManager.getString('analytics', 'contentContributionsLbl', [selectedReport.totalCount, selectedReport.aggregatedDataArrCol[5].value]);
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT:
 							if (_model.entitlementEnabled) {
 								if (selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null) {
 									if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name) {
-										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDefaultEntitlementLbl', 
+										message = resourceManager.getString('analytics', 'videoDrillDownDefaultEntitlementLbl', 
 											[selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[1].value,
 											selectedReport.aggregatedDataArrCol[0].value]);
 									}
 									else {
 										// if no media entry, it is probably a deleted entry
-										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDefaultDeletedEntitlementLbl',
+										message = resourceManager.getString('analytics', 'videoDrillDownDefaultDeletedEntitlementLbl',
 											 [selectedReport.objectName, selectedReport.objectIds,
 											selectedReport.aggregatedDataArrCol[1].value, selectedReport.aggregatedDataArrCol[0].value]);
 									}
 								}
-								else {
-									selectedReport.message = '';
-								}
 							}
 							else {
 								if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null) {
-									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDefaultLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[0].value]);
-								}
-								else {
-									selectedReport.message = '';
+									message = resourceManager.getString('analytics', 'videoDrillDownDefaultLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[0].value]);
 								}
 							}
 
@@ -182,29 +169,25 @@
 							if (_model.entitlementEnabled) {
 								if (selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[6] && selectedReport.aggregatedDataArrCol[6].value != null) {
 									if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name) {
-										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffEntitlementLbl', 
+										message = resourceManager.getString('analytics', 'videoDrillDownDropoffEntitlementLbl', 
 											[selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[6].value,
 											selectedReport.aggregatedDataArrCol[0].value]);
 									}
 									else {
 										// if no media entry, it is probably a deleted entry
-										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffDeletedEntitlementLbl', 
+										message = resourceManager.getString('analytics', 'videoDrillDownDropoffDeletedEntitlementLbl', 
 											[selectedReport.objectName, selectedReport.objectIds,
 											selectedReport.aggregatedDataArrCol[6].value, selectedReport.aggregatedDataArrCol[0].value]);
 									}
 								}
-								else
-									selectedReport.message = '';
 							}
 							else {
 								if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name 
 									&& selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[5] 
 									&& selectedReport.aggregatedDataArrCol[5].value != null) {
-										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffLbl', 
+										message = resourceManager.getString('analytics', 'videoDrillDownDropoffLbl', 
 											[selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[5].value]);
 								}
-								else
-									selectedReport.message = '';
 							}
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS:
@@ -214,17 +197,15 @@
 										+ int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) 
 										+ int(selectedReport.aggregatedDataArrCol[4].value);
 									if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name) {
-										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsEntitlementLbl', 
+										message = resourceManager.getString('analytics', 'videoDrillDownInteractionsEntitlementLbl', 
 											[selectedReport.seletedMediaEntry.name, sum1, selectedReport.aggregatedDataArrCol[0].value]);
 									}
 									else {
 										// if no media entry, it is probably a deleted entry
-										selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsDeletedEntitlementLbl', 
+										message = resourceManager.getString('analytics', 'videoDrillDownInteractionsDeletedEntitlementLbl', 
 											[selectedReport.objectName, selectedReport.objectIds, sum1, selectedReport.aggregatedDataArrCol[0].value]);
 									}
 								}
-								else
-									selectedReport.message = '';
 							}
 							else {
 								// no entitlements
@@ -233,19 +214,19 @@
 									var sum2:int = int(selectedReport.aggregatedDataArrCol[0].value) + int(selectedReport.aggregatedDataArrCol[1].value)
 										+ int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) 
 										+ int(selectedReport.aggregatedDataArrCol[4].value);
-									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsLbl', [selectedReport.seletedMediaEntry.name, sum2]);
+									message = resourceManager.getString('analytics', 'videoDrillDownInteractionsLbl', [selectedReport.seletedMediaEntry.name, sum2]);
 								}
 								else
-									selectedReport.message = '';
+									message = '';
 							}
 							break;
 						case ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN:
-							if (_model.selectedEntry && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null)
-								selectedReport.message = resourceManager.getString('analytics', 'contentContributionsSourceLbl', [ContributionTypes.getContributionType(int(_model.selectedEntry)), selectedReport.aggregatedDataArrCol[0].value]);
-							else
-								selectedReport.message = '';
+							if (_model.selectedEntry && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null) {
+								message = resourceManager.getString('analytics', 'contentContributionsSourceLbl', [ContributionTypes.getContributionType(int(_model.selectedEntry)), selectedReport.aggregatedDataArrCol[0].value]);
+							}
 							break;
 					}
+					selectedReport.message = message;
 				}
 			}
 

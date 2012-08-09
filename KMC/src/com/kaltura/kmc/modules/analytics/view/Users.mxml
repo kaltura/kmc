@@ -18,7 +18,7 @@
 			import com.kaltura.kmc.modules.analytics.view.dtn.DTNItem;
 			import com.kaltura.types.KalturaReportType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.events.CollectionEvent;
@@ -26,11 +26,12 @@
 			import mx.resources.ResourceManager;
 
 			private var _ready:Boolean = false;
-			
+
 			[Bindable]
 			private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 
 			private var _default:Boolean = false;
+
 
 			public function set showMapOverlay(value:Boolean):void {
 				var cg:PermissionEvent = new PermissionEvent(PermissionEvent.REMOVE_REPORT);
@@ -60,7 +61,8 @@
 
 					// initialize the first report:
 					topContributors.onShow();
-				} else {
+				}
+				else {
 					_ready = true;
 					addEventListener(FlexEvent.CREATION_COMPLETE, init);
 				}
@@ -115,7 +117,7 @@
 						(userViewStack.selectedChild as KalturaReportView).onHide();
 				}
 				if (gaEvent) {
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + gaEvent , GoogleAnalyticsConsts.ANALYTICS);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + gaEvent, GoogleAnalyticsConsts.ANALYTICS);
 				}
 			}
 
@@ -123,11 +125,14 @@
 			private function onDtnChange():void {
 				if (dtn.selectedIndex == 0) {
 					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.TOP_CONTRIBUTORS)).dispatch();
-				} else if (dtn.selectedIndex == 1) {
+				}
+				else if (dtn.selectedIndex == 1) {
 					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.MAP_OVERLAY)).dispatch();
-				} else if (dtn.selectedIndex == 2) {
+				}
+				else if (dtn.selectedIndex == 2) {
 					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.TOP_SYNDICATIONS)).dispatch();
-				} else if (dtn.selectedIndex == 3) {
+				}
+				else if (dtn.selectedIndex == 3) {
 					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.END_USER_ENGAGEMENT)).dispatch();
 				}
 			}
@@ -135,56 +140,47 @@
 
 			private function selectedReportChange(selectedReport:ReportData):void {
 				if (selectedReport) {
+					var message:String = '';
 					switch (_model.currentScreenState) {
 						case ScreenTypes.TOP_CONTRIBUTORS:
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value)
-								selectedReport.message = resourceManager.getString('analytics',
-									'topContributorsLbl',
-									[selectedReport.totalCount,
-									selectedReport.aggregatedDataArrCol[0].value]);
+								message = resourceManager.getString('analytics', 'topContributorsLbl',
+									[selectedReport.totalCount, selectedReport.aggregatedDataArrCol[0].value]);
 							break;
 						case ScreenTypes.MAP_OVERLAY:
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value)
-								selectedReport.message = resourceManager.getString('analytics', 'mapOverlayLbl',
-									[selectedReport.totalCount,
-									selectedReport.aggregatedDataArrCol[0].value]);
+								message = resourceManager.getString('analytics', 'mapOverlayLbl',
+									[selectedReport.totalCount, selectedReport.aggregatedDataArrCol[0].value]);
 							break;
 						case ScreenTypes.TOP_SYNDICATIONS:
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value)
-								selectedReport.message = resourceManager.getString('analytics',
-									'topSyndicationsLbl',
-									[selectedReport.totalCount,
-									selectedReport.aggregatedDataArrCol[0].value]);
+								message = resourceManager.getString('analytics', 'topSyndicationsLbl',
+									[selectedReport.totalCount, selectedReport.aggregatedDataArrCol[0].value]);
 							break;
 						case ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN:
 							if (selectedReport.objectIds && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value)
-								selectedReport.message = resourceManager.getString('analytics',
-									'syndicationsDrillDownLbl',
-									[selectedReport.totalCount,
-									selectedReport.aggregatedDataArrCol[0].value,
-									selectedReport.objectName]);
+								message = resourceManager.getString('analytics', 'syndicationsDrillDownLbl',
+									[selectedReport.totalCount, selectedReport.aggregatedDataArrCol[0].value, selectedReport.objectName]);
 							break;
 						case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value)
-								selectedReport.message = resourceManager.getString('analytics', 'mapOverlayLbl',
-									[selectedReport.totalCount,
-									selectedReport.aggregatedDataArrCol[0].value]);
+								message = resourceManager.getString('analytics', 'mapOverlayLbl',
+									[selectedReport.totalCount, selectedReport.aggregatedDataArrCol[0].value]);
 							break;
 						case ScreenTypes.END_USER_ENGAGEMENT:
-							if( selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[2].value && selectedReport.aggregatedDataArrCol[1].value && selectedReport.aggregatedDataArrCol[0].value)
-							{
-								selectedReport.message = resourceManager.getString('analytics', 'endUserReportLbl',
-									[selectedReport.aggregatedDataArrCol[2].value,selectedReport.aggregatedDataArrCol[1].value,selectedReport.aggregatedDataArrCol[0].value]);
+							if (selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[2].value && selectedReport.aggregatedDataArrCol[1].value && selectedReport.aggregatedDataArrCol[0].value) {
+								message = resourceManager.getString('analytics', 'endUserReportLbl',
+									[selectedReport.aggregatedDataArrCol[2].value, selectedReport.aggregatedDataArrCol[1].value, selectedReport.aggregatedDataArrCol[0].value]);
 							}
-							break;	
+							break;
 						case ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN:
-							if( selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[1].value && selectedReport.aggregatedDataArrCol[0].value && _model.drillDownName)
-							{
-								selectedReport.message = resourceManager.getString('analytics', 'endUserReportDrillDownLbl',
-									[selectedReport.aggregatedDataArrCol[1].value,selectedReport.aggregatedDataArrCol[0].value,_model.drillDownName]);
+							if (selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[1].value && selectedReport.aggregatedDataArrCol[0].value && _model.drillDownName) {
+								message = resourceManager.getString('analytics', 'endUserReportDrillDownLbl',
+									[selectedReport.aggregatedDataArrCol[1].value, selectedReport.aggregatedDataArrCol[0].value, _model.drillDownName]);
 							}
-							break;	
+							break;
 					}
+					selectedReport.message = message;
 				}
 			}
 
@@ -194,12 +190,14 @@
 				PermissionManager.getInstance().applyAllAttributes(this, "analytics.users");
 				_ready = true;
 			}
-			
+
+
 			private function resetDP(e:CollectionEvent):void {
 //				dtn.dataProvider = null;
 				dtn.dataProvider = _model.userDtnDp;
 			}
-			
+
+
 			public function help():void {
 				var anchor:String = (userViewStack.selectedChild as KalturaReportView).helpUrl;
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
@@ -216,25 +214,25 @@
 								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
 								isLoading="{_model.loadingFlag}" reportData="{_model.selectedReportData}"
 								orderBy="count_total" aggregatedHeaders="{ _model.aggregateHeaders.topContrib }"
-								tableHeaders="{ _model.tableHeaders.topContrib }"
-								filterUsersFlag="false" filterApplicationsFlag="false"
-								dimCbDp="{ _model.reportDimension.topContrib }" helpUrl="{'section_analytics_top_contributors'}"
+								tableHeaders="{ _model.tableHeaders.topContrib }" filterUsersFlag="false"
+								filterApplicationsFlag="false" dimCbDp="{ _model.reportDimension.topContrib }"
+								helpUrl="{'section_analytics_top_contributors'}"
 								reportType="{KalturaReportType.TOP_CONTRIBUTORS}"
-								label="{resourceManager.getString('analytics','topContributors')}"
-								styleName="pageStyle" screenType="{ScreenTypes.TOP_CONTRIBUTORS}"/>
+								label="{resourceManager.getString('analytics','topContributors')}" styleName="pageStyle"
+								screenType="{ScreenTypes.TOP_CONTRIBUTORS}"/>
 		<view:KalturaReportView id="mapOverlay" width="100%" dateOnlyFlag="{true}" context="{_model.context}"
 								filterVo="{_model.filter}" reportData="{_model.selectedReportData}"
 								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
 								loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
 								showDimention="false" showColumnChart="false" showLineChart="false" showMap="false"
-								showTable="true" showKDP="false" orderBy="count_plays"
-								filterUsersFlag="false" filterApplicationsFlag="false"
+								showTable="true" showKDP="false" orderBy="count_plays" filterUsersFlag="false"
+								filterApplicationsFlag="false"
 								aggregatedHeaders="{ _model.aggregateHeaders.mapOverlay }"
 								tableHeaders="{ _model.tableHeaders.mapOverlay }"
-								drillDown="{onDrillDown(ScreenTypes.MAP_OVERLAY_DRILL_DOWN)}" helpUrl="{'section_analytics_map_overlay'}"
-								reportType="{KalturaReportType.MAP_OVERLAY}"
-								label="{resourceManager.getString('analytics','mapOverlay')}"
-								styleName="pageStyle" screenType="{ScreenTypes.MAP_OVERLAY}"/>
+								drillDown="{onDrillDown(ScreenTypes.MAP_OVERLAY_DRILL_DOWN)}"
+								helpUrl="{'section_analytics_map_overlay'}" reportType="{KalturaReportType.MAP_OVERLAY}"
+								label="{resourceManager.getString('analytics','mapOverlay')}" styleName="pageStyle"
+								screenType="{ScreenTypes.MAP_OVERLAY}"/>
 		<view:KalturaReportView id="topSyndications" dateOnlyFlag="{true}" context="{_model.context}"
 								filterVo="{_model.filter}" width="100%" height="100%" orderBy="count_plays"
 								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
@@ -244,23 +242,26 @@
 								filterUsersFlag="false" filterApplicationsFlag="false"
 								aggregatedHeaders="{ _model.aggregateHeaders.syndicator }"
 								tableHeaders="{ _model.tableHeaders.syndicator }"
-								dimCbDp="{ _model.reportDimension.syndicator }" screenType="{ScreenTypes.TOP_SYNDICATIONS}"
+								dimCbDp="{ _model.reportDimension.syndicator }"
+								screenType="{ScreenTypes.TOP_SYNDICATIONS}"
 								drillDown="{onDrillDown(ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN)}"
-								helpUrl="{'section_analytics_top_syndications'}" reportType="{KalturaReportType.TOP_SYNDICATION}"
+								helpUrl="{'section_analytics_top_syndications'}"
+								reportType="{KalturaReportType.TOP_SYNDICATION}"
 								label="{resourceManager.getString('analytics','topSyndications')}" styleName="pageStyle"/>
-		<view:KalturaReportView id="userEngagement" width="100%" height="100%" dateOnlyFlag="{true}" context="{_model.context}"
-								playbackContextFlag="{true}" screenType="{ScreenTypes.END_USER_ENGAGEMENT}"
-								filterVo="{_model.filter}" orderBy="count_plays"
-								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
-								loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
-								reportData="{_model.selectedReportData}" showDimention="true" showColumnChart="false"
-								showLineChart="true" showMap="false" showTable="true" showKDP="false"
-								filterUsersFlag="true" filterApplicationsFlag="true"
+		<view:KalturaReportView id="userEngagement" width="100%" height="100%" dateOnlyFlag="{true}"
+								context="{_model.context}" playbackContextFlag="{true}"
+								screenType="{ScreenTypes.END_USER_ENGAGEMENT}" filterVo="{_model.filter}"
+								orderBy="count_plays" loadChart="{_model.loadingChartFlag}"
+								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
+								isLoading="{_model.loadingFlag}" reportData="{_model.selectedReportData}"
+								showDimention="true" showColumnChart="false" showLineChart="true" showMap="false"
+								showTable="true" showKDP="false" filterUsersFlag="true" filterApplicationsFlag="true"
 								aggregatedHeaders="{ _model.aggregateHeaders.userEngagement }"
 								tableHeaders="{ _model.tableHeaders.userEngagement }"
-								dimCbDp="{ _model.reportDimension.userEngagement }" 
+								dimCbDp="{ _model.reportDimension.userEngagement }"
 								drillDown="{onDrillDown(ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN)}"
-								helpUrl="{'section_analytics_user_engagement'}" reportType="{KalturaReportType.USER_ENGAGEMENT}"
+								helpUrl="{'section_analytics_user_engagement'}"
+								reportType="{KalturaReportType.USER_ENGAGEMENT}"
 								label="{resourceManager.getString('analytics','userEngagement')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="syndicationsDrillDown" dateOnlyFlag="{true}" isDrillDown="{true}"
 								filterVo="{_model.filter}" context="{_model.context}" width="100%" height="100%"
@@ -273,7 +274,8 @@
 								aggregatedHeaders="{ _model.aggregateHeaders.syndicator }"
 								tableHeaders="{ _model.tableHeaders.syndicator }"
 								dimCbDp="{ _model.reportDimension.syndicator }" reportData="{_model.selectedReportData}"
-								backScreenType="{ScreenTypes.TOP_SYNDICATIONS}" helpUrl="{'section_analytics_syndication_drilldown'}"
+								backScreenType="{ScreenTypes.TOP_SYNDICATIONS}"
+								helpUrl="{'section_analytics_syndication_drilldown'}"
 								reportType="{KalturaReportType.TOP_SYNDICATION}"
 								label="{resourceManager.getString('analytics','topSyndications')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="mapOverlayDrillDown" dateOnlyFlag="{true}" isDrillDown="{true}"
@@ -282,26 +284,29 @@
 								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
 								isLoading="{_model.loadingFlag}" showDimention="false" showColumnChart="false"
 								showLineChart="false" showMap="false" showTable="true" showKDP="false"
-								filterUsersFlag="false" filterApplicationsFlag="false"
-								orderBy="count_plays" backScreenType="{ScreenTypes.MAP_OVERLAY}"
+								filterUsersFlag="false" filterApplicationsFlag="false" orderBy="count_plays"
+								backScreenType="{ScreenTypes.MAP_OVERLAY}"
 								aggregatedHeaders="{ _model.aggregateHeaders.mapOverlay }"
-								tableHeaders="{ _model.tableHeaders.mapOverlay }" helpUrl="{'section_analytics_map_drilldown'}"
-								reportType="{KalturaReportType.MAP_OVERLAY}" screenType="{ScreenTypes.MAP_OVERLAY_DRILL_DOWN}"
+								tableHeaders="{ _model.tableHeaders.mapOverlay }"
+								helpUrl="{'section_analytics_map_drilldown'}"
+								reportType="{KalturaReportType.MAP_OVERLAY}"
+								screenType="{ScreenTypes.MAP_OVERLAY_DRILL_DOWN}"
 								label="{resourceManager.getString('analytics','mapOverlay')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="userEngagementDrillDown" dateOnlyFlag="{true}" isDrillDown="{true}"
-								playbackContextFlag="{true}"
-								filterVo="{_model.filter}" context="{_model.context}" width="100%" height="100%"
+								playbackContextFlag="{true}" filterVo="{_model.filter}" context="{_model.context}"
+								width="100%" height="100%"
 								creationComplete="{_model.selectedReportData.orderBy='count_plays'}"
 								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
 								loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
-								showDimention="true" showColumnChart="false" showLineChart="true" 
-								showMap="false" screenType="{ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN}"
-								showTable="true" showKDP="false" 
-								filterUsersFlag="false" filterApplicationsFlag="true"
+								showDimention="true" showColumnChart="false" showLineChart="true" showMap="false"
+								screenType="{ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN}" showTable="true"
+								showKDP="false" filterUsersFlag="false" filterApplicationsFlag="true"
 								aggregatedHeaders="{ _model.aggregateHeaders.userEngagementDrilldown }"
 								tableHeaders="{ _model.tableHeaders.userEngagementDrilldown }"
-								dimCbDp="{ _model.reportDimension.userEngagement }" reportData="{_model.selectedReportData}"
-								backScreenType="{ScreenTypes.END_USER_ENGAGEMENT}" helpUrl="{'section_analytics_user_drilldown'}"
+								dimCbDp="{ _model.reportDimension.userEngagement }"
+								reportData="{_model.selectedReportData}"
+								backScreenType="{ScreenTypes.END_USER_ENGAGEMENT}"
+								helpUrl="{'section_analytics_user_drilldown'}"
 								reportType="{KalturaReportType.SPEFICIC_USER_ENGAGEMENT}"
 								label="{resourceManager.getString('analytics','userEngagement')}" styleName="pageStyle"/>
 	</mx:ViewStack>
