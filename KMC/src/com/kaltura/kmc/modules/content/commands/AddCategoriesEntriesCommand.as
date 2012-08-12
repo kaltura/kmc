@@ -16,8 +16,12 @@ package com.kaltura.kmc.modules.content.commands
 
 	public class AddCategoriesEntriesCommand extends KalturaCommand {
 		
+		
+		private var _eventType:String;
+		
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
+			_eventType = event.type;
 			
 			var e:EntriesEvent = event as EntriesEvent;
 			var categories:Array = e.data as Array; // elements are KalturaCategories
@@ -52,37 +56,17 @@ package com.kaltura.kmc.modules.content.commands
 		
 		override public function result(data:Object):void {
 			super.result(data);
+			
+			if (!checkError(data)) {
+				if (_eventType == EntriesEvent.ADD_ON_THE_FLY_CATEGORY) {
+					// re-load cat.tree
+					if (_model.filterModel.catTreeDataManager) {
+						_model.filterModel.catTreeDataManager.resetData();
+					}
+				}
+			}
+			
 			_model.decreaseLoadCounter();
-			
-			// look for error
-			var er:KalturaError = (data as KalturaEvent).error;
-			var rm:IResourceManager = ResourceManager.getInstance();
-			if (er) {
-				Alert.show(getErrorText(er), rm.getString('cms', 'error'));
-				
-			}
-			else {
-				// look iside MR, ignore irrelevant
-				for each (var o:Object in data.data) {
-					er = o as KalturaError;
-					if (er) {
-//						if (er.errorCode != "ENTRY_IS_NOT_ASSIGNED_TO_CATEGORY") {
-						Alert.show(getErrorText(er), rm.getString('cms', 'error'));
-//						}
-					}
-					else if (o.error) {
-						// in MR errors aren't created
-//						if (o.error.code != "ENTRY_IS_NOT_ASSIGNED_TO_CATEGORY") {
-							var str:String = rm.getString('cms', o.error.code);
-							if (!str) {
-								str = o.error.message;
-							} 
-							Alert.show(str, rm.getString('cms', 'error'));
-//						}
-					}
-				}	
-			}
-			
 		}
 	}
 }
