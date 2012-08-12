@@ -1,6 +1,8 @@
 package com.kaltura.kmc.modules.content.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.analytics.GoogleAnalyticsConsts;
+	import com.kaltura.analytics.GoogleAnalyticsTracker;
 	import com.kaltura.edw.business.KedJSGate;
 	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.errors.KalturaError;
@@ -23,7 +25,13 @@ package com.kaltura.kmc.modules.content.commands {
 			_model.decreaseLoadCounter();
 			var er:KalturaError = (info as KalturaEvent).error;
 			if (!er) return;
-			if (er.errorCode == APIErrorCode.INVALID_KS) {
+			if (er.errorCode == "CONNECTION_TIMEOUT") {
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CLIENT_CONNECTION_TIMEOUT, GoogleAnalyticsConsts.CONTENT);
+			}
+			else if (er.errorCode == "POST_TIMEOUT") {
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CLIENT_POST_TIMEOUT, GoogleAnalyticsConsts.CONTENT);
+			}
+			else if (er.errorCode == APIErrorCode.INVALID_KS) {
 				KedJSGate.expired();
 			}
 			else if (er.errorCode == APIErrorCode.SERVICE_FORBIDDEN) {
@@ -33,8 +41,8 @@ package com.kaltura.kmc.modules.content.commands {
 				//de-activate the HTML tabs
 //				ExternalInterface.call("kmc.utils.activateHeader", false);
 			}
-			else if (er.errorMsg) {
-				var alert:Alert = Alert.show(er.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+			else {
+				Alert.show(getMessageFromError(er.errorCode, er.errorMsg), ResourceManager.getInstance().getString('cms', 'error'));
 			}
 		}
 		
@@ -68,18 +76,14 @@ package com.kaltura.kmc.modules.content.commands {
 		 * @return true if error was encountered, false otherwise
 		 */		
 		protected function checkError(resultData:Object, header:String = ''):Boolean {
-			var rm:IResourceManager = ResourceManager.getInstance();
 			if (!header) {
-				header = rm.getString('cms', 'error');
+				header = ResourceManager.getInstance().getString('cms', 'error');
 			}
 			// look for error
 			var str:String = '';
 			var er:KalturaError = (resultData as KalturaEvent).error;
 			if (er) {
-				str = rm.getString('cms', er.errorCode);
-				if (!str) {
-					str = er.errorMsg;
-				} 
+				str = getMessageFromError(er.errorCode, er.errorMsg);
 				Alert.show(str, header);
 				return true;
 			} 
@@ -90,10 +94,7 @@ package com.kaltura.kmc.modules.content.commands {
 						var o:Object = resultData.data[i];
 						if (o.error) {
 							// in MR errors aren't created
-							str = rm.getString('cms', o.error.code);
-							if (!str) {
-								str = o.error.message;
-							} 
+							str = getMessageFromError(o.error.code, o.error.message); 
 							Alert.show(str, header);
 							return true;
 						}
@@ -101,6 +102,22 @@ package com.kaltura.kmc.modules.content.commands {
 				}
 			}
 			return false;
+		}
+		
+		/**
+		 * try to get a localised error message  
+		 * @param erCode
+		 * @param erMsg
+		 * @return localised error message or given error message. 
+		 * 
+		 */
+		protected function getMessageFromError(erCode:String, erMsg:String):String {
+			var rm:IResourceManager = ResourceManager.getInstance();
+			var str:String = rm.getString('cms', erCode);
+			if (!str) {
+				str = erMsg;
+			}
+			return str;
 		}
 
 
