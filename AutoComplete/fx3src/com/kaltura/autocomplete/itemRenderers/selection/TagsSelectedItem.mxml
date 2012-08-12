@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:SelectionItemBase xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:base="com.kaltura.autocomplete.itemRenderers.selection.base.*" xmlns:classes="com.hillelcoren.components.autoComplete.classes.*" implements="com.kaltura.autocomplete.itemRenderers.selection.base.IEditableSelection" >
+<base:SelectionItemBase xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:base="com.kaltura.autocomplete.itemRenderers.selection.base.*" xmlns:classes="com.hillelcoren.components.autoComplete.classes.*"
+						implements="com.kaltura.autocomplete.itemRenderers.selection.base.IEditableSelection" creationComplete="init()">
 	<mx:Script>
 		<![CDATA[
 			import com.hillelcoren.components.autoComplete.classes.ShorterTextInput;
@@ -9,6 +10,10 @@
 			override protected function displayText(text:String):void{
 				super.displayText(text);
 				textEdit.text = text;
+			}
+			
+			private function init():void{
+				textEdit.restrict = "^,\"";
 			}
 			
 			private function button_doubleClickHandler(event:MouseEvent):void
@@ -48,7 +53,7 @@
 	<classes:ShorterTextInput id="textInput" />
 	<mx:Canvas>
 		<classes:IconButton id="button" doubleClick="button_doubleClickHandler(event)" doubleClickEnabled="true"/>
-		<mx:TextInput id="textEdit" visible="false" width="0" height="0"/>
+		<mx:TextInput id="textEdit" visible="false" width="0" height="0"  />
 	</mx:Canvas>
 	<mx:Spacer id="spacer"/>
 </base:SelectionItemBase>
