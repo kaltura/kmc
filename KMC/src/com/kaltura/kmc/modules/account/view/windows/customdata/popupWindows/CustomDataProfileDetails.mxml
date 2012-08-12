@@ -26,7 +26,7 @@ Use the 'newProfileState' state for the 'Add New..' action
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaMetadataProfile;
 			import com.kaltura.vo.MetadataFieldVO;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
@@ -298,7 +298,10 @@ Use the 'newProfileState' state for the 'Add New..' action
 			
 			private function downloadXSD():void {
 				var urlRequest:URLRequest = new URLRequest(metadataProfile.downloadUrl);
-				navigateToURL(urlRequest, '_self');
+//				navigateToURL(urlRequest, '_self');
+				
+				var fr:FileReference = new FileReference();
+				fr.download(urlRequest, _metadataProfile.profile.name + ".xml"); 
 			}
 
 
@@ -343,8 +346,8 @@ Use the 'newProfileState' state for the 'Add New..' action
 			<mx:TextInput id='sysNameTi' width="100%" text="{metadataProfile.profile.systemName}"
 						  change="onSysNameChanged(event)" restrict="a-zA-Z0-9"/>
 		</mx:HBox>
-		<mx:LinkButton id="downloadXSDBtn" paddingLeft="0"
-					   label="{resourceManager.getString('account', 'downloadSchema')}" click="downloadXSD()"/>
+		<mx:LinkButton id="downloadXSDBtn" paddingLeft="0" click="downloadXSD()"
+					   label="{resourceManager.getString('account', 'downloadSchema')}" />
 		<mx:HBox id="fieldsTableBox" width="100%" height="100%" styleName="tablePagerAndButtonsBarBox">
 			<mx:VBox width="100%" height="100%" id='tableContainer' styleName="tableAndPagerContainerStyle"
 					 horizontalAlign="center">
