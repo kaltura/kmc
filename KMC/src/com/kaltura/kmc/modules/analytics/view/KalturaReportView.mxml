@@ -188,8 +188,23 @@
 			}
 			
 			private function onFilterChanged(vo:FilterVo):void{
-				isMonths = showTimeUnits ? vo.interval == KalturaReportInterval.MONTHS : false;
-				isOneDay = (vo.toDate.time - vo.fromDate.time) <= TimeConsts.DAY;
+				handleTimeUnitChange();
+			}
+			
+			private function handleTimeUnitChange():void{
+				isMonths = showTimeUnits ? filterVo.interval == KalturaReportInterval.MONTHS : false;
+				isOneDay = (filterVo.toDate.time - filterVo.fromDate.time) <= TimeConsts.DAY;
+				
+				// QC 3885 - Changing from "Date" to "Month" in the table headers.
+				if (tableHeaders && tableHeaders.length > 1){
+					if (isMonths && tableHeaders[0] == "date_id"){
+						tableHeaders[0] = "month_id";
+					} else if (! isMonths && tableHeaders[0] == "month_id"){
+						tableHeaders[0] = "date_id";
+					}
+				}
+				
+				ktable.headerDataProvider = tableHeaders;
 			}
 
 			private function onSelectedMediaEntryChange(selectdEntry:KalturaBaseEntry):void {
@@ -317,8 +332,7 @@
 			 * ask for needed reports
 			 * */
 			private function getReports(event:Event = null):void {
-				isMonths = showTimeUnits ? filterVo.interval == KalturaReportInterval.MONTHS : false;
-				isOneDay = (filterVo.toDate.time - filterVo.fromDate.time) <= TimeConsts.DAY;
+				handleTimeUnitChange();
 				
 				var reportSetDataEvent:ReportDataEvent = new ReportDataEvent(ReportDataEvent.SET_REPORT_DATA, reportType, screenType,  label, aggregatedHeaders, tableHeaders, paging.pageSize);
 				reportSetDataEvent.dispatch();
