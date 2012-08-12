@@ -16,6 +16,9 @@
 			[Bindable]
 			public var monthGraph:Boolean = false;
 			
+			public var dataFormatFunc:Function;
+			public var dataUnits:String;
+			
 			/**
 			 * override the dataProvider to create the graph points from the rough
 			 * @internal 
@@ -104,12 +107,24 @@
 				return mockData;
 			}
  
-            private function onDataTip( hitData:HitData ) : String
+            private function onDataTip( data:HitData ) : String
             {
-            	var s:String;
-		        s = new Date(hitData.item.x).toDateString() + "\n";
-		        s += hitData.item.y;
-		        return s;
+            	var dateString:String = new Date(data.item.x).toDateString();
+//		        s += hitData.item.y;
+				
+				var tipString:String = dateString + '\n';
+				
+				if (dataFormatFunc != null){
+					tipString += dataFormatFunc(data.item.y);
+				} else {
+					tipString += Number(data.item.y).toFixed(2)
+				}
+				
+				if (dataUnits != null){
+					tipString += " " + dataUnits;
+				}
+				
+				return tipString;
             }
             
             public function set minHAxisDate( date : Date ) : void

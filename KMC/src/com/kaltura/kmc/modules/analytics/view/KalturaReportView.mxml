@@ -16,6 +16,7 @@
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 			import com.kaltura.kmc.modules.analytics.model.Context;
 			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
+			import com.kaltura.kmc.modules.analytics.model.reports.ReportDimension;
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.kmc.modules.analytics.utils.TimeConsts;
 			import com.kaltura.kmc.modules.analytics.view.window.PreviewEntryWin;
@@ -26,7 +27,10 @@
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.SWFLoader;
+			import mx.formatters.NumberFormatter;
 			import mx.managers.PopUpManager;
+			
+			import org.flexunit.internals.namespaces.classInternal;
 
 			public static var kdp:SWFLoader;
 			
@@ -184,7 +188,23 @@
 			private function init():void {
 				BindingUtils.bindSetter(onReportDataChange, this, "reportData");
 				BindingUtils.bindSetter(onFilterChanged, this, "filterVo");
+				
+				if (dimCbDp == _model.reportDimension.endUserStorage
+					|| dimCbDp == _model.reportDimension.publisherStorageNBandwidth){
+					dateBarChart.dataFormatFunc = roundUpValue;
+					dateBarChart.dataUnits = resourceManager.getString('analytics', 'MB');
+					lineChart.dataFormatFunc = roundUpValue;
+					lineChart.dataUnits = resourceManager.getString('analytics', 'MB');
+				}
 				//BindingUtils.bindSetter( onSelectedMediaEntryChange , this.reportData , "seletedMediaEntry" );
+			}
+			
+			
+			// For table data tips
+			private function roundUpValue(value:Object):String{
+				var formatter:NumberFormatter  = new NumberFormatter();
+				formatter.thousandsSeparatorTo = ",";
+				return formatter.format(Math.ceil(Number(value)));
 			}
 			
 			private function onFilterChanged(vo:FilterVo):void{
