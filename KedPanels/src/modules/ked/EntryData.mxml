@@ -272,7 +272,27 @@
 			// Methods
 			// =================================================================
 
-
+			
+			/**
+			 * compare tags ignoring spaces between them
+			 * @return true if tags are equal
+			 * */
+			private function tagsCompare(tags1:String, tags2:String):Boolean {
+				if (!tags1 && !tags2) {
+					return true;
+				}
+				else if (!tags1) {
+					return false;
+				}
+				else if (!tags2) {
+					return false;
+				}
+				// now we are sure both have values
+				var strippedTags1:String = tags1.replace(/\,\ /g, ",");
+				var strippedTags2:String = tags2.replace(/\,\ /g, ",");
+				
+				return strippedTags1 == strippedTags2;
+			}
 
 			public function isChanged():Boolean {
 				var res:Boolean = false;
@@ -280,7 +300,7 @@
 				var orig:KalturaBaseEntry = _entryData.selectedEntry;
 				res ||= _selectedEntry.name != orig.name;
 				res ||= _selectedEntry.description != orig.description;
-				res ||= _selectedEntry.tags != orig.tags;
+				res ||= !tagsCompare(_selectedEntry.tags, orig.tags);
 				res ||= _selectedEntry.referenceId != orig.referenceId;
 
 				// categories:
