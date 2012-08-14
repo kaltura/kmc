@@ -36,15 +36,18 @@ package com.kaltura.kmc.modules.analytics.commands {
 			}
 
 			if (_model.selectedReportData.originalTableHeaders) {
-				for (var i:int = 0; i < _model.selectedReportData.originalTableHeaders.length; i++)
-					if (_model.selectedReportData.originalTableHeaders[i] != "object_id")
+				for (var i:int = 0; i < _model.selectedReportData.originalTableHeaders.length; i++) {
+					if (_model.selectedReportData.originalTableHeaders[i] != "object_id") {
 						headers += ResourceManager.getInstance().getString('analytics', _model.selectedReportData.originalTableHeaders[i]) + ",";
+					}
+				}
+				// remove last ","
+				headers = headers.substr(0, headers.length - 1);
 			}
 			else {
-				headers = ResourceManager.getInstance().getString('analytics', 'no_table');
+				headers += ResourceManager.getInstance().getString('analytics', 'no_table');
 			}
 
-			headers = headers.substr(0, headers.length - 1);
 
 
 			// default texts (not supposed to be used)
