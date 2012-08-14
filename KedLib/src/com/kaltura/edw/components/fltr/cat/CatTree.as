@@ -77,8 +77,13 @@ package com.kaltura.edw.components.fltr.cat
 		 */
 		public function set chunkedData(value:Boolean):void {
 			_chunkedData = value;
-			_initDataManagerRequested = true;
-			setTimeout(delayInitDataManager, 500);
+			if (!_isExternalManager) {
+				_initDataManagerRequested = true;
+				setTimeout(delayInitDataManager, 500);
+			}
+			else {
+				_initDataManagerRequested = false;
+			}
 		}
 		
 		private var _initDataManagerRequested:Boolean = false;
@@ -116,6 +121,23 @@ package com.kaltura.edw.components.fltr.cat
 					expandItem(o, true);
 				}
 			}
+		}
+		
+		
+		/**
+		 * indicating dataManager was externaly set 
+		 */		
+		protected var _isExternalManager:Boolean;
+		
+		
+		/**
+		 * a user-defined dataManager 
+		 * @internal
+		 * if an external dataManager is provided, _chunkedData is ignored
+		 */		
+		public function set externalDataManager(value:ICategoriesDataManger):void {
+			_isExternalManager = true;
+			_dataManager = value;
 		}
 		
 		
