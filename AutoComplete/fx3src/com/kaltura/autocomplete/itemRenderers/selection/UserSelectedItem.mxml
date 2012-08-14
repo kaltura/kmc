@@ -11,7 +11,7 @@
 				var text:String;
 				var user:KalturaUser = _item as KalturaUser;
 				if (user == null || (user != null && user.createdAt == int.MIN_VALUE)){
-					toolTip = resourceManager.getString("autocomplete", "unregisteredUserMsg", [user ? user.id : _item]);
+					toolTip = getUnregisteredMsg(user ? user.id : _item as String);
 					text = user ? user.id : _item as String;
 				} else if (user.screenName != null && user.screenName != ""){
 					toolTip = user.id;
@@ -20,6 +20,10 @@
 					text = user.id;
 				}
 				setText(text);
+			}
+			
+			protected function getUnregisteredMsg(userId:String):String{
+				return resourceManager.getString("autocomplete", "unregisteredUserMsg", [userId]);
 			}
 			
 			override protected function getCurrStyle():String{
