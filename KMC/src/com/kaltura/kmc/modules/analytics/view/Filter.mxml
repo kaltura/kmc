@@ -332,7 +332,11 @@
 					case resourceManager.getString('analytics', 'thisMonth'):
 						// actually gives first day of the month until yesterday
 						_filterVo.fromDate = new Date(today.fullYear, today.month, 1);
-						_filterVo.toDate = new Date(todayStart - ONE_DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI);
+						if (today.date == 1){
+							_filterVo.toDate = new Date(_filterVo.fromDate.time);
+						} else {
+							_filterVo.toDate = new Date(todayStart - ONE_DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI);
+						}
 						break;
 					case resourceManager.getString('analytics', 'lastMonth'):
 						// actually gives from the first of last month to the last of last month
