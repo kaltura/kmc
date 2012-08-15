@@ -247,10 +247,25 @@
 				positionDropDown();
 			}			
 			
+			private function deselectAll():void{
+				if (_selectedAll){
+					for each (var item:iComboItem in flowBox.getChildren()){
+						if (item is ISelectionItemRenderer){
+							(item as ISelectionItemRenderer).selected = false;
+						}
+						
+					}
+					_selectedAll = false;
+				}
+			}
+			
+			
 			protected function handleFocusOut( event:FocusEvent ):void
 			{
 				var commitEvent:FlexEvent = new FlexEvent( FlexEvent.VALUE_COMMIT );
 				dispatchEvent( commitEvent );				
+				
+				deselectAll();
 				
 				if (event.relatedObject && contains( event.relatedObject ))
 				{
@@ -275,6 +290,8 @@
 			
 			protected function handleFocusIn( event:FocusEvent ):void
 			{
+				deselectAll();
+				
 				if (event.relatedObject && contains( event.relatedObject ))
 				{
 					return;
@@ -804,6 +821,8 @@
 					{
 						_selectedItems.addItem( _dropDown.selectedItem );
 						dispatchEvent( new Event( Event.CHANGE ) );
+					} else {
+						deselectAll();
 					}
 				}
 				else
@@ -829,77 +848,84 @@
 					
 					if (event.keyCode == Keyboard.BACKSPACE || event.keyCode == Keyboard.DELETE)
 					{
-						if (_selectedItems.length == 0)
-						{
-							return;
-						}
-						
-						if (!target.isCursorAtBeginning())
-						{
-							return;
-						}
-						
-						if (target is EditableItem)
-						{
-							if (EditableItem( target ).isTextSelected())
-							{
-								return;
-							}
-						}
-						
-						if (target is IEditableSelection){
-							if (IEditableSelection(target).isEditing){
-								return;
-							}
-						}
-						
-						if (focused is IconButton)
-						{							
-							_selectedItems.removeItemAt( index );
-							iComboItem( flowBox.getChildAt( index ) ).setTextFocus();
-							dispatchEvent( new Event( Event.CHANGE ) );																														
-						}
-						else
-						{
-							if (index == 0)
+						if (_selectedAll){
+							_selectedAll = false;
+							_selectedItems.removeAll();
+							iComboItem( flowBox.getChildAt( 0 ) ).setTextFocus();
+							dispatchEvent( new Event( Event.CHANGE ) );			
+						} else {
+							if (_selectedItems.length == 0)
 							{
 								return;
 							}
 							
-							if (_allowEditingSelectedValues)
+							if (!target.isCursorAtBeginning())
 							{
-								item = _selectedItems.getItemAt( index - 1 );
-								
-								_selectedItems.removeItemAt( index - 1 );
-								dispatchEvent( new Event( Event.CHANGE ) );
-								
-								var label:String = getLabel( item , _labelField); 
-								searchText = label.substr( 0, label.length - 1 );
-								
-								textInput.setFocus();
-								textInput.setTextSelected(false);
+								return;
 							}
-							else if (_backspaceAction == AutoComplete.BACKSPACE_REMOVE || event.keyCode == Keyboard.DELETE)
+							
+							if (target is EditableItem)
 							{
-								_selectedItems.removeItemAt( index - 1 );
+								if (EditableItem( target ).isTextSelected())
+								{
+									return;
+								}
+							}
+							
+							if (target is IEditableSelection){
+								if (IEditableSelection(target).isEditing){
+									return;
+								}
+							}
+							
+							if (focused is IconButton)
+							{							
+								_selectedItems.removeItemAt( index );
+								iComboItem( flowBox.getChildAt( index ) ).setTextFocus();
 								dispatchEvent( new Event( Event.CHANGE ) );																														
-								iComboItem( flowBox.getChildAt( index - 1 ) ).setTextFocus();
 							}
 							else
 							{
-								var prevItem:UIComponent = flowBox.getChildAt( index - 1 ) as UIComponent;
-								prevItem.setFocus();
+								if (index == 0)
+								{
+									return;
+								}
 								
-								if (prevItem is ISelectionItemRenderer)
+								if (_allowEditingSelectedValues)
 								{
-									ISelectionItemRenderer( prevItem ).selected = true;
+									item = _selectedItems.getItemAt( index - 1 );
+									
+									_selectedItems.removeItemAt( index - 1 );
+									dispatchEvent( new Event( Event.CHANGE ) );
+									
+									var label:String = getLabel( item , _labelField); 
+									searchText = label.substr( 0, label.length - 1 );
+									
+									textInput.setFocus();
+									textInput.setTextSelected(false);
 								}
-								else if (prevItem is EditableItem)
+								else if (_backspaceAction == AutoComplete.BACKSPACE_REMOVE || event.keyCode == Keyboard.DELETE)
 								{
-									EditableItem( prevItem ).setSelectionEnd();
+									_selectedItems.removeItemAt( index - 1 );
+									dispatchEvent( new Event( Event.CHANGE ) );																														
+									iComboItem( flowBox.getChildAt( index - 1 ) ).setTextFocus();
 								}
-							}
-						}												
+								else
+								{
+									var prevItem:UIComponent = flowBox.getChildAt( index - 1 ) as UIComponent;
+									prevItem.setFocus();
+									
+									if (prevItem is ISelectionItemRenderer)
+									{
+										ISelectionItemRenderer( prevItem ).selected = true;
+									}
+									else if (prevItem is EditableItem)
+									{
+										EditableItem( prevItem ).setSelectionEnd();
+									}
+								}
+							}	
+						}
 					}
 					else if (event.keyCode == Keyboard.UP)
 					{
@@ -1017,10 +1043,24 @@
 						{
 							textInput.setFocus();
 						}
+						// ctrl + c
 					} else if (event.keyCode == 67 && event.ctrlKey){
-						if (target is ISelectionItemRenderer){
+						if (_selectedAll){
+							Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, text);
+						} else if (target is ISelectionItemRenderer){
 							Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, ISelectionItemRenderer(target).text);
 						}
+						// ctrl + a
+					} else if (event.keyCode == 65 && event.ctrlKey && (_searchText == null || _searchText == "") && _selectedItems.length > 0){
+						for each (var combItem:iComboItem in flowBox.getChildren()){
+							if (combItem is ISelectionItemRenderer){
+								(combItem as ISelectionItemRenderer).selected = true; 
+							}
+						}
+						
+						_selectedAll = true;
+					} else if (! event.ctrlKey){
+						deselectAll();
 					}
 				}
 			}
@@ -1192,6 +1232,8 @@
 			public function handleFlowBoxChange( event:Event ):void
 			{
 				flowBox.invalidateDisplayList();
+				
+				deselectAll();
 				
 				var wasChangeMade:Boolean = false;
 				
@@ -1907,6 +1949,7 @@
 			private var _messagePopup:List;
 			private var _selectedItemIdentifier:Object;
 			private var _comparisonFunc:Function;
+			private var _selectedAll:Boolean;
 			
 			public function notifySearching():void{
 				if (! _isSearching){
