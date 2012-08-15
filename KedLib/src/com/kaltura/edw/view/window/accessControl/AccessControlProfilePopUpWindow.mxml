@@ -27,6 +27,7 @@
 			import com.kaltura.types.KalturaSiteRestrictionType;
 			import com.kaltura.utils.KArrayUtil;
 			import com.kaltura.vo.AccessControlProfileVO;
+			import com.kaltura.vo.KalturaAccessControl;
 			import com.kaltura.vo.KalturaBaseRestriction;
 			import com.kaltura.vo.KalturaSiteRestriction;
 			import com.kaltura.windows.popUpWindows.AddNewDomainPopUpWindow;
@@ -113,21 +114,17 @@
 			 * the acp. For add new one we create a new acp
 			 */
 			private function onCreationComplete(event:Event):void {
-				if (currentState == null) {
-					_accessControlProfile = _accessControlProfile.clone();
-					setAccessControlProfileData();
-				}
-				else {
-					_accessControlProfile = new AccessControlProfileVO();
-				}
-
-				validateInput();
 				if (currentState == "newProfileState") {
+					_accessControlProfile = new AccessControlProfileVO();
+					_accessControlProfile.profile = new KalturaAccessControl();
 					PermissionManager.getInstance().applyAllAttributes(this, "acDrilldown_add");
 				}
 				else {
+					_accessControlProfile = _accessControlProfile.clone();
+					setAccessControlProfileData();
 					PermissionManager.getInstance().applyAllAttributes(this, "acDrilldown_edit");
 				}
+				validateInput();
 			}
 
 

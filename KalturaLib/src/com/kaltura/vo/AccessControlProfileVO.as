@@ -41,6 +41,7 @@ package com.kaltura.vo {
 		 */
 		public function clone():AccessControlProfileVO {
 			var newAcp:AccessControlProfileVO = new AccessControlProfileVO();
+			newAcp.profile = new KalturaAccessControl();
 			newAcp.profile.name = this.profile.name.slice();
 			newAcp.profile.description = this.profile.description.slice();
 			newAcp.profile.createdAt = this.profile.createdAt;
