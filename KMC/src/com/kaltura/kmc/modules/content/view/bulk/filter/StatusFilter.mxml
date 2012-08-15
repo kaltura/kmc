@@ -9,24 +9,24 @@
 			
 			protected function additionalfilter1_creationCompleteHandler(event:FlexEvent):void
 			{
-				_buttons = [allBtn, finishedBtn, finishedErrBtn, failedBtn, otherBtn];
+				_buttons = [allBtn, finishedBtn, /* finishedErrBtn, */ failedBtn, otherBtn];
 				friendlyName = resourceManager.getString('filter', 'buStatusTooltip');
 			}
 			
 			override public function get filter():Object {
 				var typesString:String = "";
 				//if non of the items are selected or all selected
-				if ((finishedBtn.selected && finishedErrBtn.selected && failedBtn.selected && otherBtn.selected) 
-					|| (!finishedBtn.selected && !finishedErrBtn.selected && !failedBtn.selected && !otherBtn.selected)) {
+				if ((finishedBtn.selected &&/*  finishedErrBtn.selected && */ failedBtn.selected && otherBtn.selected) 
+					|| (!finishedBtn.selected && /* !finishedErrBtn.selected && */ !failedBtn.selected && !otherBtn.selected)) {
 					typesString = "";
 				}
 				else {
 					if (finishedBtn.selected) {
 						typesString += KalturaBatchJobStatus.FINISHED + ",";
 					}
-					if (finishedErrBtn.selected) {
+					/* if (finishedErrBtn.selected) {
 						typesString += KalturaBatchJobStatus.FINISHED_PARTIALLY + ",";
-					}
+					} */
 					if (failedBtn.selected) {
 						typesString += KalturaBatchJobStatus.FAILED + "," + KalturaBatchJobStatus.FATAL + ",";
 					}
@@ -49,7 +49,7 @@
 					// no duration 
 					allBtn.selected = true;
 					finishedBtn.selected = false;
-					finishedErrBtn.selected = false;
+					/* finishedErrBtn.selected = false; */
 					failedBtn.selected = false;
 					otherBtn.selected = false;
 				}
@@ -65,7 +65,7 @@
 								break;
 							
 							case KalturaBatchJobStatus.FINISHED_PARTIALLY:
-								finishedErrBtn.selected = true;
+								/* finishedErrBtn.selected = true; */
 								break;
 							
 							case KalturaBatchJobStatus.FAILED:
@@ -94,8 +94,8 @@
 				 selected="true" click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
 	<mx:CheckBox id="finishedBtn" width="100%" label="{resourceManager.getString('filter', 'buStatusFinished')}"
 				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
-	<mx:CheckBox id="finishedErrBtn" width="100%" label="{resourceManager.getString('filter', 'buStatusFinishedWErr')}"
-				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<!--<mx:CheckBox id="finishedErrBtn" width="100%" label="{resourceManager.getString('filter', 'buStatusFinishedWErr')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>-->
 	<mx:CheckBox id="failedBtn" width="100%" label="{resourceManager.getString('filter', 'buStatusFailed')}"
 				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
 	<mx:CheckBox id="otherBtn" width="100%" label="{resourceManager.getString('filter', 'buStatusOther')}"
