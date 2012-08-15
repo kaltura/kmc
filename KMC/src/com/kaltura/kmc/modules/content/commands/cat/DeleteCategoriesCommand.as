@@ -17,20 +17,21 @@ package com.kaltura.kmc.modules.content.commands.cat {
 	import mx.resources.ResourceManager;
 
 	public class DeleteCategoriesCommand extends KalturaCommand {
-		
+
 		private var _ids:Array;
-		
-		private var _numOfGroups:int = 1;	// number of groups to process
-		
-		private var _callsCompleted:int = 0;	// number of calls (groups) already processed
-		
-		private var _callFailed:Boolean = false;	// if any call failed, set to true
-		
+
+		private var _numOfGroups:int = 1; // number of groups to process
+
+		private var _callsCompleted:int = 0; // number of calls (groups) already processed
+
+		private var _callFailed:Boolean = false; // if any call failed, set to true
+
+
 		override public function execute(event:CairngormEvent):void {
 			var rm:IResourceManager = ResourceManager.getInstance();
 			var hasSubCats:Boolean;
 			if (event.data) {
-				hasSubCats = event.data[1]; 
+				hasSubCats = event.data[1];
 				_ids = event.data[0] as Array;
 			}
 			if (!_ids) {
@@ -40,7 +41,7 @@ package com.kaltura.kmc.modules.content.commands.cat {
 					_ids.push(kCat.id);
 				}
 			}
-			
+
 			var msg:String;
 			if (_ids.length == 0) {
 				// no categories
@@ -62,66 +63,94 @@ package com.kaltura.kmc.modules.content.commands.cat {
 			else {
 				msg = rm.getString('cms', 'deleteCategoriesWarn');
 			}
-			
+
 			// let the user know:
-			Alert.show(msg, rm.getString('cms', 'attention'), Alert.OK|Alert.CANCEL, null, deleteCats);
+			Alert.show(msg, rm.getString('cms', 'attention'), Alert.OK | Alert.CANCEL, null, deleteCatsApprove);
+		}
+
+
+		private function deleteCatsApprove(e:CloseEvent):void {
+			if (e.detail == Alert.OK) {
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CATS_DELETE_BULK, GoogleAnalyticsConsts.CONTENT);
+				deleteCats();
+			}
 		}
 		
-		private function deleteCats(e:CloseEvent):void {
-			if (e.detail == Alert.OK) {
-				
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CATS_DELETE_BULK, GoogleAnalyticsConsts.CONTENT);
-				
-				_numOfGroups = Math.floor(_ids.length / 50);
-				var lastGroupSize:int = _ids.length % 50;
-				if (lastGroupSize != 0) {
-					_numOfGroups++;
-				}
-				
-				var groupSize:int;
-				var mr:MultiRequest;
-				for (var groupIndex:int = 0; groupIndex < _numOfGroups; groupIndex++) {
-					mr = new MultiRequest();
-					mr.addEventListener(KalturaEvent.COMPLETE, result);
-					mr.addEventListener(KalturaEvent.FAILED, fault);
-					mr.queued = false;
-					
-					groupSize = (groupIndex < (_numOfGroups - 1)) ? 50 : lastGroupSize;
-					for (var entryIndexInGroup:int = 0; entryIndexInGroup < groupSize; entryIndexInGroup++) {
-						var index:int = ((groupIndex * 50) + entryIndexInGroup);
-						var keepId:int = _ids[index];
-						var deleteCategory:CategoryDelete = new CategoryDelete(keepId);
-						mr.addAction(deleteCategory);
-					}
-					_model.increaseLoadCounter();
-					_model.context.kc.post(mr);
-				}
+		
+		
+		private var _lastGroupSize:int;	// the last group will probably have a different size
+		
+		private var _groupIndex:int;	// currently processed group 
+		
+		private function deleteCats():void {
+			_numOfGroups = Math.floor(_ids.length / 50);
+			_lastGroupSize = _ids.length % 50;
+			if (_lastGroupSize != 0) {
+				_numOfGroups++;
+			}
+			else {
+				_lastGroupSize = 50;
+			}
+			
+			// start deleting
+			_groupIndex = 0;
+			if ( _groupIndex < _numOfGroups) {
+				deleteGroup();
 			}
 		}
 
-
-		override public function result(data:Object):void {
+		
+		private function deleteGroup():void {
+			var mr:MultiRequest = new MultiRequest();
+			mr.addEventListener(KalturaEvent.COMPLETE, deleteGroupResult);
+			mr.addEventListener(KalturaEvent.FAILED, fault);
+			mr.queued = false;
+			
+			// get number of categories in group
+			var groupSize:int = (_groupIndex < (_numOfGroups - 1)) ? 50 : _lastGroupSize;
+			
+			for (var entryIndexInGroup:int = 0; entryIndexInGroup < groupSize; entryIndexInGroup++) {
+				var index:int = ((_groupIndex * 50) + entryIndexInGroup);
+				var keepId:int = _ids[index];
+				var deleteCategory:CategoryDelete = new CategoryDelete(keepId);
+				mr.addAction(deleteCategory);
+			}
+			_model.increaseLoadCounter();
+			_model.context.kc.post(mr);
+		}
+		
+		
+		private function deleteGroupResult(data:KalturaEvent):void {
 			super.result(data);
 			_model.decreaseLoadCounter();
-			var rm:IResourceManager = ResourceManager.getInstance();
 			
-			_callsCompleted ++;
+			_callsCompleted++;
 			_callFailed ||= checkError(data);
+			
 			if (_callsCompleted == _numOfGroups) {
-				if (!_callFailed) {
-					Alert.show(rm.getString('cms', 'categoryDeleteDoneMsg'), rm.getString('cms', 'categoryDeleteDoneMsgTitle'));
-					
-				}
-				
-				if (_model.filterModel.catTreeDataManager) {
-					_model.filterModel.catTreeDataManager.resetData();
-				}
-				
-				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-				cgEvent.dispatch();
-				cgEvent = new CatTrackEvent(CatTrackEvent.UPDATE_STATUS);
-				cgEvent.dispatch();
+				result(data);
 			}
+			else {
+				_groupIndex++;
+				deleteGroup();
+			}
+		}
+		
+		
+		override public function result(data:Object):void {
+			if (!_callFailed) {
+				var rm:IResourceManager = ResourceManager.getInstance();
+				Alert.show(rm.getString('cms', 'categoryDeleteDoneMsg'), rm.getString('cms', 'categoryDeleteDoneMsgTitle'));
+			}
+
+			if (_model.filterModel.catTreeDataManager) {
+				_model.filterModel.catTreeDataManager.resetData();
+			}
+
+			var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+			cgEvent.dispatch();
+			cgEvent = new CatTrackEvent(CatTrackEvent.UPDATE_STATUS);
+			cgEvent.dispatch();
 		}
 	}
 }
