@@ -27,7 +27,7 @@ package com.kaltura.kmc.modules.analytics.model.reportdata
 		public var dimToChartDpMap : Object = new Object();
 		public var chartDp : ArrayCollection;
 		public var selectedDim : String;
-		public var seletedMediaEntry : KalturaBaseEntry;
+		public var selectedMediaEntry : KalturaBaseEntry;
 		
 		public var dataFieldDp : Array;
 		public var originalTableHeaders:Array;

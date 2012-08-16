@@ -196,7 +196,7 @@
 					lineChart.dataFormatFunc = roundUpValue;
 					lineChart.dataUnits = resourceManager.getString('analytics', 'MB');
 				}
-				//BindingUtils.bindSetter( onSelectedMediaEntryChange , this.reportData , "seletedMediaEntry" );
+				//BindingUtils.bindSetter( onSelectedMediaEntryChange , this.reportData , "selectedMediaEntry" );
 			}
 			
 			
@@ -242,7 +242,7 @@
 					return;
 
 				_showFlag = true;
-				_changeWatcher = BindingUtils.bindSetter(onSelectedMediaEntryChange, this.reportData, "seletedMediaEntry");
+				_changeWatcher = BindingUtils.bindSetter(onSelectedMediaEntryChange, this.reportData, "selectedMediaEntry");
 				filter.filterVo = filterVo;
 				
 				getReports();
@@ -315,8 +315,8 @@
 						paging.currRowsInPage = rdtc.tableDp ? rdtc.tableDp.length : 0;
 					}
 
-//					if(rdtc.seletedMediaEntry)
-//						drillDownObjectName.text = rdtc.seletedMediaEntry.name; 
+//					if(rdtc.selectedMediaEntry)
+//						drillDownObjectName.text = rdtc.selectedMediaEntry.name; 
 
 					//drillDownObjectName.text = rdtc.objectName;
 
@@ -387,7 +387,7 @@
 
 
 			private function onPlayerLoaded():void {
-				if (reportData && reportData.seletedMediaEntry && reportData.seletedMediaEntry.id) {
+				if (reportData && reportData.selectedMediaEntry && reportData.selectedMediaEntry.id) {
 					addKDP();
 				}
 			}
@@ -410,10 +410,10 @@
 				}
 				else if (!kdpSection.contains(kdp)) {
 					kdpSection.addChildAt(kdp, 0);
-					kdp.content["sendNotification"]('changeMedia', {entryId: reportData.seletedMediaEntry.id});
+					kdp.content["sendNotification"]('changeMedia', {entryId: reportData.selectedMediaEntry.id});
 				}
 				else {
-					kdp.content["sendNotification"]('changeMedia', {entryId: reportData.seletedMediaEntry.id});
+					kdp.content["sendNotification"]('changeMedia', {entryId: reportData.selectedMediaEntry.id});
 				}
 			}
 
@@ -446,7 +446,7 @@
 				params.subpId = context.subpId;
 				params.uiConfId = _model.kdpUiConf;
 				params.ks = context.ks;
-				params.entryId = reportData.seletedMediaEntry.id;
+				params.entryId = reportData.selectedMediaEntry.id;
 				params.allowCookies = true;
 
 				if (context.debugMode)
@@ -484,7 +484,7 @@
 				pew = new PreviewEntryWin();
 				pew.context = _model.context;
 				pew.uiconfId = _model.kdpUiConf;
-				pew.entry = _model.selectedReportData.seletedMediaEntry;
+				pew.entry = _model.selectedReportData.selectedMediaEntry;
 				
 				PopUpManager.addPopUp( pew , this, true );
 				PopUpManager.centerPopUp( pew );
@@ -594,7 +594,7 @@
 
 
 	<mx:HBox id="kdpSection" width="100%" enabled="{_isVisibleEntry}" visible="{showKDP}" includeInLayout="{showKDP}">
-		<view:EntryDetails height="292.6" width="100%" styleName="blueBox" data="{reportData.seletedMediaEntry}"/>
+		<view:EntryDetails height="292.6" width="100%" styleName="blueBox" data="{reportData.selectedMediaEntry}"/>
 	</mx:HBox>
 	
 	<!-- table -->

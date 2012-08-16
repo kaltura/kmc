@@ -21,8 +21,8 @@ package com.kaltura.kmc.modules.analytics.commands
 			_model.loadingFlag = true;
 			_model.loadingEntryFlag = true;
 			
-			if(_model.reportDataMap[_model.currentScreenState].seletedMediaEntry)
-				_model.reportDataMap[_model.currentScreenState].seletedMediaEntry = null;
+			if(_model.reportDataMap[_model.currentScreenState].selectedMediaEntry)
+				_model.reportDataMap[_model.currentScreenState].selectedMediaEntry = null;
 				
 			var baseEntryGet : BaseEntryGet = new BaseEntryGet( (event as DrillDownEvent).entryId );
 			baseEntryGet.addEventListener( KalturaEvent.COMPLETE , result );
@@ -44,7 +44,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			else
 				kme = result.data;
 
-			_model.reportDataMap[_model.currentScreenState].seletedMediaEntry = kme;
+			_model.reportDataMap[_model.currentScreenState].selectedMediaEntry = kme;
 			_model.selectedReportData = null; //refrash
 			_model.selectedReportData = _model.reportDataMap[_model.currentScreenState];
 		}
@@ -55,7 +55,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			///////////////////////////////////////	
 /* 			var kme : KalturaBaseEntry = new KalturaMediaEntry();
 			kme.id = "00_e6cf46wd"; //TESTING!!!!!!
-			_model.reportDataMap[_model.currentScreenState].seletedMediaEntry = kme; */
+			_model.reportDataMap[_model.currentScreenState].selectedMediaEntry = kme; */
 			///////////////////////////////////////	
 			_model.loadingEntryFlag = false;
 			_model.checkLoading();
