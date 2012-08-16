@@ -77,12 +77,12 @@ package com.kaltura.edw.components.fltr.cat
 		 */
 		public function set chunkedData(value:Boolean):void {
 			_chunkedData = value;
-			if (!_isExternalManager) {
-				_initDataManagerRequested = true;
-				setTimeout(delayInitDataManager, 500);
+			if (_isExternalManager) {
+				_initDataManagerRequested = false;
 			}
 			else {
-				_initDataManagerRequested = false;
+				_initDataManagerRequested = true;
+				setTimeout(delayInitDataManager, 500);
 			}
 		}
 		
@@ -95,7 +95,7 @@ package com.kaltura.edw.components.fltr.cat
 		 * this way we will only init once, with the correct value. 
 		 */
 		private function delayInitDataManager():void {
-			if (_initDataManagerRequested) {
+			if (_initDataManagerRequested && !_isExternalManager) {
 				initDataManager();
 				_initDataManagerRequested = false;
 			}
