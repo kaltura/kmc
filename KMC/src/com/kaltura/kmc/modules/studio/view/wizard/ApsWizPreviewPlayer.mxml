@@ -131,7 +131,7 @@
 				}
 				kdp3Loader.scaleContent = false;
 				kdp3Loader.trustContent = true;
-				kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain(), SecurityDomain.currentDomain);
+				kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain()/* , SecurityDomain.currentDomain */); // DON'T use security domain here, it gets KDP confused when loading plugins via CDN.
 				// if we don't set size here wierd things happen.
 				kdp3Loader.width = kdpWidth.value;
 				kdp3Loader.height = kdpHeight.value;
@@ -231,7 +231,8 @@
 					params.entryId = content.entryId;
 				}
 
-				params.cdnHost = params.cdnUrl = params.host = Studio.flashvars.host;
+				params.cdnHost = params.cdnUrl = (Studio.flashvars.cdnhost) ? Studio.flashvars.cdnhost : Studio.flashvars.host;
+				params.host = Studio.flashvars.host;
 				params.partnerId = context.partner_id;
 				params.widgetId = "_" + context.partner_id;
 				params.subpId = context.subp_id;
