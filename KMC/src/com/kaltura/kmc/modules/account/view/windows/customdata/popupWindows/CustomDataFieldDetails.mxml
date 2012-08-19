@@ -28,6 +28,9 @@
 			import mx.utils.StringUtil;
 			import mx.utils.UIDUtil;
 			import mx.validators.StringValidator;
+			
+			private const ITEM_WIDTH:int = 180;
+			private const SPACER_HEIGHT:int = 10;
 
 			public static const EDIT_MODE_STATE:String = "edit mode state";
 			public static const FIELD_ID_PREFIX:String = "md_";
@@ -37,46 +40,57 @@
 			public static var INVALID_OPTIONS_PREFIX_REGEXP:RegExp = /^-/;
 			public static var INVALID_NAME_PREFIX_REGEXP:RegExp = /^[0-9`~:;!@#$%\^&*()\-_+=|',.?\/\\{}<>"\[\]]/;
 
-			//private var rootUrl:String;
-			[Bindable]
-			public var metadataField:MetadataFieldVO;
+			
+			
 
 			[Bindable]
+			/**
+			 * optional field types
+			 * */
 			private var _typeList:Array;
-
-			[Bindable]
-			private var _maxValuesList:Array;
-
-			[Bindable]
-			private var _appearInSearchList:Array;
-			private var _dirty:Boolean = false;
-
+			
 			private var _textType:String;
 			private var _dateType:String;
 			private var _listType:String;
 			private var _objectType:String;
+
+			[Bindable]
+			/**
+			 * optional values for max chars
+			 * */
+			private var _maxValuesList:Array;
 			private var _singleValue:String;
 			private var _unboundValues:String;
+
+			[Bindable]
+			/**
+			 * optional values for appear in list 
+			 * */
+			private var _appearInSearchList:Array;
+			
 			private var _appearYes:String;
 			private var _appearNo:String;
+			
+			/**
+			 * set to true if any change occured
+			 * */
+			private var _dirty:Boolean = false;
 
+			/**
+			 * indicates label is valid
+			 * */
 			private var _validLabel:Boolean = false;
-			[Bindable]
-			private var _itemWidth:int = 180;
-			[Bindable]
-			private var _spacerHeight:int = 10;
-			private var _metadataProfile:KMCMetadataProfileVO;
+			
+			/**
+			 * currently edited field
+			 * */
+			public var metadataField:MetadataFieldVO;
+			
+			/**
+			 * the profile to which this field belongs 
+			 * */
+			public var metadataProfile:KMCMetadataProfileVO;
 
-			[Bindable]
-			public function get metadataProfile():KMCMetadataProfileVO
-			{
-				return _metadataProfile;
-			}
-
-			public function set metadataProfile(value:KMCMetadataProfileVO):void
-			{
-				_metadataProfile = value;
-			}
 
 			private function help():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section_custom_data_field'));
@@ -194,7 +208,7 @@
 			 * if name already exist then the given system name is not valid
 			 * */
 			private function isValidSystemName(sysName:String):Boolean {
-				for each (var field:MetadataFieldVO in _metadataProfile.metadataFieldVOArray) {
+				for each (var field:MetadataFieldVO in metadataProfile.metadataFieldVOArray) {
 					if (field.name == sysName)
 						return false;
 				}
@@ -372,14 +386,14 @@
 
 	<mx:Form width="100%" height="100%" verticalGap="0">
 		<mx:FormItem label="{resourceManager.getString('account','addFieldName')}" labelStyleName="metadataFormLabel">
-			<mx:TextInput id="fieldNameInput" width="{_itemWidth}" paddingLeft="5" change="changeHandler(event)"/>
+			<mx:TextInput id="fieldNameInput" width="{ITEM_WIDTH}" paddingLeft="5" change="changeHandler(event)"/>
 		</mx:FormItem>
-		<mx:Spacer height="{_spacerHeight}"/>
+		<mx:Spacer height="{SPACER_HEIGHT}"/>
 		<mx:FormItem label="{resourceManager.getString('account','addFieldType')}" labelStyleName="metadataFormLabel">
 			<mx:ComboBox id="fieldTypeList" dataProvider="{_typeList}" width="180" paddingLeft="5" editable="false"
 						 enabled="{currentState!=EDIT_MODE_STATE}" change="fieldTypeList_changeHandler(event)"/>
 		</mx:FormItem>
-		<mx:Spacer height="{_spacerHeight}"/>
+		<mx:Spacer height="{SPACER_HEIGHT}"/>
 		<mx:HBox visible="{fieldTypeList.selectedItem == resourceManager.getString('account','fieldListType')}"
 				 includeInLayout="{fieldTypeList.selectedItem == resourceManager.getString('account','fieldListType')}">
 			<mx:VBox>
@@ -388,35 +402,35 @@
 				<mx:Label text="{resourceManager.getString('account','addFieldOptionalValuesInfo')}"
 						  styleName="smallLabel"/>
 			</mx:VBox>
-			<mx:TextArea id="optionalValuesInput" x="{fieldTypeList.x}" width="{_itemWidth}"
+			<mx:TextArea id="optionalValuesInput" x="{fieldTypeList.x}" width="{ITEM_WIDTH}"
 						 height="{3*fieldNameInput.height}" styleName="optionalValuesInput"
 						 change="changeHandler(event)"/>
 			<!--enabled="{currentState!=EDIT_MODE_STATE}"/-->
 		</mx:HBox>
-		<mx:Spacer height="{_spacerHeight}"/>
+		<mx:Spacer height="{SPACER_HEIGHT}"/>
 		<mx:FormItem label="{resourceManager.getString('account','addFieldMaxValues')}"
 					 labelStyleName="metadataFormLabel">
-			<mx:ComboBox id="maxValuesList" dataProvider="{_maxValuesList}" width="{_itemWidth}" paddingLeft="5"
+			<mx:ComboBox id="maxValuesList" dataProvider="{_maxValuesList}" width="{ITEM_WIDTH}" paddingLeft="5"
 						 editable="false" enabled="{currentState!=EDIT_MODE_STATE}"/>
 		</mx:FormItem>
-		<mx:Spacer height="{_spacerHeight}"/>
+		<mx:Spacer height="{SPACER_HEIGHT}"/>
 		<mx:FormItem label="{resourceManager.getString('account','addFieldAppearInSearch')}"
 					 labelStyleName="metadataFormLabel">
-			<mx:ComboBox id="appearInSearchList" dataProvider="{_appearInSearchList}" width="{_itemWidth}"
+			<mx:ComboBox id="appearInSearchList" dataProvider="{_appearInSearchList}" width="{ITEM_WIDTH}"
 						 paddingLeft="5" editable="false"/>
 		</mx:FormItem>
-		<mx:Spacer height="{_spacerHeight}"/>
+		<mx:Spacer height="{SPACER_HEIGHT}"/>
 		<mx:FormItem label="{resourceManager.getString('account','addFieldDescription')}"
 					 labelStyleName="metadataFormLabel">
-			<mx:TextArea id="descriptionInput" width="{_itemWidth}" height="{3*fieldNameInput.height}" paddingLeft="5"/>
+			<mx:TextArea id="descriptionInput" width="{ITEM_WIDTH}" height="{3*fieldNameInput.height}" paddingLeft="5"/>
 		</mx:FormItem>
-		<mx:Spacer height="{_spacerHeight}"/>
+		<mx:Spacer height="{SPACER_HEIGHT}"/>
 		<mx:FormItem label="{resourceManager.getString('account','addFieldFullDescription')}"
 					 labelStyleName="metadataFormLabel">
-			<mx:TextArea id="fullDescriptionInput" width="{_itemWidth}" height="{3*fieldNameInput.height}"
+			<mx:TextArea id="fullDescriptionInput" width="{ITEM_WIDTH}" height="{3*fieldNameInput.height}"
 						 paddingLeft="5" />
 		</mx:FormItem>
-		<mx:Spacer height="{_spacerHeight}"/>
+		<mx:Spacer height="{SPACER_HEIGHT}"/>
 	</mx:Form>
 
 	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
