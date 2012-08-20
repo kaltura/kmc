@@ -266,10 +266,10 @@ package com.kaltura.edw.business.base
 					// Specific handling for date- prevents issues with the DateField's auto correction (Mantis 11155)
 					compInstance = new ConsistentDateField();
 					break;
-				case "ComboBox":
-					// use custom combobox (QC 2632)
-					compInstance = new DeselectionComboBox();
-					break;
+//				case "ComboBox":
+//					// use custom combobox (QC 2632)
+//					compInstance = new DeselectionComboBox();
+//					break;
 				default:
 					var componentName:String = component.@compPackage + component.localName();
 					var ClassReference:Class = getDefinitionByName(componentName) as Class;
@@ -299,7 +299,7 @@ package com.kaltura.edw.business.base
 						var chainArray:Array = attrValue.substring(1, attrValue.length -1).split(".");
 						BindingUtils.bindProperty(compInstance, attrName, _objectsHM.getValue(chainArray[0]), chainArray[1]);
 					}
-					else if (attrName != "compPackage" && attrName != "metadataData" && attrName != "dataType" && attrName != "label") {
+					else if (attrName != "compPackage" && attrName != "metadataData" && attrName != "dataType"/* && attrName != "label"*/) {
 						if (compInstance.hasOwnProperty(attrName)) {
 							var processedValue:Object = (attrValue == "true") ? true : ((attrValue == "false") ? false : attrValue);
 							compInstance[attrName] = processedValue;
