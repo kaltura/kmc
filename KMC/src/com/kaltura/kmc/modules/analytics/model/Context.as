@@ -46,6 +46,11 @@ package com.kaltura.kmc.modules.analytics.model {
 		public var kc:KalturaClient;
 
 		/**
+		 * protocol used for communication (like http://)
+		 */
+		public var protocol:String;
+		
+		/**
 		 * protocol (like http://) and then  domain (like www.kaltura.com)
 		 * e.g: swf that came from http://www.yourdomain.com/dir/file.swf will have "http://www.yourdomain.com/" as its root url
 		 */
@@ -72,11 +77,5 @@ package com.kaltura.kmc.modules.analytics.model {
 		 */
 		public var fileName:String
 
-		/**
-		 * an object holding variables that need to be passed with every API call.
-		 */
-//		public function get defaultUrlVars():Object {
-//			return {uid: userId, partner_id: kc.partnerId, subp_id: subpId, ks: kc.ks};
-//		}
 	}
 }

@@ -84,6 +84,11 @@ package com.kaltura.edw.model.datapacks
 		
 		
 		/**
+		 * the protocol used for communication (like http://)
+		 */
+		public var protocol:String;
+		
+		/**
 		* protocol (like http://) and then  domain (like www.kaltura.com)
 		* e.g: swf that came from http://www.yourdomain.com/dir/file.swf will have "http://www.yourdomain.com/" as its root url
 		*/
