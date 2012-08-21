@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <containers:ConfinedTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
-	layout="vertical" creationComplete="onCreationCompleteHelpWindow()" resize="onResize()" styleName="TitleWindowType2"
-	implements="mx.managers.IFocusManagerComponent" >
+								layout="vertical" resize="onResize()" styleName="TitleWindowType2"
+								implements="mx.managers.IFocusManagerComponent">
 	<mx:Script>
 		<![CDATA[
 			import mx.binding.utils.BindingUtils;
@@ -9,114 +9,136 @@
 			import mx.core.Application;
 			import mx.core.UIComponent;
 			import mx.events.ResizeEvent;
-
-			[Bindable] public var fullUrlHost : String;
-
-			private var _helpBtn : Button;
-			private var helpStyleName : String;
+			import mx.core.mx_internal;
 			
-			protected var _titleBtnHeight : Number = 16;
-			protected var _titleBtnWidth : Number = 16;
-			private var _helpCloseGap : Number = 5;
-			private var _showHelpButton : Boolean = false;
+			use namespace mx_internal;
 
-			//Private Functions
+			mx_internal var _helpBtn:Button;
+			
+			private var helpStyleName:String;
+
+			protected var _titleBtnHeight:Number = 16;
+			protected var _titleBtnWidth:Number = 16;
+			protected var _helpCloseGap:Number = 5;
+
+			mx_internal var _showHelpButton:Boolean = true;
+
+
+			// Overriden Methods
 			////////////////////////////////////////////////////
+			override public function set enabled(value:Boolean):void {
+				super.enabled = value;
+				
+				if (_helpBtn)
+					_helpBtn.enabled = value;
+			}
 
-			
-			protected function onCreationCompleteHelpWindow() : void
-			{
+			override protected function createChildren():void {
+				super.createChildren();
+
 				this.mx_internal::closeButton.height = _titleBtnHeight;
 				this.mx_internal::closeButton.width = _titleBtnWidth;
 				this.mx_internal::closeButton.buttonMode = true;
-				var titleBar : UIComponent = this.mx_internal::getTitleBar();
+				
 				titleBar.addEventListener(ResizeEvent.RESIZE, onResizeTitleBar);
 				titleBar.height = 20;
-				addHelpBtn();
+
+				// Create the helpButton as a child of the titleBar.
+				if (!_helpBtn) {
+					addHelpBtn();
+				}
 			}
-			
-			private function onResizeTitleBar (e : ResizeEvent ) : void {
+
+			override protected function layoutChrome(unscaledWidth:Number,
+													 unscaledHeight:Number):void {
+				super.layoutChrome(unscaledWidth, unscaledHeight);
+				_helpBtn.visible = _showHelpButton;
 				setHelpBtnPos();
 			}
+
 			
-			private function help( event : MouseEvent ) : void
-		    {
-		    	dispatchEvent( new Event( "help") );
-		    }
-		    
-		    override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
-		    {
-		    	super.updateDisplayList(unscaledWidth, unscaledHeight);
-		    	if(_helpBtn)
-		    	{
-					setHelpBtnPos();
-      			}
-		    }
-		    
-		    private function  onResize() : void
-		    {
-		    	if(_helpBtn)
-		    	{
-					setHelpBtnPos();
-      			}
-		    }
-		     
-		    private function setHelpBtnPos() : void
-		    {
-		    	_helpBtn.height = this.mx_internal::closeButton.height;
-			    _helpBtn.width =  this.mx_internal::closeButton.width; 
-			    _helpBtn.x = this.mx_internal::closeButton.x - _helpBtn.width - _helpCloseGap;
-                _helpBtn.y = this.mx_internal::closeButton.y;
-				
+			
+			// Private Methods
+			////////////////////////////////////////////////////
+
+			private function setHelpBtnPos():void {
+				_helpBtn.height = this.mx_internal::closeButton.height;
+				_helpBtn.width = this.mx_internal::closeButton.width;
+				_helpBtn.x = this.mx_internal::closeButton.x - _helpBtn.width - _helpCloseGap;
+				_helpBtn.y = this.mx_internal::closeButton.y;
+
 				if (titleTextField) {
 					titleTextField.width = _helpBtn.x - _titleBtnWidth;
 				}
-		    }
-		    
-			private function addHelpBtn():void 
-			{
-				_helpBtn = new Button();
-			    setHelpBtnPos();
- 
-			    _helpBtn.buttonMode = true;
-			    _helpBtn.addEventListener(MouseEvent.CLICK, help);
-			        
-			    if(getStyle("helpStyleName"))
-			    	_helpBtn.styleName = getStyle("helpStyleName");
-			    else
-			        _helpBtn.styleName = "help";
-
-			    // Add the child component to the custom component.
-			    titleBar.addChild(_helpBtn);
-				showHelpButton = _showHelpButton;
-				BindingUtils.bindProperty(helpBtn,"y", this.mx_internal::closeButton,"y");
 			}
-		    
-		    public function get helpBtn() : Button
-		    {
-		    	return _helpBtn;
-		    }
-		    
-		    public function set showHelpButton( value : Boolean ) : void
-		    {
-		    	_showHelpButton = value;
-				if (_helpBtn) {
-			    	_helpBtn.visible = _showHelpButton;
-					invalidateDisplayList();
-				}
-		    }
-		    
-		    public function get showHelpButton() : Boolean
-		    {
-		    	return _showHelpButton;
-		    }
 
+
+			private function addHelpBtn():void {
+				_helpBtn = new Button();
+				_helpBtn.buttonMode = true;
+				_helpBtn.addEventListener(MouseEvent.CLICK, help);
+				_helpBtn.visible = _showHelpButton;
+				setHelpBtnPos();
+
+				if (getStyle("helpStyleName"))
+					_helpBtn.styleName = getStyle("helpStyleName");
+				else
+					_helpBtn.styleName = "help";
+
+				// Add the child component to the custom component.
+				titleBar.addChild(_helpBtn);
+				_helpBtn.owner = this;
+				BindingUtils.bindProperty(_helpBtn, "y", this.mx_internal::closeButton, "y");
+			}
+
+			// Event Handlers
+			////////////////////////////////////////////////////
+			
+			private function onResizeTitleBar(e:ResizeEvent):void {
+				setHelpBtnPos();
+			}
+			
+			
+			private function help(event:MouseEvent):void {
+				dispatchEvent(new Event("help"));
+			}
+			
+			
+			
+			private function onResize():void {
+				if (_helpBtn) {
+					setHelpBtnPos();
+				}
+			}
+
+
+			// Getters / Setters
+			////////////////////////////////////////////////////
+
+			/**
+			 *  Whether to display a Help button in the HelpTitleWindow container.
+			 *  The default value is <code>true</code>.
+			 *  Set it to <code>false</code> to hide the Help button.
+			 *
+			 *  @default true
+			 *
+			 *  @tiptext If true, the help button is displayed
+			 */
+			public function set showHelpButton(value:Boolean):void {
+				_showHelpButton = value;
+			}
+
+
+			public function get showHelpButton():Boolean {
+				return _showHelpButton;
+			}
+			
 		]]>
 	</mx:Script>
-	
+
 	<mx:Metadata>
 		[Style(name="helpStyleName",type="String")]
 		[Event(name="help", type="flash.events.Event")] 
 	</mx:Metadata>
-	
+
 </containers:ConfinedTitleWindow>
