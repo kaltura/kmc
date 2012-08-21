@@ -4,29 +4,23 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.utils.KCountriesUtil;
-			import com.kaltura.utils.KConfigUtil;
+			
 			import mx.controls.Image;
 			
-			private function onCreationComplete(event:Event):void
-			{
-				if(data != null)
-				{
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				if (value) {
 					flagImg.source = KCountriesUtil.instance.getCountryFlag(data.code);
+				}
+				else {
+					flagImg.source = null;
 				}
 			}
 			
-//			override public function validateNow():void
-//			{
-//				super.validateNow();
-//				flagImg.source = KCountriesUtil.instance.getCountryFlag(data.code);
-//			}
-			
-			
 		]]>
 	</mx:Script>
-		
 	
-	
-	<mx:Image id='flagImg' creationComplete="onCreationComplete(event)"/>
+	<mx:Image id="flagImg" /> 
 	<mx:Label text="{data.name}"/>
 </mx:HBox>
