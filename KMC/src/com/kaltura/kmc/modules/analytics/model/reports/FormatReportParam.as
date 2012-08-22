@@ -68,14 +68,17 @@ package com.kaltura.kmc.modules.analytics.model.reports
 				case "used_storage":
 				case "combined_bandwidth_storage":
 				case "added_storage_mb":
+				case "deleted_storage_mb":
 				case "total_storage_mb":
 				case "average_storage":
 				case "peak_storage":
 				case "added_storage":
+				case "deleted_storage":
 					var currValue:Number = Math.ceil(parseFloat(value))
 					return isNaN(currValue) ? "N/A" : currValue.toString();
 					break;
 				case "added_msecs":
+				case "deleted_msecs":
 				case "total_msecs":
 					var numValue:Number = Math.abs(Number(value));
 					var wholeMinutes:Number = Math.floor(numValue / 60000);

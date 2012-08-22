@@ -152,6 +152,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 			// spread received data through the model
 			var i:int;
+			var currHeader:String;
 			var tablesArr:Array = _tableData.data.split(";");
 			var headersArr:Array = _tableData.header.split(",");
 			var originalHeaders:Array = headersArr.slice();
@@ -159,18 +160,41 @@ package com.kaltura.kmc.modules.analytics.commands {
 			var totalCounters:Object = new Object();
 			if (_addTotals){
 				var tempHeaders:Array = new Array();
-				for each (var header:String in headersArr){
+				
+				// Searching for an "added..." column followed by a "deleted..." column, to add a "total..." column. 
+				var currIndex:uint = 0;
+				while (currIndex < headersArr.length){
+					currHeader = headersArr[currIndex] as String;
+					tempHeaders.push(currHeader);
 					
-					tempHeaders.push(header);
-					if (header.substr(0, 5) == "added"){
-						var totalHeader:String = "total" + header.slice(5);
-						totalCounters[totalHeader] = getBaseTotal(totalHeader);
-						tempHeaders.push(totalHeader);
+					var isTotal:Boolean = false;
+					
+					// Checking we're not checking the last index in the headers array.
+					if (currIndex + 1 <headersArr.length){
+						var nextHeader:String = headersArr[currIndex + 1];
+						
+						// Checking for the right combination of columns
+						if (currHeader.substr(0, 5) == "added" && nextHeader.substr(0,7) == "deleted"){
+							
+							// Skipping the next index and already pushing the next header before the total header.
+							currIndex += 2;
+							tempHeaders.push(nextHeader);
+							
+							// Creating the total header and pushing it to the modified headers array
+							isTotal = true;
+							var totalHeader:String = "total" + currHeader.slice(5);
+							totalCounters[totalHeader] = getBaseTotal(totalHeader);
+							tempHeaders.push(totalHeader);
+						}
+					}
+					
+					// If no total header was created, going to the next header to check for a match.
+					if (! isTotal){
+						currIndex += 1;
 					}
 				}
 				headersArr = tempHeaders;
 			}
-
 			
 			var arrCol:ArrayCollection = new ArrayCollection();
 			
@@ -181,25 +205,24 @@ package com.kaltura.kmc.modules.analytics.commands {
 					var obj:Object = new Object();
 					var propCounter:int = 0;
 					for (var j:int = 0; j < headersArr.length; j++) {
-						var currHeader:String = headersArr[j] as String;
+						currHeader = headersArr[j] as String;
 						if ((_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
 							_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN) &&	currHeader == 'unique_videos'){
 							propCounter++;
 							continue;
 						}
 						if (_addTotals && currHeader.indexOf("total") != -1){
-							totalCounters[currHeader] += parseFloat(propArr[propCounter - 1]);
+							
+							// Adding the previous deleted (negative) and added (positive) to the current total.
+							totalCounters[currHeader] += (parseFloat(propArr[propCounter - 1]) * -1) + parseFloat(propArr[propCounter - 2]);
 							obj[currHeader] = FormatReportParam.format(currHeader, totalCounters[currHeader]);
 						} else {
-//							if (headersArr[j])
 							obj[currHeader] = FormatReportParam.format(currHeader, propArr[propCounter]);
 							propCounter++;
 						}
 					}
 
 					arrCol.addItem(obj);
-					
-					
 				}
 			}
 			
