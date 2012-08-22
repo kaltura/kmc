@@ -497,7 +497,7 @@
 				else if (selectedEntry is KalturaMixEntry) {
 					//this is a mix
 					
-					allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.ASSETS_PANEL, PanelConsts.LIVE_STREAM_PANEL, PanelConsts.ADS_PANEL, PanelConsts.DISTRIBUTION_PANEL]));
+					allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.ASSETS_PANEL, PanelConsts.LIVE_STREAM_PANEL, PanelConsts.ADS_PANEL, PanelConsts.DISTRIBUTION_PANEL, PanelConsts.CLIPS_PANEL]));
 				}
 				else {
 					
@@ -506,7 +506,7 @@
 					
 					//remove redundant tabs in image and audio cases
 					if (selectedEntry.mediaType == KalturaMediaType.IMAGE) {
-						allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.THUMBNAILS_PANEL, PanelConsts.ASSETS_PANEL, PanelConsts.DISTRIBUTION_PANEL, PanelConsts.CAPTIONS_PANEL, PanelConsts.ADS_PANEL/* , PanelConsts.RELATED_PANEL */]));
+						allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.THUMBNAILS_PANEL, PanelConsts.ASSETS_PANEL, PanelConsts.DISTRIBUTION_PANEL, PanelConsts.CAPTIONS_PANEL, PanelConsts.ADS_PANEL, PanelConsts.CLIPS_PANEL/* , PanelConsts.RELATED_PANEL */]));
 					}
 					else if (selectedEntry.mediaType == KalturaMediaType.AUDIO) {
 						allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.DISTRIBUTION_PANEL]));
@@ -988,6 +988,11 @@
 				return resultVector;
 			}
 			
+			
+			/**
+			 * create panels
+			 * @param panelIds	ids of panels that should be created
+			 * */
 			private function createPanels(panelIds:Vector.<String>):void{
 				_currentPanelsMapping = new Dictionary();
 				
@@ -1000,7 +1005,10 @@
 						_currentPanelsMapping[panel] = createdId;
 						alreadyCreated.push(createdId);
 					} else {
-						viewStack.removeChild(panel as DisplayObject);
+						if ((panel as DisplayObject).parent == viewStack) {
+							// some panels remove themselves if no data to present (ie entry clips)
+							viewStack.removeChild(panel as DisplayObject);
+						}
 						removeBindings(panel); 
 						panel.clear();
 						panel.destroy();
