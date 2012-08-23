@@ -3,39 +3,41 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.utils.KTimeUtil;
-			[Bindable] private var _lblWidth : Number = 80;
 			
-			override public function set data(value : Object ) : void
-			{
+			private const _lblWidth : Number = 80;
+			
+			override public function set data(value : Object ) : void {
 				super.data = value;
 				
-				if(value)
-					createdAt.text = new Date(Number(data.createdAt)*1000).toDateString();	
+				if (value) {
+					createdAt.text = new Date(Number(data.createdAt)*1000).toDateString();
+				}
+				else {
+					createdAt.text = "";
+				}
 			}
 		]]>
 	</mx:Script>
 	<mx:Label styleName="pageTitle2" text="{resourceManager.getString('analytics','videoDetails')}"/>
-	<mx:HBox width="100%">
+	<mx:Label styleName="boldLabel" text="{resourceManager.getString('analytics','entryDeleted')}"
+			  visible="{data==null}" includeInLayout="{data==null}"/>
+	<mx:HBox width="100%" visible="{data!=null}">
 		<mx:Label text="{resourceManager.getString('analytics','name_entry')}:" width="{_lblWidth}" styleName="boldLabel"/>
 		<mx:Text width="100%" text="{data.name}" />
 	</mx:HBox>
-	<mx:HBox width="100%">
+	<mx:HBox width="100%" visible="{data!=null}">
 		<mx:Label text="{resourceManager.getString('analytics','description')}:" width="{_lblWidth}" styleName="boldLabel"/>
 		<mx:Text width="100%" text="{data.description}" />
 	</mx:HBox>
-	<mx:HBox width="100%">
+	<mx:HBox width="100%" visible="{data!=null}">
 		<mx:Label text="{resourceManager.getString('analytics','tags')}:" width="{_lblWidth}" styleName="boldLabel"/>
 		<mx:Text width="100%" text="{data.tags}" />
 	</mx:HBox>
-	<!-- mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('analytics','adminTags')}:" width="{_lblWidth}" styleName="boldLabel"/>
-		<mx:Text width="100%" text="{data.adminTags}" />
-	</mx:HBox -->
-	<mx:HBox width="100%">
+	<mx:HBox width="100%" visible="{data!=null}">
 		<mx:Label text="{resourceManager.getString('analytics','duration')}:" width="{_lblWidth}" styleName="boldLabel"/>
 		<mx:Text text="{ KTimeUtil.formatTime( Number(data.duration) ) }" />
 	</mx:HBox>
-	<mx:HBox width="100%">
+	<mx:HBox width="100%" visible="{data!=null}">
 		<mx:Label text="{resourceManager.getString('analytics','createdAt')}:" width="{_lblWidth}" styleName="boldLabel"/>
 		<mx:Text id="createdAt"  />
 	</mx:HBox>
