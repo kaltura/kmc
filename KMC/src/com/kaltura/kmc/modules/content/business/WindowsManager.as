@@ -234,6 +234,7 @@ package com.kaltura.kmc.modules.content.business
 						break;
 					case WindowsStates.SETTING_SCHEDULING_WINDOW:
 						currentPopUp = new SetSchedulingWin();
+						(currentPopUp as SetSchedulingWin).context = model.context; 
 						(currentPopUp as SetSchedulingWin).selectedEntries = new ArrayCollection(model.selectedEntries);
 						break;
 					case WindowsStates.PREVIEW:

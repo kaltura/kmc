@@ -13,6 +13,7 @@ also used in SetSchedulingWin.
 	
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.KalturaClient;
 			import com.kaltura.edw.business.IDrilldownPanel;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.constants.PanelConsts;
@@ -22,10 +23,6 @@ also used in SetSchedulingWin.
 			import com.kaltura.utils.DateFieldWithTimeStepperLogic;
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.vo.KalturaBaseEntry;
-			
-			
-			
-			public static const POP_UP_MODE:String = 'popUpMode';
 			
 			
 			[Bindable]
@@ -47,9 +44,6 @@ also used in SetSchedulingWin.
 			}
 			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void {
 				_selectedEntry = selectedEntry;
-				//				if (_timeManager){
-				//					setSchedulerData();
-				//				}
 			}
 			
 			public function get dataPackModel():IDataPackRepository{
@@ -91,36 +85,36 @@ also used in SetSchedulingWin.
 			}
 			
 			
+			
+			/**
+			 * @internal
+			 * date update matrix :
+			 * 		
+			 * 						| value > 0				| value = -1 (no value)					
+			 * -------------------------------------------------------------------------------------
+			 * entry.date > 0		| entry.date = value	| entry.date = Client.NULL_INT (remove existing)
+			 * -------------------------------------------------------------------------------------
+			 * entry.date = MINVAL	| entry.date = value	| entry.date = int.MIN_VALUE (don't send)
+			 * -------------------------------------------------------------------------------------
+			 * */
 			public function save():void {
 				var startTime:int = getStartTime();
 				var endTime:int = getEndTime();
 				
 				if (_selectedEntry.startDate > 0) {
-					_selectedEntry.startDate = startTime;
-					// this can lead to startDate == -1
+					_selectedEntry.startDate = (startTime > 0) ? startTime : KalturaClient.NULL_INT;
 				}
-				else if (_selectedEntry.startDate == int.MIN_VALUE && startTime > 0) {
-					_selectedEntry.startDate = startTime;
-				}
-				else if (_selectedEntry.startDate == -1) {
-					// value was saved (reset) in this KMC session
-					if (startTime > 0) {
-						_selectedEntry.startDate = startTime;
-					}
+				else if (startTime > 0) {
+					// was not set before and is set now
+					_selectedEntry.startDate =  startTime;
 				}
 				
 				if (_selectedEntry.endDate > 0) {
-					_selectedEntry.endDate = endTime;
-					// this can lead to startDate == -1
+					_selectedEntry.endDate = (endTime > 0) ? endTime : KalturaClient.NULL_INT;
 				}
-				else if (_selectedEntry.endDate == int.MIN_VALUE && endTime > 0) {
-					_selectedEntry.endDate = endTime;
-				}
-				else if (_selectedEntry.endDate == -1) {
-					// value was saved (reset) in this KMC session
-					if (endTime > 0) {
-						_selectedEntry.endDate = endTime;
-					}
+				else if (endTime > 0) {
+					// was not set before and is set now
+					_selectedEntry.endDate =  endTime;
 				}
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
@@ -168,8 +162,7 @@ also used in SetSchedulingWin.
 			 * retrieves the selected start time
 			 * @return start time in seconds, or -1 if no start time was selected
 			 * 
-			 * @internal
-			 * used by SetSchedulingWin
+			 * @internal used DYNAMICALLY by SetSchedulingWinn
 			 * */
 			public function getStartTime():int {
 				var res:int;
@@ -184,8 +177,8 @@ also used in SetSchedulingWin.
 			/**
 			 * retrieves the selected end time
 			 * @return end time in seconds, or -1 if no end time was selected
-			 * @internal
-			 * used by SetSchedulingWin
+			 * 
+			 * @internal used DYNAMICALLY by SetSchedulingWinn
 			 * */
 			public function getEndTime():int {
 				var res:int;
@@ -207,7 +200,6 @@ also used in SetSchedulingWin.
 				var startTime:int = getStartTime();
 				var endTime:int = getEndTime();
 				
-				
 				if (_selectedEntry.startDate > 0) {
 					if (startTime != _selectedEntry.startDate) {
 						result = true;
@@ -226,21 +218,6 @@ also used in SetSchedulingWin.
 					result = true;
 				}
 				return result;
-				
-				//				//start time was reset
-				//				if ((_selectedEntry.startDate != int.MIN_VALUE) && (startTime < 0))
-				//					return true;
-				//				//start time was changed
-				//				if ((startTime >= 0) && (startTime != _selectedEntry.startDate))
-				//					return true;
-				//				//end time was reset
-				//				if ((_selectedEntry.endDate >= 0) && (endTime < 0))
-				//					return true;
-				//				//end time was changed
-				//				if ((endTime >= 0) && (endTime != _selectedEntry.endDate))
-				//					return true;
-				//
-				//				return false;
 				
 			}
 			
@@ -349,11 +326,6 @@ also used in SetSchedulingWin.
 			}
 		]]>
 	</mx:Script>
-	<mx:states>
-		<mx:State name="{POP_UP_MODE}">
-			<!--<mx:RemoveChild target="{label1}"/>-->
-		</mx:State>
-	</mx:states>
 	<mx:VBox id="topContainer" width="100%" height="100%">
 		<mx:RadioButtonGroup id='timeGroup' change="timeGroup_changeHandler(event)"/>
 		<mx:RadioButton label="{resourceManager.getString('drilldown', 'ANY_TIME')}" groupName="timeGroup"

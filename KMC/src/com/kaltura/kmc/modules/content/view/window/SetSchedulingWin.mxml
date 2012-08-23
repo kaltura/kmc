@@ -2,10 +2,11 @@
 <HelpTitleWindow xmlns="com.kaltura.containers.*" layout="vertical"
 				 title="{resourceManager.getString('cms', 'setSchedulingTitle')}"
 				 xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true" close="closeWindow(event)"
-				 help="onHelp(event)" xmlns:view="com.kaltura.edw.view.*">
+				 help="onHelp(event)" xmlns:view="com.kaltura.edw.view.*" >
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.KalturaClient;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
@@ -13,8 +14,11 @@
 			import com.kaltura.edw.business.Cloner;
 			import com.kaltura.edw.business.IDrilldownPanel;
 			import com.kaltura.edw.constants.PanelConsts;
+			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.edw.model.util.CompositeKBaseEntry;
 			import com.kaltura.edw.view.panels.PanelLoader;
+			import com.kaltura.edw.view.panels.PanelMetadataParser;
+			import com.kaltura.edw.view.panels.PanelMetadataVO;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -25,13 +29,22 @@
 			import mx.events.FlexEvent;
 
 			/**
+			 * application context
+			 * */
+			public var context:ContextDataPack;
+			
+			/**
 			 * @copy #selectedEntries
 			 * */
 			private var _selectedEntries:ArrayCollection;
-
 			
-			private var _entryShec:IDrilldownPanel;
 			private var _clonedSelectedEntries:ArrayCollection;
+
+			/**
+			 * scheduling panel, loaded as module
+			 * */
+			private var _entrySched:IDrilldownPanel;
+			
 			
 			/**
 			 * close the window
@@ -46,8 +59,29 @@
 			 * save the changes:
 			 * */
 			private function saveData(event:Event):void {
-				if (_entryShec != null){
+				if (_entrySched != null){
 
+					var startTime:int = _entrySched["getStartTime"]();
+					var endTime:int = _entrySched["getEndTime"]();
+					
+					for each (var entry:KalturaBaseEntry in _clonedSelectedEntries) {
+						if (entry.startDate > 0) {
+							entry.startDate = (startTime > 0) ? startTime : KalturaClient.NULL_INT;
+						}
+						else if (startTime > 0) {
+							// was not set before and is set now
+							entry.startDate =  startTime;
+						}
+						
+						if (entry.endDate > 0) {
+							entry.endDate = (endTime > 0) ? endTime : KalturaClient.NULL_INT;
+						}
+						else if (endTime > 0) {
+							// was not set before and is set now
+							entry.endDate =  endTime;
+						}
+					}
+					
 					// update entries:
 					var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, _clonedSelectedEntries, false);
 					cgEvent.dispatch();
@@ -64,6 +98,15 @@
 			override protected function createChildren():void{
 				super.createChildren();
 				
+				// if Panel Loader not yet initialised
+				try {
+					PanelLoader.instance;
+				} 
+				catch (e:IllegalOperationError) {
+					var panelDataVO:PanelMetadataVO = PanelMetadataParser.parse(context.panelsConfig);
+					PanelLoader.initialize(panelDataVO, context.sourceUrl);
+				}
+				// create scheduling panel
 				PanelLoader.instance.createPanel(PanelConsts.SCHEDULING_PANEL, onPanelCreated);
 			}
 			
@@ -79,13 +122,26 @@
 				_selectedEntries = arr;
 			}
 			
+			
+			/**
+			 * PanelLoader finished loading the panel
+			 * */
 			private function onPanelCreated(panel:IDrilldownPanel):void	{
-				_entryShec = panel;
-				_entryShec.init();
-				addEventListener(FlexEvent.UPDATE_COMPLETE, onUpdateComplete);
-				
-				addChildAt(_entryShec as DisplayObject, 1);
+				_entrySched = panel;
+				_entrySched.addEventListener(FlexEvent.CREATION_COMPLETE, onPanelReady);
+				addChildAt(_entrySched as DisplayObject, 1);
 			}
+			
+			
+			/**
+			 * the panel is fully created and ready for interaction
+			 * */
+			private function onPanelReady(e:Event):void {
+				_entrySched.removeEventListener(FlexEvent.CREATION_COMPLETE, onPanelReady);
+				_entrySched.init();
+				addEventListener(FlexEvent.UPDATE_COMPLETE, onUpdateComplete);
+			}
+			
 			
 			protected function onUpdateComplete(event:FlexEvent):void{
 				removeEventListener(FlexEvent.UPDATE_COMPLETE, onUpdateComplete);
@@ -99,15 +155,16 @@
 				var entryVect:Vector.<KalturaBaseEntry> = Vector.<KalturaBaseEntry>(_clonedSelectedEntries.source);
 				var compositeEntry:CompositeKBaseEntry = new CompositeKBaseEntry(entryVect);
 				
-				_entryShec.selectedEntry = compositeEntry;
+				_entrySched.selectedEntry = compositeEntry;
 				
-				_entryShec.initData();
+				_entrySched.initData();
 			}
 			
+
+
 		]]>
 	</mx:Script>
 	<mx:Label text="{resourceManager.getString('cms', 'schedulingOverrideMsg')}"/>
-	<!-- view:EntryScheduling id="entryShec" currentState="{EntryScheduling.POP_UP_MODE}"/ -->
 	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
 				   paddingTop="2">
 		<mx:Button label="{resourceManager.getString('cms', 'applySechdulingBtn')}" useHandCursor="true"
