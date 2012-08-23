@@ -21,6 +21,7 @@ package com.kaltura.kmc.modules.content.model.types
 				case KalturaBatchJobStatus.FATAL: return ResourceManager.getInstance().getString( 'cms' , 'fatal' ); break; 
 				case KalturaBatchJobStatus.RETRY: return ResourceManager.getInstance().getString( 'cms' , 'retry' ); break; 
 				case KalturaBatchJobStatus.DONT_PROCESS: return ResourceManager.getInstance().getString( 'cms' , 'dontProcess' ); break; 
+				case KalturaBatchJobStatus.FINISHED_PARTIALLY: return ResourceManager.getInstance().getString( 'cms' , 'finishedWErr' ); break; 
 			}
 			return "";
 		}
