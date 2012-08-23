@@ -363,7 +363,7 @@ package com.kaltura.edw.business.permissions {
 
 
 		/**
-		 * get tabs whose names include the given module name
+		 * get tabs-to-hide whose names include the given module name
 		 * @param module	name of the module for which we want to hide tabs
 		 * @return relevant sub-tabs to hide
 		 */
@@ -372,7 +372,7 @@ package com.kaltura.edw.business.permissions {
 			var tabName:String;
 			if (module) {
 				for each (tabName in _hideTabs) {
-					if (tabName.indexOf(module) > -1 && tabName.indexOf(".") > -1) {
+					if (tabName.indexOf(module) == 0 && tabName.indexOf(".") > -1) {
 						arr.push(tabName.split(".").pop().toString()); //isolate the main tab name
 					}
 				}

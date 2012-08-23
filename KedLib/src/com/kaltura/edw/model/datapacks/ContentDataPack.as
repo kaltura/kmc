@@ -11,11 +11,11 @@ package com.kaltura.edw.model.datapacks
 		
 		public var shared:Boolean = false;
 		
-		/**
-		 * whether to display "mixes" tab in entrydrilldown
-		 * (in KMC value is taken from content uiconf) 
-		 */		
-		public var showMixesTab:Boolean = true;
+//		/**
+//		 * whether to display "mixes" tab in entrydrilldown
+//		 * (in KMC value is taken from content uiconf) 
+//		 */		
+//		public var showMixesTab:Boolean = true;
 		
 		/**
 		 * for mix entries, all the entries that make up the mix.
