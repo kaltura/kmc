@@ -119,6 +119,7 @@ package com.kaltura.kmc.modules.content.commands
 							// close the window (oish, this is ugly)
 							_origin.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 							Alert.show(ResourceManager.getInstance().getString('cms', 'removeCategoriesNone'));
+							_model.decreaseLoadCounter();
 						}
 					}
 				}
