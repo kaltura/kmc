@@ -20,6 +20,7 @@
 			import com.kaltura.vo.KalturaMediaEntry;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.CollectionEvent;
 			import mx.events.ListEvent;
@@ -99,6 +100,11 @@
 			 */
 			private function moveItemDown():void {
 				if (playlistEntriesList.selectedItem) {
+					if (playlistEntriesList.selectedItems.length > 1) {
+						// only allow if a single item is selected
+						Alert.show(resourceManager.getString('cms', 'singleItemAction'));
+						return;
+					}
 					var oldIndex:uint = playlistEntriesList.selectedIndex;
 					if ((oldIndex == (_dataProvider as ArrayCollection).length - 1))
 						return;
@@ -115,6 +121,11 @@
 			 */
 			private function moveItemUp():void {
 				if (playlistEntriesList.selectedItem) {
+					if (playlistEntriesList.selectedItems.length > 1) {
+						// only allow if a single item is selected
+						Alert.show(resourceManager.getString('cms', 'singleItemAction'));
+						return;
+					}
 					var oldIndex:uint = playlistEntriesList.selectedIndex;
 					if (oldIndex == 0)
 						return;
@@ -128,36 +139,83 @@
 			
 			
 			private function actionsCB_changeHandler(event:ListEvent):void {
-				if (!playlistEntriesList.selectedItem) {
+				if (!playlistEntriesList.selectedItems || playlistEntriesList.selectedItems.length == 0) {
+					(event.target as ComboBox).selectedIndex = -1;
 					return;
 				}
-				var oldIndex:uint = playlistEntriesList.selectedIndex;;
-				var o:KalturaBaseEntry;
+				
+				var entry:KalturaBaseEntry;
+				var entries:Array = playlistEntriesList.selectedItems.concat();
 				switch ((event.target as ComboBox).selectedItem) {
 					case MOVE_TO_TOP:
-						if (oldIndex == 0)
-							return;
-						o = _dataProvider.removeItemAt(oldIndex) as KalturaBaseEntry;
-						_dataProvider.addItemAt(o, 0);
-						playlistEntriesList.selectedItem = o;
+						for each (entry in entries) {
+							moveToTop(entry);
+						}
+						playlistEntriesList.selectedItems = entries;
 						break;
 					case MOVE_TO_BOTTOM:
-						if ((oldIndex == _dataProvider.length - 1))
-							return;
-						o = _dataProvider.removeItemAt(oldIndex) as KalturaBaseEntry;
-						_dataProvider.addItem(o);
-						playlistEntriesList.selectedItem = o;
+						for each (entry in entries) {
+							moveToBottom(entry);
+						}
+						playlistEntriesList.selectedItems = entries;
 						break;
 					case DELETE:
-						_dataProvider.removeItemAt(oldIndex);
-						dispatchEvent(new Event(MOVE_ITEM));
+						for each (entry in entries) {
+							remove(entry);
+						}
+						playlistEntriesList.selectedItem = null;
 						break;
 				}
 				
 				dispatchEvent(new Event(MOVE_ITEM));
 				(event.target as ComboBox).selectedIndex = -1;
 			}
+			
 
+			/**
+			 * removes the given entry from the list.
+			 * it is assumed the entry IS IN the list.
+			 * @param entry		entry to remove
+			 * */
+			private function remove(entry:KalturaBaseEntry):void {
+				var oldIndex:int = _dataProvider.getItemIndex(entry);
+				_dataProvider.removeItemAt(oldIndex);
+			}
+
+			/**
+			 * moves the given entry to the bottom of the list.
+			 * it is assumed the entry IS IN the list.
+			 * @param entry		entry to move
+			 * */
+			private function moveToBottom(entry:KalturaBaseEntry):void {
+				var oldIndex:int = _dataProvider.getItemIndex(entry);
+				if (oldIndex == _dataProvider.length - 1) {
+					// item is already at bottom of list
+					return;
+				}
+				_dataProvider.removeItemAt(oldIndex);
+				_dataProvider.addItem(entry);
+			}
+			
+			
+			/**
+			 * moves the given entry to the top of the list.
+			 * it is assumed the entry IS IN the list.
+			 * @param entry		entry to move
+			 * */
+			private function moveToTop(entry:KalturaBaseEntry):void {
+				var oldIndex:int = _dataProvider.getItemIndex(entry);
+				if (oldIndex == 0) {
+					// item is already at top of list
+					return;
+				}
+				_dataProvider.removeItemAt(oldIndex);
+				_dataProvider.addItemAt(entry, 0);
+				
+			}
+			
+			
+			
 
 			private function onCreationComplete():void {
 				_dataProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, onDpChange);
@@ -290,7 +348,7 @@
 	<mx:Label text="{tableTitle}" width="100%" styleName="formLabel"/>
 
 	<et:EntryTable id="playlistEntriesList" width="100%" height="100%" kalturaSorting="false"
-				   sortableColumns="{allowSort}" showLinks="{showLinks}" singleSelection="true"
+				   sortableColumns="{allowSort}" showLinks="{showLinks}" 
 				   showSelection="{showTableSelection}" dataProvider="{dataProvider}"
 				   creationComplete="onEntryTableCreatedComplete()"
 				   showDetails="playlistEntriesList_showDetailsHandler(event)"/>
