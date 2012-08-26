@@ -151,6 +151,9 @@
 				if (_selectedCatWatcher) {
 					_selectedCatWatcher.unwatch();
 				}
+				if (_sameRefidWatcher) {
+					_sameRefidWatcher.unwatch();
+				}
 				dispatchEvent(new KedDataEvent(KedDataEvent.CLOSE_WINDOW));
 			}
 
@@ -370,20 +373,20 @@
 
 			private function tabsNav_validationCompleteHandler(event:ValidationResultEvent):void {
 				// if referenceId was changed
-//				if (_undoCategory.referenceId && _undoCategory.referenceId != KalturaClient.NULL_STRING && _origCategory.referenceId != _undoCategory.referenceId) {
-//					// list all entries with the same refid , if any - show message
-//					if (!_sameRefidWatcher) {
-//						_model.categoriesWSameRefidAsSelected = new Array();
-//						_sameRefidWatcher = BindingUtils.bindSetter(confirmSameRefid, _model, "categoriesWSameRefidAsSelected");
-//					}
-//					var cg:CairngormEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES_BY_REFID);
-//					cg.data = _undoCategory;
-//					cg.dispatch();
-//				}
-//				else {
+				if (_undoCategory.referenceId && _undoCategory.referenceId != KalturaClient.NULL_STRING && _origCategory.referenceId != _undoCategory.referenceId) {
+					// list all entries with the same refid , if any - show message
+					if (!_sameRefidWatcher) {
+						_model.categoriesWSameRefidAsSelected = new Array();
+						_sameRefidWatcher = BindingUtils.bindSetter(confirmSameRefid, _model, "categoriesWSameRefidAsSelected");
+					}
+					var cg:CairngormEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES_BY_REFID);
+					cg.data = _undoCategory;
+					cg.dispatch();
+				}
+				else {
 					// just save it
 					save();
-//				}
+				}
 			}
 			
 			/**
