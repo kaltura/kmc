@@ -138,14 +138,16 @@
 					}
 					onCategoriesChange();
 					
-					if (!_filterVo.userIds) {
-						usersComplete.selectedItems = null;
-					}
-					else {
-						var users:Array = _filterVo.userIds.split(',');
-						for (var i:int = 0; i<users.length; i++) {
-							if (users[i]) {	// avoid empty strings which are valid user ids)
-								usersComplete.selectedItemIdentifier = users[i]; 
+					if (filterUsersFlag){
+						if (!_filterVo.userIds) {
+							usersComplete.selectedItems = null;
+						}
+						else {
+							var users:Array = _filterVo.userIds.split(',');
+							for (var i:int = 0; i<users.length; i++) {
+								if (users[i]) {	// avoid empty strings which are valid user ids)
+									usersComplete.selectedItemIdentifier = users[i]; 
+								}
 							}
 						}
 					}
@@ -282,13 +284,13 @@
 				switch ((event.target as ComboBox).selectedItem.toString()) {
 					case resourceManager.getString('analytics', 'yesterday'):
 						// actually gives the day before yesterday
-						_filterVo.fromDate = new Date(todayStart - 2 * ONE_DAY + today.timezoneOffset * 60000);
-						_filterVo.toDate = new Date(todayStart - ONE_DAY - SECOND_IN_MILI + today.timezoneOffset * 60000);
+						_filterVo.fromDate = new Date((todayStart - 2 * ONE_DAY + today.timezoneOffset * 60000) + ONE_DAY);
+						_filterVo.toDate = new Date((todayStart - ONE_DAY - SECOND_IN_MILI + today.timezoneOffset * 60000) + ONE_DAY) ;
 						break;
 					case resourceManager.getString('analytics', 'last7Days'):
 						// actually gives 7 days, starting 8 days ago and ending yesterday
-						_filterVo.fromDate = new Date(todayStart - 8 * ONE_DAY + today.timezoneOffset * 60000);
-						_filterVo.toDate = new Date(todayStart - ONE_DAY - SECOND_IN_MILI + today.timezoneOffset * 60000);
+						_filterVo.fromDate = new Date((todayStart - 8 * ONE_DAY + today.timezoneOffset * 60000) + ONE_DAY);
+						_filterVo.toDate = new Date((todayStart - ONE_DAY - SECOND_IN_MILI + today.timezoneOffset * 60000) + ONE_DAY);
 						break;
 					case resourceManager.getString('analytics', 'thisWeek'):
 						// actually gives from last sunday to yesterday
@@ -298,7 +300,7 @@
 							_filterVo.toDate = new Date(todayStart + today.timezoneOffset * 60000 - SECOND_IN_MILI); 
 						}
 						else {
-							_filterVo.toDate = new Date(todayStart - ONE_DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI); 
+							_filterVo.toDate = new Date((todayStart - ONE_DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI) + ONE_DAY); 
 						}
 						break;
 					case resourceManager.getString('analytics', 'lastWeek'):
@@ -308,8 +310,8 @@
 						break;
 					case resourceManager.getString('analytics', 'last30Days'):
 						// actually gives 31 days ago until yesterday
-						_filterVo.fromDate = new Date(todayStart - 31 * ONE_DAY + today.timezoneOffset * 60000);
-						_filterVo.toDate = new Date(todayStart - ONE_DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI);
+						_filterVo.fromDate = new Date((todayStart - 31 * ONE_DAY + today.timezoneOffset * 60000) + ONE_DAY);
+						_filterVo.toDate = new Date((todayStart - ONE_DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI) + ONE_DAY);
 						break;
 					case resourceManager.getString('analytics', 'last12Months'):
 						// actually gives a year ago today until yesterday
@@ -327,7 +329,7 @@
 						else date -= 1;
 						
 						_filterVo.fromDate = new Date(year - 1, month, date);
-						_filterVo.toDate = new Date(todayStart - ONE_DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI);
+						_filterVo.toDate = new Date((todayStart - ONE_DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI) + ONE_DAY);
 						break;
 					case resourceManager.getString('analytics', 'thisMonth'):
 						// actually gives first day of the month until yesterday
@@ -335,7 +337,7 @@
 						if (today.date == 1){
 							_filterVo.toDate = new Date(_filterVo.fromDate.time);
 						} else {
-							_filterVo.toDate = new Date(todayStart - ONE_DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI);
+							_filterVo.toDate = new Date((todayStart - ONE_DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI) + ONE_DAY);
 						}
 						break;
 					case resourceManager.getString('analytics', 'lastMonth'):
@@ -351,7 +353,7 @@
 					case resourceManager.getString('analytics', 'thisYear'):
 						// actually gives from the 1/1 of current year to yesterday
 						_filterVo.fromDate = new Date(today.fullYear, 0, 1);
-						_filterVo.toDate = new Date(todayStart - ONE_DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI);
+						_filterVo.toDate = new Date((todayStart - ONE_DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI) + ONE_DAY);
 						break;
 					default:
 						return;
