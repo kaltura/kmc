@@ -515,10 +515,17 @@ package com.kaltura.controls {
 		
 		
 		override public function set timeValue(value:Object):void {
-			this.hour = value.hour ? value.hour : 0;
-			this.minute = value.minute ? value.minute : 0;
-			this.second = value.second ? value.second : 0;
-			this.milisecond = value.milisecond ? value.milisecond : 0;
+			hour = value.hour ? value.hour : 0;
+			if (is24Hour) {
+				am_pm = (value.hour > 12) ? "pm" : "am";
+			}
+			else {
+				am_pm = "pm";
+			}
+			
+			minute = value.minute ? value.minute : 0;
+			second = value.second ? value.second : 0;
+			milisecond = value.milisecond ? value.milisecond : 0;
 			avoidLessThanMinimum();
 			avoidMoreThanMaximum();
 		}
