@@ -80,6 +80,7 @@ package com.kaltura.controls {
 		 * @return an object with <code>{hour, minute, second}</code> attributes. 
 		 * */
 		public function getTimeAsObject(time:Number):Object {
+			//TODO eliminate hour over 24 !!
 			var secondsForCalc:int = Math.floor(time);
 			var o:Object = new Object();
 			var h:int = Math.floor(secondsForCalc / 3600); // 60 * 60 = 3600
@@ -87,7 +88,8 @@ package com.kaltura.controls {
 			var m:int = Math.floor((secondsForCalc - sh) / 60);
 			var sm:int = m * 60;
 			var s:int = secondsForCalc - sh - sm;
-			o.hour = h;
+			
+			o.hour = h%24;
 			o.minute = m;
 			o.second = s;
 			o.milisecond = Math.floor(time*1000 - secondsForCalc*1000);  // (time - secondsForCalc)*1000 causes rounding error!!!
