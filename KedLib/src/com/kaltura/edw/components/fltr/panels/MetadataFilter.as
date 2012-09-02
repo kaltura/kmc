@@ -1,12 +1,16 @@
 package com.kaltura.edw.components.fltr.panels
 {
 	import com.kaltura.edw.components.fltr.IAdvancedSearchFilterComponent;
+	import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
 	import com.kaltura.types.KalturaSearchOperatorType;
 	import com.kaltura.vo.KalturaMetadataSearchItem;
 	import com.kaltura.vo.KalturaSearchCondition;
 	import com.kaltura.vo.MetadataFieldVO;
 	
+	import flash.events.MouseEvent;
+	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Button;
 	import mx.controls.CheckBox;
 	
 	public class MetadataFilter extends AdditionalFilter implements IAdvancedSearchFilterComponent {
@@ -78,6 +82,34 @@ package com.kaltura.edw.components.fltr.panels
 				friendlyName = _mainButtonTitle;
 			}
 		}
+		
+		/**
+		 * override removeItem() because data is not an object, it is just a string
+		 * (don't use dataUniqueIdentifier)
+		 * @param item	indicator vo representing the value to remove from the filter
+		 */		
+		override public function removeItem(item:IndicatorVo):void {
+			// item.value is button.data
+			// find correct button, set "selected", dispatch change
+			// basically - dispatch a "click" from the matching button
+			for each (var btn:Button in _buttons) {
+				if (btn.data) {
+					if (btn.data == item.value) {
+						btn.dispatchEvent(new MouseEvent(MouseEvent.CLICK, true));
+					}
+					else if (btn.data && item.value && btn.data == item.value) {
+						btn.dispatchEvent(new MouseEvent(MouseEvent.CLICK, true));
+					}
+				}
+				else {
+					// if no data, we use label
+					if (btn.label == item.value) {
+						btn.dispatchEvent(new MouseEvent(MouseEvent.CLICK, true));
+					}
+				}
+			}
+			
+		} 
 	
 	}
 }
