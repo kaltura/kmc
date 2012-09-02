@@ -20,7 +20,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 		public var endUserStorage : Array = ['added_entries', 'deleted_entries', 'total_entries', 'added_storage_mb', 'deleted_storage_mb', 'total_storage_mb', 'added_msecs', 'deleted_msecs', 'total_msecs'];
 		public var specificEndUserStorage : Array = ['user_added_entries', 'user_deleted_entries', 'user_total_entries', 'user_added_storage_mb', 'user_deleted_storage_mb', 'user_total_storage_mb', 'user_added_msecs', 'user_deleted_msecs', 'user_total_msecs'];
 		
-		public var userEngagement : Array = ['users','videos','count_plays','sum_time_viewed','avg_time_viewed','avg_view_drop_off','count_loads','load_play_ratio'];
-		public var userEngagementDrilldown : Array = ['videos','count_plays','sum_time_viewed','avg_time_viewed','avg_view_drop_off','count_loads','load_play_ratio'];
+		public var userEngagement : Array = ['users','videos','count_user_plays','sum_time_viewed','avg_time_viewed','avg_view_drop_off','count_loads','load_play_ratio'];
+		public var userEngagementDrilldown : Array = ['videos','count_user_plays','sum_time_viewed','avg_time_viewed','avg_view_drop_off','count_loads','load_play_ratio'];
 	}
 }
