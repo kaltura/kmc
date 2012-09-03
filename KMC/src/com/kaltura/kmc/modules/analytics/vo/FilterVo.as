@@ -34,8 +34,8 @@ package com.kaltura.kmc.modules.analytics.vo
 			var today:Date = new Date();
 			var todaysHourInMiliSeconds:Number = (((today.hoursUTC) * 60 + today.minutesUTC) * 60 + today.secondsUTC) * 1000 + today.millisecondsUTC;
 			var todayStart:Number = today.time - todaysHourInMiliSeconds;
-			fromDate = new Date(todayStart - 31 * TimeConsts.DAY + today.timezoneOffset * 60000);
-			toDate = new Date(todayStart - TimeConsts.DAY + today.timezoneOffset * 60000 - 1000);
+			fromDate = new Date((todayStart - 31 * TimeConsts.DAY + today.timezoneOffset * 60000) + TimeConsts.DAY);
+			toDate = new Date((todayStart - TimeConsts.DAY + today.timezoneOffset * 60000 - 1000) + TimeConsts.DAY);
 		}
 	}
 }
