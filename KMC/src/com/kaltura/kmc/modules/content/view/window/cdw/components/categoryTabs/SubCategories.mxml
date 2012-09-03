@@ -2,6 +2,10 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
 		 implements="com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel"
 		 creationComplete="creationCompleteHandler(event)">
+	<mx:Metadata>
+		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
+		[Event(name="panelDataSaved", type="com.kaltura.edw.events.InternalKedEvent")] 
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
@@ -109,7 +113,7 @@
 					}
 				}
 				_changeFlag = false;
-				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.PANEL_DATA_SAVED));
 			}
 			
 			public function destroy():void {

@@ -677,7 +677,7 @@
 				for (var i:int = 0; i < viewStack.numChildren; i++) {
 					if (viewStack.getChildAt(i) is IDrilldownPanel) {
 						var panel:IDrilldownPanel = viewStack.getChildAt(i) as IDrilldownPanel;
-						panel.removeEventListener(InternalKedEvent.SAVED, onPanelSaveComplete);
+						panel.removeEventListener(InternalKedEvent.PANEL_DATA_SAVED, onPanelSaveComplete);
 						panel.removeEventListener(ValidationResultEvent.VALIDATION_COMPLETE, onPanelValidationComplete);
 						removeBindings(panel);
 						panel.clear();
@@ -730,6 +730,9 @@
 							// just save it
 							save();
 						}
+					}
+					else {
+						trace("if we got here with no error message, it's a problem");
 					}
 				}
 			}
@@ -801,8 +804,8 @@
 				for (var i:int = 0; i < viewStack.numChildren; i++) {
 					if (viewStack.getChildAt(i) is IDrilldownPanel) {
 						panel = viewStack.getChildAt(i) as IDrilldownPanel;
-						if (!panel.hasEventListener(InternalKedEvent.SAVED)) {
-							panel.addEventListener(InternalKedEvent.SAVED, onPanelSaveComplete);
+						if (!panel.hasEventListener(InternalKedEvent.PANEL_DATA_SAVED)) {
+							panel.addEventListener(InternalKedEvent.PANEL_DATA_SAVED, onPanelSaveComplete);
 						}
 						panel.save();
 					}

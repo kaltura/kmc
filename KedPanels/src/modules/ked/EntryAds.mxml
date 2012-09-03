@@ -5,7 +5,7 @@
 		   label="{resourceManager.getString('drilldown','ads')}">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
-		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
+		[Event(name="panelDataSaved", type="com.kaltura.edw.events.InternalKedEvent")] 
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
@@ -30,6 +30,8 @@
 			import com.kaltura.vo.KalturaAdCuePoint;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
+			
+			import flash.utils.setTimeout;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
@@ -385,11 +387,11 @@
 			
 			public function save():void {
 				if (isChanged()) {
-					_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
+//					_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
 					_kClip["save"]();
 				}
 				else {
-					dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
+					dispatchEvent(new InternalKedEvent(InternalKedEvent.PANEL_DATA_SAVED));
 				}
 			}
 			
@@ -473,7 +475,7 @@
 					}
 				}
 				else {
-					if (selectedEntry && selectedEntry.status == KalturaEntryStatus.READY) {
+					if (_selectedEntry && _selectedEntry.status == KalturaEntryStatus.READY) {
 						var newUrl:String = context.protocol + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownAdsUiconf + "/nowrapper/1";
 						EntryAds.kdpLoader = new SWFLoader();
 						kdpLoader.addEventListener(Event.COMPLETE, onKdpLoaded);
@@ -547,6 +549,7 @@
 					_kClip.addEventListener(KClipEventTypes.PLAYHEAD_DRAG_DROP, handleKClipEvents);
 					_kClip.addEventListener(KClipEventTypes.PLAYHEAD_DRAG_START, handleKClipEvents);
 					_kClip.addEventListener(KClipEventTypes.ZOOM_CHANGED, handleKClipEvents);
+					_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
 					_listenersAddedKClip = true;
 				}
 			}
@@ -565,6 +568,7 @@
 				_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_DRAG_DROP, handleKClipEvents);
 				_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_DRAG_START, handleKClipEvents);
 				_kClip.removeEventListener(KClipEventTypes.ZOOM_CHANGED, handleKClipEvents);
+				_kClip.removeEventListener(KClipEventTypes.SAVED, handleKClipEvents);
 			}
 			
 			
@@ -622,7 +626,7 @@
 						_counter++;
 						break;
 					case KClipEventTypes.SAVED:
-						dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
+						dispatchEvent(new InternalKedEvent(InternalKedEvent.PANEL_DATA_SAVED));
 						break;
 					case KClipEventTypes.ZOOM_CHANGED:
 						// pause KDP

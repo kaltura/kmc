@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="initCategoryEndUserAcessTab(event)"
 		 implements="com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel">
+	<mx:Metadata>
+		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
+		[Event(name="panelDataSaved", type="com.kaltura.edw.events.InternalKedEvent")] 
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
@@ -254,7 +258,7 @@
 					category.owner = null;
 					category.defaultPermissionLevel = int.MIN_VALUE;
 				}
-				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.PANEL_DATA_SAVED));
 			}
 
 
