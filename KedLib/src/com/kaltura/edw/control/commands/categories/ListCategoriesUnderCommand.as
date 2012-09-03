@@ -57,7 +57,7 @@ package com.kaltura.edw.control.commands.categories
 		override public function result(data:Object):void {
 			super.result(data);
 			var limit:int = (_model.getDataPack(ContextDataPack) as ContextDataPack).singleLevelMaxCategories;
-			if ((data.data as KalturaCategoryListResponse).totalCount >= limit - 1) {
+			if ((data.data as KalturaCategoryListResponse).totalCount > limit - 1) {
 				Alert.show(ResourceManager.getInstance().getString('filter', 'catsSingleLevelExceeded', [limit - 1]));
 			}
 			else {
