@@ -3,7 +3,7 @@
 	 "Moderate" section of the content viewstack.
 	 allows moderating flagged entries.
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" hide="{stopPlayer()}" verticalScrollPolicy="off"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" hide="hideHandler()" verticalScrollPolicy="off"
 		 creationComplete="onRequestedDataLoaded()"
 		 implements="com.kaltura.kmc.modules.content.business.IContentPanel,com.kaltura.edw.business.IDataOwner"
 		 xmlns:et1="com.kaltura.edw.components.et.*" xmlns:controls="com.kaltura.controls.*"
@@ -178,7 +178,7 @@
 				if (entryFilter && entryFilter is KalturaMediaEntryFilter) {
 					_initialFilter = entryFilter as KalturaMediaEntryFilter;
 				}
-
+				
 				if (filterModel.loadingRequired) {
 					// load all the data the filter needs
 					var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterModel);
@@ -218,11 +218,17 @@
 			 * When the moderation is hidden by moving to another tab, stop the player from playin
 			 * if it is playing
 			 */
-			private function stopPlayer():void {
+			private function hideHandler():void {
 				if (_kdp3SwfLoader && _kdp3SwfLoader.content && _kdp3SwfLoader.content.hasOwnProperty("sendNotification")) {
 					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.DO_PAUSE);
 					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.DO_SEEK, "0");
 				}
+				
+				//When one click on switch tab and get back if the accordion filter is not the first child 
+				//everything looked curapted. This will resolve the issue when one swith tabs
+				/////////////////////////////////////////////////////////////////////////////////
+				if(filter && filter.accordion)
+					filter.accordion.selectedIndex = 0;
 			}
 
 
