@@ -587,8 +587,13 @@
 					(prev as ManualPlaylistWindow).loadEntries();
 				}
 				else if (top is EntryDetailsWin && _model.refreshEntriesRequired) {
-					// closing entry drilldown in "manage"
-					manage.loadEntries();
+					// closing entry drilldown, refresh current screen
+					if (contentView.selectedChild == manage) {
+						manage.loadEntries();
+					}
+					else if (contentView.selectedChild == moderation) {
+						moderation.loadEntries();
+					}
 				}
 				else if (top is CategoryDetailsWin && _model.categoriesModel.refreshCategoriesRequired) {
 					// closing cat drilldown in "categories"
