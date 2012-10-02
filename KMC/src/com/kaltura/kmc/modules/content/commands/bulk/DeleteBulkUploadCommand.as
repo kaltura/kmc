@@ -22,8 +22,8 @@ package com.kaltura.kmc.modules.content.commands.bulk
 		{
 			super.result(data);
 			var temp:KalturaBulkUpload;
-			var bulkEvent : BulkEvent = new BulkEvent( BulkEvent.LIST_BULK_UPLOAD );
-			bulkEvent.dispatch();
+//			var bulkEvent : BulkEvent = new BulkEvent( BulkEvent.LIST_BULK_UPLOAD );
+//			bulkEvent.dispatch();
 			_model.decreaseLoadCounter();
 		}
 	}
