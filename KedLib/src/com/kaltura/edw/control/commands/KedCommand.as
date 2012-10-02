@@ -77,7 +77,7 @@ package com.kaltura.edw.control.commands
 		/**
 		 * display any errors that are encountered in the result
 		 * @param data KalturaEvent
-		 * @return true if no errors are found
+		 * @return true if errors are found
 		 * 
 		 */		
 		protected function checkErrors(data:Object):Boolean {

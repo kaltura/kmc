@@ -122,24 +122,26 @@ package com.kaltura.edw.control.commands
 		}
 	
 		override public function result(data:Object):void {
-			var responseCount:int = 0;
-			
-			if (_filterModel.enableDistribution) {
-				// distribution
-				handleListDistributionProfileResult(data.data[responseCount] as KalturaDistributionProfileListResponse);
+			if (!checkErrors(data)) {
+				var responseCount:int = 0;
+				
+				if (_filterModel.enableDistribution) {
+					// distribution
+					handleListDistributionProfileResult(data.data[responseCount] as KalturaDistributionProfileListResponse);
+					responseCount ++;
+				}
+				
+				// flavor params
+				handleFlavorsData(data.data[responseCount] as KalturaFlavorParamsListResponse);
 				responseCount ++;
+				
+				// access control
+				handleAccessControls(data.data[responseCount] as KalturaAccessControlListResponse);
+				responseCount ++;
+				
+				_filterModel.loadingRequired = false;
+				_caller.onRequestedDataLoaded();
 			}
-			
-			// flavor params
-			handleFlavorsData(data.data[responseCount] as KalturaFlavorParamsListResponse);
-			responseCount ++;
-			
-			// access control
-			handleAccessControls(data.data[responseCount] as KalturaAccessControlListResponse);
-			responseCount ++;
-			
-			_filterModel.loadingRequired = false;
-			_caller.onRequestedDataLoaded();
 			_model.decreaseLoadCounter();
 
 		}
