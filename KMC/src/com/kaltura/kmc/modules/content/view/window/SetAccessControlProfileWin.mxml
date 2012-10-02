@@ -16,18 +16,19 @@
 			import com.kaltura.edw.business.IDrilldownPanel;
 			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.edw.model.util.CompositeKBaseEntry;
 			import com.kaltura.edw.view.panels.PanelLoader;
+			import com.kaltura.edw.view.panels.PanelMetadataParser;
+			import com.kaltura.edw.view.panels.PanelMetadataVO;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			import com.kaltura.vo.AccessControlProfileVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.collections.ArrayCollection;
-			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 
 
@@ -43,6 +44,11 @@
 			
 			private var _entryACP:IDrilldownPanel;
 			
+			/**
+			 * application context
+			 * */
+			public var context:ContextDataPack;
+			
 			
 			public function set selectedEntries(arr:ArrayCollection):void {
 				_selectedEntries = arr;
@@ -56,6 +62,15 @@
 			
 			override protected function createChildren():void{
 				super.createChildren();
+				
+				// if Panel Loader not yet initialised
+				try {
+					PanelLoader.instance;
+				} 
+				catch (e:IllegalOperationError) {
+					var panelDataVO:PanelMetadataVO = PanelMetadataParser.parse(context.panelsConfig);
+					PanelLoader.initialize(panelDataVO, context.sourceUrl);
+				}
 				
 				PanelLoader.instance.createPanel(PanelConsts.ACCESS_CONTROL_PANEL, onPanelCreated);
 			}

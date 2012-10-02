@@ -227,6 +227,7 @@ package com.kaltura.kmc.modules.content.business
 						break;
 					case WindowsStates.SETTING_ACCESS_CONTROL_PROFILES_WINDOW:
 						currentPopUp = new SetAccessControlProfileWin();
+						(currentPopUp as SetAccessControlProfileWin).context = model.context; 
 						(currentPopUp as SetAccessControlProfileWin).selectedEntries = new ArrayCollection(model.selectedEntries);
 						(currentPopUp as SetAccessControlProfileWin).filterModel = model.filterModel;
 						(currentPopUp as SetAccessControlProfileWin).entryDetailsModel = KMvCModel.getInstance();
