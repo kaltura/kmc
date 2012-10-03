@@ -212,48 +212,49 @@
 			 * switch between edit / new mode and init window
 			 */
 			private function onCreationComplete():void {
-				new KACTagsController(tagsComplete, client, KalturaTaggedObjectType.ENTRY);
-				
-				//switch edit or new manual playlist
-				if (editedItem && (editedItem is KalturaPlaylist)) {
-					// edit existing playlist
-					title = editedItem.name;
-					_originalPlaylist = editedItem as KalturaPlaylist;
-					_editPlaylist = Cloner.cloneKalturaPlaylist(_originalPlaylist);
-					playlistName.text = _editPlaylist.name;
-					playlistDescription.text = _editPlaylist.description;
-					_editPlaylist.parts = _playlistArrayCollection;
-					// set entry tags on screen
-					if (_editPlaylist.tags) {
-						var ac:ArrayCollection = new ArrayCollection(_editPlaylist.tags.split(", ")); 
-						tagsComplete.selectedItems = ac;
-					}
-
-					var e:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.GET_PLAYLIST);
-					e.data = _editPlaylist;
-					dispatchEvent(e);
-				}
-				else if (context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) {
+				if (context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) {
 					// edit custom data linked entries
-//					removeChild(nameAndDescription);
 					_playlistArrayCollection = editLinkedArrayCollection;
 					title = resourceManager.getString('drilldown', 'editEntry') + " - " +
 						editedItem.name + " > " +
 						resourceManager.getString('drilldown', 'linkedEntriedAddRemove');
 				}
+				
 				else {
-					// create new playlist
-					title = resourceManager.getString('cms', 'newManualPlaylist');
+					// playlist
+					new KACTagsController(tagsComplete, client, KalturaTaggedObjectType.ENTRY);
+					
+					if (editedItem && (editedItem is KalturaPlaylist)) {
+						// edit existing playlist
+						title = editedItem.name;
+						_originalPlaylist = editedItem as KalturaPlaylist;
+						_editPlaylist = Cloner.cloneKalturaPlaylist(_originalPlaylist);
+						playlistName.text = _editPlaylist.name;
+						playlistDescription.text = _editPlaylist.description;
+						_editPlaylist.parts = _playlistArrayCollection;
+						// set entry tags on screen
+						if (_editPlaylist.tags) {
+							var ac:ArrayCollection = new ArrayCollection(_editPlaylist.tags.split(", ")); 
+							tagsComplete.selectedItems = ac;
+						}
+	
+						var e:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.GET_PLAYLIST);
+						e.data = _editPlaylist;
+						dispatchEvent(e);
+					}
+					else {
+						// create new playlist
+						title = resourceManager.getString('cms', 'newManualPlaylist');
+					}
 				}
-
+				
 				var kFilter:KalturaMediaEntryFilter = filter.kalturaFilter as KalturaMediaEntryFilter;
-				//a unique moderation & Conversion status for custom data
+				// a unique moderation & Conversion status for custom data
 				if (context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) {
 					kFilter.moderationStatusIn = null;
-//					kFilter.statusIn = null;
 				}
 				else {
-					//view only approved and pending
+					// view only approved and pending
 					kFilter.moderationStatusIn = KalturaEntryModerationStatus.APPROVED + "," + KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW
 						+ "," + KalturaEntryModerationStatus.PENDING_MODERATION + "," + KalturaEntryModerationStatus.AUTO_APPROVED;
 					// view only ready and converting
@@ -269,11 +270,15 @@
 				paging.selectedPage = 1;
 				paging.pageSize = paging.rowInPageCb.value as int;
 				loadFilterData();
-				if (context != ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE) {
-					PermissionManager.getInstance().applyAllAttributes(this, "manualPlaylistDrilldown_add");
-				}
-				else {
-					PermissionManager.getInstance().applyAllAttributes(this, "manualPlaylistDrilldown_edit");
+				
+				// roles and permissions:
+				if (context != ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE && context != ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) {
+					if (context != ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE) {
+						PermissionManager.getInstance().applyAllAttributes(this, "manualPlaylistDrilldown_add");
+					}
+					else {
+						PermissionManager.getInstance().applyAllAttributes(this, "manualPlaylistDrilldown_edit");
+					}
 				}
 			}
 
