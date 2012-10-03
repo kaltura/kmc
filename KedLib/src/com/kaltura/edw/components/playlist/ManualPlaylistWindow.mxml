@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<HelpTitleWindow xmlns="com.kaltura.containers.*" 
-				 xmlns:controls="com.kaltura.controls.*"
-				 xmlns:mx="http://www.adobe.com/2006/mxml" 
-				 xmlns:playlist="com.kaltura.edw.components.playlist.*" 
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:controls="com.kaltura.controls.*"
+				 xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:playlist="com.kaltura.edw.components.playlist.*"
 				 implements="com.kaltura.edw.business.IListable,com.kaltura.edw.business.IDataOwner"
-				 creationComplete="{onCreationComplete()}" showCloseButton="true" close="{onClose(event)}" help="{onHelp()}"
-				 verticalScrollPolicy="off" horizontalAlign="center" layout="vertical" width="1000" height="595"
-				 styleName="TitleWindowType2" xmlns:et1="com.kaltura.edw.components.et.*" 
-				 xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:components="com.hillelcoren.components.*"  >
+				 creationComplete="{onCreationComplete()}" showCloseButton="true" close="{onClose(event)}"
+				 help="{onHelp()}" verticalScrollPolicy="off" horizontalAlign="center" layout="vertical" width="1000"
+				 height="595" styleName="TitleWindowType2" xmlns:et1="com.kaltura.edw.components.et.*"
+				 xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:components="com.hillelcoren.components.*">
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.utils.ArrayUtil;
 			import com.kaltura.KalturaClient;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
@@ -55,6 +54,7 @@
 
 			private var _distProsWatcher:ChangeWatcher;
 
+
 			/**
 			 * set distribution profiles via binding
 			 * */
@@ -62,7 +62,7 @@
 				if (_distProsWatcher) {
 					_distProsWatcher.unwatch();
 				}
-				_distProsWatcher = BindingUtils.bindProperty(this, "distributionProfilesArray", value, "distributionProfiles" );
+				_distProsWatcher = BindingUtils.bindProperty(this, "distributionProfilesArray", value, "distributionProfiles");
 			}
 
 			[Bindable]
@@ -82,10 +82,6 @@
 			[Bindable]
 			public var filterData:FilterModel;
 
-			/**
-			 * the url on which the help files are located
-			 * */
-			public var rootUrl:String;
 
 			[Bindable]
 			/**
@@ -110,13 +106,17 @@
 
 
 			/**
-			 * for the use of editing existing linked items for metadata
+			 * list of custom-data linked items
+			 * @see com.kaltura.edw.view.customData.EntryIdLinkTable
+			 * @internal
+			 * reference to the array collection on EntryIdLinkTable 
 			 * */
-			public var editLinkedArrayCollection:ArrayCollection = new ArrayCollection();
+			public var editLinkedArrayCollection:ArrayCollection;
 
 
 			[Bindable]
 			private var _playlistArrayCollection:ArrayCollection = new ArrayCollection();
+
 
 			/**
 			 * when creating on-the-fly playlist, the initial entries for the list.
@@ -138,15 +138,11 @@
 			private var _originalPlaylist:KalturaPlaylist;
 			private var _orderBy:String = KalturaBaseEntryOrderBy.CREATED_AT_DESC;
 
-			/**
-			 * the title of the entries table
-			 * */
-			private var _entriesTableTitle:String = "";
-
 			[Bindable]
 			private var _listableVo:ListableVo;
 
 			public var client:KalturaClient;
+
 
 			public function onRequestedDataLoaded():void {
 				loadEntries();
@@ -179,8 +175,7 @@
 				else {
 					// if this is a new playlist - check if theres a change in name/description and if
 					// there is an entry in the right list
-					if (playlistName.text == "" && playlistDescription.text == "" && getPlaylistTags() == "" 
-						&& (_playlistArrayCollection.source && _playlistArrayCollection.source.length == 0))
+					if (playlistName.text == "" && playlistDescription.text == "" && getPlaylistTags() == "" && (_playlistArrayCollection.source && _playlistArrayCollection.source.length == 0))
 						removeMe();
 					else
 						Alert.show(resourceManager.getString('cms', 'undoEntryDetails'),
@@ -213,17 +208,17 @@
 			 */
 			private function onCreationComplete():void {
 				if (context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) {
-					// edit custom data linked entries
-					_playlistArrayCollection = editLinkedArrayCollection;
-					title = resourceManager.getString('drilldown', 'editEntry') + " - " +
-						editedItem.name + " > " +
-						resourceManager.getString('drilldown', 'linkedEntriedAddRemove');
+					// edit custom data linked entries: we keep the original and edit a copy so we can revert on cancel
+					_playlistArrayCollection = new ArrayCollection(ArrayUtil.copyArray(editLinkedArrayCollection.source));
+					title = resourceManager.getString('drilldown', 'editEntry') + " - " + editedItem.name + " > " + resourceManager.getString('drilldown', 'linkedEntriedAddRemove');
+					entries.tableTitle = resourceManager.getString('drilldown', 'linkedEntriesSelectedEntries');
 				}
-				
+
 				else {
 					// playlist
 					new KACTagsController(tagsComplete, client, KalturaTaggedObjectType.ENTRY);
-					
+					entries.tableTitle = resourceManager.getString('cms', 'playlistResultLabel');
+
 					if (editedItem && (editedItem is KalturaPlaylist)) {
 						// edit existing playlist
 						title = editedItem.name;
@@ -234,10 +229,10 @@
 						_editPlaylist.parts = _playlistArrayCollection;
 						// set entry tags on screen
 						if (_editPlaylist.tags) {
-							var ac:ArrayCollection = new ArrayCollection(_editPlaylist.tags.split(", ")); 
+							var ac:ArrayCollection = new ArrayCollection(_editPlaylist.tags.split(", "));
 							tagsComplete.selectedItems = ac;
 						}
-	
+
 						var e:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.GET_PLAYLIST);
 						e.data = _editPlaylist;
 						dispatchEvent(e);
@@ -247,7 +242,7 @@
 						title = resourceManager.getString('cms', 'newManualPlaylist');
 					}
 				}
-				
+
 				var kFilter:KalturaMediaEntryFilter = filter.kalturaFilter as KalturaMediaEntryFilter;
 				// a unique moderation & Conversion status for custom data
 				if (context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) {
@@ -255,12 +250,11 @@
 				}
 				else {
 					// view only approved and pending
-					kFilter.moderationStatusIn = KalturaEntryModerationStatus.APPROVED + "," + KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW
-						+ "," + KalturaEntryModerationStatus.PENDING_MODERATION + "," + KalturaEntryModerationStatus.AUTO_APPROVED;
+					kFilter.moderationStatusIn = KalturaEntryModerationStatus.APPROVED + "," + KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW + "," + KalturaEntryModerationStatus.PENDING_MODERATION + "," + KalturaEntryModerationStatus.AUTO_APPROVED;
 					// view only ready and converting
 					kFilter.statusIn = KalturaEntryStatus.PRECONVERT + "," + KalturaEntryStatus.READY;
 				}
-				
+
 				if (filterData.enableCustomData && filterData.metadataProfiles) {
 					// retrigger binding
 					filter.metadataProfiles = null;
@@ -270,7 +264,7 @@
 				paging.selectedPage = 1;
 				paging.pageSize = paging.rowInPageCb.value as int;
 				loadFilterData();
-				
+
 				// roles and permissions:
 				if (context != ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE && context != ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) {
 					if (context != ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE) {
@@ -290,7 +284,7 @@
 
 
 			private function onEntriesTableReady():void {
-				var ar:Array = [EntryTableColumns.NAME, /* EntryTableColumns.MEDIA_TYPE, */ 
+				var ar:Array = [EntryTableColumns.NAME, /* EntryTableColumns.MEDIA_TYPE, */
 					EntryTableColumns.PLAYS, EntryTableColumns.DURATION];
 				allEntries.showColumns(ar);
 			}
@@ -329,8 +323,7 @@
 			 * add selected items to the current playlist
 			 */
 			private function addToPlaylist():void {
-				if ((context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) 
-					&& maxAllowedValues != 0 && maxAllowedValues == _playlistArrayCollection.length) {
+				if ((context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) && maxAllowedValues != 0 && maxAllowedValues == _playlistArrayCollection.length) {
 					Alert.show(resourceManager.getString('cms', 'metadataMaxAllowedEntriesError'),
 						resourceManager.getString('cms', 'metadataMaxAllowedErrorTitle'));
 				}
@@ -366,6 +359,7 @@
 				kpl.playlistContent = entriesIds.join();
 			}
 
+
 			private function getPlaylistTags():String {
 				var str:String = '';
 				var ac:ArrayCollection = tagsComplete.selectedItems;
@@ -378,12 +372,14 @@
 				return str;
 			}
 
+
 			/**
 			 * Save playlist. If this was an edit - use updatePlaylist Command,
 			 * if this is a new playlist - use addPlaylist
 			 */
 			private function save():void {
 				if (context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) {
+					editLinkedArrayCollection.source = _playlistArrayCollection.source;
 					onClose();
 					return;
 				}
@@ -408,7 +404,7 @@
 					_editPlaylist.setUpdatedFieldsOnly(true);
 
 					var e:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.SAVE_EXISTING_PLAYLIST);
-					e.data = _editPlaylist; 
+					e.data = _editPlaylist;
 					dispatchEvent(e);
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_PLAYLIST,
 						"ManuallPlayList>EditPlayList" + ">" + _editPlaylist.id);
@@ -462,23 +458,6 @@
 			}
 
 
-			public function setEntriesListTitle(str:*):void {
-				if (str is Event) {
-					// str is creation complete event
-					if (_entriesTableTitle != "") {
-						entries.tableTitle = _entriesTableTitle;
-					}
-				}
-				else {
-					if (entries) {
-						entries.tableTitle = str;
-					}
-					else {
-						_entriesTableTitle = str;
-					}
-				}
-			}
-
 			protected function entryTable_showDetailsHandler(event:KedDataEvent):void {
 				var e:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.SHOW_ENTRY_DETAILS);
 				e.data = event.data as KalturaBaseEntry;
@@ -503,9 +482,6 @@
 				entries.editable = value;
 				saveBtn.enabled = value;
 			}
-
-
-
 		]]>
 	</mx:Script>
 
@@ -523,8 +499,9 @@
 	<mx:StringValidator id='playListValidator' source="{playlistName}" property="text" trigger="{playlistName}"
 						triggerEvent="change" required="true"
 						requiredFieldError="{resourceManager.getString('cms', 'nameIsMandatory')}"/>
-	
-	<mx:Grid width="100%" id="nameAndDescription" visible="{context == ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE || context == ManualPlaylistWindowMode.NEW_PLAYLIST}"
+
+	<mx:Grid width="100%" id="nameAndDescription"
+			 visible="{context == ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE || context == ManualPlaylistWindowMode.NEW_PLAYLIST}"
 			 includeInLayout="{context == ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE || context == ManualPlaylistWindowMode.NEW_PLAYLIST}">
 		<mx:GridRow width="100%" height="100%">
 			<mx:GridItem>
@@ -548,31 +525,33 @@
 			</mx:GridItem>
 			<mx:GridItem width="100%" height="100%">
 				<!--<mx:TextInput id="playlistTags" width="100%"/>-->
-				<components:AutoComplete id="tagsComplete" width="100%"  
-										 selectedItemStyleName="facebook" showRemoveIcon="true" allowMultipleSelection="true"
-										 allowNewValues="true" labelField="tag"/>
+				<components:AutoComplete id="tagsComplete" width="100%" selectedItemStyleName="facebook"
+										 showRemoveIcon="true" allowMultipleSelection="true" allowNewValues="true"
+										 labelField="tag"/>
 			</mx:GridItem>
 		</mx:GridRow>
 	</mx:Grid>
-	
+
 	<mx:HBox id="playlistWorkArea" width="100%" height="100%" verticalAlign="middle">
 		<mx:VBox height="100%" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 			<mx:Label text="{resourceManager.getString('cms', 'filters')}" styleName="formLabel"/>
-			<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{filter.width}"
-								 attribute="freeText" defaultText="{resourceManager.getString('filter', 'searchEntries')}"/>
+			<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{filter.width}" attribute="freeText"
+								 defaultText="{resourceManager.getString('filter', 'searchEntries')}"/>
 			<fltr:EntriesFilter id="filter" width="260" height="100%" filterChanged="loadEntries()"
-								freeTextSearch="{searchBox}" enableIngestionStatus="false" filterModel="{filterData}" 
-								metadataProfiles="{filterData.metadataProfiles}" distributionProfiles="{distributionProfilesArray}"
-								categoriesRoot="{filterData.categoriesGeneral}" allCategories="{filterData.categoriesMapGeneral}" />
+								freeTextSearch="{searchBox}" enableIngestionStatus="false" filterModel="{filterData}"
+								metadataProfiles="{filterData.metadataProfiles}"
+								distributionProfiles="{distributionProfilesArray}"
+								categoriesRoot="{filterData.categoriesGeneral}"
+								allCategories="{filterData.categoriesMapGeneral}"/>
 		</mx:VBox>
 
 		<mx:VBox id="availableEntriesContainer" width="100%" height="100%" verticalGap="0" horizontalScrollPolicy="off"
 				 verticalScrollPolicy="off">
 			<mx:Label text="{resourceManager.getString('cms', 'entriesTable')}" styleName="formLabel"/>
 			<et1:EntryTable id="allEntries" width="100%" orderByChanged="{onOrderByChanged()}" showLinks="{showLinks}"
-							selectionAttribute="table2Selected"
-							dataProvider="{_listableVo.arrayCollection}" singleSelection="{(maxAllowedValues==1)}"
-							showDetails="entryTable_showDetailsHandler(event)" creationComplete="onEntriesTableReady()"	/>
+							selectionAttribute="table2Selected" dataProvider="{_listableVo.arrayCollection}"
+							singleSelection="{(maxAllowedValues==1)}" showDetails="entryTable_showDetailsHandler(event)"
+							creationComplete="onEntriesTableReady()"/>
 			<controls:Paging id="paging" styleName="paging" rowsInPageChange="gotoPage()" nextPage="gotoPage()"
 							 prvPage="gotoPage()" getPageNum="gotoPage()" verticalScrollPolicy="off"
 							 horizontalScrollPolicy="off" width="100%" showRowsInPage="true"/>
@@ -584,10 +563,9 @@
 		</mx:HBox>
 
 		<playlist:PlaylistEntries id="entries" width="100%" height="100%" dataProvider="{_playlistArrayCollection}"
-								  showLinks="{showLinks}" allowSort="true"  allowRuleBasedActions="false" 
-								  allowManualActions="{context == ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE || context == ManualPlaylistWindowMode.NEW_PLAYLIST}"
-								  moveItem="dispatchRefreshEntriesList()" showEntryDetails="entryTable_showDetailsHandler(event)" 
-								  creationComplete="setEntriesListTitle(event)" />
+								  showLinks="{showLinks}" allowSort="true" 
+								  allowManualActions="true" allowRuleBasedActions="false"
+								  moveItem="dispatchRefreshEntriesList()" showEntryDetails="entryTable_showDetailsHandler(event)" />
 	</mx:HBox>
 	<mx:ControlBar>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('cms','save')}" click="{save()}"/>

@@ -500,7 +500,6 @@ package com.kaltura.kmc.modules.content.business
 			cgEvent.dispatch();
 			
 			var mpw:ManualPlaylistWindow = new ManualPlaylistWindow();
-			mpw.rootUrl = model.context.rootUrl;
 			mpw.filterData = model.filterModel;
 			mpw.client = model.context.kc;
 			
