@@ -117,7 +117,7 @@ package com.kaltura.utils.parsers
 			annotation.setNamespace(XSDConstants.NAMESPACE);
 			var appInfo:XMLList = annotation.children();
 			for each (var info:XML in appInfo) {
-				if (info.localName() =="documentation") {
+				if (info.localName() == "documentation") {
 					info.appendChild(fieldToUpdate.fullDescription);
 				}
 				else {
@@ -146,7 +146,7 @@ package com.kaltura.utils.parsers
 				info.setNamespace(XSDConstants.NAMESPACE);
 			}
 			
-			//in list case- sets the optioanl values
+			// in list case- sets the optional values
 			if(fieldToUpdate.type == MetadataCustomFieldTypes.LIST) {
 				var listValues:XML = createXSDObject(XSDConstants.SIMPLE_TYPE_STRUCTURE);
 				var restriction:XML = listValues.children()[0];

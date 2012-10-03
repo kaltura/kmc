@@ -20,6 +20,7 @@ package com.kaltura.kmc.modules.account.command
 			var editField:MetadataFieldVO = (event as MetadataFieldEvent).metadataField;
 			if (!_model.selectedMetadataProfile || !editField)
 				return;
+			
 			if (!_model.selectedMetadataProfile.xsd) {
 				_model.selectedMetadataProfile.xsd = MetadataProfileParser.createNewXSD();
 			}

@@ -136,8 +136,6 @@
 			 * */
 			public function setMetadataFieldValues(field:MetadataFieldVO):void {
 				fieldNameInput.text = field.defaultLabel;
-				if ((field.type == MetadataCustomFieldTypes.LIST) && field.optionalValues)
-					optionalValuesInput.text = field.optionalValues.join('\r');
 				appearInSearchList.selectedItem = field.appearInSearch ? _appearYes : _appearNo;
 
 				switch (field.type) {
@@ -146,12 +144,17 @@
 						break;
 					case MetadataCustomFieldTypes.DATE:
 						fieldTypeList.selectedItem = _dateType;
+						if (field.timeControl) {
+							timeControlCB.selected = true;
+						}
 						break;
 					case MetadataCustomFieldTypes.OBJECT:
 						fieldTypeList.selectedItem = _objectType;
 						break;
 					case MetadataCustomFieldTypes.LIST:
 						fieldTypeList.selectedItem = _listType;
+						if (field.optionalValues)
+							optionalValuesInput.text = field.optionalValues.join('\r');
 						break;
 				}
 
@@ -334,6 +337,10 @@
 						}
 						metadataField.optionalValues = output.source;
 					}
+					
+					if (fieldTypeList.selectedLabel == _dateType) {
+						metadataField.timeControl = timeControlCB.selected;
+					}
 				}
 			}
 
@@ -379,6 +386,7 @@
 				optionalValuesInput.editable = value;
 				fieldTypeList.enabled = value;	// binding to currentState!=EDIT_MODE_STATE, not supposed to be a problem
 				fieldNameInput.editable = value;
+				timeControlCB.enabled = value;
 			}
 			
 			private function fieldTypeList_changeHandler(event:ListEvent):void
@@ -398,8 +406,10 @@
 						 enabled="{currentState!=EDIT_MODE_STATE}" change="fieldTypeList_changeHandler(event)"/>
 		</mx:FormItem>
 		<mx:Spacer height="{SPACER_HEIGHT}"/>
-		<mx:HBox visible="{fieldTypeList.selectedItem == resourceManager.getString('account','fieldListType')}"
-				 includeInLayout="{fieldTypeList.selectedItem == resourceManager.getString('account','fieldListType')}">
+		
+		<!-- optional values for text select list -->
+		<mx:HBox visible="{fieldTypeList.selectedItem == _listType}"
+				 includeInLayout="{fieldTypeList.selectedItem == _listType}">
 			<mx:VBox>
 				<mx:Label text="{resourceManager.getString('account','addFieldOptionalValues')}"
 						  styleName="metadataFormLabel"/>
@@ -409,8 +419,15 @@
 			<mx:TextArea id="optionalValuesInput" x="{fieldTypeList.x}" width="{ITEM_WIDTH}"
 						 height="{3*fieldNameInput.height}" styleName="optionalValuesInput"
 						 change="changeHandler(event)"/>
-			<!--enabled="{currentState!=EDIT_MODE_STATE}"/-->
 		</mx:HBox>
+		
+		<!-- time control for dates -->
+		<mx:HBox visible="{fieldTypeList.selectedItem == _dateType}"
+				 includeInLayout="{fieldTypeList.selectedItem == _dateType}">
+			<mx:CheckBox id="timeControlCB" label="{resourceManager.getString('account','addFieldIncludeTime')}"
+						 styleName="metadataFormLabel" change="changeHandler(event)" />
+		</mx:HBox>
+			
 		<mx:Spacer height="{SPACER_HEIGHT}"/>
 		<mx:FormItem label="{resourceManager.getString('account','addFieldMaxValues')}"
 					 labelStyleName="metadataFormLabel">
