@@ -87,10 +87,12 @@
 			 * */
 			public var rootUrl:String;
 
+			[Bindable]
 			/**
 			 * This attribute will switch between 2 usage of this window:
 			 * 1 - A manual playlist
 			 * 2 - A list for the metadata
+			 * @see com.kaltura.edw.components.playlist.types.ManualPlaylistWindowMode
 			 */
 			public var context:String = ManualPlaylistWindowMode.NEW_PLAYLIST;
 
@@ -233,7 +235,7 @@
 				}
 				else if (context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) {
 					// edit custom data linked entries
-					removeChild(nameAndDescription);
+//					removeChild(nameAndDescription);
 					_playlistArrayCollection = editLinkedArrayCollection;
 					title = resourceManager.getString('drilldown', 'editEntry') + " - " +
 						editedItem.name + " > " +
@@ -516,7 +518,9 @@
 	<mx:StringValidator id='playListValidator' source="{playlistName}" property="text" trigger="{playlistName}"
 						triggerEvent="change" required="true"
 						requiredFieldError="{resourceManager.getString('cms', 'nameIsMandatory')}"/>
-	<mx:Grid width="100%" id="nameAndDescription">
+	
+	<mx:Grid width="100%" id="nameAndDescription" visible="{context == ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE || context == ManualPlaylistWindowMode.NEW_PLAYLIST}"
+			 includeInLayout="{context == ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE || context == ManualPlaylistWindowMode.NEW_PLAYLIST}">
 		<mx:GridRow width="100%" height="100%">
 			<mx:GridItem>
 				<mx:Label text="{'*' + resourceManager.getString('cms', 'name') + ':'}" styleName="formLabel"/>
@@ -545,8 +549,9 @@
 			</mx:GridItem>
 		</mx:GridRow>
 	</mx:Grid>
+	
 	<mx:HBox id="playlistWorkArea" width="100%" height="100%" verticalAlign="middle">
-		<mx:VBox height="400" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<mx:VBox height="100%" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 			<mx:Label text="{resourceManager.getString('cms', 'filters')}" styleName="formLabel"/>
 			<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{filter.width}"
 								 attribute="freeText" defaultText="{resourceManager.getString('filter', 'searchEntries')}"/>
@@ -556,7 +561,7 @@
 								categoriesRoot="{filterData.categoriesGeneral}" allCategories="{filterData.categoriesMapGeneral}" />
 		</mx:VBox>
 
-		<mx:VBox id="availableEntriesContainer" width="100%" height="400" verticalGap="0" horizontalScrollPolicy="off"
+		<mx:VBox id="availableEntriesContainer" width="100%" height="100%" verticalGap="0" horizontalScrollPolicy="off"
 				 verticalScrollPolicy="off">
 			<mx:Label text="{resourceManager.getString('cms', 'entriesTable')}" styleName="formLabel"/>
 			<et1:EntryTable id="allEntries" width="100%" orderByChanged="{onOrderByChanged()}" showLinks="{showLinks}"
@@ -573,10 +578,11 @@
 			<mx:Button id="addBtn" buttonMode="true" styleName="addRightBtnWide" click="addToPlaylist()"/>
 		</mx:HBox>
 
-		<playlist:PlaylistEntries id="entries" width="100%" height="400" dataProvider="{_playlistArrayCollection}"
-								  showLinks="{showLinks}" allowSort="true"  
+		<playlist:PlaylistEntries id="entries" width="100%" height="100%" dataProvider="{_playlistArrayCollection}"
+								  showLinks="{showLinks}" allowSort="true"  allowRuleBasedActions="false" 
+								  allowManualActions="{context == ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE || context == ManualPlaylistWindowMode.NEW_PLAYLIST}"
 								  moveItem="dispatchRefreshEntriesList()" showEntryDetails="entryTable_showDetailsHandler(event)" 
-								  creationComplete="setEntriesListTitle(event)" allowRuleBasedActions="false" />
+								  creationComplete="setEntriesListTitle(event)" />
 	</mx:HBox>
 	<mx:ControlBar>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('cms','save')}" click="{save()}"/>
