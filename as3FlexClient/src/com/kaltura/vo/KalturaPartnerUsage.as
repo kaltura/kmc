@@ -54,7 +54,7 @@ package com.kaltura.vo
 		 * total usage in GB - including bandwidth and storage
 		 * 
 		 **/
-		public var usageGB : int = int.MIN_VALUE;
+		public var usageGB : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		 * date when partner reached the limit of his package (timestamp)

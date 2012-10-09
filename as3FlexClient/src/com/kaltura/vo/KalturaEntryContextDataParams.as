@@ -39,6 +39,12 @@ package com.kaltura.vo
 		public var flavorAssetId : String = null;
 
 		/**
+		 * The tags of the flavors that should be used for playback.
+		 * 
+		 **/
+		public var flavorTags : String = null;
+
+		/**
 		 * Playback streamer type: RTMP, HTTP, appleHttps, rtsp, sl.
 		 * 
 		 **/
@@ -55,6 +61,7 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('flavorAssetId');
+			arr.push('flavorTags');
 			arr.push('streamerType');
 			arr.push('mediaProtocol');
 			return arr;

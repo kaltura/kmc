@@ -25,14 +25,30 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaDistributionErrorType
+	import com.kaltura.vo.KalturaDistributionValidationError;
+
+	[Bindable]
+	public dynamic class KalturaDistributionValidationErrorMissingAsset extends KalturaDistributionValidationError
 	{
-		public static const MISSING_FLAVOR : int = 1;
-		public static const MISSING_THUMBNAIL : int = 2;
-		public static const MISSING_METADATA : int = 3;
-		public static const INVALID_DATA : int = 4;
-		public static const MISSING_ASSET : int = 5;
+		/**
+		 **/
+		public var data : String = null;
+
+		override public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			arr.push('data');
+			return arr;
+		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
 	}
 }

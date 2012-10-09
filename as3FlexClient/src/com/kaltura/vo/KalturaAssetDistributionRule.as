@@ -25,14 +25,45 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaDistributionErrorType
+	import com.kaltura.vo.BaseFlexVo;
+
+	[Bindable]
+	public dynamic class KalturaAssetDistributionRule extends BaseFlexVo
 	{
-		public static const MISSING_FLAVOR : int = 1;
-		public static const MISSING_THUMBNAIL : int = 2;
-		public static const MISSING_METADATA : int = 3;
-		public static const INVALID_DATA : int = 4;
-		public static const MISSING_ASSET : int = 5;
+		/**
+		 * The validation error description that will be set on the "data" property on KalturaDistributionValidationErrorMissingAsset if rule was not fulfilled
+		 * 
+		 **/
+		public var validationError : String = null;
+
+		/**
+		 * An array of asset distribution conditions
+		 * 
+		 **/
+		public var assetDistributionConditions : Array = null;
+
+		/** 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
+		public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			arr.push('validationError');
+			arr.push('assetDistributionConditions');
+			return arr;
+		}
+
+		/** 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
 	}
 }

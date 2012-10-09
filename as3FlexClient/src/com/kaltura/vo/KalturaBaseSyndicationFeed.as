@@ -140,6 +140,12 @@ package com.kaltura.vo
 		 **/
 		public var privacyContext : String = null;
 
+		/**
+		 * Update date as Unix timestamp (In seconds)
+		 * 
+		 **/
+		public var updatedAt : int = int.MIN_VALUE;
+
 		/** 
 		 * a list of attributes which may be updated on this object 
 		 **/ 

@@ -191,7 +191,7 @@ package com.kaltura.vo
 		public var status : int = int.MIN_VALUE;
 
 		/**
-		 * the category id that this category inherit its members and members permission (for contribution and join)
+		 * The category id that this category inherit its members and members permission (for contribution and join)
 		 * 
 		 **/
 		public var inheritedParentId : int = int.MIN_VALUE;
@@ -222,7 +222,7 @@ package com.kaltura.vo
 		public var directSubCategoriesCount : int = int.MIN_VALUE;
 
 		/**
-		 * Entries moderation
+		 * Moderation to add entries to this category by users that are not of permission level Manager or Moderator.
 		 * 
 		 * @see com.kaltura.types.KalturaNullableBoolean
 		 **/

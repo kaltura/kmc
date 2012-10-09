@@ -79,10 +79,14 @@ package com.kaltura.vo
 		public var adminTags : String = null;
 
 		/**
+		 * Categories with no entitlement that this entry belongs to.
+		 * 
 		 **/
 		public var categories : String = null;
 
 		/**
+		 * Categories Ids of categories with no entitlement that this entry belongs to
+		 * 
 		 **/
 		public var categoriesIds : String = null;
 

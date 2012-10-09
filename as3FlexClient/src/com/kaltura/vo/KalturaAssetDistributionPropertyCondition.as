@@ -25,14 +25,40 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaDistributionErrorType
+	import com.kaltura.vo.KalturaAssetDistributionCondition;
+
+	[Bindable]
+	public dynamic class KalturaAssetDistributionPropertyCondition extends KalturaAssetDistributionCondition
 	{
-		public static const MISSING_FLAVOR : int = 1;
-		public static const MISSING_THUMBNAIL : int = 2;
-		public static const MISSING_METADATA : int = 3;
-		public static const INVALID_DATA : int = 4;
-		public static const MISSING_ASSET : int = 5;
+		/**
+		 * The property name to look for, this will match to a getter on the asset object.
+		 * Should be camelCase naming convention (defining "myPropertyName" will look for getMyPropertyName())
+		 * 
+		 **/
+		public var propertyName : String = null;
+
+		/**
+		 * The value to compare
+		 * 
+		 **/
+		public var propertyValue : String = null;
+
+		override public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			arr.push('propertyName');
+			arr.push('propertyValue');
+			return arr;
+		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
 	}
 }

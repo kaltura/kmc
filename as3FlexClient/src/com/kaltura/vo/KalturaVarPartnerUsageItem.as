@@ -124,10 +124,16 @@ package com.kaltura.vo
 		public var totalStorage : Number = Number.NEGATIVE_INFINITY;
 
 		/**
-		 * The change in storage consumption (new uploads) during the given date range (in MB)
+		 * The added storage consumption (new uploads) during the given date range (in MB)
 		 * 
 		 **/
 		public var storage : Number = Number.NEGATIVE_INFINITY;
+
+		/**
+		 * The deleted storage consumption (new uploads) during the given date range (in MB)
+		 * 
+		 **/
+		public var deletedStorage : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		 * The peak amount of storage consumption during the given date range for the specific publisher
@@ -176,6 +182,7 @@ package com.kaltura.vo
 			arr.push('bandwidth');
 			arr.push('totalStorage');
 			arr.push('storage');
+			arr.push('deletedStorage');
 			arr.push('peakStorage');
 			arr.push('avgStorage');
 			arr.push('combinedStorageBandwidth');

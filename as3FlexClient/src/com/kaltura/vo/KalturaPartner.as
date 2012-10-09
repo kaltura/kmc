@@ -195,6 +195,11 @@ package com.kaltura.vo
 		public var publishersQuota : int = int.MIN_VALUE;
 
 		/**
+		 * @see com.kaltura.types.KalturaPartnerGroupType
+		 **/
+		public var partnerGroupType : int = int.MIN_VALUE;
+
+		/**
 		 * @see com.kaltura.types.kalturaBoolean
 		 **/
 		public var defaultEntitlementEnforcement : Boolean;
