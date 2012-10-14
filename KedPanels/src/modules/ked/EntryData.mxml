@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Module layout="horizontal" xmlns:mx="http://www.adobe.com/2006/mxml" 
 		   creationComplete="onCreationComplete()" implements="com.kaltura.edw.business.IDrilldownPanel"
-		   label="{resourceManager.getString('drilldown', 'metadata')}"
+		   label="{resourceManager.getString('drilldown', 'metadata')}" height="100%"
 		   xmlns:components="com.hillelcoren.components.*" hide="pausePreview()">
 	<mx:Metadata> 
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
@@ -999,82 +999,86 @@
 		<mx:Label visible="{!_entryHasContent}" includeInLayout="{!_entryHasContent}"
 				  text="{resourceManager.getString('drilldown','noContentMessage')}" styleName="noContentLabel"/>
 		<mx:Spacer height="20"/>
+		
 		<!-- non-editable info -->
-		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('drilldown','creator')}:" width="{LABEL_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:Label text="{selectedEntry.creatorId}" width="100%" styleName="drillDownSubLabel"/>
-		</mx:HBox>
-		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('drilldown','createdDate')}:" width="{LABEL_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:Label text="{EntryDataHelper.formatDate(selectedEntry.createdAt)}" width="100%"
-					  styleName="drillDownSubLabel"/>
-		</mx:HBox>
-		<mx:HBox width="100%" paddingBottom="15">
-			<mx:Label text="{resourceManager.getString('drilldown','landingPage')}:" width="{LABEL_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:Label id="landingPageLabel" selectable="true" width="100%" styleName="drillDownSubLabel"/>
-		</mx:HBox>
-
-		<mx:HRule width="100%"/>
-		<!-- - - - - - - 2 columns - - - - - - - -->
-		<mx:HBox width="100%" styleName="noPadding" paddingTop="15">
-			<mx:VBox width="100%" styleName="noPadding">
-				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('drilldown','type')}:" width="{RIGHT_LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:Label text="{EntryDataHelper.getMediaTypes(int(selectedEntry.mediaType),selectedEntry.type)}"
-							  width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
-				</mx:HBox>
-				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('drilldown', 'moderation')}:" width="{RIGHT_LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:Label text="{EntryDataHelper.getModeration(selectedEntry.moderationStatus)}"
-							  width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
-				</mx:HBox>
-				<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
-					<mx:Label text="{resourceManager.getString('drilldown', 'plays')}:" width="{RIGHT_LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:Label text="{selectedEntry.plays}" width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
-				</mx:HBox>
-				<mx:HBox width="100%" visible="{_entryHasContent &amp;&amp; selectedEntry.rank}"
-						 includeInLayout="{_entryHasContent &amp;&amp; selectedEntry.rank}">
-					<mx:Label text="{resourceManager.getString('drilldown','rating')}:" width="{RIGHT_LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:Label text="{selectedEntry.rank}" width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
-				</mx:HBox>
-			</mx:VBox>
-
-			<mx:VBox width="100%" styleName="noPadding">
-				<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
-					<mx:Label text="{resourceManager.getString('drilldown','duration')}:" width="{RIGHT_LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:Label text="{KTimeUtil.formatTime(selectedEntry.duration)}" width="{RIGHT_TEXT_WIDTH2}"
-							  styleName="drillDownSubLabel"/>
-				</mx:HBox>
-				<mx:HBox width="100%" visible="{_entryHasContent &amp;&amp; selectedEntry.moderationCount}"
-						 includeInLayout="{_entryHasContent &amp;&amp; selectedEntry.moderationCount}">
-					<mx:Label text="{resourceManager.getString('drilldown','flags')}:" width="{RIGHT_LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:Label text="{selectedEntry.moderationCount}" width="{RIGHT_TEXT_WIDTH2}"
-							  styleName="drillDownSubLabel"/>
-				</mx:HBox>
-				<mx:HBox width="100%" visible="{_entryHasContent &amp;&amp; selectedEntry.votes}"
-						 includeInLayout="{_entryHasContent &amp;&amp; selectedEntry.votes}">
-					<mx:Label text="{resourceManager.getString('drilldown','votesCount')}:" width="{RIGHT_LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:Label text="{selectedEntry.votes}" width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
-				</mx:HBox>
-
-				<mx:HBox width="100%" visible="{selectedEntry.rootEntryId != selectedEntry.id}"
-						 includeInLayout="{selectedEntry.rootEntryId != selectedEntry.id}">
-					<mx:Label text="{resourceManager.getString('drilldown','clippedFrom')}:" width="{RIGHT_LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)"
-								   width="{RIGHT_TEXT_WIDTH2}" paddingLeft="0"/>
-				</mx:HBox>
-			</mx:VBox>
-		</mx:HBox>
+		<mx:VBox styleName="noPadding" width="100%" height="190" horizontalScrollPolicy="off" verticalGap="0">
+			
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('drilldown','creator')}:" width="{LABEL_WIDTH}"
+						  styleName="drillDownLabel"/>
+				<mx:Label text="{selectedEntry.creatorId}" width="100%" styleName="drillDownSubLabel"/>
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('drilldown','createdDate')}:" width="{LABEL_WIDTH}"
+						  styleName="drillDownLabel"/>
+				<mx:Label text="{EntryDataHelper.formatDate(selectedEntry.createdAt)}" width="100%"
+						  styleName="drillDownSubLabel"/>
+			</mx:HBox>
+			<mx:HBox width="100%" paddingBottom="15">
+				<mx:Label text="{resourceManager.getString('drilldown','landingPage')}:" width="{LABEL_WIDTH}"
+						  styleName="drillDownLabel"/>
+				<mx:Label id="landingPageLabel" selectable="true" width="100%" styleName="drillDownSubLabel"/>
+			</mx:HBox>
+	
+			<mx:HRule width="100%"/>
+			<!-- - - - - - - 2 columns - - - - - - - -->
+			<mx:HBox width="100%" styleName="noPadding" paddingTop="15">
+				<mx:VBox width="100%" styleName="noPadding">
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('drilldown','type')}:" width="{RIGHT_LABEL_WIDTH}"
+								  styleName="drillDownLabel"/>
+						<mx:Label text="{EntryDataHelper.getMediaTypes(int(selectedEntry.mediaType),selectedEntry.type)}"
+								  width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('drilldown', 'moderation')}:" width="{RIGHT_LABEL_WIDTH}"
+								  styleName="drillDownLabel"/>
+						<mx:Label text="{EntryDataHelper.getModeration(selectedEntry.moderationStatus)}"
+								  width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
+					</mx:HBox>
+					<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
+						<mx:Label text="{resourceManager.getString('drilldown', 'plays')}:" width="{RIGHT_LABEL_WIDTH}"
+								  styleName="drillDownLabel"/>
+						<mx:Label text="{selectedEntry.plays}" width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
+					</mx:HBox>
+					<mx:HBox width="100%" visible="{_entryHasContent &amp;&amp; selectedEntry.rank}"
+							 includeInLayout="{_entryHasContent &amp;&amp; selectedEntry.rank}">
+						<mx:Label text="{resourceManager.getString('drilldown','rating')}:" width="{RIGHT_LABEL_WIDTH}"
+								  styleName="drillDownLabel"/>
+						<mx:Label text="{selectedEntry.rank}" width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
+					</mx:HBox>
+				</mx:VBox>
+	
+				<mx:VBox width="100%" styleName="noPadding">
+					<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
+						<mx:Label text="{resourceManager.getString('drilldown','duration')}:" width="{RIGHT_LABEL_WIDTH}"
+								  styleName="drillDownLabel"/>
+						<mx:Label text="{KTimeUtil.formatTime(selectedEntry.duration)}" width="{RIGHT_TEXT_WIDTH2}"
+								  styleName="drillDownSubLabel"/>
+					</mx:HBox>
+					<mx:HBox width="100%" visible="{_entryHasContent &amp;&amp; selectedEntry.moderationCount}"
+							 includeInLayout="{_entryHasContent &amp;&amp; selectedEntry.moderationCount}">
+						<mx:Label text="{resourceManager.getString('drilldown','flags')}:" width="{RIGHT_LABEL_WIDTH}"
+								  styleName="drillDownLabel"/>
+						<mx:Label text="{selectedEntry.moderationCount}" width="{RIGHT_TEXT_WIDTH2}"
+								  styleName="drillDownSubLabel"/>
+					</mx:HBox>
+					<mx:HBox width="100%" visible="{_entryHasContent &amp;&amp; selectedEntry.votes}"
+							 includeInLayout="{_entryHasContent &amp;&amp; selectedEntry.votes}">
+						<mx:Label text="{resourceManager.getString('drilldown','votesCount')}:" width="{RIGHT_LABEL_WIDTH}"
+								  styleName="drillDownLabel"/>
+						<mx:Label text="{selectedEntry.votes}" width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
+					</mx:HBox>
+	
+					<mx:HBox width="100%" visible="{selectedEntry.rootEntryId != selectedEntry.id}"
+							 includeInLayout="{selectedEntry.rootEntryId != selectedEntry.id}">
+						<mx:Label text="{resourceManager.getString('drilldown','clippedFrom')}:" width="{RIGHT_LABEL_WIDTH}"
+								  styleName="drillDownLabel"/>
+						<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)"
+									   width="{RIGHT_TEXT_WIDTH2}" paddingLeft="0"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:HBox>
+		</mx:VBox>
 	</mx:VBox>
 </mx:Module>
