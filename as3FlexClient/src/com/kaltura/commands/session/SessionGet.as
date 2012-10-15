@@ -25,25 +25,39 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.session
 {
-	import com.kaltura.vo.KalturaBaseJobFilter;
+	import com.kaltura.delegates.session.SessionGetDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaMailJobBaseFilter extends KalturaBaseJobFilter
+	/**
+	 * Parse session key and return its info
+	 * 
+	 **/
+	public class SessionGet extends KalturaCall
 	{
-		override public function getUpdateableParamKeys():Array
+		public var filterFields : String;
+		
+		/**
+		 * @param session String
+		 **/
+		public function SessionGet( session : String = null )
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			return arr;
+			service= 'session';
+			action= 'get';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('session');
+			valueArr.push(session);
+			applySchema(keyArr, valueArr);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new SessionGetDelegate( this , config );
 		}
 	}
 }

@@ -36,5 +36,6 @@ package com.kaltura.types
 		public static const HTTPS : int = 5;
 		public static const SFTP_CMD : int = 8;
 		public static const SFTP_SEC_LIB : int = 9;
+		public static const ASPERA : int = 10;
 	}
 }

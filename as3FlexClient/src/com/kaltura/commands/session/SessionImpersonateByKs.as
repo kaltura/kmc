@@ -25,25 +25,50 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.session
 {
-	import com.kaltura.vo.KalturaMailJobBaseFilter;
+	import com.kaltura.delegates.session.SessionImpersonateByKsDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaMailJobFilter extends KalturaMailJobBaseFilter
+	/**
+	 * Start an impersonated session with Kaltura's server.
+	 * The result KS info contains the session key that you should pass to all services that requires a ticket.
+	 * Type, expiry and privileges won't be changed if they're not set
+	 * 
+	 **/
+	public class SessionImpersonateByKs extends KalturaCall
 	{
-		override public function getUpdateableParamKeys():Array
+		public var filterFields : String;
+		
+		/**
+		 * @param session String
+		 * @param type int
+		 * @param expiry int
+		 * @param privileges String
+		 **/
+		public function SessionImpersonateByKs( session : String,type : int=int.MIN_VALUE,expiry : int=int.MIN_VALUE,privileges : String = null )
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			return arr;
+			service= 'session';
+			action= 'impersonateByKs';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('session');
+			valueArr.push(session);
+			keyArr.push('type');
+			valueArr.push(type);
+			keyArr.push('expiry');
+			valueArr.push(expiry);
+			keyArr.push('privileges');
+			valueArr.push(privileges);
+			applySchema(keyArr, valueArr);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new SessionImpersonateByKsDelegate( this , config );
 		}
 	}
 }

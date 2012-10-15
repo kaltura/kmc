@@ -27,22 +27,59 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaNotificationBaseFilter;
+	import com.kaltura.vo.BaseFlexVo;
 
 	[Bindable]
-	public dynamic class KalturaNotificationFilter extends KalturaNotificationBaseFilter
+	public dynamic class KalturaYouTubeApiCaptionDistributionInfo extends BaseFlexVo
 	{
-		override public function getUpdateableParamKeys():Array
+		/**
+		 **/
+		public var language : String = null;
+
+		/**
+		 **/
+		public var filePath : String = null;
+
+		/**
+		 **/
+		public var remoteId : String = null;
+
+		/**
+		 * @see com.kaltura.types.KalturaYouTubeApiDistributionCaptionAction
+		 **/
+		public var action : int = int.MIN_VALUE;
+
+		/**
+		 **/
+		public var version : String = null;
+
+		/**
+		 **/
+		public var assetId : String = null;
+
+		/** 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
-			arr = super.getUpdateableParamKeys();
+			arr = new Array();
+			arr.push('language');
+			arr.push('filePath');
+			arr.push('remoteId');
+			arr.push('action');
+			arr.push('version');
+			arr.push('assetId');
 			return arr;
 		}
 
-		override public function getInsertableParamKeys():Array
+		/** 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
+		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
-			arr = super.getInsertableParamKeys();
+			arr = new Array();
 			return arr;
 		}
 	}

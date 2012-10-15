@@ -25,25 +25,12 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.types
 {
-	import com.kaltura.vo.KalturaBaseJobFilter;
-
-	[Bindable]
-	public dynamic class KalturaNotificationBaseFilter extends KalturaBaseJobFilter
+	public class KalturaYouTubeApiDistributionCaptionAction
 	{
-		override public function getUpdateableParamKeys():Array
-		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			return arr;
-		}
-
-		override public function getInsertableParamKeys():Array
-		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
-		}
+		public static const UPDATE_ACTION : int = 1;
+		public static const SUBMIT_ACTION : int = 2;
+		public static const DELETE_ACTION : int = 3;
 	}
 }

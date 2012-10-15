@@ -25,19 +25,56 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaNotificationOrderBy
+	import com.kaltura.vo.BaseFlexVo;
+
+	[Bindable]
+	public dynamic class KalturaSessionInfo extends BaseFlexVo
 	{
-		public static const CREATED_AT_ASC : String = '+createdAt';
-		public static const CREATED_AT_DESC : String = '-createdAt';
-		public static const UPDATED_AT_ASC : String = '+updatedAt';
-		public static const UPDATED_AT_DESC : String = '-updatedAt';
-		public static const PROCESSOR_EXPIRATION_ASC : String = '+processorExpiration';
-		public static const PROCESSOR_EXPIRATION_DESC : String = '-processorExpiration';
-		public static const EXECUTION_ATTEMPTS_ASC : String = '+executionAttempts';
-		public static const EXECUTION_ATTEMPTS_DESC : String = '-executionAttempts';
-		public static const LOCK_VERSION_ASC : String = '+lockVersion';
-		public static const LOCK_VERSION_DESC : String = '-lockVersion';
+		/**
+		 **/
+		public var ks : String = null;
+
+		/**
+		 * @see com.kaltura.types.KalturaSessionType
+		 **/
+		public var sessionType : int = int.MIN_VALUE;
+
+		/**
+		 **/
+		public var partnerId : int = int.MIN_VALUE;
+
+		/**
+		 **/
+		public var userId : String = null;
+
+		/**
+		 **/
+		public var expiry : int = int.MIN_VALUE;
+
+		/**
+		 **/
+		public var privileges : String = null;
+
+		/** 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
+		public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
+
+		/** 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
 	}
 }
