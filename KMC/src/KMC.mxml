@@ -11,6 +11,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.commands.MultiRequest;
 			import com.kaltura.commands.permission.PermissionList;
+			import com.kaltura.commands.session.SessionGet;
 			import com.kaltura.commands.uiConf.UiConfGet;
 			import com.kaltura.commands.user.UserGet;
 			import com.kaltura.commands.userRole.UserRoleGet;
@@ -39,10 +40,11 @@
 			import com.kaltura.utils.ObjectHelpers;
 			import com.kaltura.vo.KalturaFilterPager;
 			import com.kaltura.vo.KalturaPermissionListResponse;
+			import com.kaltura.vo.KalturaSessionInfo;
 			import com.kaltura.vo.KalturaUiConf;
 			import com.kaltura.vo.KalturaUser;
 			import com.kaltura.vo.KalturaUserRole;
-
+			
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
@@ -322,10 +324,14 @@
 				var permissions:UiConfGet = new UiConfGet(objParam.permissionuiconf);
 
 				// get user id from service, if server decides to give it..
-				var userid:String = KSUtil.getUserId(_modelLocator.kalturaClient.ks);
-				var userget:UserGet = new UserGet(userid);
-				mr.mapMultiRequestParam(3, "roleIds", 4, "userRoleId");
-				// get null, the real role id param is passed from the multirequest
+				
+				var ssnget:SessionGet = new SessionGet();
+				mr.mapMultiRequestParam(3, "userId", 4, "userId");
+				//
+				// get dummy, the real user id param is passed from the multirequest
+				var userget:UserGet = new UserGet('1');
+				mr.mapMultiRequestParam(4, "roleIds", 5, "userRoleId");
+				// get dummy, the real role id param is passed from the multirequest
 				var roleGet:UserRoleGet = new UserRoleGet(1);
 				var p:KalturaFilterPager = new KalturaFilterPager();
 				p.pageSize = 500;
@@ -333,6 +339,7 @@
 
 				mr.addAction(uiconf);
 				mr.addAction(permissions);
+				mr.addAction(ssnget);
 				mr.addAction(userget);
 				mr.addAction(roleGet);
 				mr.addAction(perms);
@@ -443,27 +450,31 @@
 				if (isError(event.data[1].error))
 					return;
 				var uidefinition:XML = new XML((event.data[1] as KalturaUiConf).confFile); // all permissions
-
-				// [2, 3] user and role:
-				if (isError(event.data[2].error))
+				// [2] SessionInfo (only used for getting user id, which is already used in the user.get call)
+				if (isError(event.data[2].error)) {
+					KalturaSessionInfo;
 					return;
+				}
+				// [3, 4] user and role:
 				if (isError(event.data[3].error))
 					return;
+				if (isError(event.data[4].error))
+					return;
 				var uvo:UserVO = new UserVO();
-				uvo.user = event.data[2] as KalturaUser;
-				uvo.role = event.data[3] as KalturaUserRole;
+				uvo.user = event.data[3] as KalturaUser;
+				uvo.role = event.data[4] as KalturaUserRole;
 				_modelLocator.userInfo = uvo;
 
 				var roleOfCurrentUser:String;
 				roleOfCurrentUser = uvo.role.permissionNames;
 
 				// [4] partner permissions list
-				if (isError(event.data[4].error))
+				if (isError(event.data[5].error))
 					return;
 
 				permissionManager = PermissionManager.getInstance();
 				permissionManager.addEventListener(KedErrorEvent.ERROR, onError);
-				permissionManager.init(uidefinition, roleOfCurrentUser, event.data[4] as KalturaPermissionListResponse);
+				permissionManager.init(uidefinition, roleOfCurrentUser, event.data[5] as KalturaPermissionListResponse);
 
 				// GAtracking
 				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
