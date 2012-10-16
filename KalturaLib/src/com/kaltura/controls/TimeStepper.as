@@ -80,7 +80,6 @@ package com.kaltura.controls {
 		 * @return an object with <code>{hour, minute, second}</code> attributes. 
 		 * */
 		public function getTimeAsObject(time:Number):Object {
-			//TODO eliminate hour over 24 !!
 			var secondsForCalc:int = Math.floor(time);
 			var o:Object = new Object();
 			var h:int = Math.floor(secondsForCalc / 3600); // 60 * 60 = 3600
@@ -195,6 +194,10 @@ package com.kaltura.controls {
 		
 		override public function get timeValue():Object {
 			var o:Object = super.timeValue;
+			if (!is24Hour && am_pm == "pm") {
+				// add 12 hours so hour value will be correct
+				o.hour += 12;
+			}
 			o.milisecond = this.milisecond;
 			return o;
 		}
@@ -525,10 +528,10 @@ package com.kaltura.controls {
 		override public function set timeValue(value:Object):void {
 			hour = value.hour ? value.hour : 0;
 			if (is24Hour) {
-				am_pm = (value.hour > 12) ? "pm" : "am";
+				am_pm = "pm";
 			}
 			else {
-				am_pm = "pm";
+				am_pm = (value.hour >= 12) ? "pm" : "am";
 			}
 			
 			minute = value.minute ? value.minute : 0;
