@@ -438,6 +438,14 @@ package com.kaltura.controls {
 			}
 		}
 		
+		override protected function amPMKeyHandler(event:KeyboardEvent):void {
+			super.amPMKeyHandler(event);
+			if (event.keyCode == 38 || event.keyCode == 40 || event.keyCode == 37 || event.keyCode == 39) {
+				// notify any listeners of the change
+				dispatchEvent(new FlexEvent('change'));
+			}
+		}
+		
 		override protected function formatText(value:String, theField:String):String {
 			if (_focusArea) {
 				_focusArea.setSelection(0, 3);
