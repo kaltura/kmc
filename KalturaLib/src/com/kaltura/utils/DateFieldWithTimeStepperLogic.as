@@ -93,9 +93,9 @@ package com.kaltura.utils
 			var hours:Number = dayHour * 60 * 60;
 			var minute:Number = timeObj.minute * 60;
 			var seconds:Number = timeObj.second;
-			var addition:Number = isPM && (timeObj.hour != 12) ? (12 * 60 * 60) : 0;
+//			var addition:Number = isPM && (timeObj.hour != 12) ? (12 * 60 * 60) : 0;
 			
-			var totalTime:Number = hours + minute + seconds + addition;
+			var totalTime:Number = hours + minute + seconds/* + addition*/;
 			
 			return totalTime;
 		}
