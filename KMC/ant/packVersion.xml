@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="pack compiled files into the version folder" basedir="../" default="build">
 	
-	<property name="KMC_VERSION" value="v5.23"/>
-	<property name="KDP_VERSION" value="v3.6.9"/>
+	<property name="KMC_VERSION" value="v5.24"/>
+	<property name="KDP_VERSION" value="v3.6.12"/>
 	<property name="KCLIP_VERSION" value="v1.1.2.1"/>
 	
 	<property name="PACK_DEPLOY_DIR" value="${basedir}/../${KMC_VERSION}"/>
 	
 	<property name="PACK_SOURCE_DIR" value="${basedir}/bin-debug"/>
-
+	
 	
 	<target name="build" depends="clean, init, update_config, copy_assets, copy_locale, copy_modules, copy_xml">
 		<echo>Version ${KMC_VERSION} packed successfully</echo>
@@ -43,7 +43,11 @@
 		<copy todir="${PACK_DEPLOY_DIR}/assets/flags">
 			<fileset dir="${PACK_SOURCE_DIR}/assets/flags" includes="**/*"/>
 		</copy>
-		<copy file="${PACK_SOURCE_DIR}/workspaces/kmc/KMC/assets/kmc_skin.swf" 
+		
+		<basename property="WS_DIRECTORY_NAME" file="${basedir}/../"/>
+		<echo>WS_DIRECTORY_NAME: ${WS_DIRECTORY_NAME}</echo>
+			
+		<copy file="${PACK_SOURCE_DIR}/workspaces/${WS_DIRECTORY_NAME}/KMC/assets/kmc_skin.swf" 
 			tofile="${PACK_DEPLOY_DIR}/assets/kmc_skin.swf" />
     </target>
 	
