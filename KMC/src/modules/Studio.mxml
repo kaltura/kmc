@@ -47,7 +47,15 @@
 			 * */
 			private var _wizard:ApsWizard;
 
+			/**
+			 * swfurl assigned to new / edited players
+			 * */
 			private var _swfUrl:String;
+			
+			/**
+			 * html5url assigned to new / edited players
+			 * */
+			private var _html5Url:String;
 			
 			private var _media:PlayerContentVo;
 
@@ -132,6 +140,7 @@
 			private function loadedAppstudioUiconf(evt:KalturaEvent):void {
 				playerList.refresh();
 				_swfUrl = (evt.data as KalturaUiConf).swfUrl;
+				_html5Url = (evt.data as KalturaUiConf).html5Url;
 
 				// if need to load local templates file 
 				if (_flashvars.templatesxmlurl) {
@@ -180,6 +189,7 @@
 			private function newWizard(playerUiConfVo:PlayerUiConfVo, isNew:Boolean = false):void {
 				_wizard = new ApsWizard();
 				_wizard.swfUrl = _swfUrl;
+				_wizard.html5Url = _html5Url;
 				_wizard.isNewPlayer = isNew;
 				_wizard.id = "wizard";
 				_wizard.styleName = "WinTitleStyle";
