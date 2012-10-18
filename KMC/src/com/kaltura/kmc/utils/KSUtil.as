@@ -1,7 +1,11 @@
 package com.kaltura.kmc.utils
 {
 	import mx.utils.Base64Decoder;
-
+	/**
+	 * @depracated
+	 * This class matches the old KS (v1) and will explode if given KS v2 
+	 * @author atar.shadmi
+	 */
 	public class KSUtil {
 		
 		
