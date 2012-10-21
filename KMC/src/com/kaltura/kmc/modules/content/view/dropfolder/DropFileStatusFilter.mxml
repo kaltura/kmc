@@ -25,7 +25,7 @@
 				else {
 					all.selected = false;
 					var dropStatusArr:Array = value.toString().split(',');
-					for each (var statusCode:String in dropStatusArr) {
+					for each (var statusCode:int in dropStatusArr) {
 						switch (statusCode) {
 							case KalturaDropFolderFileStatus.UPLOADING:
 								transferring.selected = true;
@@ -55,6 +55,18 @@
 								handled.selected = true;
 								break;
 						}
+					}
+				}
+				if (!all.selected) {
+					var isAll:Boolean = true;
+					for (var i:int = 1; i<_buttons.length; i++) {
+						if (!_buttons[i].selected) {
+							isAll = false;
+							break;
+						}
+					}
+					if (isAll) {
+						filter = '';
 					}
 				}
 			}
