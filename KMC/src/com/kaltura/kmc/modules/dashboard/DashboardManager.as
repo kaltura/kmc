@@ -156,10 +156,6 @@ package com.kaltura.kmc.modules.dashboard {
 		private function getUsageData():void {
 			var now:Date = new Date();
 			new KalturaPartnerUsage();
-//			var getPartnerUsage:PartnerGetUsage = new PartnerGetUsage(int.MIN_VALUE, int.MIN_VALUE, null);
-//			getPartnerUsage.addEventListener(KalturaEvent.COMPLETE, onSrvRes);
-//			getPartnerUsage.addEventListener(KalturaEvent.FAILED, onSrvFlt);
-//			kc.post(getPartnerUsage);
 			var partnerGetStatistics:PartnerGetStatistics = new PartnerGetStatistics();
 			partnerGetStatistics.addEventListener(KalturaEvent.COMPLETE, onPartnerStatistics);
 			partnerGetStatistics.addEventListener(KalturaEvent.FAILED, fault);
@@ -182,18 +178,6 @@ package com.kaltura.kmc.modules.dashboard {
 		 */
 		private function onSrvFlt(fault:Object):void {
 			Alert.show(ResourceManager.getInstance().getString('kdashboard', 'usageErrorMsg') + ":\n" + fault.error.errorMsg, ResourceManager.getInstance().getString('kdashboard', 'error'));
-		}
-
-
-		/**
-		 * Usage data call result, updates the propare vars
-		 *
-		 *
-		 */
-		private function onSrvRes(result:Object):void {
-			totalBWSoFar = result.data.usageGB;
-			totalPercentSoFar = result.data.Percent;
-			hostingGB = result.data.hostingGB;
 		}
 
 
