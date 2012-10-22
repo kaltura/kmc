@@ -43,6 +43,7 @@
 			import com.kaltura.kmc.modules.content.business.IContentPanel;
 			import com.kaltura.kmc.modules.content.events.*;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.kmc.modules.content.utils.FilterUtil;
 			import com.kaltura.kmc.modules.content.view.window.RulePlaylistWindow;
 			import com.kaltura.kmc.modules.content.view.window.SetSchedulingWin;
 			import com.kaltura.kmc.modules.content.view.window.cdw.CategoryDetailsWin;
@@ -358,43 +359,7 @@
 			}
 
 
-			/**
-			 * creates a KalturaMediaEntryFilter from encoded data
-			 * @param filter	encoded filter data
-			 * */
-			private function createFilterFromString(filter:String):KalturaBaseEntryFilter {
-				var dec:Base64Decoder = new Base64Decoder();
-				dec.decode(filter);
-				var filterString:String = dec.toByteArray().toString();
-				var filterArray:Array = filterString.split("&");
-
-				// distinguish between playlist and entry:
-				var kmef:KalturaBaseEntryFilter;
-				for (var j:int = 0; j < filterArray.length; j++) {
-					if (filterArray[j].indexOf("objectType") == 0) {
-						var cls:String = filterArray[j].split("=")[1];
-						if (cls == "KalturaPlaylistFilter") {
-							kmef = new KalturaPlaylistFilter();
-						}
-						else {
-							kmef = new KalturaMediaEntryFilter();
-						}
-						break;
-					}
-				}
-
-				var att:Array;
-				for (var i:int = 0; i < filterArray.length; i++) {
-					att = filterArray[i].split("=");
-					if (att[1]) {
-						// KalturaMediaEntryFilter is dynamic, ok to put all values without testing
-						kmef[att[0]] = att[1];
-					}
-				}
-
-				return kmef;
-			}
-
+			
 
 			/**
 			 * dispatches events that trigger data loading, for data that can be changed from other
@@ -521,7 +486,7 @@
 			private function switchToTab(tab:String = ""):void {
 				var kmef:KalturaBaseEntryFilter;
 				if (_model.attic.filter) {
-					kmef = createFilterFromString(_model.attic.filter);
+					kmef = FilterUtil.createFilterFromString(_model.attic.filter);
 					_model.attic.filter = null;
 					_model.attic.kmef = kmef;
 				}
