@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()" show="onShow()" hide="onHide()"
 		 xmlns:view="com.kaltura.kmc.modules.analytics.view.*" xmlns:map="com.kaltura.kmc.modules.analytics.view.map.*"
-		 xmlns:charts="com.kaltura.kmc.modules.analytics.view.charts.*"
-		 xmlns:aggregateBar="com.kaltura.kmc.modules.analytics.view.aggregateBar.*"
-		 xmlns:controls="com.kaltura.controls.*" xmlns:components="com.hillelcoren.components.*">
+		 xmlns:charts="com.kaltura.kmc.modules.analytics.view.charts.*" xmlns:controls="com.kaltura.controls.*"
+		 xmlns:aggregateBar="com.kaltura.kmc.modules.analytics.view.aggregateBar.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -16,48 +15,73 @@
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 			import com.kaltura.kmc.modules.analytics.model.Context;
 			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
-			import com.kaltura.kmc.modules.analytics.model.reports.ReportDimension;
-			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.kmc.modules.analytics.utils.TimeConsts;
 			import com.kaltura.kmc.modules.analytics.view.window.PreviewEntryWin;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 			import com.kaltura.types.KalturaReportInterval;
+			import com.kaltura.types.KalturaReportType;
 			import com.kaltura.vo.KalturaBaseEntry;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.SWFLoader;
 			import mx.formatters.NumberFormatter;
 			import mx.managers.PopUpManager;
-			
-			import org.flexunit.internals.namespaces.classInternal;
 
 			public static var kdp:SWFLoader;
-			
-			public static var pew: PreviewEntryWin;
-			
-			[Bindable]
+
+			public static var pew:PreviewEntryWin;
+
+			private static var playerLoadedFlag:Boolean = false;
+			private static var playerReadyFlag:Boolean = false;
+
 			/**
 			 * to load the kdp you must pass a context
 			 * */
 			public var context:Context; 
-			//////////////////////////////////////////////////////////////////////////////////
 
 			[Bindable]
+			/**
+			 * columns to show in table
+			 * */
 			public var tableHeaders:Array;
+
 			[Bindable]
-			public var dimCbDp:Array;
-			[Bindable]
+			/**
+			 * headers of "totals" component
+			 * */
 			public var aggregatedHeaders:Array;
+
+			[Bindable]
+			/**
+			 * list of optional graph dimensions
+			 * */
+			public var dimCbDp:Array;
 			////////////////////////////////////////////////////////
 
 			[Bindable]
+			/**
+			 * current report's data
+			 * */
 			public var reportData:ReportData;
+
 			[Bindable]
+			/**
+			 * report type
+			 * @see com.kaltura.types.KalturaReportType
+			 * */
 			public var reportType:int;
-			[Bindable]
+
+			/**
+			 * screen type
+			 * @see com.kaltura.kmc.modules.analytics.model.types.ScreenTypes
+			 * */
 			public var screenType:int;
-			[Bindable]
+
+			/**
+			 * in drilldown reports, the type of screen that is the "parent" of this screen.
+			 * not used in non-drilldown reports.
+			 * */
 			public var backScreenType:int;
 
 			public var helpUrl:String = "reportAndAnalyticsSection4";
@@ -77,65 +101,71 @@
 			public var showKDP:Boolean = false;
 			[Bindable]
 			public var showMessageTip:Boolean = false;
-			
-			[Bindable]
+
+
 			public var addGraphTotals:Boolean = false;
-			[Bindable]
+
 			public var addTableTotals:Boolean = false;
-			
+
+			[Bindable]
 			/**
 			 * Show or Hide the user filter UI
 			 * */
-			[Bindable] public var filterUsersFlag:Boolean = true;
-			
+			public var filterUsersFlag:Boolean = true;
+
+			[Bindable]
 			/**
 			 * Show or Hide the application filter UI
 			 * */
-			[Bindable] public var filterApplicationsFlag:Boolean = true;
-			////////////////////////////////////////////////////////
+			public var filterApplicationsFlag:Boolean = true;
 
-			//LOADING FLAGS
-			[Bindable]
-			private var _isLoading:Boolean = false;
-			
 			[Bindable]
 			public var showChartSwitch:Boolean = false;
-			
+			////////////////////////////////////////////////////////
+
 			[Bindable]
+			/**
+			 * remove paging component (for reports which don't support paging)
+			 * */
 			public var disablePager:Boolean = false;
 
 
+			[Bindable]
+			private var _isLoading:Boolean = false;
+
+			/**
+			 * loading flag
+			 * */
 			public function set isLoading(value:Boolean):void {
 				_isLoading = value;
 			}
+
 			[Bindable]
 			private var _loadChart:Boolean = false;
-
 
 			public function set loadChart(value:Boolean):void {
 				_loadChart = value;
 				_isVisibleLineChart = !value && showLineChart;
 				_isVisibleColumnChart = !value && showColumnChart;
 			}
+
 			[Bindable]
 			private var _loadTotal:Boolean = false;
-
 
 			public function set loadTotal(value:Boolean):void {
 				_loadTotal = value;
 				_isVisibleTotal = !value;
 			}
+
 			[Bindable]
 			private var _loadTable:Boolean = false;
 
-
 			public function set loadTable(value:Boolean):void {
 				_loadTable = value;
-				_isVisibleTable = !value && showTable;
 			}
+
 			[Bindable]
 			private var _loadEntry:Boolean = false;
-
 
 			public function set loadEntry(value:Boolean):void {
 				_loadEntry = value;
@@ -145,8 +175,6 @@
 
 			//VISIBLE FLAGS
 			[Bindable]
-			private var _isVisibleTable:Boolean = false;
-			[Bindable]
 			private var _isVisibleLineChart:Boolean = false;
 			[Bindable]
 			private var _isVisibleColumnChart:Boolean = false;
@@ -154,23 +182,50 @@
 			private var _isVisibleTotal:Boolean = false;
 			[Bindable]
 			private var _isVisibleEntry:Boolean = false;
+
 			private var _showFlag:Boolean = false;
+
+			/**
+			 * see if the current entry has changed
+			 * */
 			private var _changeWatcher:ChangeWatcher;
 			////////////////////////////////////////////////////////
 			[Bindable]
+			/**
+			 * show navigation between drilldown reports in the filter
+			 * */
 			public var showDrillDownNav:Boolean = false;
+
 			[Bindable]
+			/**
+			 * in filter, show only dates
+			 * */
 			public var dateOnlyFlag:Boolean = false;
-			
+
 			[Bindable]
+			/**
+			 * in filter, set texts to playbackContext related
+			 * */
 			public var playbackContextFlag : Boolean = false;
-			
+
 			[Bindable]
+			/**
+			 * is this report a drilldon-report
+			 * */
 			public var isDrillDown:Boolean = false;
+
 			[Bindable]
+			/**
+			 * filtering data
+			 * */
 			public var filterVo:FilterVo;
+
 			[Bindable]
+			/**
+			 * table ordering
+			 * */
 			public var orderBy:String;
+
 			[Bindable]
 			public var showTimeUnits:Boolean = false;
 			[Bindable]
@@ -181,17 +236,15 @@
 			public var isMonths:Boolean = false;
 			[Bindable]
 			public var isOneDay:Boolean = false;
-			
-			private static var playerLoadedFlag:Boolean = false;
-			private static var playerReadyFlag:Boolean = false;
 
-			[Bindable] private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
+			[Bindable] 
+			private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 
 
 			private function init():void {
 				BindingUtils.bindSetter(onReportDataChange, this, "reportData");
 				BindingUtils.bindSetter(onFilterChanged, this, "filterVo");
-				
+
 				if (dimCbDp == _model.reportDimension.endUserStorage
 					|| dimCbDp == _model.reportDimension.publisherStorageNBandwidth){
 					dateBarChart.dataFormatFunc = roundUpValue;
@@ -200,23 +253,23 @@
 					lineChart.dataUnits = resourceManager.getString('analytics', 'MB');
 				}
 			}
-			
-			
+
+
 			// For table data tips
 			private function roundUpValue(value:Object):String{
 				var formatter:NumberFormatter  = new NumberFormatter();
 				formatter.thousandsSeparatorTo = ",";
 				return formatter.format(Math.ceil(Number(value)));
 			}
-			
+
 			private function onFilterChanged(vo:FilterVo):void{
 				handleTimeUnitChange();
 			}
-			
+
 			private function handleTimeUnitChange():void{
 				isMonths = showTimeUnits ? filterVo.interval == KalturaReportInterval.MONTHS : false;
 				isOneDay = (filterVo.toDate.time - filterVo.fromDate.time) <= TimeConsts.DAY;
-				
+
 				// QC 3885 - Changing from "Date" to "Month" in the table headers.
 				if (tableHeaders && tableHeaders.length > 1){
 					if (isMonths && tableHeaders[0] == "date_id"){
@@ -225,7 +278,7 @@
 						tableHeaders[0] = "date_id";
 					}
 				}
-				
+
 				ktable.headerDataProvider = tableHeaders;
 			}
 
@@ -249,7 +302,7 @@
 				_showFlag = true;
 				_changeWatcher = BindingUtils.bindSetter(onSelectedMediaEntryChange, this.reportData, "selectedMediaEntry");
 				filter.filterVo = filterVo;
-				
+
 				getReports();
 			}
 
@@ -281,15 +334,15 @@
 				filter.interactions.buttonMode = true;
 
 				if (showKDP) {
-					if (reportType == ScreenTypes.TOP_CONTENT) {
+					if (reportType == KalturaReportType.TOP_CONTENT) {
 						filter.basicDetails.setStyle('textDecoration', 'none');
 						filter.basicDetails.buttonMode = false;
 					}
-					else if (reportType == ScreenTypes.CONTENT_DROPOFF) {
+					else if (reportType == KalturaReportType.CONTENT_DROPOFF) {
 						filter.dropoff.setStyle('textDecoration', 'none');
 						filter.dropoff.buttonMode = false;
 					}
-					else if (reportType == ScreenTypes.CONTENT_INTERACTIONS) {
+					else if (reportType == KalturaReportType.CONTENT_INTERACTIONS) {
 						filter.interactions.setStyle('textDecoration', 'none');
 						filter.interactions.buttonMode = false;
 					}
@@ -335,10 +388,10 @@
 			 * */
 			private function getReports(event:Event = null):void {
 				handleTimeUnitChange();
-				
+
 				var reportSetDataEvent:ReportDataEvent = new ReportDataEvent(ReportDataEvent.SET_REPORT_DATA, reportType, screenType,  label, aggregatedHeaders, tableHeaders, paging.pageSize);
 				reportSetDataEvent.dispatch();
-				
+
 				var reportTotalEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TOTAL, reportType, screenType);
 				reportTotalEvent.dispatch();
 
@@ -351,7 +404,7 @@
 					var reportGraphEvent:ReportEvent = new ReportEvent(ReportEvent.GET_GRAPH, reportType, screenType, '', true, true, true, true, false, addGraphTotals);
 					reportGraphEvent.dispatch();
 				}
-				
+
 				if (addGraphTotals || addTableTotals){
 					var reportBaseTotalsEvent:ReportEvent = new ReportEvent(ReportEvent.GET_BASE_TOTALS, reportType, screenType);
 					reportBaseTotalsEvent.dispatch();
@@ -442,12 +495,12 @@
 			private function help():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, helpUrl));
 			}
-			
+
 			private function changeToColChart():void{
 				showColumnChart = true;
 				showLineChart = false;
 			}
-			
+
 			private function changeToLineChart():void{
 				showColumnChart = false;
 				showLineChart = true;
@@ -463,12 +516,12 @@
 				pew.context = _model.context;
 				pew.uiconfId = _model.kdpUiConf;
 				pew.entry = _model.selectedReportData.selectedMediaEntry;
-				
+
 				PopUpManager.addPopUp( pew , this, true );
 				PopUpManager.centerPopUp( pew );
 				JSGate.maskHeader(false);
 			}
-			
+
 
 		]]>
 	</mx:Script>
@@ -489,32 +542,27 @@
 	<mx:HBox width="100%">
 		<mx:Label id="reportTitle" text="{this.label}" styleName="pageTitle2"/>
 	</mx:HBox>
- 
+
 	<mx:Spacer height="5"/>
 
 	<!-- report filter -->
-	<mx:VBox width="100%" >
-		<!-- entry filter -->
-		<view:Filter id="filter" filterVo="{filterVo}" width="100%" apply="{getReports(event)}"
-					 applicationsList="{_model.applicationsList}" 
-					 playbackContextFlag="{playbackContextFlag}"
-					 drillDownName="{_model.drillDownName}"
-					 filterUsersFlag="{filterUsersFlag}" filterApplicationsFlag="{filterApplicationsFlag}"
-					 dateOnlyFlag="{dateOnlyFlag}" objectIds="{reportData.objectIds}" 
-					 kc="{_model.kc}" showTimeUnits="{showTimeUnits}" showSearchFilter="{showSearchFilter}"
-					 showDrillDownNav="{showDrillDownNav}" isLoading="{_isLoading}"/>
-	</mx:VBox>
-	
+	<view:Filter id="filter" width="100%" isLoading="{_isLoading}" filterVo="{filterVo}" 
+				 applicationsList="{_model.applicationsList}" drillDownName="{_model.drillDownName}" 
+				 playbackContextFlag="{playbackContextFlag}" filterUsersFlag="{filterUsersFlag}" 
+				 filterApplicationsFlag="{filterApplicationsFlag}" dateOnlyFlag="{dateOnlyFlag}" 
+				 showTimeUnits="{showTimeUnits}" showSearchFilter="{showSearchFilter}" showDrillDownNav="{showDrillDownNav}" 
+				 objectIds="{reportData.objectIds}" kc="{_model.kc}" apply="{getReports(event)}"/>
+
 	<!-- chart switch -->
 	<mx:HBox width="100%" horizontalAlign="left" includeInLayout="{showChartSwitch}" visible="{showChartSwitch}">
 		<mx:Button styleName="barChartIcon" click="changeToColChart()" buttonMode="true" useHandCursor="true" toolTip="Show Bar Chart"/>
 		<mx:Button  styleName="lineChartIcon" click="changeToLineChart()" buttonMode="true" useHandCursor="true"  toolTip="Show Line Chart"/>
 	</mx:HBox>
-	
+
 	<mx:Spacer height="5"/>
 	<mx:HRule width="100%"/>
 	<mx:Spacer height="5"/>
-	
+
 	<!-- graph dimension -->
 	<mx:HBox width="100%">
 		<view:DimComboBox id="dimCb" width="310" dataProvider="{dimCbDp}" visible="{showDimention}"
@@ -567,14 +615,14 @@
 	<mx:HBox id="kdpSection" width="100%" enabled="{_isVisibleEntry}" visible="{showKDP}" includeInLayout="{showKDP}">
 		<view:EntryDetails height="292.6" width="100%" styleName="blueBox" data="{reportData.selectedMediaEntry}"/>
 	</mx:HBox>
-	
+
 	<!-- table -->
 	<mx:Label text="{resourceManager.getString('analytics', 'tableTitle')}" styleName="pageTitle2" 
 			  includeInLayout="{showTable}" visible="{showTable}"/>
 	<view:KTable id="ktable" width="100%" height="295" rowHeight="27" orderBy="{orderBy}" 
 				 supportDrillDown="{_model.tableSupportDrillDown}"
 				 includeInLayout="{showTable}" visible="{showTable}" headerDataProvider="{tableHeaders}"
-				 reportType="{reportType}" reportData="{ reportData }"/> <!-- enabled="{_isVisibleTable}"-->
+				 reportType="{reportType}" reportData="{ reportData }"/> 
 
 	<!-- paging -->
 	<controls:Paging id="paging" width="100%" visible="{showTable &amp;&amp; ! disablePager}" includeInLayout="{showTable &amp;&amp; ! disablePager}"

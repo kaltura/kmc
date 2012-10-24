@@ -15,24 +15,25 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 
 		public function execute(event:CairngormEvent):void {
-			var newStae:int = (event as StateEvent).newState;
+			var newState:int = (event as StateEvent).newState;
 			
 			_model.selectedEntry = null;
 			
-			_model.currentScreenState = newStae;
+			_model.currentScreenState = newState;
 			_model.filter.keywords = "";
 			_model.filter.userIds = "";
 			_model.filter.categories = null;
 			_model.selectedUserId = null;
 
-			switch (newStae) {
+			switch (newState) {
 				case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:
 				case ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN:
 				case ScreenTypes.TOP_CONTRIBUTORS:
 					//if it's not drilldown make the name null
 					_model.drillDownName = null;
 					_model.tableSupportDrillDown = false;
-				break;
+					break;
+				
 				case ScreenTypes.END_USER_ENGAGEMENT:
 				case ScreenTypes.MAP_OVERLAY:
 				case ScreenTypes.TOP_SYNDICATIONS:
@@ -40,23 +41,26 @@ package com.kaltura.kmc.modules.analytics.commands {
 					 //if it's not drilldown make the name null
 					_model.drillDownName = null;
 					_model.tableSupportDrillDown = true;
-					break;	
+					break;
+				
 				case ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN:
 					_model.tableSupportDrillDown = false;
 					break;
+				
 				case ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE:
 					_model.drillDownName = null;
 					_model.tableSupportDrillDown = false;
 					break;
+				
 				default:
 					_model.tableSupportDrillDown = true;
-				break;
+					break;
 			}
 
-			if (_model.reportDataMap[newStae])
-				_model.selectedReportData = _model.reportDataMap[newStae];
+			if (_model.reportDataMap[newState])
+				_model.selectedReportData = _model.reportDataMap[newState];
 			else
-				_model.selectedReportData = _model.reportDataMap[newStae] = new ReportData();
+				_model.selectedReportData = _model.reportDataMap[newState] = new ReportData();
 			
 		}
 	}

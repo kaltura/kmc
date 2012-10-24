@@ -49,7 +49,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			}
 			
 			var reportGetTotal : ReportGetTotal;
-			//If we have a user report call we need to have another fileter (that support application and users) 
+			//If we have a user report call we need to have another filter (that support application and users) 
 			//when we generate the report get total call
 			if ( _model.entitlementEnabled &&
 				(screenType == ScreenTypes.END_USER_ENGAGEMENT || 
