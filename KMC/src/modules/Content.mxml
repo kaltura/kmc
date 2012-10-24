@@ -561,8 +561,11 @@
 					}
 				}
 				else if (top is CategoryDetailsWin && _model.categoriesModel.refreshCategoriesRequired) {
-					// closing cat drilldown in "categories"
-					categories.loadCategories(true);
+					// we also get here when bulk "add to new category" in entries screen, then no need to refresh
+					if (contentView.selectedChild == categories) {
+						// closing cat drilldown in "categories"
+						categories.loadCategories(true);
+					}
 				}
 				else if (top is SetSchedulingWin){
 					// setting scheduling from "more options" menu
