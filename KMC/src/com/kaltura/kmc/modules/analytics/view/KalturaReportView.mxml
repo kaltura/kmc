@@ -37,7 +37,10 @@
 			public static var pew: PreviewEntryWin;
 			
 			[Bindable]
-			public var context:Context; //to load the kdp you must pass a context
+			/**
+			 * to load the kdp you must pass a context
+			 * */
+			public var context:Context; 
 			//////////////////////////////////////////////////////////////////////////////////
 
 			[Bindable]
@@ -174,8 +177,6 @@
 			public var showSearchFilter:Boolean = true;
 			[Bindable]
 			public var generalBarChartFlag:Boolean = false;
-//			[Bindable]
-//			public var isDateBarChart:Boolean = false;
 			[Bindable]
 			public var isMonths:Boolean = false;
 			[Bindable]
@@ -198,7 +199,6 @@
 					lineChart.dataFormatFunc = roundUpValue;
 					lineChart.dataUnits = resourceManager.getString('analytics', 'MB');
 				}
-				//BindingUtils.bindSetter( onSelectedMediaEntryChange , this.reportData , "selectedMediaEntry" );
 			}
 			
 			
@@ -242,7 +242,6 @@
 			 * triggered when tab is shown.
 			 * */
 			public function onShow():void {
-//				trace(this.id, "onShow");
 				// work around that in some case the show called twice
 				if (_showFlag)
 					return;
@@ -303,47 +302,23 @@
 			 * */
 			protected function onReportDataChange(rdtc:ReportData):void {
 				if (rdtc && this.visible) {
-//					populateFilter( rdtc );
-
 					if (showLineChart){
 						if (isMonths || isOneDay){
 							dateBarChart.dataProvider = rdtc.chartDp;
-						} else {
+						} 
+						else {
 							lineChart.dataProvider = rdtc.chartDp;
 						}
-					} else if (showColumnChart){
+					} 
+					else if (showColumnChart){
 						columnChart.dataProvider = rdtc.chartDp;
 					}
-					
 
 					if (showTable){
 						paging.totalCount = rdtc.totalCount;
 						paging.currRowsInPage = rdtc.tableDp ? rdtc.tableDp.length : 0;
 						paging.pageSize = rdtc.pager ? rdtc.pager.pageSize : paging.pageSize;
 					}
-
-//					if(rdtc.selectedMediaEntry)
-//						drillDownObjectName.text = rdtc.selectedMediaEntry.name; 
-
-					//drillDownObjectName.text = rdtc.objectName;
-
-//					// set all the reportData parameters form the current report view:
-//					rdtc.title = this.label;
-//					rdtc.type = this.reportType;
-//					rdtc.totalHeaders = aggregatedHeaders;
-//					rdtc.tableHeaders = tableHeaders;
-//
-//					if (filterVo && filterVo.keywords) {
-//						if (filterVo.searchInTags && filterVo.searchInAdminTags)
-//							rdtc.filterMessage = resourceManager.getString('analytics', 'filterAllMessage', [filterVo.keywords]);
-//						else if (filterVo.searchInTags)
-//							rdtc.filterMessage = resourceManager.getString('analytics', 'filterTagsOnlyMessage', [filterVo.keywords]);
-//						else if (filterVo.searchInAdminTags)
-//							rdtc.filterMessage = resourceManager.getString('analytics', 'filterAdminOnlyMessage', [filterVo.keywords]);
-//					}
-//					else {
-//						rdtc.filterMessage = '';
-//					}
 
 					set3rdLvlSelection();
 
@@ -479,7 +454,9 @@
 			}
 
 
-			//open entry preview
+			/**
+			 * open entry preview
+			 * */
 			protected function searchNote_linkHandler(event:TextEvent):void
 			{
 				pew = new PreviewEntryWin();
@@ -492,15 +469,6 @@
 				JSGate.maskHeader(false);
 			}
 			
-//			private function get isMonthGraph():Boolean{
-//				return showTimeUnits ? filterVo.interval == KalturaReportInterval.MONTHS : false;
-//			}
-//			
-//			[Bindable]
-//			private function set isMonthGraph(value:Boolean):void{
-//				
-//			}
-				
 
 		]]>
 	</mx:Script>
@@ -571,7 +539,6 @@
 	<!-- loader -->
 	<mx:VBox width="{this.width-150}" height="200" paddingTop="-150" horizontalAlign="center" clipContent="false"
 			 includeInLayout="false" visible="{_loadChart}">
-		<!-- <view:ProgressPanel title="Loading Chart" isLoading="{_loadChart}" halfSecCycles="50"/> -->
 		<mx:SWFLoader source="@Embed(source='assets/loader.swf', symbol='MyLoader')"/>
 	</mx:VBox>
 
@@ -592,7 +559,6 @@
 	<!-- loader -->
 	<mx:VBox width="{this.width-150}" paddingTop="-35" horizontalAlign="center" visible="{_loadTotal}"
 			 includeInLayout="false" clipContent="false">
-		<!-- <view:ProgressPanel title="Loading Total Bar" isLoading="{_loadTotal}" halfSecCycles="30" /> -->
 		<mx:SWFLoader source="@Embed(source='assets/loader.swf', symbol='MyLoader')"/>
 	</mx:VBox>
 	<mx:Spacer height="5"/>
@@ -611,7 +577,6 @@
 				 reportType="{reportType}" reportData="{ reportData }"/> <!-- enabled="{_isVisibleTable}"-->
 
 	<!-- paging -->
-	<!--pageSize="{reportData &amp;&amp; reportData.pager ? reportData.pager.pageSize : paging.pageSize}"-->
 	<controls:Paging id="paging" width="100%" visible="{showTable &amp;&amp; ! disablePager}" includeInLayout="{showTable &amp;&amp; ! disablePager}"
 					 rowsInPageChange="onPageChange()" nextPage="onPageChange()" prvPage="onPageChange()"
 					 getPageNum="onPageChange()" showRowsInPage="true" 
@@ -621,12 +586,10 @@
 	<mx:VBox width="{this.width-150}" paddingTop="-130" horizontalAlign="center" includeInLayout="false"
 			 visible="{_loadEntry}" clipContent="false">
 		<mx:SWFLoader source="@Embed(source='assets/loader.swf', symbol='MyLoader')"/>
-		<!-- <view:ProgressPanel title="Loading Entry" isLoading="{_loadEntry}" /> -->
 	</mx:VBox>
 	<mx:VBox width="{this.width-150}" paddingTop="-130" horizontalAlign="center" includeInLayout="false"
 			 visible="{_loadTable}" clipContent="false">
 		<mx:SWFLoader source="@Embed(source='assets/loader.swf', symbol='MyLoader')"/>
-		<!-- <view:ProgressPanel title="Loading Table" isLoading="{_loadTable}" /> -->
 	</mx:VBox>
 
 </mx:VBox>
