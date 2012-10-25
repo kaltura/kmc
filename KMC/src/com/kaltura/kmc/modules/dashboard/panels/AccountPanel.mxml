@@ -26,7 +26,6 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.DASHBOARD_ACCOUNT_CONTACT_US, GoogleAnalyticsConsts.DASHBOARD);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.DASHBOARD,KalturaStatsKmcEventType.DASHBOARD_ACCOUNT_CONTACT_US,
 														  "DashBoard>Account Contacts Us")
-//				DashboardManager.instance.loadKMCModule('account', 'Account Upgrade')
 				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'account', 'upgrade'));
 			}
 			
@@ -34,7 +33,6 @@
 			{
 				BindingUtils.bindSetter(onPackageReceived, DashboardManager.instance, "partnerPackage");
 				BindingUtils.bindSetter(onPercentSet, DashboardManager.instance, "totalPercentSoFar");
-//				BindingUtils.bindSetter(onUsageSet, DashboardManager.instance, "totalUsage");
 			}
 			
 			private function onPackageReceived(partnerPackage:String):void{
@@ -46,24 +44,21 @@
 				usageProgress.label = percent + "%";
 			}
 			
-//			private function onUsageSet(usage:String):void{
-//				
-//			}
 		]]>
 	</mx:Script>
-	<!--mx:states>
-		<mx:State
-	</mx:states-->
 	<mx:Label text="{resourceManager.getString('kdashboard', 'account_title')}" id="accountTitleLabel"
 			  styleName="accountSubTitleLabel"/>
-	<mx:Label text="{resourceManager.getString('kdashboard', 'trial_usage') + ' ' +  DashboardManager.instance.totalUsage + ' ' + resourceManager.getString('kdashboard', 'GB')}"
+	
+	<mx:Label text="{resourceManager.getString('kdashboard', 'trial_usage', [DashboardManager.instance.totalUsage])}"
 			  includeInLayout="{_showUsagePercent}" visible="{_showUsagePercent}" styleName="featureLineLabel"/>
 	<mx:ProgressBar id="usageProgress" includeInLayout="{_showUsagePercent}" visible="{_showUsagePercent}" labelPlacement="bottom" themeColor="#F20D7A"
 					minimum="0" maximum="100" direction="right" mode="manual" width="100%"/>
-	<mx:Label text="{resourceManager.getString('kdashboard', 'total_bandwidth') + ' ' + DashboardManager.instance.totalBWSoFar + ' ' + resourceManager.getString('kdashboard', 'GB') }"
+	
+	<mx:Label text="{resourceManager.getString('kdashboard', 'total_bandwidth', [DashboardManager.instance.totalBWSoFar])}"
 			  styleName="featureLineLabel" visible="{! _showUsagePercent}" includeInLayout="{! _showUsagePercent}"/>
-	<mx:Label text="{resourceManager.getString('kdashboard', 'total_storage') + ' ' +  DashboardManager.instance.hostingGB + ' ' + resourceManager.getString('kdashboard', 'GB')}"
+	<mx:Label text="{resourceManager.getString('kdashboard', 'total_storage', [DashboardManager.instance.hostingGB])}"
 			 styleName="featureLineLabel" visible="{! _showUsagePercent}" includeInLayout="{! _showUsagePercent}"/>
+	
 	<mx:Text id="customizeOptionText" text="{resourceManager.getString('kdashboard', 'contact_us_text')}"
 			 styleName="featureLineLabel" width="100%"/>
 	<mx:Button id='contactUsLinkButton' label="{resourceManager.getString('kdashboard', 'contact_us_link')}"
