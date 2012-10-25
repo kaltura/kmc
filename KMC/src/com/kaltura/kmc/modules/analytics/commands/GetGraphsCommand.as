@@ -68,7 +68,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			}
 			
 			var reportGetGraphs : ReportGetGraphs;
-			//If we have a user report call we need to have another fileter (that support application and users) 
+			//If we have a user report call we need to have another filter (that support application and users) 
 			//when we generate the report get total call
 			if (_screenType == ScreenTypes.END_USER_ENGAGEMENT || 
 				_screenType == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
@@ -80,7 +80,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			{
 				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
 				
-				//in the reports above we need to send playback context and instead of categories
+				//in the reports above we need to send playback context instead of categories
 				keurif.playbackContext = keurif.categories;
 				keurif.categories = null;
 				

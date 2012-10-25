@@ -68,6 +68,9 @@ package com.kaltura.kmc.modules.analytics.commands {
 				case ScreenTypes.END_USER_STORAGE:
 				case ScreenTypes.END_USER_STORAGE_DRILL_DOWN:
 					krif = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
+					//in the reports above we need to send playback context instead of categories
+					krif.playbackContext = krif.categories;
+					krif.categories = null;
 					break;
 					
 				case ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT:
@@ -75,6 +78,9 @@ package com.kaltura.kmc.modules.analytics.commands {
 				case ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS:
 					if (_model.entitlementEnabled) {
 						krif = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
+						//in the reports above we need to send playback context instead of categories
+						krif.playbackContext = krif.categories;
+						krif.categories = null;
 					}
 					else {
 						krif = ExecuteReportHelper.createFilterFromCurrentReport();
