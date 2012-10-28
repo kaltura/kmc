@@ -8,6 +8,7 @@
 		<![CDATA[
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.analytics.business.IDateRangeManager;
 			import com.kaltura.kmc.modules.analytics.control.PageEvent;
 			import com.kaltura.kmc.modules.analytics.control.ReportDataEvent;
 			import com.kaltura.kmc.modules.analytics.control.ReportEvent;
@@ -221,6 +222,12 @@
 			 * filtering data
 			 * */
 			public var filterVo:FilterVo;
+			
+			[Bindable]
+			/**
+			 * manager for dates ranges in filter
+			 * */
+			public var dateRanger:IDateRangeManager;
 
 			[Bindable]
 			/**
@@ -553,7 +560,8 @@
 				 playbackContextFlag="{playbackContextFlag}" filterUsersFlag="{filterUsersFlag}" 
 				 filterApplicationsFlag="{filterApplicationsFlag}" dateOnlyFlag="{dateOnlyFlag}" 
 				 showTimeUnits="{showTimeUnits}" showSearchFilter="{showSearchFilter}" showDrillDownNav="{showDrillDownNav}" 
-				 objectIds="{reportData.objectIds}" kc="{_model.kc}" apply="{getReports(event)}"/>
+				 objectIds="{reportData.objectIds}" kc="{_model.kc}" dateRangeManager="{dateRanger}" 
+				 apply="{getReports(event)}"/>
 
 	<!-- chart switch -->
 	<mx:HBox width="100%" horizontalAlign="left" includeInLayout="{showChartSwitch}" visible="{showChartSwitch}">

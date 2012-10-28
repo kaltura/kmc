@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:users="com.kaltura.kmc.modules.analytics.view.users.*"
-		 xmlns:drilldown="com.kaltura.kmc.modules.analytics.view.users.drilldown.*"
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
 		 xmlns:dtn="com.kaltura.kmc.modules.analytics.view.dtn.*" xmlns:view="com.kaltura.kmc.modules.analytics.view.*"
 		 creationComplete="creationCompleteHandler(event)">
 
@@ -18,35 +17,22 @@
 			import com.kaltura.kmc.modules.analytics.view.dtn.DTNItem;
 			import com.kaltura.types.KalturaReportType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.events.CollectionEvent;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 
-			private var _ready:Boolean = false;
+			private var _default:Boolean = false;
 
 			[Bindable]
 			private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 
-			private var _default:Boolean = false;
+			private var _ready:Boolean = false;
 
-
-			public function set showMapOverlay(value:Boolean):void {
-				var cg:PermissionEvent = new PermissionEvent(PermissionEvent.REMOVE_REPORT);
-				cg.data = ResourceManager.getInstance().getString('analytics', 'mapOverlay');
-				cg.dispatch();
-			}
-
-
-			/**
-			 * @internal
-			 * the getter is required for roles and permissions for its type,
-			 * the value is irrelevant
-			 * */
-			public function get showMapOverlay():Boolean {
-				return true;
+			public function help():void {
+				var anchor:String = (userViewStack.selectedChild as KalturaReportView).helpUrl;
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
 			}
 
 
@@ -69,9 +55,49 @@
 			}
 
 
+			/**
+			 * @internal
+			 * the getter is required for roles and permissions for its type,
+			 * the value is irrelevant
+			 * */
+			public function get showMapOverlay():Boolean {
+				return true;
+			}
+
+
+			public function set showMapOverlay(value:Boolean):void {
+				var cg:PermissionEvent = new PermissionEvent(PermissionEvent.REMOVE_REPORT);
+				cg.data = ResourceManager.getInstance().getString('analytics', 'mapOverlay');
+				cg.dispatch();
+			}
+
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				_model.userDtnDp.addEventListener(CollectionEvent.COLLECTION_CHANGE, resetDP, false, 0, true);
+				PermissionManager.getInstance().applyAllAttributes(this, "analytics.users");
+				_ready = true;
+			}
+
+
 			private function onDrillDown(newState:int):void {
 				var stateEvent:StateEvent = new StateEvent(StateEvent.STATE_CHANGE, newState);
 				stateEvent.dispatch();
+			}
+
+
+			private function onDtnChange():void {
+				if (dtn.selectedIndex == 0) {
+					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.TOP_CONTRIBUTORS)).dispatch();
+				}
+				else if (dtn.selectedIndex == 1) {
+					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.MAP_OVERLAY)).dispatch();
+				}
+				else if (dtn.selectedIndex == 2) {
+					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.TOP_SYNDICATIONS)).dispatch();
+				}
+				else if (dtn.selectedIndex == 3) {
+					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.END_USER_ENGAGEMENT)).dispatch();
+				}
 			}
 
 
@@ -122,19 +148,9 @@
 			}
 
 
-			private function onDtnChange():void {
-				if (dtn.selectedIndex == 0) {
-					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.TOP_CONTRIBUTORS)).dispatch();
-				}
-				else if (dtn.selectedIndex == 1) {
-					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.MAP_OVERLAY)).dispatch();
-				}
-				else if (dtn.selectedIndex == 2) {
-					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.TOP_SYNDICATIONS)).dispatch();
-				}
-				else if (dtn.selectedIndex == 3) {
-					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.END_USER_ENGAGEMENT)).dispatch();
-				}
+			private function resetDP(e:CollectionEvent):void {
+//				dtn.dataProvider = null;
+				dtn.dataProvider = _model.userDtnDp;
 			}
 
 
@@ -183,28 +199,9 @@
 							// make sure we don't override another report's message
 							return;
 					}
-					
+
 					selectedReport.message = message;
 				}
-			}
-
-
-			protected function creationCompleteHandler(event:FlexEvent):void {
-				_model.userDtnDp.addEventListener(CollectionEvent.COLLECTION_CHANGE, resetDP, false, 0, true);
-				PermissionManager.getInstance().applyAllAttributes(this, "analytics.users");
-				_ready = true;
-			}
-
-
-			private function resetDP(e:CollectionEvent):void {
-//				dtn.dataProvider = null;
-				dtn.dataProvider = _model.userDtnDp;
-			}
-
-
-			public function help():void {
-				var anchor:String = (userViewStack.selectedChild as KalturaReportView).helpUrl;
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
 			}
 		]]>
 	</mx:Script>
@@ -218,8 +215,8 @@
 								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
 								isLoading="{_model.loadingFlag}" reportData="{_model.selectedReportData}"
 								orderBy="count_total" aggregatedHeaders="{ _model.aggregateHeaders.topContrib }"
-								tableHeaders="{ _model.tableHeaders.topContrib }" filterUsersFlag="false"
-								filterApplicationsFlag="false" dimCbDp="{ _model.reportDimension.topContrib }"
+								tableHeaders="{ _model.tableHeaders.topContrib }" dateRanger="{_model.shortTermDatesRanger}" 
+								filterUsersFlag="false" filterApplicationsFlag="false" dimCbDp="{ _model.reportDimension.topContrib }"
 								helpUrl="{'section_analytics_top_contributors'}"
 								reportType="{KalturaReportType.TOP_CONTRIBUTORS}"
 								label="{resourceManager.getString('analytics','topContributors')}" styleName="pageStyle"
@@ -232,7 +229,7 @@
 								showTable="true" showKDP="false" orderBy="count_plays" filterUsersFlag="false"
 								filterApplicationsFlag="false"
 								aggregatedHeaders="{ _model.aggregateHeaders.mapOverlay }"
-								tableHeaders="{ _model.tableHeaders.mapOverlay }"
+								tableHeaders="{ _model.tableHeaders.mapOverlay }" dateRanger="{_model.shortTermDatesRanger}"
 								drillDown="{onDrillDown(ScreenTypes.MAP_OVERLAY_DRILL_DOWN)}"
 								helpUrl="{'section_analytics_map_overlay'}" reportType="{KalturaReportType.MAP_OVERLAY}"
 								label="{resourceManager.getString('analytics','mapOverlay')}" styleName="pageStyle"
@@ -245,7 +242,7 @@
 								showLineChart="true" showMap="false" showTable="true" showKDP="false"
 								filterUsersFlag="false" filterApplicationsFlag="false"
 								aggregatedHeaders="{ _model.aggregateHeaders.syndicator }"
-								tableHeaders="{ _model.tableHeaders.syndicator }"
+								tableHeaders="{ _model.tableHeaders.syndicator }" dateRanger="{_model.shortTermDatesRanger}"
 								dimCbDp="{ _model.reportDimension.syndicator }"
 								screenType="{ScreenTypes.TOP_SYNDICATIONS}"
 								drillDown="{onDrillDown(ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN)}"
@@ -261,7 +258,7 @@
 								showDimention="true" showColumnChart="false" showLineChart="true" showMap="false"
 								showTable="true" showKDP="false" filterUsersFlag="true" filterApplicationsFlag="true"
 								aggregatedHeaders="{ _model.aggregateHeaders.userEngagement }"
-								tableHeaders="{ _model.tableHeaders.userEngagement }"
+								tableHeaders="{ _model.tableHeaders.userEngagement }" dateRanger="{_model.shortTermDatesRanger}"
 								dimCbDp="{ _model.reportDimension.userEngagement }"
 								drillDown="{onDrillDown(ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN)}"
 								helpUrl="{'section_analytics_user_engagement'}"
@@ -276,7 +273,7 @@
 								showTable="true" showKDP="false" screenType="{ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN}"
 								filterUsersFlag="false" filterApplicationsFlag="false"
 								aggregatedHeaders="{ _model.aggregateHeaders.syndicator }"
-								tableHeaders="{ _model.tableHeaders.syndicator }"
+								tableHeaders="{ _model.tableHeaders.syndicator }" dateRanger="{_model.shortTermDatesRanger}"
 								dimCbDp="{ _model.reportDimension.syndicator }" reportData="{_model.selectedReportData}"
 								backScreenType="{ScreenTypes.TOP_SYNDICATIONS}"
 								helpUrl="{'section_analytics_syndication_drilldown'}"
@@ -291,7 +288,7 @@
 								filterUsersFlag="false" filterApplicationsFlag="false" orderBy="count_plays"
 								backScreenType="{ScreenTypes.MAP_OVERLAY}"
 								aggregatedHeaders="{ _model.aggregateHeaders.mapOverlay }"
-								tableHeaders="{ _model.tableHeaders.mapOverlay }"
+								tableHeaders="{ _model.tableHeaders.mapOverlay }" dateRanger="{_model.shortTermDatesRanger}"
 								helpUrl="{'section_analytics_map_drilldown'}"
 								reportType="{KalturaReportType.MAP_OVERLAY}"
 								screenType="{ScreenTypes.MAP_OVERLAY_DRILL_DOWN}"
@@ -306,7 +303,7 @@
 								screenType="{ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN}" showTable="true"
 								showKDP="false" filterUsersFlag="false" filterApplicationsFlag="true"
 								aggregatedHeaders="{ _model.aggregateHeaders.userEngagementDrilldown }"
-								tableHeaders="{ _model.tableHeaders.userEngagementDrilldown }"
+								tableHeaders="{ _model.tableHeaders.userEngagementDrilldown }" dateRanger="{_model.shortTermDatesRanger}"
 								dimCbDp="{ _model.reportDimension.userEngagement }"
 								reportData="{_model.selectedReportData}"
 								backScreenType="{ScreenTypes.END_USER_ENGAGEMENT}"
