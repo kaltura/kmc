@@ -21,7 +21,7 @@
 			import com.kaltura.types.KalturaReportInterval;
 			import com.kaltura.types.KalturaReportType;
 			import com.kaltura.vo.KalturaBaseEntry;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.SWFLoader;
@@ -34,6 +34,8 @@
 
 			private static var playerLoadedFlag:Boolean = false;
 			private static var playerReadyFlag:Boolean = false;
+			
+			private static const TABLE_ROW_HEIGHT:int = 27;
 
 			/**
 			 * to load the kdp you must pass a context
@@ -376,7 +378,7 @@
 					set3rdLvlSelection();
 
 					if (ktable && showTable) {
-						ktable.height = 295 + (paging.pageSize - 10) * 27;
+						ktable.height = 295 + (paging.pageSize - 10) * TABLE_ROW_HEIGHT;
 					}
 
 				}
@@ -619,7 +621,7 @@
 	<!-- table -->
 	<mx:Label text="{resourceManager.getString('analytics', 'tableTitle')}" styleName="pageTitle2" 
 			  includeInLayout="{showTable}" visible="{showTable}"/>
-	<view:KTable id="ktable" width="100%" height="295" rowHeight="27" orderBy="{orderBy}" 
+	<view:KTable id="ktable" width="100%" height="295" rowHeight="{TABLE_ROW_HEIGHT}" orderBy="{orderBy}" 
 				 supportDrillDown="{_model.tableSupportDrillDown}"
 				 includeInLayout="{showTable}" visible="{showTable}" headerDataProvider="{tableHeaders}"
 				 reportType="{reportType}" reportData="{ reportData }"/> 
