@@ -1,107 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
-	xmlns:charts="com.kaltura.kmc.modules.analytics.view.charts.*" xmlns:view="com.kaltura.kmc.modules.analytics.view.*" xmlns:dtn="com.kaltura.kmc.modules.analytics.view.dtn.*"	 >
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:charts="com.kaltura.kmc.modules.analytics.view.charts.*"
+		 xmlns:view="com.kaltura.kmc.modules.analytics.view.*" xmlns:dtn="com.kaltura.kmc.modules.analytics.view.dtn.*">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
-			import com.kaltura.analytics.KAnalyticsTracker;
-			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.analytics.control.PartnerEvent;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
-			import com.kaltura.kmc.modules.analytics.control.UsageGraphEvent;
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
-			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
-			import com.kaltura.kmc.modules.analytics.model.types.PackageType;
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.kmc.modules.analytics.view.dtn.DTNItem;
-			import com.kaltura.kmc.modules.analytics.vo.AccountUsageVO;
-			import com.kaltura.kmc.modules.analytics.vo.PackagesVO;
-			import com.kaltura.kmc.modules.analytics.vo.PartnerVO;
 			import com.kaltura.types.KalturaReportType;
-			import com.kaltura.types.KalturaStatsKmcEventType;
-			
-			import modules.Analytics;
 			
 			import mx.binding.utils.BindingUtils;
-			import mx.collections.ArrayCollection;
-			import mx.controls.Text;
 			import mx.events.FlexEvent;
 			import mx.events.ItemClickEvent;
-			
-			public static const INT2MONTHS_MAP : Object = { 1:"January", 
-												   			2:"February",
-															3:"March",
-															4:"April",
-															5:"May",
-															6:"June",
-															7:"July",
-															8:"August",
-															9:"September",
-															10:"October",
-															11:"November",
-															12:"December"
-													  };	
-													  
-			public static const MONTHS2INT_MAP : Object = { "January":1, 
-												   			"February":2,
-															"March":3,
-															"April":4,
-															"May":5,
-															"June":6,
-															"July":7,
-															"August":8,
-															"September":9,
-															"October":10,
-															"November":11,
-															"December":12
-													  };	
-													  
-			public static const Y_UNITS : String = "mb";
-			public static const YEARS : String = "years";
-			public static const DAYS : String = "days";
-			public static const MONTHS : String = "months";
-			
-			private var _defaultYear:Boolean=false;
-			private var _defaultMonth:Boolean=false;
-			[Bindable] public var partnerPackage : PackagesVO;
-			[Bindable] public var partnerData : PartnerVO;
-			[Bindable] public var accountUsageData : AccountUsageVO;
-			[Bindable] public var srvParams : Object = null;
-			[Bindable] public var getPartnerUsageURL : String = null;
-			[Bindable] public var rootUrl : String = "www.kaltura.com";
-			
-			[Bindable] public var createdYear : uint;
-			[Bindable] public var createdMonth : uint;
-			[Bindable] public var createdDay : uint;
-			
-			private var _currentTimeFrame : String = MONTHS;
-			private var _currentResolution : String = DAYS;
-			
-			private var _today : Date = new Date();
-			
-			private var _selectedYear : String = _today.fullYear.toString();
-			private var _selectedMonth : String = String(_today.month + 1);
-			
-			private var _mText : Text;
-			private var _srvParams : Object = null;
-			
-			private var monthsMap:HashMap = new HashMap();
+
+
 			private var _ready:Boolean = false;
-			
+
 			[Bindable]
 			private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
-			
-			public function init(evt:Event = null) : void
-			{
-				if (_ready){
+
+
+			public function init(evt:Event = null):void {
+				if (_ready) {
 					BindingUtils.bindSetter(onStateChange, _model, "currentScreenState");
-					
+
 					(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE)).dispatch();
-					
-					var partnerEvent : PartnerEvent = new PartnerEvent( PartnerEvent.GET_PARTNER_INFO );
+
+					var partnerEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
 					partnerEvent.dispatch();
 					pbns.onShow();
 				}
@@ -110,12 +39,13 @@
 					addEventListener(FlexEvent.CREATION_COMPLETE, init);
 				}
 			}
-			
+
+
 			private function onStateChange(newState:int):void {
 				var gaEvent:String;
 				for (var i:int = 0; i < dtn.numChildren; i++)
 					(dtn.getChildAt(i) as DTNItem).btn.styleName = "dtnButton";
-				
+
 				switch (newState) {
 					case ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE:
 						usageViews.selectedIndex = dtn.selectedIndex = 0;
@@ -125,7 +55,7 @@
 						usageViews.selectedIndex = dtn.selectedIndex = 1;
 						gaEvent = GoogleAnalyticsConsts.ANALYTICS_USER_USAGE_REPORTS;
 						break;
-					
+
 					case ScreenTypes.END_USER_STORAGE_DRILL_DOWN:
 						usageViews.selectedIndex = 2;
 						dtn.selectedIndex = -1;
@@ -137,85 +67,22 @@
 						(usageViews.selectedChild as KalturaReportView).onHide();
 				}
 				if (gaEvent) {
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + gaEvent , GoogleAnalyticsConsts.ANALYTICS);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + gaEvent, GoogleAnalyticsConsts.ANALYTICS);
 				}
 			}
-			
-			private function getMonth(monthCode:String):String
-			{
-				return INT2MONTHS_MAP[int(monthCode)];
-			}
-			
-			private function linkHandler(linkEvent:TextEvent):void
-	        {
-	            switch(linkEvent.text)
-	            {
-	            	case "package": dispatchEvent( new ItemClickEvent(ItemClickEvent.ITEM_CLICK , false , false , null, 2) ); break;
-	            }
-	        }
-			
-			public function undo() : void
-			{
-				
-			}
-					
-			public function isChanged() : Boolean
-			{
-				return false;
-			}
-			
-			public function saveChanges() : void
-			{
-				
-			}
-			
-			public function resetClonedData() : void
-			{
-				
-			}
-	     	
-	     	private function setCBDataProvider() : void
-	     	{
-	     		var arrColl : ArrayCollection = new ArrayCollection();
-		
-	     		var years : int = _today.fullYear - partnerData.createdYear; 
-		     	var months : int = _today.month + 1 - partnerData.createdMonth; 
-		     	var totalMonth : int = months + years * 12; 
-		     	
-		     	var i:int=0;
-		     	
-	     		if( _currentTimeFrame == YEARS )
-	     		{
-		     		for( i=0 ; i <= years ; i++)
-		     		{
-		     			arrColl.addItem( _today.fullYear - i );
-		     		}
-	     		}
-	     		else if( _currentTimeFrame == MONTHS )
-	     		{
-	     			var year : uint = _today.fullYear;
-	     			var month : uint = _today.month + 1;
-		     		
-		     		for( i=0 ; i <= totalMonth ; i++)
-		     		{
-		     			arrColl.addItem( INT2MONTHS_MAP[month] +" "+  year );
-		     			if(month>1)
-		     				--month;
-		     			else
-		     			{
-		     				month = 12;
-		     				--year;
-		     			}	
-		     		}
-	     		}
-	     	}
-	     	
+
+
+
 			public function help():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section_analytics_usage'));
 			}
-			
+
+
+			/**
+			 * handle sub-navigation
+			 * */
 			private function onDtnChange():void {
-				switch (dtn.selectedIndex){
+				switch (dtn.selectedIndex) {
 					case 0:
 						(new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE)).dispatch();
 						break;
@@ -224,50 +91,65 @@
 						break;
 				}
 			}
-			
+
+
+			/**
+			 * handle navigation to drilldown
+			 * */
 			private function onDrillDown(newState:int):void {
 				var stateEvent:StateEvent = new StateEvent(StateEvent.STATE_CHANGE, newState);
 				stateEvent.dispatch();
 			}
-			
 		]]>
-	</mx:Script> 
-	
+	</mx:Script>
+
 	<mx:Metadata>
 		 [Event(name="itemClick", type="mx.events.ItemClickEvent")]
 	</mx:Metadata>
 	<dtn:DTN id="dtn" width="158" styleName="analyticsDtn" dataProvider="{_model.usageDtnDp}"
 			 enabled="{!_model.loadingFlag}" change="onDtnChange()"/>
 	<mx:ViewStack id="usageViews" width="100%" height="{this.height - 15}" styleName="contentViewStack">
-		<view:KalturaReportView id="pbns" width="100%" height="100%" showTimeUnits="true"
-			dateOnlyFlag="true" filterUsersFlag="false" filterApplicationsFlag="false" showChartSwitch="false"
-			generalBarChartFlag="true" context="{_model.context}" loadChart="{_model.loadingChartFlag}"
-			loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
-			isLoading="{_model.loadingFlag}" filterVo="{_model.filter}" screenType="{ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE}"
-			reportData="{_model.selectedReportData}" showSearchFilter="false"
-			aggregatedHeaders="{ _model.aggregateHeaders.publisherBandwidthNStorage }"
-			tableHeaders="{ _model.tableHeaders.publisherBandwidthNStorage }" dimCbDp="{ _model.reportDimension.publisherStorageNBandwidth }"
-			reportType="{KalturaReportType.PARTNER_USAGE}" helpUrl="{'section_analytics_publisher_bandwidth_and_storage'}"
-			label="{resourceManager.getString('analytics','pbns')}" styleName="pageStyle"/>
-		<view:KalturaReportView id="endUserStorage" width="100%" height="100%" showTimeUnits="true"
-			dateOnlyFlag="true" filterUsersFlag="true" filterApplicationsFlag="false" addGraphTotals="true"
-			generalBarChartFlag="true" context="{_model.context}" loadChart="{_model.loadingChartFlag}" showChartSwitch="false"
-			loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
-			isLoading="{_model.loadingFlag}" filterVo="{_model.filter}" screenType="{ScreenTypes.END_USER_STORAGE}"
-			reportData="{_model.selectedReportData}" showSearchFilter="false" 
-			aggregatedHeaders="{ _model.aggregateHeaders.endUserStorage }"
-			tableHeaders="{_model.tableHeaders.endUserStorage}" dimCbDp="{ _model.reportDimension.endUserStorage }"
-			reportType="{KalturaReportType.USER_USAGE}" drillDown="{onDrillDown(ScreenTypes.END_USER_STORAGE_DRILL_DOWN)}"
-			helpUrl="{'section_analytics_end_user_storage'}" label="{resourceManager.getString('analytics','endUserStorage')}" styleName="pageStyle"/>
+		<view:KalturaReportView id="pbns" width="100%" height="100%" showTimeUnits="true" dateOnlyFlag="true"
+								filterUsersFlag="false" filterApplicationsFlag="false" showChartSwitch="false"
+								generalBarChartFlag="true" context="{_model.context}"
+								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
+								loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
+								filterVo="{_model.filter}" screenType="{ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE}"
+								reportData="{_model.selectedReportData}" showSearchFilter="false"
+								aggregatedHeaders="{ _model.aggregateHeaders.publisherBandwidthNStorage }"
+								tableHeaders="{ _model.tableHeaders.publisherBandwidthNStorage }"
+								dimCbDp="{ _model.reportDimension.publisherStorageNBandwidth }"
+								reportType="{KalturaReportType.PARTNER_USAGE}"
+								helpUrl="{'section_analytics_publisher_bandwidth_and_storage'}"
+								label="{resourceManager.getString('analytics','pbns')}" styleName="pageStyle"/>
+		<view:KalturaReportView id="endUserStorage" width="100%" height="100%" showTimeUnits="true" dateOnlyFlag="true"
+								filterUsersFlag="true" filterApplicationsFlag="false" addGraphTotals="true"
+								generalBarChartFlag="true" context="{_model.context}"
+								loadChart="{_model.loadingChartFlag}" showChartSwitch="false"
+								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
+								isLoading="{_model.loadingFlag}" filterVo="{_model.filter}"
+								screenType="{ScreenTypes.END_USER_STORAGE}" reportData="{_model.selectedReportData}"
+								showSearchFilter="false" aggregatedHeaders="{ _model.aggregateHeaders.endUserStorage }"
+								tableHeaders="{_model.tableHeaders.endUserStorage}"
+								dimCbDp="{ _model.reportDimension.endUserStorage }"
+								reportType="{KalturaReportType.USER_USAGE}"
+								drillDown="{onDrillDown(ScreenTypes.END_USER_STORAGE_DRILL_DOWN)}"
+								helpUrl="{'section_analytics_end_user_storage'}"
+								label="{resourceManager.getString('analytics','endUserStorage')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="specificEndUserStorage" width="100%" height="100%" showTimeUnits="true"
-			dateOnlyFlag="true" filterUsersFlag="false" filterApplicationsFlag="false" addGraphTotals="true" addTableTotals="true"
-			generalBarChartFlag="true" context="{_model.context}" loadChart="{_model.loadingChartFlag}" showChartSwitch="false"
-			loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}" 
-			isLoading="{_model.loadingFlag}" filterVo="{_model.filter}" screenType="{ScreenTypes.END_USER_STORAGE_DRILL_DOWN}"
-			reportData="{_model.selectedReportData}" showSearchFilter="false" disablePager="true"
-			aggregatedHeaders="{_model.aggregateHeaders.specificEndUserStorage}" tableHeaders="{_model.tableHeaders.specificEndUserStorage}"
-			dimCbDp="{ _model.reportDimension.endUserStorage }"	reportType="{KalturaReportType.SPECIFIC_USER_USAGE}" isDrillDown="true"
-			backScreenType="{ScreenTypes.END_USER_STORAGE}" helpUrl="{'section_analytics_end_user_storage_drilldown'}"
-			label="{resourceManager.getString('analytics','endUserStorage')}" styleName="pageStyle"/>
+								dateOnlyFlag="true" filterUsersFlag="false" filterApplicationsFlag="false"
+								addGraphTotals="true" addTableTotals="true" generalBarChartFlag="true"
+								context="{_model.context}" loadChart="{_model.loadingChartFlag}" showChartSwitch="false"
+								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
+								isLoading="{_model.loadingFlag}" filterVo="{_model.filter}"
+								screenType="{ScreenTypes.END_USER_STORAGE_DRILL_DOWN}"
+								reportData="{_model.selectedReportData}" showSearchFilter="false" disablePager="true"
+								aggregatedHeaders="{_model.aggregateHeaders.specificEndUserStorage}"
+								tableHeaders="{_model.tableHeaders.specificEndUserStorage}"
+								dimCbDp="{ _model.reportDimension.endUserStorage }"
+								reportType="{KalturaReportType.SPECIFIC_USER_USAGE}" isDrillDown="true"
+								backScreenType="{ScreenTypes.END_USER_STORAGE}"
+								helpUrl="{'section_analytics_end_user_storage_drilldown'}"
+								label="{resourceManager.getString('analytics','endUserStorage')}" styleName="pageStyle"/>
 	</mx:ViewStack>
 </mx:HBox>
