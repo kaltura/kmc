@@ -23,6 +23,27 @@ package com.kaltura.kmc.modules.analytics.business
 		
 		
 		/**
+		 * the last selected "from" date 
+		 */
+		function get latestFromDate():Date;
+		function set latestFromDate(value:Date):void;
+		
+		
+		/**
+		 * the last selected "to" date 
+		 */
+		function get latestToDate():Date;
+		function set latestToDate(value:Date):void;
+		
+		
+		/**
+		 * the last selected item in dropdown 
+		 */
+		function get latestSelected():String;
+		function set latestSelected(value:String):void;
+		
+		
+		/**
 		 * change filter values according to selected item 
 		 * @param filterVo
 		 * @return 
