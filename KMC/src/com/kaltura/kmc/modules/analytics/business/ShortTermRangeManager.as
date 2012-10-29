@@ -13,8 +13,8 @@ package com.kaltura.kmc.modules.analytics.business {
 	 * 
 	 */
 	public class ShortTermRangeManager implements IDateRangeManager {
-		public static const ONE_DAY:Number = 1000 * 60 * 60 * 24;
-		public static const SECOND_IN_MILI:Number = 1000;
+		private static const ONE_DAY:Number = 1000 * 60 * 60 * 24;
+		private static const SECOND_IN_MILI:Number = 1000;
 
 		private var _dateRange:Array;
 

@@ -2,8 +2,9 @@ package com.kaltura.kmc.modules.analytics.model {
 	import com.adobe.cairngorm.model.IModelLocator;
 	import com.kaltura.KalturaClient;
 	import com.kaltura.dataStructures.HashMap;
-	import com.kaltura.kmc.modules.analytics.business.ShortTermRangeManager;
 	import com.kaltura.kmc.modules.analytics.business.IDateRangeManager;
+	import com.kaltura.kmc.modules.analytics.business.LongTermRangeManager;
+	import com.kaltura.kmc.modules.analytics.business.ShortTermRangeManager;
 	import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
 	import com.kaltura.kmc.modules.analytics.model.reports.AggregateHeaders;
 	import com.kaltura.kmc.modules.analytics.model.reports.ReportDimension;
@@ -63,7 +64,7 @@ package com.kaltura.kmc.modules.analytics.model {
 
 		
 		public var shortTermDatesRanger:IDateRangeManager = new ShortTermRangeManager();
-		public var longTermDatesRanger:IDateRangeManager = new ShortTermRangeManager();
+		public var longTermDatesRanger:IDateRangeManager = new LongTermRangeManager();
 		
 		
 		public var categories:ArrayCollection;
