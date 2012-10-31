@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()" xmlns:components="com.hillelcoren.components.*">
+	<mx:Metadata>
+		[Event(name="apply", type="flash.events.Event")] 
+	</mx:Metadata>
+	
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
@@ -8,7 +12,6 @@
 			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.edw.vo.CategoryVO;
 			import com.kaltura.kmc.business.JSGate;
-			import com.kaltura.kmc.modules.analytics.business.ShortTermRangeManager;
 			import com.kaltura.kmc.modules.analytics.business.IDateRangeManager;
 			import com.kaltura.kmc.modules.analytics.control.DrillDownEvent;
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
@@ -16,7 +19,7 @@
 			import com.kaltura.kmc.modules.analytics.view.window.CategoriesTreePopUp;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 			import com.kaltura.types.KalturaReportInterval;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -28,32 +31,35 @@
 
 			public const LBL_WIDTH : int = 100;
 			public const INPUT_WIDTH : int = 310;
-			
+
 			public static const APPLY:String = "apply";
-			
+
 			public static const ONE_DAY:Number = 1000 * 60 * 60 * 24;
 			public static const SECOND_IN_MILI:Number = 1000; 
-			
-			
+
+
 			[Bindable]
 			/**
 			 * handles everything related to date ranges (dataProvider texts, change, reverse)
 			 * */
 			public var dateRangeManager:IDateRangeManager;
-			
-			public var objectIds:String = '';
-			
+
 			/**
-			 * elements are of type CategoryVO 
+			 * when switching between drilldown reports, need to keep drilldown subject id
+			 * */
+			public var drilldownSubjectId:String = '';
+
+			/**
+			 * elements are of type CategoryVO
 			 * */
 			private var _selectedCategoriesArr:ArrayCollection = new ArrayCollection();
-			
+
 			[Bindable]
 			/**
 			 * set texts to playbackContext related
 			 * */
 			public var playbackContextFlag : Boolean;
-			
+
 			[Bindable]
 			private var _filterVo:FilterVo;
 
@@ -62,16 +68,16 @@
 
 			[Bindable]
 			public var kc :KalturaClient;
-			
+
 			[Bindable]
 			public var applicationsList : ArrayCollection = new ArrayCollection();
-			
+
 			[Bindable]
 			public var showTimeUnits:Boolean = false;
-			
+
 			[Bindable]
 			public var showSearchFilter:Boolean = true;
-			
+
 			[Bindable]
 			public var drillDownName : String;
 
@@ -98,22 +104,22 @@
 
 			[Bindable]
 			private var _timeUnitsDp:Array = [ResourceManager.getInstance().getString('analytics', 'monthly'), ResourceManager.getInstance().getString('analytics', 'daily')];
-			
+
 			[Bindable]
 			public var dateOnlyFlag:Boolean = false;
-			
+
 			[Bindable]
 			/**
 			 * Show or Hide the user filter UI
 			 * */
 			public var filterUsersFlag:Boolean = true;
-			
+
 			[Bindable] 
 			/**
 			 * Show or Hide the application filter UI
 			 * */
 			public var filterApplicationsFlag:Boolean = true;
-			
+
 			[Bindable] 
 			public var showDrillDownNav:Boolean = false;
 
@@ -121,19 +127,21 @@
 			private var _oldFromDate:Date;
 
 
-			//Private Functions	
+
 			private function init():void {
 				if (this.visible) {
+					// get dates from manager:
 					if (dateCb)
 						dateCb.selectedItem = dateRangeManager.latestSelected; 
 					_oldFromDate = _filterVo.fromDate = dateRangeManager.latestFromDate;
 					_oldToDate = _filterVo.toDate = dateRangeManager.latestToDate;
-					
-					// default value for time units
+
+					// if timeunits selector is visible, set default value for time units
 					if (showTimeUnits){
 						filterVo.interval = KalturaReportInterval.MONTHS;
 					}
-					
+
+					// if there are categories on the filter vo, show them in autocomplete
 					if (_filterVo.categories == null) {
 						_selectedCategoriesArr = new ArrayCollection();
 					}
@@ -141,7 +149,8 @@
 						_selectedCategoriesArr = getCategoriesFromNames(_filterVo.categories.split(','));
 					}
 					onCategoriesChange();
-					
+
+					// if users filter is visible, show selected items if any
 					if (filterUsersFlag){
 						if (!_filterVo.userIds) {
 							usersComplete.selectedItems = null;
@@ -155,8 +164,9 @@
 							}
 						}
 					}
-					
-					if (! filterApplicationsFlag){
+
+					// if applications selector is not visible, clear filter value
+					if (! filterApplicationsFlag && filterVo.application){
 						filterVo.application = null;
 					} 
 				}
@@ -166,7 +176,7 @@
 			/**
 			 * given a list of category full names, retrieve a list of matching CategoryVO objects
 			 * @param ar	categries full names
-			 * @return ArrayCollection with CategoryVO objects 
+			 * @return ArrayCollection with CategoryVO objects
 			 * */
 			private function getCategoriesFromNames(ar:Array):ArrayCollection {
 				var result:ArrayCollection = new ArrayCollection();
@@ -259,7 +269,7 @@
 
 
 			private function onDrillDown(newState:int):void {
-				var drillDownEvent:DrillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN, objectIds, newState,drillDownName); 	
+				var drillDownEvent:DrillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN, drilldownSubjectId, newState, drillDownName); 	
 				drillDownEvent.dispatch();
 			}
 
@@ -276,7 +286,7 @@
 
 			private function onCategoriesSelected(event:Event):void {
 //				if ((event.target as CategoriesTreePopUp).selectedCategories.length > 0) {
-					dispatchEvent(new Event(APPLY));
+				dispatchEvent(new Event(APPLY));
 //				}
 			}
 
@@ -301,7 +311,9 @@
 						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectCategories');
 						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectCategoriesToolTip');
 					}
-					_filterVo.categories = null;
+					if (_filterVo.categories) {
+						_filterVo.categories = null;
+					}
 
 				}
 				else {
@@ -334,7 +346,7 @@
 			private function allCategoriesClick(event:MouseEvent):void {
 				dispatchEvent(new Event(APPLY));
 			}
-			
+
 			//Set the filter userIds for every change of the auto compelte user component
 			protected function usersComplete_changeHandler(event:Event):void
 			{
@@ -344,10 +356,10 @@
 					usersIds += usersComplete.selectedItems[i].id + ",";
 				}
 				_filterVo.userIds = usersIds.substr(0, usersIds.length-1);
-				
+
 				dispatchEvent(new Event(APPLY)); //apply
 			}
-			
+
 			protected function changeTimeUnits(event:ListEvent):void
 			{
 				switch (timeUnitsCb.selectedItem){
@@ -358,22 +370,19 @@
 						filterVo.interval = KalturaReportInterval.DAYS;
 						break;
 				}
-				
+
 				dispatchEvent(new Event(APPLY)); //apply
 			}
-			
+
 			private function onAppCbChange(evt:Event):void{
 				_filterVo.application = appFilter.selectedItem.toString();
 				dispatchEvent(new Event(APPLY));
 			}
-			
+
 		]]>
 	</mx:Script>
 
-	<mx:Metadata>
-		  [Event(name="apply", type="flash.events.Event")] 
-	</mx:Metadata>
-
+	<!-- dates and time-units -->
 	<mx:HBox width="100%" verticalAlign="middle">
 		<mx:Label text="{resourceManager.getString('analytics','dateRange')}"/>
 		<mx:ComboBox id="dateCb" dataProvider="{dateRangeManager.dateRange}" change="changeDateByRange(event)"
@@ -388,10 +397,9 @@
 					  change="fromDateChanged( event )" enabled="{!isLoading}"/>
 		<mx:DateField id="toDate" width="100" buttonMode="true" selectedDate="{_filterVo.toDate}"
 					  change="toDateChanged( event )" enabled="{!isLoading}"/>
-		<!--mx:Button label="{resourceManager.getString('analytics','apply')}" visible="false" includeInLayout="false"
-				   buttonMode="true" click="{dispatchEvent(new Event(APPLY))}" styleName="buttonType2"
-				   enabled="{!isLoading}"/-->
 	</mx:HBox>
+
+	<!-- categories -->
 	<mx:HBox id="categoriesBox" verticalAlign="middle" includeInLayout="{ !dateOnlyFlag || playbackContextFlag }" visible="{!dateOnlyFlag || playbackContextFlag}">
 		<mx:Label width="{LBL_WIDTH}" 
 				  text="{ playbackContextFlag ? resourceManager.getString('analytics','playbackContext') :  resourceManager.getString('analytics','categoriesTitle')}:"/>
@@ -401,6 +409,8 @@
 		<mx:LinkButton id='selectedCategoriesBtn' label="{resourceManager.getString('analytics','selectCategories')}"
 					   click="onCategoriesTreeOpen(event)" enabled="{!isLoading}"/>
 	</mx:HBox>
+
+	<!-- drilldown navigation -->
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{dateOnlyFlag}" visible="{dateOnlyFlag}">
 		<mx:LinkButton id="basicDetails" visible="{showDrillDownNav}"
 					   label="{resourceManager.getString('analytics','basicDetails')}"
@@ -414,29 +424,31 @@
 					   enabled="{!isLoading}"/>
 	</mx:HBox>
 
+	<!-- free text search -->
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{!dateOnlyFlag &amp;&amp; showSearchFilter}" visible="{!dateOnlyFlag &amp;&amp; showSearchFilter}">
 		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','searchFilter')}"/>
 		<mx:TextInput id="searchTerm" width="205" text="{_filterVo.keywords}"
 					  change="{_filterVo.keywords = searchTerm.text}"
 					  keyDown="{if(event.keyCode == Keyboard.ENTER)dispatchEvent(new Event(APPLY))}"
 					  enabled="{!isLoading}"/>
-		<!--<mx:Label text="{resourceManager.getString('analytics','in')}:" />-->
-		<!-- user filter -->
-		<mx:RadioButton id="searchInTags" groupName="searchGroup" height="15"
-						label="{resourceManager.getString('analytics','searchInTags')}"
-						selected="{_filterVo.searchInTags}"
-						change="{_filterVo.searchInAdminTags = !(_filterVo.searchInTags = searchInTags.selected);}"
-						visible="false" includeInLayout="false" enabled="{!isLoading}"/>
-		<!--  checkDisableTextField() -->
-		<mx:RadioButton id="searchInAdminTags" groupName="searchGroup" height="15"
-						label="{resourceManager.getString('analytics','searchInAdminTags')}"
-						selected="{_filterVo.searchInAdminTags}"
-						change="{_filterVo.searchInTags = !(_filterVo.searchInAdminTags = searchInAdminTags.selected);}"
-						visible="false" includeInLayout="false" enabled="{!isLoading}"/>
-		<!--  checkDisableTextField() -->
+		<!--
+				<mx:RadioButton id="searchInTags" groupName="searchGroup" height="15"
+								label="{resourceManager.getString('analytics','searchInTags')}"
+								selected="{_filterVo.searchInTags}"
+								change="{_filterVo.searchInAdminTags = !(_filterVo.searchInTags = searchInTags.selected);}"
+								visible="false" includeInLayout="false" enabled="{!isLoading}"/>
+
+				<mx:RadioButton id="searchInAdminTags" groupName="searchGroup" height="15"
+								label="{resourceManager.getString('analytics','searchInAdminTags')}"
+								selected="{_filterVo.searchInAdminTags}"
+								change="{_filterVo.searchInTags = !(_filterVo.searchInAdminTags = searchInAdminTags.selected);}"
+								visible="false" includeInLayout="false" enabled="{!isLoading}"/>
+		-->
 		<mx:Button label="{resourceManager.getString('analytics','apply')}" buttonMode="true"
 				   click="{dispatchEvent(new Event(APPLY))}" styleName="buttonType2" enabled="{!isLoading}"/>
 	</mx:HBox>
+
+	<!-- application -->
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{filterApplicationsFlag}" visible="{filterApplicationsFlag}">
 		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','application')}" />
 		<!-- TODO: CHECK IF WE NEED PROMPT THAT SAID LOADING... -->
@@ -444,6 +456,8 @@
 					 selectedIndex="{_filterVo.application ? (appFilter.dataProvider as ArrayCollection).getItemIndex(_filterVo.application) : 0}" 
 					 change="onAppCbChange(event)" />
 	</mx:HBox>
+
+	<!-- users -->
 	<mx:HBox width="100%" includeInLayout="{filterUsersFlag}" visible="{filterUsersFlag}">
 		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','searchUser')}" />
 		<components:AutoComplete id="usersComplete" width="{INPUT_WIDTH}" height="60" 

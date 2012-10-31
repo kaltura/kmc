@@ -78,7 +78,7 @@ package com.kaltura.kmc.modules.analytics.commands
 				_screenType == ScreenTypes.END_USER_STORAGE ||
 				_screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)
 			{
-				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
+				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport(_model.filter);
 				
 				//in the reports above we need to send playback context instead of categories
 				keurif.playbackContext = keurif.categories;
@@ -88,7 +88,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			}
 			else
 			{
-				var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
+				var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport(_model.filter);
 				reportGetGraphs = new ReportGetGraphs( (event as ReportEvent).reportType , krif , _model.selectedReportData.selectedDim, objectIds);
 			}
 			
@@ -239,8 +239,8 @@ package com.kaltura.kmc.modules.analytics.commands
 				else
 					_model.reportDataMap[_screenType].chartDp = _model.reportDataMap[_screenType].dimToChartDpMap["content_dropoff"];
 			}	
-			_model.filter = _model.filter;
-			_model.selectedReportData = null; //refreash
+			
+			_model.selectedReportData = null; //refresh
 			_model.selectedReportData = _model.reportDataMap[_screenType];	
 		}
 		

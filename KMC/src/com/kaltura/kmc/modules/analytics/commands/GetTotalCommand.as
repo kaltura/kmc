@@ -60,7 +60,7 @@ package com.kaltura.kmc.modules.analytics.commands
 					screenType == ScreenTypes.END_USER_STORAGE ||
 					screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN))
 			{
-				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
+				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport(_model.filter);
 				
 				//in the reports above we need to send playback context and instead of categories
 				keurif.playbackContext = keurif.categories;
@@ -70,7 +70,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			}
 			else
 			{
-				var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
+				var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport(_model.filter);
 				reportGetTotal = new ReportGetTotal( (event as ReportEvent).reportType , krif , objectIds);
 			}
 			
@@ -119,7 +119,6 @@ package com.kaltura.kmc.modules.analytics.commands
 				
 			_model.reportDataMap[_model.currentScreenState].aggregatedDataArrCol = arrCol;
 			_model.reportDataMap[_model.currentScreenState].originalTotalHeaders = aggLbls;
-			_model.filter = _model.filter;
 			
 			//if we have entitlement and the uniqe users are known
 			if ( _model.entitlementEnabled &&
@@ -133,7 +132,7 @@ package com.kaltura.kmc.modules.analytics.commands
 					_model.selectedReportData.totalCount = int(arrCol[0].value);
 			}
 			
-			_model.selectedReportData = null; //refreash
+			_model.selectedReportData = null; //refresh
 			_model.selectedReportData = _model.reportDataMap[_model.currentScreenState];
 		}
 		

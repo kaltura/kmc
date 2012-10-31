@@ -29,23 +29,21 @@ package com.kaltura.kmc.modules.analytics.commands {
 		 * @return krif the new KalturaReportInputFilter
 		 *
 		 */
-		public static function createFilterFromCurrentReport():KalturaReportInputFilter {
+		public static function createFilterFromCurrentReport(fvo:FilterVo):KalturaReportInputFilter {
 			var krif:KalturaReportInputFilter = new KalturaReportInputFilter();
 			var today:Date = new Date();
-			var fvo:FilterVo = _model.filter;
 			if (fvo) {
 				// filter dates are in seconds, Date.time is in ms, Date.timezoneOffset is in minutes.
 				krif.fromDate = Math.ceil(fvo.fromDate.time / 1000) - today.timezoneOffset * 60;
 				krif.toDate = Math.ceil(fvo.toDate.time / 1000) - today.timezoneOffset * 60;
 				krif.keywords = fvo.keywords;
 				krif.categories = fvo.categories;
-				krif.searchInTags = fvo.searchInTags;
-				krif.searchInAdminTags = fvo.searchInAdminTags;
+				krif.searchInTags = true;
+				krif.searchInAdminTags = false;
 				
 				if (fvo.interval != null){
 					krif.interval = fvo.interval;
 				}
-//				krif.interval
 				// add time offset in minutes.
 				krif.timeZoneOffset = today.timezoneOffset;
 			}
@@ -53,17 +51,16 @@ package com.kaltura.kmc.modules.analytics.commands {
 			return krif;
 		}
 		
-		public static function createEndUserFilterFromCurrentReport():KalturaEndUserReportInputFilter{
+		public static function createEndUserFilterFromCurrentReport(fvo:FilterVo):KalturaEndUserReportInputFilter{
 			var keurif:KalturaEndUserReportInputFilter = new KalturaEndUserReportInputFilter();
 			var today:Date = new Date();
-			var fvo:FilterVo = _model.filter;
 			if (fvo) {
 				// filter dates are in seconds, Date.time is in ms, Date.timezoneOffset is in minutes.
 				keurif.fromDate = Math.ceil(fvo.fromDate.time / 1000) - today.timezoneOffset * 60;
 				keurif.toDate = Math.ceil(fvo.toDate.time / 1000) - today.timezoneOffset * 60;
 				keurif.keywords = fvo.keywords;
 				
-				//if we selected spacific application
+				//if we selected specific application
 				if(fvo.application != ResourceManager.getInstance().getString('analytics', 'all'))
 					keurif.application = fvo.application;
 				
@@ -73,8 +70,8 @@ package com.kaltura.kmc.modules.analytics.commands {
 				
 				keurif.userIds = fvo.userIds;
 				keurif.categories = fvo.categories;
-				keurif.searchInTags = fvo.searchInTags;
-				keurif.searchInAdminTags = fvo.searchInAdminTags;
+				keurif.searchInTags = true;
+				keurif.searchInAdminTags = false;
 				// add time offset in minutes.
 				keurif.timeZoneOffset = today.timezoneOffset;
 			}

@@ -24,7 +24,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			if(_model.reportDataMap[_model.currentScreenState].selectedMediaEntry)
 				_model.reportDataMap[_model.currentScreenState].selectedMediaEntry = null;
 				
-			var baseEntryGet : BaseEntryGet = new BaseEntryGet( (event as DrillDownEvent).entryId );
+			var baseEntryGet : BaseEntryGet = new BaseEntryGet( (event as DrillDownEvent).subjectId );
 			baseEntryGet.addEventListener( KalturaEvent.COMPLETE , result );
 			baseEntryGet.addEventListener( KalturaEvent.FAILED , fault );
 			_model.kc.post( baseEntryGet );

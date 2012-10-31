@@ -20,10 +20,6 @@ package com.kaltura.kmc.modules.analytics.commands {
 			_model.selectedEntry = null;
 			
 			_model.currentScreenState = newState;
-			_model.filter.keywords = "";
-			_model.filter.userIds = "";
-			_model.filter.categories = null;
-			_model.selectedUserId = null;
 
 			switch (newState) {
 				case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:

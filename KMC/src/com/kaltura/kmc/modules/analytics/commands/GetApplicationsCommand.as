@@ -33,7 +33,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 	
 			var reportGetTable:ReportGetTable;
 
-			var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
+			var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport(_model.filter);
 			reportGetTable = new ReportGetTable(KalturaReportType.APPLICATIONS,
 												krif, 
 												applicationPager);

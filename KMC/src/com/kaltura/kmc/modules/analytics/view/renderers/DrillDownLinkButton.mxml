@@ -33,6 +33,7 @@
  
 			private function onItemClick( event : MouseEvent ) : void
 			{
+				// "data" is of type Object. it's attributes match table headers as received from server for the current report.
 				var object_name : String;
 				
 				if(data.country) object_name = data.country;
@@ -45,10 +46,8 @@
 				var drillDownEvent : DrillDownEvent;
 				
 				//if we drill down a user
-				if(data.name)
-					drillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN , data.name , 0 , object_name);
-				else if (data.NAME)
-					drillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN , data.NAME , 0 , object_name);
+				if(data.name || data.NAME)
+					drillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN , object_name , 0 , object_name);
 				else // else we drill down an entry
 					drillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN , data.object_id , 0 , object_name); //data.entry_id
 				

@@ -31,7 +31,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			_model.loadingFlag = true;
 			ExecuteReportHelper.reportSetupBeforeExecution();
 			
-			var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
+			var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport(_model.filter);
 			
 			if(!_model.selectedReportData.pager)
 			{

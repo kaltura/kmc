@@ -39,12 +39,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			reportData.pager.pageSize = rdEvt.pageSize;
 			
 			if (_model.filter && _model.filter.keywords) {
-				if (_model.filter.searchInTags && _model.filter.searchInAdminTags)
-					reportData.filterMessage = ResourceManager.getInstance().getString('analytics', 'filterAllMessage', [_model.filter.keywords]);
-				else if (_model.filter.searchInTags)
-					reportData.filterMessage = ResourceManager.getInstance().getString('analytics', 'filterTagsOnlyMessage', [_model.filter.keywords]);
-				else if (_model.filter.searchInAdminTags)
-					reportData.filterMessage = ResourceManager.getInstance().getString('analytics', 'filterAdminOnlyMessage', [_model.filter.keywords]);
+				reportData.filterMessage = ResourceManager.getInstance().getString('analytics', 'filterTagsOnlyMessage', [_model.filter.keywords]);
 			}
 			else {
 				reportData.filterMessage = '';

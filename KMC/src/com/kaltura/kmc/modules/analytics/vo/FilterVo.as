@@ -1,10 +1,12 @@
 package com.kaltura.kmc.modules.analytics.vo {
 	import com.kaltura.kmc.modules.analytics.utils.TimeConsts;
-
+	
+	import flash.events.EventDispatcher;
+	
 	import mx.resources.ResourceManager;
 
 	[Bindable]
-	public class FilterVo {
+	public class FilterVo extends EventDispatcher{
 		
 
 		public var selectedDate:String;
@@ -12,13 +14,15 @@ package com.kaltura.kmc.modules.analytics.vo {
 		public var toDate:Date;
 
 		/**
-		 * comma-separated list of categories full-names
+		 * comma-separated list of categories full-names.
+		 * 
+		 * @internal
+		 * when getting report, the command switches between categories and playbackContext according to required report
 		 */
 		public var categories:String;
 
 		public var keywords:String;
-		public var searchInAdminTags:Boolean = false;
-		public var searchInTags:Boolean = true;
+		
 		public var application:String;
 		
 		/**
@@ -34,11 +38,6 @@ package com.kaltura.kmc.modules.analytics.vo {
 
 
 		public function FilterVo() {
-//			var today:Date = new Date();
-//			var todaysHourInMiliSeconds:Number = (((today.hoursUTC) * 60 + today.minutesUTC) * 60 + today.secondsUTC) * 1000 + today.millisecondsUTC;
-//			var todayStart:Number = today.time - todaysHourInMiliSeconds;
-//			fromDate = new Date((todayStart - 31 * TimeConsts.DAY + today.timezoneOffset * 60000) + TimeConsts.DAY);
-//			toDate = new Date((todayStart - TimeConsts.DAY + today.timezoneOffset * 60000 - 1000) + TimeConsts.DAY);
 		}
 	}
 }

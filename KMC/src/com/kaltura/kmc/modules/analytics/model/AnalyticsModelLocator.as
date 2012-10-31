@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.analytics.model {
 	import com.kaltura.kmc.modules.analytics.business.ShortTermRangeManager;
 	import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
 	import com.kaltura.kmc.modules.analytics.model.reports.AggregateHeaders;
+	import com.kaltura.kmc.modules.analytics.model.reports.FilterMasks;
 	import com.kaltura.kmc.modules.analytics.model.reports.ReportDimension;
 	import com.kaltura.kmc.modules.analytics.model.reports.TableHeaders;
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
@@ -44,7 +45,13 @@ package com.kaltura.kmc.modules.analytics.model {
 
 		//---------------------------------------------------------
 		//data objects
+		
+		
+		/**
+		 * the name of subject (user name, entry name) of current drilldown (shown in breadcrumps)
+		 */
 		public var drillDownName:String = "";
+		
 		public var reportDataMap:Object = new Object();
 
 		/**
@@ -53,17 +60,102 @@ package com.kaltura.kmc.modules.analytics.model {
 		public var selectedReportData:ReportData;
 		public var partnerData:PartnerVO = new PartnerVO();
 		public var usageData:AccountUsageVO = new AccountUsageVO();
-		public var filter:FilterVo = new FilterVo();
+		
 		public var reportDimension:ReportDimension = new ReportDimension();
 		public var aggregateHeaders:AggregateHeaders = new AggregateHeaders();
 		public var tableHeaders:TableHeaders = new TableHeaders();
+		
+		public var filterMasks:FilterMasks = new FilterMasks(new FilterVo());
+		
+		public function get filter():FilterVo {
+			var res:FilterVo;
+			// get correct mask according to current report
+			switch (currentScreenState) {
+				case ScreenTypes.TOP_CONTENT :
+					res = filterMasks.topContent;
+					break;
+				case ScreenTypes.CONTENT_DROPOFF :
+					res = filterMasks.contentDropoff;
+					break;
+				case ScreenTypes.CONTENT_INTERACTIONS :
+					res = filterMasks.contentInteraction;
+					break;
+				case ScreenTypes.CONTENT_CONTRIBUTIONS :
+					res = filterMasks.contentContributions;
+					break;
+				case ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT :
+					res = filterMasks.topContentPerUser;
+					break;
+				case ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF :
+					res = filterMasks.contentDropoffPerUser;
+					break;
+				case ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS :
+					res = filterMasks.contentInteractionPerUser;
+					break;
+				case ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN :
+					res = filterMasks.contentContributions;
+					break;
+				
+				case ScreenTypes.TOP_CONTRIBUTORS :
+					res = filterMasks.topContrib;
+					break;
+				case ScreenTypes.MAP_OVERLAY :
+					res = filterMasks.mapOverlay;
+					break;
+				case ScreenTypes.TOP_SYNDICATIONS :
+					res = filterMasks.syndicator;
+					break;
+				case ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN  :
+					res = filterMasks.syndicator;
+					break;
+				case ScreenTypes.MAP_OVERLAY_DRILL_DOWN  : 
+					res = filterMasks.mapOverlay;
+					break;
+				
+				case ScreenTypes.END_USER_ENGAGEMENT  :
+					res = filterMasks.userEngagement;
+					break;
+				case ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN  :
+					res = filterMasks.userEngagementDrilldown;
+					break;
+				
+				case ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE :
+					res = filterMasks.publisherBandwidthNStorage;
+					break;
+				case ScreenTypes.END_USER_STORAGE :
+					res = filterMasks.endUserStorage;
+					break;
+				case ScreenTypes.END_USER_STORAGE_DRILL_DOWN :
+					res = filterMasks.publisherBandwidthNStorage;  
+					break;
+			}
+			return res;
+		}
+		
+		/**
+		 * id of drilldown subject (user / entry)
+		 */
 		public var selectedEntry:String;
-		public var selectedUserId:String;
+		
+		/**
+		 * does ktable show links for items 
+		 */
 		public var tableSupportDrillDown:Boolean = true;
+		
+		/**
+		 * should referer icon be shown in ktable
+		 */
 		public var showRefererIcon:Boolean = false;
 
 		
+		/**
+		 * dates ranges manager for content / users reports 
+		 */
 		public var shortTermDatesRanger:IDateRangeManager = new ShortTermRangeManager();
+		
+		/**
+		 * dates ranges manager for BW & storage reports 
+		 */		
 		public var longTermDatesRanger:IDateRangeManager = new LongTermRangeManager();
 		
 		

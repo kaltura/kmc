@@ -55,7 +55,7 @@ package com.kaltura.kmc.modules.analytics.commands
 				objectIds = _model.selectedReportData.objectIds = _model.selectedEntry;
 			}
 			
-			var filter:KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
+			var filter:KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport(_model.filter);
 			filter.playbackContext = filter.categories;
 			filter.categories = null;
 			

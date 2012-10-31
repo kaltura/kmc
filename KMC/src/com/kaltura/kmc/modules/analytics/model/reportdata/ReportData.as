@@ -16,6 +16,10 @@ package com.kaltura.kmc.modules.analytics.model.reportdata
 		public var filterMessage : String;
 		public var totalHeaders : Array;
 		public var tableHeaders : Array;
+		
+		/**
+		 * in drilldown reports, report subject.
+		 */
 		public var objectIds : String;
 		public var objectName : String;
 		

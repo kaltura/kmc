@@ -274,7 +274,7 @@
 		<view:KalturaReportView id="topContet" width="100%" context="{_model.context}"
 								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
 								loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
-								filterVo="{_model.filter}" reportData="{_model.selectedReportData}"
+								filterVo="{_model.filterMasks.topContent}" reportData="{_model.selectedReportData}"
 								orderBy="count_plays" aggregatedHeaders="{ _model.aggregateHeaders.topContent }"
 								tableHeaders="{ _model.tableHeaders.topContent }" dateRanger="{_model.shortTermDatesRanger}"
 								dimCbDp="{ _model.reportDimension.topContent }" screenType="{ScreenTypes.TOP_CONTENT}"
@@ -283,7 +283,7 @@
 								drillDown="{onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT)}"
 								label="{resourceManager.getString('analytics','topContent')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="contentDropOff" width="100%" height="100%" context="{_model.context}"
-								filterVo="{_model.filter}" loadChart="{_model.loadingChartFlag}" filterUsersFlag="false"
+								filterVo="{_model.filterMasks.contentDropoff}" loadChart="{_model.loadingChartFlag}" filterUsersFlag="false"
 								filterApplicationsFlag="false" loadTotal="{_model.loadingTotalFlag}"
 								loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
 								reportData="{_model.selectedReportData}" orderBy="count_plays" showKDP="false"
@@ -295,7 +295,7 @@
 								screenType="{ScreenTypes.CONTENT_DROPOFF}"
 								label="{resourceManager.getString('analytics','contentDropOff')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="contentInteractions" width="100%" height="100%" context="{_model.context}"
-								filterVo="{_model.filter}" loadChart="{_model.loadingChartFlag}"
+								filterVo="{_model.filterMasks.contentInteraction}" loadChart="{_model.loadingChartFlag}"
 								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
 								isLoading="{_model.loadingFlag}" reportData="{_model.selectedReportData}"
 								orderBy="count_plays" showKDP="false" showColumnChart="false" showLineChart="true"
@@ -309,7 +309,7 @@
 								label="{resourceManager.getString('analytics','contentInteractions')}"
 								styleName="pageStyle" screenType="{ScreenTypes.CONTENT_INTERACTIONS}"/>
 		<view:KalturaReportView id="contentContributions" width="100%" height="100%" context="{_model.context}"
-								filterVo="{_model.filter}" dateOnlyFlag="{true}" loadChart="{_model.loadingChartFlag}"
+								filterVo="{_model.filterMasks.contentContributions}" dateOnlyFlag="{true}" loadChart="{_model.loadingChartFlag}"
 								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
 								isLoading="{_model.loadingFlag}" reportData="{_model.selectedReportData}"
 								orderBy="count_total" showKDP="false" showColumnChart="false" showLineChart="true"
@@ -323,7 +323,7 @@
 								drillDown="{onDrillDown(ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN)}"
 								label="{resourceManager.getString('analytics','contentContributions')}"
 								styleName="pageStyle" screenType="{ScreenTypes.CONTENT_CONTRIBUTIONS}"/>
-		<view:KalturaReportView id="videoDrillDownDefault" width="100%" height="100%" filterVo="{_model.filter}"
+		<view:KalturaReportView id="videoDrillDownDefault" width="100%" height="100%" filterVo="{_model.filterMasks.topContentPerUser}"
 								context="{_model.context}" dateOnlyFlag="{true}" showDrillDownNav="{true}"
 								playbackContextFlag="{_model.entitlementEnabled}" isDrillDown="{true}"
 								filterApplicationsFlag="{_model.entitlementEnabled}"
@@ -339,7 +339,7 @@
 								helpUrl="{'section_analytics_video_drilldown'}"
 								reportType="{_model.entitlementEnabled ? KalturaReportType.USER_TOP_CONTENT : KalturaReportType.TOP_CONTENT}"
 								label="{resourceManager.getString('analytics','topContent')}" styleName="pageStyle"/>
-		<view:KalturaReportView id="videoDrillDownDropoff" width="100%" height="100%" filterVo="{_model.filter}"
+		<view:KalturaReportView id="videoDrillDownDropoff" width="100%" height="100%" filterVo="{_model.filterMasks.contentDropoffPerUser}"
 								playbackContextFlag="{_model.entitlementEnabled}" context="{_model.context}"
 								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
 								loadEntry="{_model.loadingEntryFlag}"
@@ -356,7 +356,7 @@
 								helpUrl="{'section_analytics_video_drilldown_dropoff'}"
 								reportType="{_model.entitlementEnabled ? KalturaReportType.USER_CONTENT_DROPOFF : KalturaReportType.CONTENT_DROPOFF}"
 								label="{resourceManager.getString('analytics','contentDropOff')}" styleName="pageStyle"/>
-		<view:KalturaReportView id="videoDrillDownInteractions" filterVo="{_model.filter}" context="{_model.context}"
+		<view:KalturaReportView id="videoDrillDownInteractions" filterVo="{_model.filterMasks.contentInteractionPerUser}" context="{_model.context}"
 								playbackContextFlag="{_model.entitlementEnabled}" loadChart="{_model.loadingChartFlag}"
 								loadTotal="{_model.loadingTotalFlag}" loadEntry="{_model.loadingEntryFlag}"
 								isLoading="{_model.loadingFlag}" showKDP="{!_model.entitlementEnabled}"
@@ -374,7 +374,7 @@
 								tableHeaders="{_model.tableHeaders.contentInteractionPerUser}" dateRanger="{_model.shortTermDatesRanger}"
 								label="{resourceManager.getString('analytics','contentInteractions')}"
 								styleName="pageStyle"/>
-		<view:KalturaReportView id="contentContributionsDrillDown" width="100%" height="100%" filterVo="{_model.filter}"
+		<view:KalturaReportView id="contentContributionsDrillDown" width="100%" height="100%" filterVo="{_model.filterMasks.contentContributions}"
 								context="{_model.context}" loadChart="{_model.loadingChartFlag}"
 								loadTotal="{_model.loadingTotalFlag}" loadEntry="{_model.loadingEntryFlag}"
 								isLoading="{_model.loadingFlag}" dateOnlyFlag="{true}" isDrillDown="{true}"

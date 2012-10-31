@@ -38,7 +38,7 @@
 
 			public function init(e:Event = null):void {
 				if (_ready) {
-					BindingUtils.bindSetter(onStateChnage, _model, "currentScreenState");
+					BindingUtils.bindSetter(onStateChange, _model, "currentScreenState");
 					BindingUtils.bindSetter(selectedReportChange, _model, "selectedReportData");
 
 					var stateEvent:StateEvent = new StateEvent(StateEvent.STATE_CHANGE,
@@ -101,7 +101,7 @@
 			}
 
 
-			private function onStateChnage(newState:int):void {
+			private function onStateChange(newState:int):void {
 				var gaEvent:String;
 				switch (newState) {
 					case ScreenTypes.TOP_CONTRIBUTORS:
@@ -211,7 +211,7 @@
 	<mx:ViewStack id="userViewStack" selectedIndex="0" width="100%" height="{this.height - 15}"
 				  styleName="contentViewStack">
 		<view:KalturaReportView id="topContributors" width="100%" dateOnlyFlag="{true}" context="{_model.context}"
-								filterVo="{_model.filter}" loadChart="{_model.loadingChartFlag}"
+								filterVo="{_model.filterMasks.topContrib}" loadChart="{_model.loadingChartFlag}"
 								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
 								isLoading="{_model.loadingFlag}" reportData="{_model.selectedReportData}"
 								orderBy="count_total" aggregatedHeaders="{ _model.aggregateHeaders.topContrib }"
@@ -222,7 +222,7 @@
 								label="{resourceManager.getString('analytics','topContributors')}" styleName="pageStyle"
 								screenType="{ScreenTypes.TOP_CONTRIBUTORS}"/>
 		<view:KalturaReportView id="mapOverlay" width="100%" dateOnlyFlag="{true}" context="{_model.context}"
-								filterVo="{_model.filter}" reportData="{_model.selectedReportData}"
+								filterVo="{_model.filterMasks.mapOverlay}" reportData="{_model.selectedReportData}"
 								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
 								loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
 								showDimention="false" showColumnChart="false" showLineChart="false" showMap="false"
@@ -235,7 +235,7 @@
 								label="{resourceManager.getString('analytics','mapOverlay')}" styleName="pageStyle"
 								screenType="{ScreenTypes.MAP_OVERLAY}"/>
 		<view:KalturaReportView id="topSyndications" dateOnlyFlag="{true}" context="{_model.context}"
-								filterVo="{_model.filter}" width="100%" height="100%" orderBy="count_plays"
+								filterVo="{_model.filterMasks.syndicator}" width="100%" height="100%" orderBy="count_plays"
 								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
 								loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
 								reportData="{_model.selectedReportData}" showDimention="true" showColumnChart="false"
@@ -251,7 +251,7 @@
 								label="{resourceManager.getString('analytics','topSyndications')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="userEngagement" width="100%" height="100%" dateOnlyFlag="{true}"
 								context="{_model.context}" playbackContextFlag="{true}"
-								screenType="{ScreenTypes.END_USER_ENGAGEMENT}" filterVo="{_model.filter}"
+								screenType="{ScreenTypes.END_USER_ENGAGEMENT}" filterVo="{_model.filterMasks.userEngagement}"
 								orderBy="count_plays" loadChart="{_model.loadingChartFlag}"
 								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
 								isLoading="{_model.loadingFlag}" reportData="{_model.selectedReportData}"
@@ -265,7 +265,7 @@
 								reportType="{KalturaReportType.USER_ENGAGEMENT}"
 								label="{resourceManager.getString('analytics','userEngagement')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="syndicationsDrillDown" dateOnlyFlag="{true}" isDrillDown="{true}"
-								filterVo="{_model.filter}" context="{_model.context}" width="100%" height="100%"
+								filterVo="{_model.filterMasks.syndicator}" context="{_model.context}" width="100%" height="100%"
 								creationComplete="{_model.selectedReportData.orderBy='count_plays'}"
 								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
 								loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
@@ -280,7 +280,7 @@
 								reportType="{KalturaReportType.TOP_SYNDICATION}"
 								label="{resourceManager.getString('analytics','topSyndications')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="mapOverlayDrillDown" dateOnlyFlag="{true}" isDrillDown="{true}"
-								filterVo="{_model.filter}" context="{_model.context}"
+								filterVo="{_model.filterMasks.mapOverlay}" context="{_model.context}"
 								reportData="{_model.selectedReportData}" loadChart="{_model.loadingChartFlag}"
 								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
 								isLoading="{_model.loadingFlag}" showDimention="false" showColumnChart="false"
@@ -294,7 +294,7 @@
 								screenType="{ScreenTypes.MAP_OVERLAY_DRILL_DOWN}"
 								label="{resourceManager.getString('analytics','mapOverlay')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="userEngagementDrillDown" dateOnlyFlag="{true}" isDrillDown="{true}"
-								playbackContextFlag="{true}" filterVo="{_model.filter}" context="{_model.context}"
+								playbackContextFlag="{true}" filterVo="{_model.filterMasks.userEngagementDrilldown}" context="{_model.context}"
 								width="100%" height="100%"
 								creationComplete="{_model.selectedReportData.orderBy='count_plays'}"
 								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
