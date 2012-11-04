@@ -10,6 +10,7 @@ package com.kaltura.kmc.modules.analytics.model {
 	import com.kaltura.kmc.modules.analytics.model.reports.FilterMasks;
 	import com.kaltura.kmc.modules.analytics.model.reports.ReportDimension;
 	import com.kaltura.kmc.modules.analytics.model.reports.TableHeaders;
+	import com.kaltura.kmc.modules.analytics.model.reports.UnsortableColumnHeaders;
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.kmc.modules.analytics.vo.AccountUsageVO;
 	import com.kaltura.kmc.modules.analytics.vo.FilterVo;
@@ -64,6 +65,7 @@ package com.kaltura.kmc.modules.analytics.model {
 		public var reportDimension:ReportDimension = new ReportDimension();
 		public var aggregateHeaders:AggregateHeaders = new AggregateHeaders();
 		public var tableHeaders:TableHeaders = new TableHeaders();
+		public var tableNonSortableHeaders:UnsortableColumnHeaders = new UnsortableColumnHeaders();
 		
 		public var filterMasks:FilterMasks = new FilterMasks(new FilterVo());
 		

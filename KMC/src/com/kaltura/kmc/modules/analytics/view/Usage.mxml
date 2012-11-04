@@ -12,7 +12,7 @@
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.kmc.modules.analytics.view.dtn.DTNItem;
 			import com.kaltura.types.KalturaReportType;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.events.FlexEvent;
 			import mx.events.ItemClickEvent;
@@ -106,50 +106,45 @@
 	<mx:Metadata>
 		 [Event(name="itemClick", type="mx.events.ItemClickEvent")]
 	</mx:Metadata>
-	<dtn:DTN id="dtn" width="158" styleName="analyticsDtn" dataProvider="{_model.usageDtnDp}"
-			 enabled="{!_model.loadingFlag}" change="onDtnChange()"/>
+	<dtn:DTN id="dtn" width="158" styleName="analyticsDtn" dataProvider="{_model.usageDtnDp}" enabled="{!_model.loadingFlag}"
+			 change="onDtnChange()"/>
 	<mx:ViewStack id="usageViews" width="100%" height="{this.height - 15}" styleName="contentViewStack">
-		<view:KalturaReportView id="pbns" width="100%" height="100%" showTimeUnits="true" dateOnlyFlag="true"
-								filterUsersFlag="false" filterApplicationsFlag="false" showChartSwitch="false"
-								generalBarChartFlag="true" context="{_model.context}"
+		<view:KalturaReportView id="pbns" width="100%" height="100%" showTimeUnits="true" dateOnlyFlag="true" filterUsersFlag="false"
+								filterApplicationsFlag="false" showChartSwitch="false" generalBarChartFlag="true" context="{_model.context}"
 								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
 								loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
-								filterVo="{_model.filterMasks.publisherBandwidthNStorage}" screenType="{ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE}"
-								reportData="{_model.selectedReportData}" showSearchFilter="false"
-								aggregatedHeaders="{ _model.aggregateHeaders.publisherBandwidthNStorage }"
-								tableHeaders="{ _model.tableHeaders.publisherBandwidthNStorage }" dateRanger="{_model.longTermDatesRanger}"
-								dimCbDp="{ _model.reportDimension.publisherStorageNBandwidth }"
-								reportType="{KalturaReportType.PARTNER_USAGE}"
+								filterVo="{_model.filterMasks.publisherBandwidthNStorage}"
+								screenType="{ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE}" reportData="{_model.selectedReportData}"
+								showSearchFilter="false" aggregatedHeaders="{_model.aggregateHeaders.publisherBandwidthNStorage}"
+								tableHeaders="{_model.tableHeaders.publisherBandwidthNStorage}" dateRanger="{_model.longTermDatesRanger}"
+								dimCbDp="{_model.reportDimension.publisherStorageNBandwidth}" reportType="{KalturaReportType.PARTNER_USAGE}"
 								helpUrl="{'section_analytics_publisher_bandwidth_and_storage'}"
-								label="{resourceManager.getString('analytics','pbns')}" styleName="pageStyle"/>
+								label="{resourceManager.getString('analytics', 'pbns')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="endUserStorage" width="100%" height="100%" showTimeUnits="true" dateOnlyFlag="true"
-								filterUsersFlag="true" filterApplicationsFlag="false" addGraphTotals="true"
-								generalBarChartFlag="true" context="{_model.context}"
-								loadChart="{_model.loadingChartFlag}" showChartSwitch="false"
-								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
-								isLoading="{_model.loadingFlag}" filterVo="{_model.filterMasks.endUserStorage}"
-								screenType="{ScreenTypes.END_USER_STORAGE}" reportData="{_model.selectedReportData}"
-								showSearchFilter="false" aggregatedHeaders="{ _model.aggregateHeaders.endUserStorage }"
+								filterUsersFlag="true" filterApplicationsFlag="false" addGraphTotals="true" generalBarChartFlag="true"
+								context="{_model.context}" loadChart="{_model.loadingChartFlag}" showChartSwitch="false"
+								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}" isLoading="{_model.loadingFlag}"
+								filterVo="{_model.filterMasks.endUserStorage}" screenType="{ScreenTypes.END_USER_STORAGE}"
+								reportData="{_model.selectedReportData}" showSearchFilter="false"
+								aggregatedHeaders="{_model.aggregateHeaders.endUserStorage}"
 								tableHeaders="{_model.tableHeaders.endUserStorage}" dateRanger="{_model.longTermDatesRanger}"
-								dimCbDp="{ _model.reportDimension.endUserStorage }"
-								reportType="{KalturaReportType.USER_USAGE}"
+								tableNonSortableHeaders="{_model.tableNonSortableHeaders.endUserStorage}"
+								dimCbDp="{_model.reportDimension.endUserStorage}" reportType="{KalturaReportType.USER_USAGE}"
 								drillDown="{onDrillDown(ScreenTypes.END_USER_STORAGE_DRILL_DOWN)}"
 								helpUrl="{'section_analytics_end_user_storage'}"
-								label="{resourceManager.getString('analytics','endUserStorage')}" styleName="pageStyle"/>
-		<view:KalturaReportView id="specificEndUserStorage" width="100%" height="100%" showTimeUnits="true"
-								dateOnlyFlag="true" filterUsersFlag="false" filterApplicationsFlag="false"
-								addGraphTotals="true" addTableTotals="true" generalBarChartFlag="true"
-								context="{_model.context}" loadChart="{_model.loadingChartFlag}" showChartSwitch="false"
-								loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
+								label="{resourceManager.getString('analytics', 'endUserStorage')}" styleName="pageStyle"/>
+		<view:KalturaReportView id="specificEndUserStorage" width="100%" height="100%" showTimeUnits="true" dateOnlyFlag="true"
+								filterUsersFlag="false" filterApplicationsFlag="false" addGraphTotals="true" addTableTotals="true"
+								generalBarChartFlag="true" context="{_model.context}" loadChart="{_model.loadingChartFlag}"
+								showChartSwitch="false" loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
 								isLoading="{_model.loadingFlag}" filterVo="{_model.filterMasks.publisherBandwidthNStorage}"
-								screenType="{ScreenTypes.END_USER_STORAGE_DRILL_DOWN}"
-								reportData="{_model.selectedReportData}" showSearchFilter="false" disablePager="true"
+								screenType="{ScreenTypes.END_USER_STORAGE_DRILL_DOWN}" reportData="{_model.selectedReportData}"
+								showSearchFilter="false" disablePager="true"
 								aggregatedHeaders="{_model.aggregateHeaders.specificEndUserStorage}"
 								tableHeaders="{_model.tableHeaders.specificEndUserStorage}" dateRanger="{_model.longTermDatesRanger}"
-								dimCbDp="{ _model.reportDimension.endUserStorage }"
-								reportType="{KalturaReportType.SPECIFIC_USER_USAGE}" isDrillDown="true"
-								backScreenType="{ScreenTypes.END_USER_STORAGE}"
+								dimCbDp="{_model.reportDimension.endUserStorage}" reportType="{KalturaReportType.SPECIFIC_USER_USAGE}"
+								isDrillDown="true" backScreenType="{ScreenTypes.END_USER_STORAGE}"
 								helpUrl="{'section_analytics_end_user_storage_drilldown'}"
-								label="{resourceManager.getString('analytics','endUserStorage')}" styleName="pageStyle"/>
+								label="{resourceManager.getString('analytics', 'endUserStorage')}" styleName="pageStyle"/>
 	</mx:ViewStack>
 </mx:HBox>
