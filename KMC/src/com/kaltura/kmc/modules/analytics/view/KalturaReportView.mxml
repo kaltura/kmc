@@ -35,13 +35,13 @@
 
 			private static var playerLoadedFlag:Boolean = false;
 			private static var playerReadyFlag:Boolean = false;
-			
+
 			private static const TABLE_ROW_HEIGHT:int = 27;
 
 			/**
 			 * to load the kdp you must pass a context
 			 * */
-			public var context:Context; 
+			public var context:Context;
 
 			[Bindable]
 			/**
@@ -97,50 +97,89 @@
 
 			//SHOW & HIDE FLAGS
 			[Bindable]
+			/**
+			 * default: true
+			 * */
 			public var showLineChart:Boolean = true;
+			
 			[Bindable]
+			/**
+			 * default: false
+			 * */
 			public var showColumnChart:Boolean = false;
+			
+//			[Bindable]
+//			/**
+//			 * default: false
+//			 * */
+//			public var showMap:Boolean = false;
+			
 			[Bindable]
-			public var showMap:Boolean = false;
-			[Bindable]
+			/**
+			 * default: true
+			 * */
 			public var showDimention:Boolean = true;
+			
 			[Bindable]
+			/**
+			 * default: true
+			 * */
 			public var showTable:Boolean = true;
+			
 			[Bindable]
+			/**
+			 * default: false
+			 * */
 			public var showKDP:Boolean = false;
+			
 			[Bindable]
+			/**
+			 * default: false
+			 * */
 			public var showMessageTip:Boolean = false;
 
-
+			/**
+			 * default: false
+			 * */
 			public var addGraphTotals:Boolean = false;
-
+			
+			/**
+			 * default: false
+			 * */
 			public var addTableTotals:Boolean = false;
 
 			[Bindable]
 			/**
-			 * Show or Hide the user filter UI
+			 * Show or Hide the user filter UI <br>
+			 * default: true
 			 * */
 			public var filterUsersFlag:Boolean = true;
 
 			[Bindable]
 			/**
-			 * Show or Hide the application filter UI
+			 * Show or Hide the application filter UI <br>
+			 * default: true
 			 * */
 			public var filterApplicationsFlag:Boolean = true;
 
-			[Bindable]
-			public var showChartSwitch:Boolean = false;
+//			[Bindable]
+//			/**
+//			 * default: false
+//			 * */
+//			public var showChartSwitch:Boolean = false;
 			////////////////////////////////////////////////////////
 
 			[Bindable]
 			/**
-			 * remove paging component (for reports which don't support paging)
+			 * remove paging component (for reports which don't support paging) <br>
+			 * default: false
 			 * */
 			public var disablePager:Boolean = false;
 
 
 			[Bindable]
 			private var _isLoading:Boolean = false;
+
 
 			/**
 			 * loading flag
@@ -152,6 +191,7 @@
 			[Bindable]
 			private var _loadChart:Boolean = false;
 
+
 			public function set loadChart(value:Boolean):void {
 				_loadChart = value;
 				_isVisibleLineChart = !value && showLineChart;
@@ -161,6 +201,7 @@
 			[Bindable]
 			private var _loadTotal:Boolean = false;
 
+
 			public function set loadTotal(value:Boolean):void {
 				_loadTotal = value;
 				_isVisibleTotal = !value;
@@ -169,12 +210,14 @@
 			[Bindable]
 			private var _loadTable:Boolean = false;
 
+
 			public function set loadTable(value:Boolean):void {
 				_loadTable = value;
 			}
 
 			[Bindable]
 			private var _loadEntry:Boolean = false;
+
 
 			public function set loadEntry(value:Boolean):void {
 				_loadEntry = value;
@@ -201,34 +244,38 @@
 			////////////////////////////////////////////////////////
 			[Bindable]
 			/**
-			 * is this report a drilldown-report
+			 * is this report a drilldown-report <br>
+			 * default:false
 			 * */
 			public var isDrillDown:Boolean = false;
-			
+
 			[Bindable]
 			/**
-			 * show navigation between drilldown reports in the filter
+			 * show navigation between drilldown reports in the filter <br>
+			 * default:false
 			 * */
 			public var showDrillDownNav:Boolean = false;
 
 			[Bindable]
 			/**
-			 * in filter, show only dates
+			 * in filter, show only dates <br>
+			 * default:false
 			 * */
 			public var dateOnlyFlag:Boolean = false;
 
 			[Bindable]
 			/**
-			 * in filter, set texts to playbackContext related
+			 * in filter, set texts to playbackContext related <br>
+			 * default:false
 			 * */
-			public var playbackContextFlag : Boolean = false;
+			public var playbackContextFlag:Boolean = false;
 
 			[Bindable]
 			/**
 			 * filtering data
 			 * */
 			public var filterVo:FilterVo;
-			
+
 			[Bindable]
 			/**
 			 * manager for dates ranges in filter
@@ -242,17 +289,30 @@
 			public var orderBy:String;
 
 			[Bindable]
+			/**
+			 * default:false
+			 * */
 			public var showTimeUnits:Boolean = false;
+			
 			[Bindable]
+			/**
+			 * default:true
+			 * */
 			public var showSearchFilter:Boolean = true;
+			
 			[Bindable]
+			/**
+			 * default:false
+			 * */
 			public var generalBarChartFlag:Boolean = false;
+			
 			[Bindable]
-			public var isMonths:Boolean = false;
+			private var _isMonths:Boolean = false;
+			
 			[Bindable]
-			public var isOneDay:Boolean = false;
+			private var _isOneDay:Boolean = false;
 
-			[Bindable] 
+			[Bindable]
 			private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 
 
@@ -260,8 +320,7 @@
 				BindingUtils.bindSetter(onReportDataChange, this, "reportData");
 				BindingUtils.bindSetter(onFilterChanged, this, "filterVo");
 
-				if (dimCbDp == _model.reportDimension.endUserStorage
-					|| dimCbDp == _model.reportDimension.publisherStorageNBandwidth){
+				if (dimCbDp == _model.reportDimension.endUserStorage || dimCbDp == _model.reportDimension.publisherStorageNBandwidth) {
 					dateBarChart.dataFormatFunc = roundUpValue;
 					dateBarChart.dataUnits = resourceManager.getString('analytics', 'MB');
 					lineChart.dataFormatFunc = roundUpValue;
@@ -271,31 +330,35 @@
 
 
 			// For table data tips
-			private function roundUpValue(value:Object):String{
-				var formatter:NumberFormatter  = new NumberFormatter();
+			private function roundUpValue(value:Object):String {
+				var formatter:NumberFormatter = new NumberFormatter();
 				formatter.thousandsSeparatorTo = ",";
 				return formatter.format(Math.ceil(Number(value)));
 			}
 
-			private function onFilterChanged(vo:FilterVo):void{
+
+			private function onFilterChanged(vo:FilterVo):void {
 				handleTimeUnitChange();
 			}
 
-			private function handleTimeUnitChange():void{
-				isMonths = showTimeUnits ? filterVo.interval == KalturaReportInterval.MONTHS : false;
-				isOneDay = (filterVo.toDate.time - filterVo.fromDate.time) <= TimeConsts.DAY;
+
+			private function handleTimeUnitChange():void {
+				_isMonths = showTimeUnits ? filterVo.interval == KalturaReportInterval.MONTHS : false;
+				_isOneDay = (filterVo.toDate.time - filterVo.fromDate.time) <= TimeConsts.DAY;
 
 				// QC 3885 - Changing from "Date" to "Month" in the table headers.
-				if (tableHeaders && tableHeaders.length > 1){
-					if (isMonths && tableHeaders[0] == "date_id"){
+				if (tableHeaders && tableHeaders.length > 1) {
+					if (_isMonths && tableHeaders[0] == "date_id") {
 						tableHeaders[0] = "month_id";
-					} else if (! isMonths && tableHeaders[0] == "month_id"){
+					}
+					else if (!_isMonths && tableHeaders[0] == "month_id") {
 						tableHeaders[0] = "date_id";
 					}
 				}
 
 				ktable.headerDataProvider = tableHeaders;
 			}
+
 
 			private function onSelectedMediaEntryChange(selectdEntry:KalturaBaseEntry):void {
 				if (reportData && reportData.selectedMediaEntry && reportData.selectedMediaEntry.id) {
@@ -370,19 +433,19 @@
 			 * */
 			protected function onReportDataChange(rdtc:ReportData):void {
 				if (rdtc && this.visible) {
-					if (showLineChart){
-						if (isMonths || isOneDay){
+					if (showLineChart) {
+						if (_isMonths || _isOneDay) {
 							dateBarChart.dataProvider = rdtc.chartDp;
-						} 
+						}
 						else {
 							lineChart.dataProvider = rdtc.chartDp;
 						}
-					} 
-					else if (showColumnChart){
+					}
+					else if (showColumnChart) {
 						columnChart.dataProvider = rdtc.chartDp;
 					}
 
-					if (showTable){
+					if (showTable) {
 						paging.totalCount = rdtc.totalCount;
 						paging.currRowsInPage = rdtc.tableDp ? rdtc.tableDp.length : 0;
 						paging.pageSize = rdtc.pager ? rdtc.pager.pageSize : paging.pageSize;
@@ -404,14 +467,14 @@
 			private function getReports(event:Event = null):void {
 				handleTimeUnitChange();
 
-				var reportSetDataEvent:ReportDataEvent = new ReportDataEvent(ReportDataEvent.SET_REPORT_DATA, reportType, screenType,  label, aggregatedHeaders, tableHeaders, paging.pageSize);
+				var reportSetDataEvent:ReportDataEvent = new ReportDataEvent(ReportDataEvent.SET_REPORT_DATA, reportType, screenType, label, aggregatedHeaders, tableHeaders, paging.pageSize);
 				reportSetDataEvent.dispatch();
 
 				var reportTotalEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TOTAL, reportType, screenType);
 				reportTotalEvent.dispatch();
 
 				if (showTable) {
-					var reportTableEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TABLE, reportType , screenType, ktable.orderBy, true, true, true, false, addTableTotals);
+					var reportTableEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TABLE, reportType, screenType, ktable.orderBy, true, true, true, false, addTableTotals);
 					reportTableEvent.dispatch();
 				}
 
@@ -420,7 +483,7 @@
 					reportGraphEvent.dispatch();
 				}
 
-				if (addGraphTotals || addTableTotals){
+				if (addGraphTotals || addTableTotals) {
 					var reportBaseTotalsEvent:ReportEvent = new ReportEvent(ReportEvent.GET_BASE_TOTALS, reportType, screenType);
 					reportBaseTotalsEvent.dispatch();
 				}
@@ -475,8 +538,8 @@
 			 * Kdp loaded
 			 */
 			private function onKDP3Loaded(event:Event):void {
-				kdp.content.addEventListener("kdpReady", showKdp); 
-				kdp.content.addEventListener("entryReady", showKdp); 
+				kdp.content.addEventListener("kdpReady", showKdp);
+				kdp.content.addEventListener("entryReady", showKdp);
 
 				var params:Object = new Object();
 				params.cdnHost = context.cdnHost;
@@ -511,12 +574,14 @@
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, helpUrl));
 			}
 
-			private function changeToColChart():void{
+
+			private function changeToColChart():void {
 				showColumnChart = true;
 				showLineChart = false;
 			}
 
-			private function changeToLineChart():void{
+
+			private function changeToLineChart():void {
 				showColumnChart = false;
 				showLineChart = true;
 			}
@@ -525,16 +590,20 @@
 			/**
 			 * open entry preview
 			 * */
-			protected function searchNote_linkHandler(event:TextEvent):void
-			{
+			protected function searchNote_linkHandler(event:TextEvent):void {
 				pew = new PreviewEntryWin();
 				pew.context = _model.context;
 				pew.uiconfId = _model.kdpUiConf;
 				pew.entry = _model.selectedReportData.selectedMediaEntry;
 
-				PopUpManager.addPopUp( pew , this, true );
-				PopUpManager.centerPopUp( pew );
+				PopUpManager.addPopUp(pew, this, true);
+				PopUpManager.centerPopUp(pew);
 				JSGate.maskHeader(false);
+			}
+			
+			private function exportToCsv(event:MouseEvent):void {
+				var reportEvent:ReportEvent = new ReportEvent(ReportEvent.EXPORT_TO_EXCEL , reportType); 
+				reportEvent.dispatch();
 			}
 
 
@@ -561,19 +630,21 @@
 	<mx:Spacer height="5"/>
 
 	<!-- report filter -->
-	<view:Filter id="filter" width="100%" isLoading="{_isLoading}" filterVo="{filterVo}" 
-				 applicationsList="{_model.applicationsList}" drillDownName="{_model.drillDownName}" 
-				 playbackContextFlag="{playbackContextFlag}" filterUsersFlag="{filterUsersFlag}" 
-				 filterApplicationsFlag="{filterApplicationsFlag}" dateOnlyFlag="{dateOnlyFlag}" 
-				 showTimeUnits="{showTimeUnits}" showSearchFilter="{showSearchFilter}" showDrillDownNav="{showDrillDownNav}" 
-				 drilldownSubjectId="{reportData.objectIds}" kc="{_model.kc}" dateRangeManager="{dateRanger}" 
-				 apply="{getReports(event)}"/>
+	<view:Filter id="filter" width="100%" isLoading="{_isLoading}" filterVo="{filterVo}"
+				 applicationsList="{_model.applicationsList}" drillDownName="{_model.drillDownName}"
+				 playbackContextFlag="{playbackContextFlag}" filterUsersFlag="{filterUsersFlag}"
+				 filterApplicationsFlag="{filterApplicationsFlag}" dateOnlyFlag="{dateOnlyFlag}"
+				 showTimeUnits="{showTimeUnits}" showSearchFilter="{showSearchFilter}"
+				 showDrillDownNav="{showDrillDownNav}" drilldownSubjectId="{reportData.objectIds}" kc="{_model.kc}"
+				 dateRangeManager="{dateRanger}" apply="{getReports(event)}"/>
 
 	<!-- chart switch -->
-	<mx:HBox width="100%" horizontalAlign="left" includeInLayout="{showChartSwitch}" visible="{showChartSwitch}">
-		<mx:Button styleName="barChartIcon" click="changeToColChart()" buttonMode="true" useHandCursor="true" toolTip="Show Bar Chart"/>
-		<mx:Button  styleName="lineChartIcon" click="changeToLineChart()" buttonMode="true" useHandCursor="true"  toolTip="Show Line Chart"/>
-	</mx:HBox>
+	<!--<mx:HBox width="100%" horizontalAlign="left" includeInLayout="{showChartSwitch}" visible="{showChartSwitch}">
+		<mx:Button styleName="barChartIcon" click="changeToColChart()" buttonMode="true" useHandCursor="true"
+				   toolTip="Show Bar Chart"/>
+		<mx:Button styleName="lineChartIcon" click="changeToLineChart()" buttonMode="true" useHandCursor="true"
+				   toolTip="Show Line Chart"/>
+	</mx:HBox>-->
 
 	<mx:Spacer height="5"/>
 	<mx:HRule width="100%"/>
@@ -582,23 +653,28 @@
 	<!-- graph dimension -->
 	<mx:HBox width="100%">
 		<view:DimComboBox id="dimCb" width="310" dataProvider="{dimCbDp}" visible="{showDimention}"
-						  includeInLayout="{showDimention}"  enabled="{!_isLoading}"/>
+						  includeInLayout="{showDimention}" enabled="{!_isLoading}"/>
 		<mx:Spacer width="100%"/>
 		<mx:LinkButton label="{resourceManager.getString('analytics','exportToExcel')}"
-					   click="{ var reportEvent : ReportEvent = new ReportEvent(ReportEvent.EXPORT_TO_EXCEL , reportType); reportEvent.dispatch();}"
+					   click="exportToCsv(event)"
 					   enabled="{!_isLoading}"/>
 	</mx:HBox>
 
 	<!-- charts -->
-	<map:KMap id="kmap" width="100%" visible="{showMap}" includeInLayout="{showMap}"/>
+	<!--<map:KMap id="kmap" width="100%" visible="{showMap}" includeInLayout="{showMap}"/>-->
 
 	<charts:KColumnChart id="columnChart" width="100%" enabled="{_isVisibleColumnChart}" visible="{showColumnChart}"
 						 includeInLayout="{showColumnChart}" createColumnsFromDp="{generalBarChartFlag}"/>
 
-	<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}" includeInLayout="{showLineChart &amp;&amp; ! (isOneDay || isMonths)}"
-					   visible="{showLineChart &amp;&amp; ! (isOneDay || isMonths)}" minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>
-	<charts:KDateColumnChart id="dateBarChart" dimName="{dimCb.selectedItem.label}" width="100%" oneDayDate="{isOneDay &amp;&amp; ! isMonths ? filterVo.fromDate : null}" 
-							 includeInLayout="{showLineChart &amp;&amp; (isOneDay || isMonths)}" visible="{showLineChart &amp;&amp; (isOneDay || isMonths)}" />
+	<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}"
+					   includeInLayout="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}"
+					   visible="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}" minHAxisDate="{filterVo.fromDate}"
+					   maxHAxisDate="{filterVo.toDate}"/>
+
+	<charts:KDateColumnChart id="dateBarChart" dimName="{dimCb.selectedItem.label}" width="100%"
+							 oneDayDate="{_isOneDay &amp;&amp; ! _isMonths ? filterVo.fromDate : null}"
+							 includeInLayout="{showLineChart &amp;&amp; (_isOneDay || _isMonths)}"
+							 visible="{showLineChart &amp;&amp; (_isOneDay || _isMonths)}"/>
 
 	<!-- loader -->
 	<mx:VBox width="{this.width-150}" height="200" paddingTop="-150" horizontalAlign="center" clipContent="false"
@@ -608,15 +684,16 @@
 
 	<mx:Spacer height="10"/>
 	<mx:HBox width="100%">
-		<mx:Text id="searchNote" htmlText="{reportData.message}" link="searchNote_linkHandler(event)" styleName="pageTitle2"/> 
+		<mx:Text id="searchNote" htmlText="{reportData.message}" link="searchNote_linkHandler(event)"
+				 styleName="pageTitle2"/>
 		<mx:Button id="ttBtn" styleName="toolTipHelp" visible="{showMessageTip}" includeInLayout="{showMessageTip}"
-				   toolTip="{resourceManager.getString('analytics', 'sinceUserReports')}" />
+				   toolTip="{resourceManager.getString('analytics', 'sinceUserReports')}"/>
 	</mx:HBox>
 	<mx:Text width="100%" height="15" styleName="pageTitle3" text="{reportData.filterMessage}"/>
 	<mx:Spacer height="10"/>
 
 	<!-- totals -->
-	<mx:Label text="{resourceManager.getString('analytics', 'totalsTitle')}" styleName="pageTitle2" />
+	<mx:Label text="{resourceManager.getString('analytics', 'totalsTitle')}" styleName="pageTitle2"/>
 	<aggregateBar:AggregateBar id="aggregateBar" width="100%" headerDataProvider="{aggregatedHeaders}"
 							   enabled="{_isVisibleTotal}" dataProvider="{reportData.aggregatedDataArrCol}"/>
 
@@ -633,18 +710,19 @@
 	</mx:HBox>
 
 	<!-- table -->
-	<mx:Label text="{resourceManager.getString('analytics', 'tableTitle')}" styleName="pageTitle2" 
+	<mx:Label text="{resourceManager.getString('analytics', 'tableTitle')}" styleName="pageTitle2"
 			  includeInLayout="{showTable}" visible="{showTable}"/>
-	<view:KTable id="ktable" width="100%" height="295" rowHeight="{TABLE_ROW_HEIGHT}" orderBy="{orderBy}" 
+	<view:KTable id="ktable" width="100%" height="295" rowHeight="{TABLE_ROW_HEIGHT}" orderBy="{orderBy}"
 				 supportDrillDown="{_model.tableSupportDrillDown}" nonSortableHeaders="{tableNonSortableHeaders}"
 				 includeInLayout="{showTable}" visible="{showTable}" headerDataProvider="{tableHeaders}"
-				 reportType="{reportType}" reportData="{ reportData }"/> 
+				 reportType="{reportType}" reportData="{ reportData }"/>
 
 	<!-- paging -->
-	<controls:Paging id="paging" width="100%" visible="{showTable &amp;&amp; ! disablePager}" includeInLayout="{showTable &amp;&amp; ! disablePager}"
-					 rowsInPageChange="onPageChange()" nextPage="onPageChange()" prvPage="onPageChange()"
-					 getPageNum="onPageChange()" showRowsInPage="true" 
-					 totalCount="{reportData.totalCount}" currRowsInPage="{reportData.tableDp ? reportData.tableDp.length : 0}" 
+	<controls:Paging id="paging" width="100%" visible="{showTable &amp;&amp; ! disablePager}"
+					 includeInLayout="{showTable &amp;&amp; ! disablePager}" rowsInPageChange="onPageChange()"
+					 nextPage="onPageChange()" prvPage="onPageChange()" getPageNum="onPageChange()"
+					 showRowsInPage="true" totalCount="{reportData.totalCount}"
+					 currRowsInPage="{reportData.tableDp ? reportData.tableDp.length : 0}"
 					 selectedPage="{reportData.pager.pageIndex}"/>
 
 	<mx:VBox width="{this.width-150}" paddingTop="-130" horizontalAlign="center" includeInLayout="false"
