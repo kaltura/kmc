@@ -10,6 +10,12 @@ package com.kaltura.kmc.modules.analytics.model.reports
 	import com.kaltura.kmc.modules.analytics.vo.filterMasks.UserEngMask;
 
 	[Bindable]
+	/**
+	 * mapping of filter masks to reports.
+	 * @see com.kaltura.kmc.modules.analytics.vo.filterMasks.BaseMask
+	 * @author atar.shadmi
+	 * 
+	 */
 	public class FilterMasks
 	{
 		

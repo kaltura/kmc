@@ -4,6 +4,16 @@ package com.kaltura.kmc.modules.analytics.vo.filterMasks
 	
 	import mx.events.PropertyChangeEvent;
 	
+	/**
+	 * Base class for all analytics filter masks. <br>
+	 * all reports get the same filterVo instance, but each report gets it through a mask
+	 * which only allows editing certain attributes, accoring to the report in question. <br>
+	 * trying to set other attributes causes an error to be thrown.
+	 * 
+	 * @see  com.kaltura.kmc.modules.analytics.vo.FilterVo
+	 * @author atar.shadmi
+	 * 
+	 */
 	public class BaseMask extends FilterVo
 	{
 		
