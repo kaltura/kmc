@@ -128,7 +128,7 @@ package com.kaltura.kmc.modules.analytics.model {
 					res = filterMasks.endUserStorage;
 					break;
 				case ScreenTypes.END_USER_STORAGE_DRILL_DOWN :
-					res = filterMasks.publisherBandwidthNStorage;  
+					res = filterMasks.specificEndUserStorage;  
 					break;
 			}
 			return res;

@@ -65,7 +65,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 			
 			publisherBandwidthNStorage = new UnitsDatesMask(fvo);
 			endUserStorage = new UnitsDatesUsersMask(fvo);
-			specificEndUserStorage = new UnitsDatesMask(fvo);
+			specificEndUserStorage = new UnitsDatesUsersMask(fvo);
 			
 		}
 		
