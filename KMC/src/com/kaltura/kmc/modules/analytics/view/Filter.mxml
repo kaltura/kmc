@@ -19,7 +19,7 @@
 			import com.kaltura.kmc.modules.analytics.view.window.CategoriesTreePopUp;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 			import com.kaltura.types.KalturaReportInterval;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -103,7 +103,7 @@
 
 
 			[Bindable]
-			private var _timeUnitsDp:Array = [ResourceManager.getInstance().getString('analytics', 'monthly'), ResourceManager.getInstance().getString('analytics', 'daily')];
+			private var _timeUnitsDp:Array = [KalturaReportInterval.MONTHS, KalturaReportInterval.DAYS];
 
 			[Bindable]
 			public var dateOnlyFlag:Boolean = false;
@@ -136,9 +136,14 @@
 					_oldFromDate = _filterVo.fromDate = dateRangeManager.latestFromDate;
 					_oldToDate = _filterVo.toDate = dateRangeManager.latestToDate;
 
-					// if timeunits selector is visible, set default value for time units
+					// timeunits selector
 					if (showTimeUnits){
-						filterVo.interval = KalturaReportInterval.MONTHS;
+						if (timeUnitsCb && filterVo.interval) {
+							timeUnitsCb.selectedItem = filterVo.interval;
+						}
+						else {
+							filterVo.interval = KalturaReportInterval.MONTHS;
+						}
 					}
 
 					// if there are categories on the filter vo, show them in autocomplete
@@ -360,23 +365,27 @@
 				dispatchEvent(new Event(APPLY)); //apply
 			}
 
-			protected function changeTimeUnits(event:ListEvent):void
-			{
-				switch (timeUnitsCb.selectedItem){
-					case ResourceManager.getInstance().getString('analytics', 'monthly'):
-						filterVo.interval = KalturaReportInterval.MONTHS;
-						break;
-					case ResourceManager.getInstance().getString('analytics', 'daily'):
-						filterVo.interval = KalturaReportInterval.DAYS;
-						break;
-				}
-
+			protected function changeTimeUnits(event:ListEvent):void {
+				filterVo.interval = timeUnitsCb.selectedItem.toString();
 				dispatchEvent(new Event(APPLY)); //apply
 			}
 
 			private function onAppCbChange(evt:Event):void{
 				_filterVo.application = appFilter.selectedItem.toString();
 				dispatchEvent(new Event(APPLY));
+			}
+			
+			private function getTimeUnitLabel(item:Object):String {
+				var res:String;
+				switch (item) {
+					case KalturaReportInterval.MONTHS:
+						res = ResourceManager.getInstance().getString('analytics', 'monthly');
+						break;
+					case KalturaReportInterval.DAYS:
+						res = ResourceManager.getInstance().getString('analytics', 'daily');
+						break;
+				}
+				return res;
 			}
 
 		]]>
@@ -390,7 +399,7 @@
 		<mx:Label text="{resourceManager.getString('analytics', 'timeUnits')}"
 				  includeInLayout="{showTimeUnits}" visible="{showTimeUnits}" />
 		<mx:ComboBox id="timeUnitsCb" styleName="analyticsCombo" enabled="{!isLoading}"
-					 dataProvider="{_timeUnitsDp}" change="changeTimeUnits(event)"
+					 dataProvider="{_timeUnitsDp}" change="changeTimeUnits(event)" labelFunction="getTimeUnitLabel"
 					 includeInLayout="{showTimeUnits}" visible="{showTimeUnits}" selectedIndex="{_filterVo.interval == KalturaReportInterval.MONTHS ? 0 : 1}" />
 		<mx:Label text="{resourceManager.getString('analytics','dates')}"/>
 		<mx:DateField id="fromDate" width="100" buttonMode="true" selectedDate="{_filterVo.fromDate}"
