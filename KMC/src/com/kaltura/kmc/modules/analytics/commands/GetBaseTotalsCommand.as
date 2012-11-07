@@ -22,20 +22,13 @@ package com.kaltura.kmc.modules.analytics.commands
 	public class GetBaseTotalsCommand implements ICommand, IResponder
 	{
 		private var _model : AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
-//		private var _addTableTotals:Boolean = false;
-//		private var _graphWatcher:ChangeWatcher;
-//		private var _tableWatcher:ChangeWatcher;
 		
-		public function GetBaseTotalsCommand()
-		{
-		}
 		
 		public function execute(event:CairngormEvent):void
 		{
 			_model.loadingFlag = true;
 			_model.loadingBaseTotals = true;
 			
-//			_addTableTotals = (event as ReportEvent).addTableTotals;
 			
 			if (!_model.selectedReportData.pager) {
 				_model.selectedReportData.pager = new KalturaFilterPager();
@@ -44,18 +37,11 @@ package com.kaltura.kmc.modules.analytics.commands
 			}
 			
 			var objectIds:String = '';
-			if (_model.selectedEntry && (/*_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT 
-				|| _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF 
-				|| _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS 
-				|| _model.currentScreenState == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN 
-				|| _model.currentScreenState == ScreenTypes.MAP_OVERLAY_DRILL_DOWN 
-				|| _model.currentScreenState == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN
-				|| _model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN
-				||*/ _model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)) {
+			if (_model.selectedEntry && _model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN) {
 				objectIds = _model.selectedReportData.objectIds = _model.selectedEntry;
 			}
 			
-			var filter:KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport(_model.filter);
+			var filter:KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport(_model.getFilterForScreen((event as ReportEvent).screenType));
 			filter.playbackContext = filter.categories;
 			filter.categories = null;
 			

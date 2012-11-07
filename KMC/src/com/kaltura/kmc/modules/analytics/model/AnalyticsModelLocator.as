@@ -69,10 +69,24 @@ package com.kaltura.kmc.modules.analytics.model {
 		
 		public var filterMasks:FilterMasks = new FilterMasks(new FilterVo());
 		
+		/**
+		 * get the filter for the current screen 
+		 */
 		public function get filter():FilterVo {
+			return getFilterForScreen(currentScreenState);
+		}
+
+		/**
+		 * get a filter vo according to given screen
+		 * @param screenType as enumerated in ScreenTypes
+		 * @return filter vo through required mask
+		 * 
+		 * @see com.kaltura.kmc.modules.analytics.model.types.ScreenTypes
+		 */		
+		public function getFilterForScreen(screenType:int):FilterVo {
 			var res:FilterVo;
 			// get correct mask according to current report
-			switch (currentScreenState) {
+			switch (screenType) {
 				case ScreenTypes.TOP_CONTENT :
 					res = filterMasks.topContent;
 					break;
@@ -133,6 +147,8 @@ package com.kaltura.kmc.modules.analytics.model {
 			}
 			return res;
 		}
+		
+
 		
 		/**
 		 * id of drilldown subject (user / entry)

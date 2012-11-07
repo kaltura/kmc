@@ -38,8 +38,13 @@ package com.kaltura.kmc.modules.analytics.commands
 			reportData.pager.pageIndex = 1;
 			reportData.pager.pageSize = rdEvt.pageSize;
 			
-			if (_model.filter && _model.filter.keywords) {
-				reportData.filterMessage = ResourceManager.getInstance().getString('analytics', 'filterTagsOnlyMessage', [_model.filter.keywords]);
+			var keywords:String ;
+			if (_model.getFilterForScreen(rdEvt.screenType)) {
+				keywords = _model.getFilterForScreen(rdEvt.screenType).keywords;
+			}
+			
+			if (keywords) {
+				reportData.filterMessage = ResourceManager.getInstance().getString('analytics', 'filterTagsOnlyMessage', [keywords]);
 			}
 			else {
 				reportData.filterMessage = '';

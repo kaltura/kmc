@@ -329,7 +329,9 @@
 			}
 
 
-			// For table data tips
+			/**
+			 * For table data tips
+			 * */
 			private function roundUpValue(value:Object):String {
 				var formatter:NumberFormatter = new NumberFormatter();
 				formatter.thousandsSeparatorTo = ",";
@@ -342,8 +344,17 @@
 			}
 
 
+			/**
+			 * recalculate _isMonths/_isOneDay and change table headers
+			 * */
 			private function handleTimeUnitChange():void {
-				_isMonths = showTimeUnits ? filterVo.interval == KalturaReportInterval.MONTHS : false;
+				if (showTimeUnits) {
+					_isMonths = filterVo.interval == KalturaReportInterval.MONTHS; 
+				}
+				else {
+					_isMonths =  false;
+				}
+				
 				_isOneDay = (filterVo.toDate.time - filterVo.fromDate.time) <= TimeConsts.DAY;
 
 				// QC 3885 - Changing from "Date" to "Month" in the table headers.
@@ -360,6 +371,9 @@
 			}
 
 
+			/**
+			 * show KDP if required
+			 * */
 			private function onSelectedMediaEntryChange(selectdEntry:KalturaBaseEntry):void {
 				if (reportData && reportData.selectedMediaEntry && reportData.selectedMediaEntry.id) {
 					if (showKDP) {

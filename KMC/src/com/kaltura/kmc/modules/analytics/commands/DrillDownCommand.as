@@ -13,14 +13,11 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 
 		public function execute(event:CairngormEvent):void {
-			var getEntryFlag:Boolean = true;
-			
-
+			var getEntryFlag:Boolean = true;	// should we load a KalturaEntry
 			_model.drillDownName = (event as DrillDownEvent).objectName;
 
-
-			//switch to a new 
 			if ((event as DrillDownEvent).newScreen) {
+				// got here from filter sub-navigation
 				if (_model.currentScreenState == (event as DrillDownEvent).newScreen)
 					return;
 
