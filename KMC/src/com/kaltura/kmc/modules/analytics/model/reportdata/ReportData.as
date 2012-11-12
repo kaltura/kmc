@@ -25,7 +25,7 @@ package com.kaltura.kmc.modules.analytics.model.reportdata
 		
 		//public var filter :FilterVo;
 		public var orderBy : String;
-		public var aggregatedDataArrCol : ArrayCollection; 
+		public var aggregatedData : ArrayCollection; 
 		
 		public var dimArrColl : ArrayCollection = new ArrayCollection();
 		public var dimToChartDpMap : Object = new Object();

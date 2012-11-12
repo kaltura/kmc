@@ -104,7 +104,8 @@ package com.kaltura.kmc.modules.analytics.commands
 				
 				var aggDataVo : AggregateDataVo = new AggregateDataVo();
 				aggDataVo.title = ResourceManager.getInstance().getString('analytics',aggLbls[i]);
-				aggDataVo.value = FormatReportParam.format( aggLbls[i] , aggArr[i] );
+				aggDataVo.formattedValue = FormatReportParam.format( aggLbls[i] , aggArr[i] );
+				aggDataVo.value = aggArr[i];
 				if ( _model.entitlementEnabled && _model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN){
 					aggDataVo.helpToolTip = ResourceManager.getInstance().getString('analytics', "user_" + aggLbls[i] + "ToolTip");
 				} else {
@@ -117,7 +118,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			if(_model.drillDownName)
 				_model.reportDataMap[_model.currentScreenState].objectName = _model.drillDownName; 
 				
-			_model.reportDataMap[_model.currentScreenState].aggregatedDataArrCol = arrCol;
+			_model.reportDataMap[_model.currentScreenState].aggregatedData = arrCol;
 			_model.reportDataMap[_model.currentScreenState].originalTotalHeaders = aggLbls;
 			
 			//if we have entitlement and the uniqe users are known
@@ -139,9 +140,9 @@ package com.kaltura.kmc.modules.analytics.commands
 		public function fault(info:Object):void
 		{
 			//resets selectedReportData to clean view
-			_model.reportDataMap[_model.currentScreenState].aggregatedDataArrCol = null;
+			_model.reportDataMap[_model.currentScreenState].aggregatedData = null;
 			if(_model.selectedReportData)
-				_model.selectedReportData.aggregatedDataArrCol = null;
+				_model.selectedReportData.aggregatedData = null;
 
 			_model.loadingTotalFlag = false;
 			_model.checkLoading();
