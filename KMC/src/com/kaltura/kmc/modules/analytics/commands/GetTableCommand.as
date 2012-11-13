@@ -141,11 +141,10 @@ package com.kaltura.kmc.modules.analytics.commands {
 			
 			// if no table data (empty table)
 			if (_tableData && !_tableData.data) {
-				// Atar: the commented part points to the same object as the uncommented. WTF?
-				_model.selectedReportData.tableDp = /*_model.reportDataMap[_model.currentScreenState].tableDp = */ null;
-				_model.selectedReportData.totalCount = /*_model.reportDataMap[_model.currentScreenState].totalCount = */ 0;
+				_model.selectedReportData.tableDp = _model.reportDataMap[_model.currentScreenState].tableDp =  null;
+				_model.selectedReportData.totalCount = _model.reportDataMap[_model.currentScreenState].totalCount =  0;
 				
-				_model.selectedReportData = null; //refreash
+				_model.selectedReportData = null; //refresh
 				_model.selectedReportData = _model.reportDataMap[_model.currentScreenState];
 				return;
 			}

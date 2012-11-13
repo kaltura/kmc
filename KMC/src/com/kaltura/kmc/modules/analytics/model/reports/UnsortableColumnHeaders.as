@@ -11,13 +11,13 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 	 *
 	 */
 	public class UnsortableColumnHeaders {
-//		public const topContent:Array;
+		public var topContent:Array = ['entry_name'];
 		public var topContentPerUser:Array = ['user_id', 'name'];
-//		public const contentDropoff:Array;
+		public var contentDropoff:Array = ['entry_name'];
 		public var contentDropoffPerUser:Array = ['user_id', 'name'];
-//		public const contentInteraction:Array;
+		public var contentInteraction:Array = ['entry_name'];
 		public var contentInteractionPerUser:Array = ['user_id', 'name'];
-//		public const contentContributions:Array;
+		public var contentContributions:Array = ["entry_media_source_name"];
 		public var topContrib:Array = ['name'];
 //		public const mapOverlay:Array;
 //		public const syndicator:Array;

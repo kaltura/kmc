@@ -284,9 +284,9 @@
 
 			[Bindable]
 			/**
-			 * table ordering
+			 * initial table ordering
 			 * */
-			public var orderBy:String;
+			public var tableOrderBy:String;
 
 			[Bindable]
 			/**
@@ -488,8 +488,7 @@
 				reportTotalEvent.dispatch();
 
 				if (showTable) {
-					var reportTableEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TABLE, reportType, screenType, ktable.orderBy, true, true, true, false, addTableTotals);
-					reportTableEvent.dispatch();
+					getTable();
 				}
 
 				if (showLineChart || showColumnChart) {
@@ -510,6 +509,8 @@
 			private function onPageChange():void {
 				var pageEvent:PageEvent = new PageEvent(PageEvent.PAGE_CHANGE, paging.selectedPage, paging.pageSize, reportType);
 				pageEvent.dispatch();
+				
+				getTable();
 			}
 
 
@@ -621,6 +622,12 @@
 			}
 
 
+
+			private function getTable():void {
+				var reportTableEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TABLE, reportType, screenType, ktable.orderBy, true, true, true, false, addTableTotals);
+				reportTableEvent.dispatch();
+			}
+
 		]]>
 	</mx:Script>
 
@@ -726,10 +733,10 @@
 	<!-- table -->
 	<mx:Label text="{resourceManager.getString('analytics', 'tableTitle')}" styleName="pageTitle2"
 			  includeInLayout="{showTable}" visible="{showTable}"/>
-	<view:KTable id="ktable" width="100%" height="295" rowHeight="{TABLE_ROW_HEIGHT}" orderBy="{orderBy}"
+	<view:KTable id="ktable" width="100%" height="295" rowHeight="{TABLE_ROW_HEIGHT}" orderBy="{tableOrderBy}"
 				 supportDrillDown="{_model.tableSupportDrillDown}" nonSortableHeaders="{tableNonSortableHeaders}"
 				 includeInLayout="{showTable}" visible="{showTable}" headerDataProvider="{tableHeaders}"
-				 reportType="{reportType}" reportData="{ reportData }"/>
+				 reportType="{reportType}" reportData="{reportData}" orderByChanged="getTable()"/>
 
 	<!-- paging -->
 	<controls:Paging id="paging" width="100%" visible="{showTable &amp;&amp; ! disablePager}"

@@ -2,20 +2,32 @@
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" textAlign="left" paddingLeft="2"
 			 headerRelease="onHeaderRelease( event )" creationComplete="init()" verticalScrollPolicy="off"
 			 horizontalScrollPolicy="off">
+	<mx:Metadata>
+		[Event(name="orderByChanged", type="flash.events.Event")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.analytics.control.ReportEvent;
 			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
 			import com.kaltura.kmc.modules.analytics.view.renderers.DrillDownLinkButton;
 			import com.kaltura.kmc.modules.analytics.view.renderers.TooltipedColumnHeader;
-
+			
+			import mx.controls.Alert;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.DataGridEvent;
 
+			
+			/**
+			 * defined the value of "type" attribute of "orderByChanged" event
+			 * */
+			public static const ORDERBY_CHANGED:String = "orderByChanged";
+			
+			
 			private var _tempHeaderArr:Array;
 			private var _headerDataProvider:Array;
 			private var _sortIndex:int = 1;
 			private var _sortDirection:String = "DESC";
+			
 			
 			
 			
@@ -107,6 +119,7 @@
 					for each (var col:String in nonSortableHeaders) {
 						if (!event.itemRenderer.data.dataField || event.itemRenderer.data.dataField == col) {
 							// can't sort by this field or no data
+							Alert.show(resourceManager.getString('analytics', 'cannotOrderByIt', [resourceManager.getString('analytics', col)]), resourceManager.getString('analytics', 'cannotOrderByItTitle'));
 							return;
 						}
 					}
@@ -127,8 +140,9 @@
 				_sortDirection = dir;
 				setSortIndicator();
 
-				var reportTableEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TABLE, reportType, -1, orderBy);
-				reportTableEvent.dispatch();
+				
+				dispatchEvent(new Event(ORDERBY_CHANGED));
+
 			}
 
 

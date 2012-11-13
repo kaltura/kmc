@@ -3,12 +3,8 @@ package com.kaltura.kmc.modules.analytics.commands {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.report.ReportGetTable;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.analytics.control.ReportEvent;
 	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
-	import com.kaltura.kmc.modules.analytics.model.reports.FormatReportParam;
-	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.types.KalturaReportType;
-	import com.kaltura.vo.KalturaEndUserReportInputFilter;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaReportInputFilter;
 	import com.kaltura.vo.KalturaReportTable;
