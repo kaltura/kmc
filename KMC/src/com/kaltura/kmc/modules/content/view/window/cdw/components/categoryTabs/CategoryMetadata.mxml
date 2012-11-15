@@ -233,13 +233,14 @@
 
 
 			private function onCreationComplete(event:FlexEvent):void {
-				_tagsWatcher = BindingUtils.bindSetter(onTagsSet, this, ["category", "tags"]);
+				_tagsWatcher = BindingUtils.bindSetter(onTagsSet, this, ["category"]);
 			}
 
 
-			private function onTagsSet(tags:String):void {
-				if (tags != null) {
-					tagsInput.selectedItems = new ArrayCollection(tags.split(","));
+			private function onTagsSet(cat:KalturaCategory):void {
+				if (cat.tags != null) {
+					var temp:Array = cat.tags.split(",");
+					tagsInput.selectedItems = new ArrayCollection(temp);
 				}
 				else {
 					tagsInput.selectedItems = null;
