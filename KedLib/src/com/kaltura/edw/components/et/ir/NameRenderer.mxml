@@ -3,7 +3,7 @@
 	<mx:Script>
 		<![CDATA[
 			// -------------------------
-			// "owner" is EntryTable
+			// "owner" is EntryTable, "data" is KalturaBaseEntry
 			// -------------------------
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaType;
@@ -22,17 +22,14 @@
 			
 			/**
 			 * This function builds the tooltip for the entry name
-			 * @param tags
-			 * @ param adminTags
+			 * @param data
 			 */
-			private function tagsAndAdminTags(tags:String, adminTags:String):String {
-				if (!tags && !adminTags)
-					return '';
-				var str:String = "";
-				if (tags)
-					str += "Tags:\n" + tags /* + "\n" */;
-//				if (adminTags)
-//					str += "Categories:\n" + adminTags;
+			private function makeTooltip(data:Object):String {
+				var str:String = data.name;
+				if (data.tags)
+					str += "\nTags:\n" + data.tags;
+//				if (data.adminTags)
+//					str += "\nCategories:\n" + adminTags;
 				
 				return str;
 			}
@@ -56,5 +53,5 @@
 	<mx:LinkButton label="{data.name}" textDecoration="{getUnderlineType(data)}"
 				   enabled="{getDrillDownEnabled(data.mediaType)}"
 				   click="linkbutton1_clickHandler(event)"
-				   toolTip="{tagsAndAdminTags(data.tags,data.adminTags)}"/>
+				   toolTip="{makeTooltip(data)}"/>
 </mx:HBox>
