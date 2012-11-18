@@ -26,6 +26,8 @@ package com.kaltura.kmc.modules.account.command
 				Alert.show(ResourceManager.getInstance().getString('account','metadataMalformedXSDError'), ResourceManager.getInstance().getString('account','error'));
 				return;
 			}
+			
+			_model.selectedMetadataProfile.metadataProfileReordered = true;
 			_model.selectedMetadataProfile.metadataProfileChanged = true;
 		}
 	}

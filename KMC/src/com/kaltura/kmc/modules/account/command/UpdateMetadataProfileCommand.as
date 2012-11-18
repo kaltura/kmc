@@ -72,6 +72,7 @@ package com.kaltura.kmc.modules.account.command
 				_model.selectedMetadataProfile.xsd = new XML(recievedProfile.xsd);
 				_model.selectedMetadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(_model.selectedMetadataProfile.xsd);
 				_model.selectedMetadataProfile.metadataProfileChanged = false;
+				_model.selectedMetadataProfile.metadataProfileReordered = false;
 			}
 			
 			
