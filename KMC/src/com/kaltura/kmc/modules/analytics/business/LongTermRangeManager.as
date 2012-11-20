@@ -23,12 +23,10 @@ package com.kaltura.kmc.modules.analytics.business {
 		public function LongTermRangeManager() {
 			var resourceManager:IResourceManager = ResourceManager.getInstance();
 			var today:Date = new Date();
-			var todaysHourInMiliSeconds:Number = (((today.hoursUTC) * 60 + today.minutesUTC) * 60 + today.secondsUTC) * 1000 + today.millisecondsUTC;
-			var todayStart:Number = today.time - todaysHourInMiliSeconds;
 			
 			_latestSelected = resourceManager.getString('analytics', 'curYear');
 			_latestFromDate = new Date(today.fullYear, 0, 1);
-			_latestToDate = new Date((todayStart - TimeConsts.DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI) + TimeConsts.DAY);
+			_latestToDate = today;
 			
 			_dateRange = [resourceManager.getString('analytics', 'curYear'),	//Current year (default)
 				resourceManager.getString('analytics', 'curMonth'),				//Current month
@@ -91,20 +89,16 @@ package com.kaltura.kmc.modules.analytics.business {
 
 			switch ((event.target as ComboBox).selectedItem.toString()) {
 				case resourceManager.getString('analytics', 'curYear'):
-					// actually gives from the 1/1 of current year to yesterday
+					// actually gives from the 1/1 of current year to today
 					filterVo.fromDate = new Date(today.fullYear, 0, 1);
-					filterVo.toDate = new Date((todayStart - TimeConsts.DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI) + TimeConsts.DAY);
+					filterVo.toDate = today;
 					break;
 
 				case resourceManager.getString('analytics', 'curMonth'):
-					// actually gives first day of the month until yesterday
+					// actually gives first day of the month until today
 					filterVo.fromDate = new Date(today.fullYear, today.month, 1);
-					if (today.date == 1) {
-						filterVo.toDate = new Date(filterVo.fromDate.time);
-					}
-					else {
-						filterVo.toDate = new Date((todayStart - TimeConsts.DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI) + TimeConsts.DAY);
-					}
+					filterVo.toDate = today;
+					
 					break;
 
 				case resourceManager.getString('analytics', 'curPrevMonth'):
@@ -117,36 +111,25 @@ package com.kaltura.kmc.modules.analytics.business {
 						filterVo.fromDate = new Date(today.fullYear, today.month - 1, 1);
 					}
 
-					if (today.date == 1) {
-						filterVo.toDate = new Date(filterVo.fromDate.time);
-					}
-					else {
-						filterVo.toDate = new Date((todayStart - TimeConsts.DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI) + TimeConsts.DAY);
-					}
+					filterVo.toDate = today;
 					break;
 
 				case resourceManager.getString('analytics', 'prevMonth'):
 					if (today.month == 0) {
 						// wer'e in january, get last december 
 						filterVo.fromDate = new Date(today.fullYear - 1, 11, 1);
+						filterVo.toDate = new Date(today.fullYear - 1, 11, 31);
 					}
 					else {
 						// first of last month
 						filterVo.fromDate = new Date(today.fullYear, today.month - 1, 1);
+						filterVo.toDate = new Date(today.fullYear, today.month - 1, getLastDayOfMonth(today.month - 1));
 					}
-
-					filterVo.toDate = new Date(today.fullYear, today.month, 1);
 					break;
 
 				case resourceManager.getString('analytics', 'curQtr'):
 					filterVo.fromDate = new Date(today.fullYear, getFirstMonthOfQtr(today.month), 1);
-
-					if (today.date == 1) {
-						filterVo.toDate = new Date(filterVo.fromDate.time);
-					}
-					else {
-						filterVo.toDate = new Date((todayStart - TimeConsts.DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI) + TimeConsts.DAY);
-					}
+					filterVo.toDate = today;
 					break;
 
 				case resourceManager.getString('analytics', 'curPrevQtr'):
@@ -167,14 +150,7 @@ package com.kaltura.kmc.modules.analytics.business {
 						filterVo.fromDate = new Date(today.fullYear, 6, 1);
 					}
 
-
-
-					if (today.date == 1) {
-						filterVo.toDate = new Date(filterVo.fromDate.time);
-					}
-					else {
-						filterVo.toDate = new Date((todayStart - TimeConsts.DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI) + TimeConsts.DAY);
-					}
+					filterVo.toDate = today;
 					break;
 
 				case resourceManager.getString('analytics', 'prevQtr'):
@@ -204,12 +180,12 @@ package com.kaltura.kmc.modules.analytics.business {
 				case resourceManager.getString('analytics', 'curPrevYear'):
 					// actually gives from the 1/1 of last year to yesterday
 					filterVo.fromDate = new Date(today.fullYear - 1, 0, 1);
-					filterVo.toDate = new Date((todayStart - TimeConsts.DAY + today.timezoneOffset * 60000 - SECOND_IN_MILI) + TimeConsts.DAY);
+					filterVo.toDate = today;
 					break;
 
 				case resourceManager.getString('analytics', 'prevYear'):
 					filterVo.fromDate = new Date(today.fullYear - 1, 0, 1);
-					filterVo.toDate = new Date(today.fullYear - 1, 11, 1);
+					filterVo.toDate = new Date(today.fullYear - 1, 11, 31);
 					break;
 
 				default:
@@ -223,43 +199,56 @@ package com.kaltura.kmc.modules.analytics.business {
 
 		public function changeRangeByDate(filterVo:FilterVo):int {
 			var resourceManager:IResourceManager = ResourceManager.getInstance();
-			var curDate:Date = new Date();
-			var todaysHourInMiliSeconds:Number = (((curDate.hoursUTC) * 60 + curDate.minutesUTC) * 60 + curDate.secondsUTC) * 1000 + curDate.millisecondsUTC;
-			var today:Date = new Date(Number(curDate.time - todaysHourInMiliSeconds - TimeConsts.DAY));
+			var today:Date = new Date();
+			
+			var fromDate:Date = filterVo.fromDate;
+			var toDate:Date = filterVo.toDate;
+			
 			var result:String = ''; // the required string
 
-			if (filterVo.fromDate.fullYear == today.fullYear && filterVo.fromDate.month == 0 && filterVo.fromDate.date == 1 && filterVo.toDate.fullYear == today.fullYear && filterVo.toDate.month == today.month && filterVo.toDate.date == today.date) {
+			if (fromDate.fullYear == today.fullYear && fromDate.month == 0 && fromDate.date == 1
+				&& toDate.fullYear == today.fullYear && toDate.month == today.month && toDate.date == today.date) {
 
 				result = resourceManager.getString('analytics', 'curYear');
 			}
-			else if (filterVo.fromDate.fullYear == today.fullYear && filterVo.fromDate.month == today.month && filterVo.fromDate.date == 1 && filterVo.toDate.fullYear == today.fullYear && filterVo.toDate.month == today.month && filterVo.toDate.date == today.date) {
+			else if (fromDate.fullYear == today.fullYear && fromDate.month == today.month 
+				&& fromDate.date == 1 && toDate.fullYear == today.fullYear && toDate.month == today.month && toDate.date == today.date) {
 
 				result = resourceManager.getString('analytics', 'curMonth');
 			}
-			else if (filterVo.fromDate.fullYear == today.fullYear && filterVo.fromDate.month == today.month - 1 && filterVo.fromDate.date == 1 && filterVo.toDate.fullYear == today.fullYear && filterVo.toDate.month == today.month && filterVo.toDate.date == today.date) {
+			else if (fromDate.fullYear == today.fullYear && fromDate.month == today.month - 1 
+				&& fromDate.date == 1 && toDate.fullYear == today.fullYear && toDate.month == today.month && toDate.date == today.date) {
 
 				result = resourceManager.getString('analytics', 'curPrevMonth');
 			}
-			else if (filterVo.fromDate.fullYear == today.fullYear && filterVo.fromDate.month == today.month - 1 && filterVo.fromDate.date == 1 && filterVo.toDate.fullYear == today.fullYear && filterVo.toDate.month == today.month - 1 && filterVo.toDate.date == getLastDayOfMonth(today.month - 1)) {
+			else if (fromDate.fullYear == today.fullYear && fromDate.month == today.month - 1 
+				&& fromDate.date == 1 && toDate.fullYear == today.fullYear && toDate.month == today.month - 1 
+				&& toDate.date == getLastDayOfMonth(today.month - 1)) {
 
 				result = resourceManager.getString('analytics', 'prevMonth');
 			}
-			else if (filterVo.fromDate.fullYear == today.fullYear && filterVo.fromDate.month == getFirstMonthOfQtr(today.month) && filterVo.fromDate.date == 1 && filterVo.toDate.fullYear == today.fullYear && filterVo.toDate.month == today.month && filterVo.toDate.date == today.date) {
+			else if (fromDate.fullYear == today.fullYear && fromDate.month == getFirstMonthOfQtr(today.month) 
+				&& fromDate.date == 1 && toDate.fullYear == today.fullYear && toDate.month == today.month && toDate.date == today.date) {
 				result = resourceManager.getString('analytics', 'curQtr');
 			}
-			else if (filterVo.fromDate.fullYear == today.fullYear && filterVo.fromDate.month == getFirstMonthOfQtr(today.month - 3) && filterVo.fromDate.date == 1 && filterVo.toDate.fullYear == today.fullYear && filterVo.toDate.month == today.month && filterVo.toDate.date == today.date) {
+			else if (fromDate.fullYear == today.fullYear && fromDate.month == getFirstMonthOfQtr(today.month - 3)
+				&& fromDate.date == 1 && toDate.fullYear == today.fullYear && toDate.month == today.month && toDate.date == today.date) {
 
 				result = resourceManager.getString('analytics', 'curPrevQtr');
 			}
-			else if (filterVo.fromDate.fullYear == today.fullYear && filterVo.fromDate.month == getFirstMonthOfQtr(today.month - 3) && filterVo.fromDate.date == 1 && filterVo.toDate.fullYear == today.fullYear && filterVo.toDate.month == getLastMonthOfQtr(today.month - 3) && filterVo.toDate.date == getLastDayOfMonth(filterVo.toDate.month)) {
+			else if (fromDate.fullYear == today.fullYear && fromDate.month == getFirstMonthOfQtr(today.month - 3) 
+				&& fromDate.date == 1 && toDate.fullYear == today.fullYear && toDate.month == getLastMonthOfQtr(today.month - 3) 
+				&& toDate.date == getLastDayOfMonth(toDate.month)) {
 
 				result = resourceManager.getString('analytics', 'prevQtr');
 			}
-			else if (filterVo.fromDate.fullYear == today.fullYear - 1 && filterVo.fromDate.month == 0 && filterVo.fromDate.date == 1 && filterVo.toDate.fullYear == today.fullYear && filterVo.toDate.month == today.month && filterVo.toDate.date == today.date) {
+			else if (fromDate.fullYear == today.fullYear - 1 && fromDate.month == 0 && fromDate.date == 1 
+				&& toDate.fullYear == today.fullYear && toDate.month == today.month && toDate.date == today.date) {
 
 				result = resourceManager.getString('analytics', 'curPrevYear');
 			}
-			else if (filterVo.fromDate.fullYear == today.fullYear - 1 && filterVo.fromDate.month == 0 && filterVo.fromDate.date == 1 && filterVo.toDate.fullYear == today.fullYear - 1 && filterVo.toDate.month == 11 && filterVo.toDate.date == 31) {
+			else if (fromDate.fullYear == today.fullYear - 1 && fromDate.month == 0 && fromDate.date == 1 
+				&& toDate.fullYear == today.fullYear - 1 && toDate.month == 11 && toDate.date == 31) {
 				result = resourceManager.getString('analytics', 'prevYear')
 			}
 			else {

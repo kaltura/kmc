@@ -8,11 +8,13 @@ package com.kaltura.kmc.modules.analytics.commands {
 	import com.kaltura.vo.KalturaReportInputFilter;
 	
 	import mx.resources.ResourceManager;
+	import mx.formatters.DateFormatter;
 
 	public class ExecuteReportHelper {
 		private static var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 
-
+		private static var dateFormatter:DateFormatter; 
+		
 		public function ExecuteReportHelper() {
 		}
 
@@ -23,6 +25,11 @@ package com.kaltura.kmc.modules.analytics.commands {
 				_model.showRefererIcon = true;
 		}
 
+		
+		private static function initDateFormatter():void {
+			dateFormatter = new DateFormatter();
+			dateFormatter.formatString = "YYYYMMDD"; 
+		}
 
 		/**
 		 * creates a new KalturaReportInputFilter from the current filter in the KMCModelLocator instance
@@ -34,8 +41,12 @@ package com.kaltura.kmc.modules.analytics.commands {
 			var today:Date = new Date();
 			if (fvo) {
 				// filter dates are in seconds, Date.time is in ms, Date.timezoneOffset is in minutes.
-				krif.fromDate = Math.ceil(fvo.fromDate.time / 1000) - today.timezoneOffset * 60;
-				krif.toDate = Math.ceil(fvo.toDate.time / 1000) - today.timezoneOffset * 60;
+//				krif.fromDate = Math.ceil(fvo.fromDate.time / 1000) - today.timezoneOffset * 60;
+//				krif.toDate = Math.ceil(fvo.toDate.time / 1000) - today.timezoneOffset * 60;
+				if (!dateFormatter) initDateFormatter();
+				// use new filters (YYYYMMDD). send local date.
+				krif.fromDay = dateFormatter.format(fvo.fromDate);
+				krif.toDay = dateFormatter.format(fvo.toDate);
 				krif.keywords = fvo.keywords;
 				krif.categories = fvo.categories;
 				krif.searchInTags = true;
@@ -56,8 +67,13 @@ package com.kaltura.kmc.modules.analytics.commands {
 			var today:Date = new Date();
 			if (fvo) {
 				// filter dates are in seconds, Date.time is in ms, Date.timezoneOffset is in minutes.
-				keurif.fromDate = Math.ceil(fvo.fromDate.time / 1000) - today.timezoneOffset * 60;
-				keurif.toDate = Math.ceil(fvo.toDate.time / 1000) - today.timezoneOffset * 60;
+//				keurif.fromDate = Math.ceil(fvo.fromDate.time / 1000) - today.timezoneOffset * 60;
+//				keurif.toDate = Math.ceil(fvo.toDate.time / 1000) - today.timezoneOffset * 60;
+				if (!dateFormatter) initDateFormatter();
+				// use new filters (YYYYMMDD). send local date.
+				keurif.fromDay = dateFormatter.format(fvo.fromDate);
+				keurif.toDay = dateFormatter.format(fvo.toDate);
+				
 				keurif.keywords = fvo.keywords;
 				
 				//if we selected specific application
