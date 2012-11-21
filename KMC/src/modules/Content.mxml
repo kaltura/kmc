@@ -688,45 +688,42 @@
 				var tab:DisplayObject = contentView.selectedChild;
 				var anchor:String;
 				switch (tab) {
-					case manage:  {
+					case manage:  
 						anchor = 'section_entries';
 						break;
-					}
-					case moderation:  {
+					
+					case moderation:  
 						anchor = 'section_moderation';
 						break;
-					}
-					case playlists:  {
+					
+					case playlists:  
 						anchor = 'section_playlists';
 						break;
-					}
-					case syndication:  {
+					
+					case syndication:  
 						anchor = 'section_syndication';
 						break;
-					}
-					case categories:  {
+					
+					case categories:  
 						anchor = 'section_categories';
 						break;
-					}
-					case uploads:  {
-						if (uploads.uploadViewStack.selectedIndex == 0) {
-							// your uploads
-							anchor = 'section_uploads';
-						}
-						else {
-							// bulk log
-							anchor = 'section_bulk_log';
-						}
+					
+					case uploads:  
+						anchor = 'section_uploads';
 						break;
-					}
+					
+					case bulk:  
+						anchor = 'section_bulk_log';
+						break;
+					
 					case dropFolders:
 						anchor = 'section_drop_folders';
 						break;
 
-					default:  {
+					default:  
 						Alert.show("Help for unknown tab !");
 						return;
-					}
+					
 				}
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
 			}
@@ -748,8 +745,8 @@
 			 * triggered from add menu
 			 * */
 			public function refreshBulk():void {
-				if (uploads.bulk) {
-					uploads.bulk.loadEntries();
+				if (bulk) {
+					bulk.loadEntries();
 				}
 			}
 
@@ -804,9 +801,16 @@
 						   click="rightTabClicked(event)" 
 						   styleName="{uploadsBtn.selected ? 'rightTlnSelectedTabStyle' : 'rightTlnUnSelectedTabStyle'}"
 						   buttonMode="true" toggle="true" />
-				<mx:Button id="dropFoldersBtn" label="{resourceManager.getString('cms','dropFoldersTitle')}" height="{SUB_MENU_HEIGHT}"
+				<mx:Button id="bulkBtn" height="{SUB_MENU_HEIGHT}" 
+						   label="{resourceManager.getString('cms','importFromExistingHosting')}"
+						   click="rightTabClicked(event)" 
+						   styleName="{bulkBtn.selected ? 'rightTlnSelectedTabStyle' : 'rightTlnUnSelectedTabStyle'}"
+						   buttonMode="true" toggle="true" />
+				<mx:Button id="dropFoldersBtn" height="{SUB_MENU_HEIGHT}"
+						   label="{resourceManager.getString('cms','dropFoldersTitle')}"
+						   click="rightTabClicked(event)"
 						   styleName="{dropFoldersBtn.selected ? 'rightTlnSelectedTabStyle' : 'rightTlnUnSelectedTabStyle'}"
-						   buttonMode="true" toggle="true" click="rightTabClicked(event)"/>
+						   buttonMode="true" toggle="true" />
 
 				<mx:Button styleName="help" buttonMode="true" click="{onHelpClick(event)}"/>
 			</mx:HBox>
@@ -831,9 +835,9 @@
 							 categoriesModel="{_model.categoriesModel}"/>
 
 			<view:Uploads id="uploads" width="100%" height="100%" 
-						  files="{_files}"
-						  styleName="pageStyle" 
-						  bulkUploadDataProvider="{_model.bulkUploadModel}" />
+						  files="{_files}" styleName="pageStyle" />
+			<view:BulkUpload id="bulk" width="100%" height="100%" bulkUploadData="{_model.bulkUploadModel}"
+							 styleName="pageStyle"/>
 			<view:DropFolders id="dropFolders" width="100%" height="100%" styleName="pageStyle"	  
 							  dropFolderModel="{_model.dropFolderModel}" />
 

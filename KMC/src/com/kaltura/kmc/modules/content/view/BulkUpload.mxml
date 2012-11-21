@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
-		 xmlns:controls="com.kaltura.controls.*"
+		 implements="com.kaltura.kmc.modules.content.business.IContentPanel"
+		 xmlns:controls="com.kaltura.controls.*" xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*" 
+		 xmlns:filter="com.kaltura.kmc.modules.content.view.bulk.filter.*"
 		 horizontalAlign="left" width="100%" height="100%" 
-		 creationComplete="{creationCompleteHandler(event)}" xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*" xmlns:filter="com.kaltura.kmc.modules.content.view.bulk.filter.*">
+		 creationComplete="{creationCompleteHandler(event)}" >
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
@@ -48,6 +51,8 @@
 
 			private var _fm:FileManager = new FileManager();
 
+			public function init(kbef:KalturaBaseEntryFilter = null):void {
+			}
 
 			public function initPaging():void {
 				if (paging && _pager && _pager.allEntries)

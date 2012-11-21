@@ -17,9 +17,6 @@
 
 
 			[Bindable]
-			public var bulkUploadDataProvider:BulkUploadModel;
-
-			[Bindable]
 			private var _files:ArrayCollection = null;
 
 
@@ -38,18 +35,7 @@
 			}
 
 
-			private function onSwitchUploadState():void {
-				uploadViewStack.selectedIndex = uploadViewStack.selectedIndex == 0 ? 1 : 0;
-				if (uploadViewStack.selectedIndex == 0)
-					switchStatesLink.label = resourceManager.getString('cms', 'switchToBulkUpload');
-				else if (uploadViewStack.selectedIndex == 1)
-					switchStatesLink.label = resourceManager.getString('cms', 'switchToUpload');
-			}
 
-
-//			protected function resizeToContent():void {
-//				uploadViewStack.height = uploadViewStack.selectedChild.height;
-//			}
 
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
@@ -57,21 +43,15 @@
 			}
 		]]>
 	</mx:Script>
-	<mx:ViewStack id="uploadViewStack" width="100%" height="100%">
-		<mx:VBox width="100%" height="100%" >
-			<mx:Label text="{resourceManager.getString('cms', 'uploadsTitle')}" styleName="filterTitleHeader"/>
-			<mx:Text htmlText="{resourceManager.getString('cms', 'uploadsDescription')}"/>
-			<!--<mx:Text htmlText="{resourceManager.getString('cms', 'uploadsDescriptionNote')}"/>-->
+	
+	<mx:VBox width="100%" height="100%" >
+		<mx:Label text="{resourceManager.getString('cms', 'uploadsTitle')}" styleName="filterTitleHeader"/>
+		<mx:Text htmlText="{resourceManager.getString('cms', 'uploadsDescription')}"/>
+		<!--<mx:Text htmlText="{resourceManager.getString('cms', 'uploadsDescriptionNote')}"/>-->
 
-			<view:FileUploadTable width="100%" height="100%" dataProvider="{_files}" rowHeight="50"/>
+		<view:FileUploadTable width="100%" height="100%" dataProvider="{_files}" rowHeight="50"/>
 
-		</mx:VBox>
-		<view:BulkUpload id="bulk" width="100%" height="100%" bulkUploadData="{bulkUploadDataProvider}"/>
-	</mx:ViewStack>
-	<mx:HBox id="toolbar" width="100%" height="30" styleName="DataGridActions">
-		<mx:LinkButton id="switchStatesLink" label="{resourceManager.getString('cms','switchToBulkUpload')}"
-					   styleName="switchModesLinkButtonStyle" click="{onSwitchUploadState()}"/>
-		<mx:Spacer width="100%"/>
-	</mx:HBox>
+	</mx:VBox>
+		
 
 </mx:VBox>
