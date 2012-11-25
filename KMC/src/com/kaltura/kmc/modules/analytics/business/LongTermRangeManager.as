@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.analytics.business {
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.utils.ArrayUtil;
+	import com.kaltura.kmc.vo.LocalizedVo;
 
 	public class LongTermRangeManager implements IDateRangeManager {
 
@@ -15,20 +16,25 @@ package com.kaltura.kmc.modules.analytics.business {
 		private var _dateRange:Array;
 		private var _latestToDate:Date;
 		private var _latestFromDate:Date;
-		private var _latestSelected:String;
+		private var _latestSelected:Object;
 
 
 
 
 		public function LongTermRangeManager() {
-			var resourceManager:IResourceManager = ResourceManager.getInstance();
-			var today:Date = new Date();
-			
-			_latestSelected = resourceManager.getString('analytics', 'curYear');
-			_latestFromDate = new Date(today.fullYear, 0, 1);
-			_latestToDate = today;
-			
-			_dateRange = [resourceManager.getString('analytics', 'curYear'),	//Current year (default)
+			_dateRange = [
+				new LocalizedVo('curYear', 'curYear', 'analytics'),
+				new LocalizedVo('curMonth', 'curMonth', 'analytics'),
+				new LocalizedVo('curPrevMonth', 'curPrevMonth', 'analytics'),
+				new LocalizedVo('prevMonth', 'prevMonth', 'analytics'),
+				new LocalizedVo('curQtr', 'curQtr', 'analytics'),
+				new LocalizedVo('curPrevQtr', 'curPrevQtr', 'analytics'),
+				new LocalizedVo('prevQtr', 'prevQtr', 'analytics'),
+				new LocalizedVo('curPrevYear', 'curPrevYear', 'analytics'),
+				new LocalizedVo('prevYear', 'prevYear', 'analytics'),
+				new LocalizedVo('custom', 'custom', 'analytics'),
+				];
+				/*resourceManager.getString('analytics', 'curYear'),	//Current year (default)
 				resourceManager.getString('analytics', 'curMonth'),				//Current month
 				resourceManager.getString('analytics', 'curPrevMonth'),			//Current and previous month
 				resourceManager.getString('analytics', 'prevMonth'),			//Previous month
@@ -37,15 +43,22 @@ package com.kaltura.kmc.modules.analytics.business {
 				resourceManager.getString('analytics', 'prevQtr'),				//Previous quarter
 				resourceManager.getString('analytics', 'curPrevYear'),			//Current and previous year
 				resourceManager.getString('analytics', 'prevYear'),				//Previous year
-				resourceManager.getString('analytics', 'custom')];				//Custom
+				resourceManager.getString('analytics', 'custom')				//Custom
+			];*/
+			var today:Date = new Date();
+			
+			_latestSelected = _dateRange[0];
+			_latestFromDate = new Date(today.fullYear, 0, 1);
+			_latestToDate = today;
+			
 		}
 		
-		public function get latestSelected():String {
+		public function get latestSelected():Object {
 			return _latestSelected;
 		}
 		
 		
-		public function set latestSelected(value:String):void {
+		public function set latestSelected(value:Object):void {
 			_latestSelected = value;
 		}
 		
@@ -80,28 +93,28 @@ package com.kaltura.kmc.modules.analytics.business {
 
 
 		public function changeDateByRange(event:ListEvent, filterVo:FilterVo):void {
-			var resourceManager:IResourceManager = ResourceManager.getInstance();
+			
 			var today:Date = new Date();
 			var todaysHourInMiliSeconds:Number = (((today.hoursUTC) * 60 + today.minutesUTC) * 60 + today.secondsUTC) * 1000 + today.millisecondsUTC;
 			var todayStart:Number = today.time - todaysHourInMiliSeconds;
 
-			latestSelected = (event.target as ComboBox).selectedItem.toString();
+			latestSelected = (event.target as ComboBox).selectedItem;
 
-			switch ((event.target as ComboBox).selectedItem.toString()) {
-				case resourceManager.getString('analytics', 'curYear'):
+			switch ((event.target as ComboBox).selectedItem.value) {
+				case 'curYear':
 					// actually gives from the 1/1 of current year to today
 					filterVo.fromDate = new Date(today.fullYear, 0, 1);
 					filterVo.toDate = today;
 					break;
 
-				case resourceManager.getString('analytics', 'curMonth'):
+				case 'curMonth':
 					// actually gives first day of the month until today
 					filterVo.fromDate = new Date(today.fullYear, today.month, 1);
 					filterVo.toDate = today;
 					
 					break;
 
-				case resourceManager.getString('analytics', 'curPrevMonth'):
+				case 'curPrevMonth':
 					if (today.month == 0) {
 						// wer'e in january, get last december 
 						filterVo.fromDate = new Date(today.fullYear - 1, 11, 1);
@@ -114,7 +127,7 @@ package com.kaltura.kmc.modules.analytics.business {
 					filterVo.toDate = today;
 					break;
 
-				case resourceManager.getString('analytics', 'prevMonth'):
+				case 'prevMonth':
 					if (today.month == 0) {
 						// wer'e in january, get last december 
 						filterVo.fromDate = new Date(today.fullYear - 1, 11, 1);
@@ -127,12 +140,12 @@ package com.kaltura.kmc.modules.analytics.business {
 					}
 					break;
 
-				case resourceManager.getString('analytics', 'curQtr'):
+				case 'curQtr':
 					filterVo.fromDate = new Date(today.fullYear, getFirstMonthOfQtr(today.month), 1);
 					filterVo.toDate = today;
 					break;
 
-				case resourceManager.getString('analytics', 'curPrevQtr'):
+				case 'curPrevQtr':
 					if (today.month < 3) {
 						// 4th qtr of last year
 						filterVo.fromDate = new Date(today.fullYear - 1, 9, 1);
@@ -153,7 +166,7 @@ package com.kaltura.kmc.modules.analytics.business {
 					filterVo.toDate = today;
 					break;
 
-				case resourceManager.getString('analytics', 'prevQtr'):
+				case 'prevQtr':
 					if (today.month < 3) {
 						// 4th qtr of last year
 						filterVo.fromDate = new Date(today.fullYear - 1, 9, 1); // (last) oct 1
@@ -177,13 +190,13 @@ package com.kaltura.kmc.modules.analytics.business {
 
 					break;
 
-				case resourceManager.getString('analytics', 'curPrevYear'):
+				case 'curPrevYear':
 					// actually gives from the 1/1 of last year to yesterday
 					filterVo.fromDate = new Date(today.fullYear - 1, 0, 1);
 					filterVo.toDate = today;
 					break;
 
-				case resourceManager.getString('analytics', 'prevYear'):
+				case 'prevYear':
 					filterVo.fromDate = new Date(today.fullYear - 1, 0, 1);
 					filterVo.toDate = new Date(today.fullYear - 1, 11, 31);
 					break;
@@ -198,7 +211,6 @@ package com.kaltura.kmc.modules.analytics.business {
 
 
 		public function changeRangeByDate(filterVo:FilterVo):int {
-			var resourceManager:IResourceManager = ResourceManager.getInstance();
 			var today:Date = new Date();
 			
 			var fromDate:Date = filterVo.fromDate;
@@ -209,55 +221,60 @@ package com.kaltura.kmc.modules.analytics.business {
 			if (fromDate.fullYear == today.fullYear && fromDate.month == 0 && fromDate.date == 1
 				&& toDate.fullYear == today.fullYear && toDate.month == today.month && toDate.date == today.date) {
 
-				result = resourceManager.getString('analytics', 'curYear');
+				result = 'curYear';
 			}
 			else if (fromDate.fullYear == today.fullYear && fromDate.month == today.month 
 				&& fromDate.date == 1 && toDate.fullYear == today.fullYear && toDate.month == today.month && toDate.date == today.date) {
 
-				result = resourceManager.getString('analytics', 'curMonth');
+				result = 'curMonth';
 			}
 			else if (fromDate.fullYear == today.fullYear && fromDate.month == today.month - 1 
 				&& fromDate.date == 1 && toDate.fullYear == today.fullYear && toDate.month == today.month && toDate.date == today.date) {
 
-				result = resourceManager.getString('analytics', 'curPrevMonth');
+				result = 'curPrevMonth';
 			}
 			else if (fromDate.fullYear == today.fullYear && fromDate.month == today.month - 1 
 				&& fromDate.date == 1 && toDate.fullYear == today.fullYear && toDate.month == today.month - 1 
 				&& toDate.date == getLastDayOfMonth(today.month - 1)) {
 
-				result = resourceManager.getString('analytics', 'prevMonth');
+				result = 'prevMonth';
 			}
 			else if (fromDate.fullYear == today.fullYear && fromDate.month == getFirstMonthOfQtr(today.month) 
 				&& fromDate.date == 1 && toDate.fullYear == today.fullYear && toDate.month == today.month && toDate.date == today.date) {
-				result = resourceManager.getString('analytics', 'curQtr');
+				result = 'curQtr';
 			}
 			else if (fromDate.fullYear == today.fullYear && fromDate.month == getFirstMonthOfQtr(today.month - 3)
 				&& fromDate.date == 1 && toDate.fullYear == today.fullYear && toDate.month == today.month && toDate.date == today.date) {
 
-				result = resourceManager.getString('analytics', 'curPrevQtr');
+				result = 'curPrevQtr';
 			}
 			else if (fromDate.fullYear == today.fullYear && fromDate.month == getFirstMonthOfQtr(today.month - 3) 
 				&& fromDate.date == 1 && toDate.fullYear == today.fullYear && toDate.month == getLastMonthOfQtr(today.month - 3) 
 				&& toDate.date == getLastDayOfMonth(toDate.month)) {
 
-				result = resourceManager.getString('analytics', 'prevQtr');
+				result = 'prevQtr';
 			}
 			else if (fromDate.fullYear == today.fullYear - 1 && fromDate.month == 0 && fromDate.date == 1 
 				&& toDate.fullYear == today.fullYear && toDate.month == today.month && toDate.date == today.date) {
 
-				result = resourceManager.getString('analytics', 'curPrevYear');
+				result = 'curPrevYear';
 			}
 			else if (fromDate.fullYear == today.fullYear - 1 && fromDate.month == 0 && fromDate.date == 1 
 				&& toDate.fullYear == today.fullYear - 1 && toDate.month == 11 && toDate.date == 31) {
-				result = resourceManager.getString('analytics', 'prevYear')
+				result = 'prevYear';
 			}
 			else {
-				result = resourceManager.getString('analytics', 'custom');
+				result = 'custom';
 			}
 
-			latestSelected = result;
-
-			return ArrayUtil.getItemIndex(result, _dateRange);
+			var i:int;
+			for (i = _dateRange.length - 1; i>=0; i--) {
+				if (_dateRange[i].value == result) {
+					latestSelected = _dateRange[i];
+					break;
+				}
+			}
+			return i;
 		}
 
 

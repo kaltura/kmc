@@ -61,6 +61,10 @@ package com.kaltura.kmc.vo
 		{
 			return _value;
 		}
+		
+		override public function toString():String {
+			return _label;
+		}
 
 	}
 }

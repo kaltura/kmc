@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.analytics.business {
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.utils.ArrayUtil;
+	import com.kaltura.kmc.vo.LocalizedVo;
 
 	/**
 	 * dates range manager for the short term: day to year.
@@ -19,19 +20,24 @@ package com.kaltura.kmc.modules.analytics.business {
 		private var _dateRange:Array;
 		private var _latestToDate:Date;
 		private var _latestFromDate:Date;
-		private var _latestSelected:String;
+		private var _latestSelected:Object;
 		
 
 
 		public function ShortTermRangeManager() {
-			var resourceManager:IResourceManager = ResourceManager.getInstance();
-			var today:Date = new Date();
 			
-			_latestSelected = resourceManager.getString('analytics', 'last30Days');
-			_latestFromDate = new Date(today.time - 30 * TimeConsts.DAY + today.timezoneOffset * 60000);
-			_latestToDate = today;
+			_dateRange = [new LocalizedVo('yesterday', 'yesterday', 'analytics'),
+				new LocalizedVo('last7Days', 'last7Days', 'analytics'),
+				new LocalizedVo('thisWeek', 'thisWeek', 'analytics'),
+				new LocalizedVo('lastWeek', 'lastWeek', 'analytics'),
+				new LocalizedVo('last30Days', 'last30Days', 'analytics'),
+				new LocalizedVo('thisMonth', 'thisMonth', 'analytics'),
+				new LocalizedVo('lastMonth', 'lastMonth', 'analytics'),
+				new LocalizedVo('last12Months', 'last12Months', 'analytics'),
+				new LocalizedVo('thisYear', 'thisYear', 'analytics'),
+				new LocalizedVo('custom', 'custom', 'analytics')
 			
-			_dateRange = [resourceManager.getString('analytics', 'yesterday'),
+				/*resourceManager.getString('analytics', 'yesterday'),
 				resourceManager.getString('analytics', 'last7Days'),
 				resourceManager.getString('analytics', 'thisWeek'),
 				resourceManager.getString('analytics', 'lastWeek'),
@@ -40,17 +46,22 @@ package com.kaltura.kmc.modules.analytics.business {
 				resourceManager.getString('analytics', 'lastMonth'),
 				resourceManager.getString('analytics', 'last12Months'),
 				resourceManager.getString('analytics', 'thisYear'),
-				resourceManager.getString('analytics', 'custom')];
+				resourceManager.getString('analytics', 'custom')*/];
+			
+			var today:Date = new Date();
+			_latestSelected = _dateRange[4];
+			_latestFromDate = new Date(today.time - 30 * TimeConsts.DAY + today.timezoneOffset * 60000);
+			_latestToDate = today;
 		}
 
 
 		
-		public function get latestSelected():String {
+		public function get latestSelected():Object {
 			return _latestSelected;
 		}
 		
 		
-		public function set latestSelected(value:String):void {
+		public function set latestSelected(value:Object):void {
 			_latestSelected = value;
 		}
 
@@ -91,48 +102,47 @@ package com.kaltura.kmc.modules.analytics.business {
 
 
 		public function changeDateByRange(event:ListEvent, filterVo:FilterVo):void {
-			var resourceManager:IResourceManager = ResourceManager.getInstance();
 			var now:Date = new Date();
 			var nowTime:Number = now.time;	// current UTC time in MS
 			var tzOffsetMs:Number = now.timezoneOffset * 60000;	// current timezone offset in MS (original value in minutes)
 			
-			latestSelected = (event.target as ComboBox).selectedItem.toString();
+			latestSelected = (event.target as ComboBox).selectedItem;
 
-			switch ((event.target as ComboBox).selectedItem.toString()) {
-				case resourceManager.getString('analytics', 'yesterday'):
+			switch ((event.target as ComboBox).selectedItem.value) {
+				case 'yesterday':
 					filterVo.fromDate = new Date(nowTime - TimeConsts.DAY + tzOffsetMs);
 					filterVo.toDate = now;
 					break;
-				case resourceManager.getString('analytics', 'last7Days'):
+				case 'last7Days':
 					filterVo.fromDate = new Date(nowTime - 7 * TimeConsts.DAY + tzOffsetMs);
 					filterVo.toDate = now;
 					break;
-				case resourceManager.getString('analytics', 'thisWeek'):
+				case 'thisWeek':
 					// last sunday to today
 					filterVo.fromDate = new Date(nowTime - now.day * TimeConsts.DAY + tzOffsetMs);
 					filterVo.toDate = now;
 					break;
-				case resourceManager.getString('analytics', 'lastWeek'):
+				case 'lastWeek':
 					// 2 sundays ago to last saturday 
 					filterVo.fromDate = new Date(nowTime - (now.day + 7) * TimeConsts.DAY + tzOffsetMs);
 					filterVo.toDate = new Date(nowTime - (now.day + 1) * TimeConsts.DAY + tzOffsetMs);
 					break;
-				case resourceManager.getString('analytics', 'last30Days'):
+				case 'last30Days':
 					// 30 days ago until today
 					filterVo.fromDate = new Date(nowTime - 30 * TimeConsts.DAY + tzOffsetMs);
 					filterVo.toDate = now;
 					break;
-				case resourceManager.getString('analytics', 'last12Months'):
+				case 'last12Months':
 					// actually gives a year ago today until today
 					filterVo.fromDate = new Date(now.fullYear - 1, now.month, now.date);
 					filterVo.toDate = now;
 					break;
-				case resourceManager.getString('analytics', 'thisMonth'):
+				case 'thisMonth':
 					// actually gives first day of the month until today
 					filterVo.fromDate = new Date(now.fullYear, now.month, 1);
 					filterVo.toDate = now;
 					break;
-				case resourceManager.getString('analytics', 'lastMonth'):
+				case 'lastMonth':
 					// actually gives from the first of last month to the last of last month
 					if (now.month > 0) {
 						filterVo.fromDate = new Date(now.fullYear, now.month - 1, 1);
@@ -142,7 +152,7 @@ package com.kaltura.kmc.modules.analytics.business {
 					}
 					filterVo.toDate = new Date(nowTime - TimeConsts.DAY * now.date + tzOffsetMs);
 					break;
-				case resourceManager.getString('analytics', 'thisYear'):
+				case 'thisYear':
 					// actually gives from the 1/1 of current year to today
 					filterVo.fromDate = new Date(now.fullYear, 0, 1);
 					filterVo.toDate = now;
@@ -177,59 +187,64 @@ package com.kaltura.kmc.modules.analytics.business {
 			var fromDate:Date = filterVo.fromDate;
 			var toDate:Date = filterVo.toDate;
 			
-			var result:String = ''; // the required string
+			var result:String = ''; // the required string (key in locale, item value)
 
 			if (fromDate.date == date - 1 && fromDate.month == month && fromDate.fullYear == year
 				&& toDate.date == date && toDate.month == month && toDate.fullYear == year) {
-				result = resourceManager.getString('analytics', 'yesterday');
+				result = 'yesterday';
 			}
 			else if (fromDate.date == date - 7 && fromDate.month == month && fromDate.fullYear == year
 				&& toDate.date == date && toDate.month == month && toDate.fullYear == year) {
 				//TODO handle first 6 days of month
-				result = resourceManager.getString('analytics', 'last7Days');
+				result = 'last7Days';
 			}
 			else if (isLastSunday(fromDate, now)
 				&& toDate.date == date && toDate.month == month && toDate.fullYear == year) {
 				// last sunday to today
-				result = resourceManager.getString('analytics', 'thisWeek');
+				result = 'thisWeek';
 			}
 			else if (now.time - fromDate.time >= 7 * TimeConsts.DAY && now.time - fromDate.time < 14 * TimeConsts.DAY 
 				&& fromDate.day == 0 && toDate.day == 6 && now.time > toDate.time) {
 				// 2 sundays ago to last saturday
-				result = resourceManager.getString('analytics', 'lastWeek');
+				result = 'lastWeek';
 			}
 			else if (now.time - fromDate.time >= TimeConsts.DAY * 30 && now.time - fromDate.time < TimeConsts.DAY * 31 
 				&& now.time - toDate.time >= 0 && now.time - toDate.time < TimeConsts.DAY) {
-				result = resourceManager.getString('analytics', 'last30Days');
+				result = 'last30Days';
 			}
 			else if (now.time - toDate.time >= 0 && now.time - toDate.time < TimeConsts.DAY 
 				&& fromDate.fullYear == toDate.fullYear && fromDate.month == toDate.month && fromDate.date == 1) {
-				result = resourceManager.getString('analytics', 'thisMonth');
+				result = 'thisMonth';
 			}
 			else if (toDate.month + 1 == now.month && fromDate.date == 1 && fromDate.month + 1 == now.month) {
 				var tempDate:Date = new Date(now.time - now.date * TimeConsts.DAY);
 				if (toDate.date == tempDate.date) {
-					result = resourceManager.getString('analytics', 'lastMonth');
+					result = 'lastMonth';
 				}
 				else {
-					result = resourceManager.getString('analytics', 'custom');
+					result = 'custom';
 				}
 			}
 			else if (toDate.fullYear == fromDate.fullYear + 1 && toDate.month == fromDate.month && toDate.date == fromDate.date 
 				&& now.time - toDate.time >= 0 && now.time - toDate.time < TimeConsts.DAY) {
-				result = resourceManager.getString('analytics', 'last12Months');
+				result = 'last12Months';
 			}
 			else if (now.time - toDate.time >= 0 && now.time - toDate.time < TimeConsts.DAY 
 				&& now.fullYear == fromDate.fullYear && fromDate.month == 0 && fromDate.date == 1) {
-				result = resourceManager.getString('analytics', 'thisYear');
+				result = 'thisYear';
 			}
 			else {
-				result = resourceManager.getString('analytics', 'custom');
+				result = 'custom';
 			}
-
-			latestSelected = result;
-
-			return ArrayUtil.getItemIndex(result, _dateRange);
+			
+			var i:int;
+			for (i = _dateRange.length - 1; i>=0; i--) {
+				if (_dateRange[i].value == result) {
+					latestSelected = _dateRange[i];
+					break;
+				}
+			}
+			return i;
 		}
 	}
 }

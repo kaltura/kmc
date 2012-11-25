@@ -83,6 +83,17 @@
 				}
 			}
 			
+			override protected function resourcesChanged():void {
+				super.resourcesChanged();
+				var dtnItem:DTNItem;
+				for (var i:int = 0; i<this.numChildren; i++) {
+					dtnItem = this.getChildAt(i) as DTNItem;
+					if (dtnItem) {
+						(dtnItem.data as ToggleLinkVo).linkTxt = (_dataProvider[i] && _dataProvider[i].hasOwnProperty("label")) ? _dataProvider[i].label : _dataProvider[i];
+					}
+				}
+			}
+			
 			private function onDtnBtnCreationComplete( event : Event ) :void
 			{
 				var dtnItem : DTNItem = event.target as DTNItem;
@@ -92,7 +103,7 @@
 				var index : int = this.getChildIndex(dtnItem);		
 				var tlVo : ToggleLinkVo = new ToggleLinkVo();
 				
-				tlVo.linkTxt = _dataProvider[index];
+				tlVo.linkTxt = (_dataProvider[index] && _dataProvider[index].hasOwnProperty("label")) ? _dataProvider[index].label : _dataProvider[index];
 				tlVo.selected = false;
 					
 				if( index == _selectedIndex ) 

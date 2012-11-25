@@ -1,37 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml" width="150" styleName="analyticsCombo"
-	change="{ onChange() }">
+<mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml" width="150" styleName="analyticsCombo" change="{ onChange() }">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.vo.LocalizedVo;
 			import com.kaltura.kmc.modules.analytics.control.GraphEvent;
-			
-			private function onChange() : void
-			{
-				var graphEvent : GraphEvent = new GraphEvent( GraphEvent.CHANGE_DIM , this.selectedItem.data);
-				 graphEvent.dispatch();
+
+
+			private function onChange():void {
+				var graphEvent:GraphEvent = new GraphEvent(GraphEvent.CHANGE_DIM, this.selectedItem.value);
+				graphEvent.dispatch();
 			}
-			
-			override public function set dataProvider(value:Object):void 
-			{
-				 if(value && value is Array)
-				 {
-				 	var dp : Array = new Array();
-				 	
-				 	for(var i:int=0; i< (value as Array).length; i++)
-				 	{
-				 		var obj : Object = new Object();
-				 		obj.data = (value as Array)[i];
-				 		obj.label = resourceManager.getString('analytics', (value as Array)[i]);
-				 		dp.push( obj );
-				 	}
-				 		
+
+
+			override public function set dataProvider(value:Object):void {
+				if (value && value is Array) {
+					var val:Array = value as Array;
+					var dp:Array = new Array();
+
+					for (var i:int = 0; i < val.length; i++) {
+						var obj:LocalizedVo = new LocalizedVo(val[i], val[i], 'analytics'); 
+//						obj.data = (value as Array)[i];
+//						obj.label = resourceManager.getString('analytics', (value as Array)[i]);
+						dp.push(obj);
+					}
+
 					super.dataProvider = dp;
 				}
-				else
-					 super.dataProvider = value;
+				else {
+					super.dataProvider = value;
+				}
 			}
-			
 		]]>
 	</mx:Script>
-	
+
 </mx:ComboBox>

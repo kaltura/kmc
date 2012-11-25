@@ -18,6 +18,7 @@ package com.kaltura.kmc.modules.analytics.model {
 	
 	import mx.collections.ArrayCollection;
 	import mx.resources.ResourceManager;
+	import com.kaltura.kmc.vo.LocalizedVo;
 
 	[Bindable]
 	public class AnalyticsModelLocator implements IModelLocator {
@@ -197,11 +198,11 @@ package com.kaltura.kmc.modules.analytics.model {
 		/**
 		 * dataprovider for content reports tab sub-navigation
 		 */
-		public var contentDtnDp:ArrayCollection = new ArrayCollection(
-			[ResourceManager.getInstance().getString('analytics', 'topContent'),
-			ResourceManager.getInstance().getString('analytics', 'contentDropOff'),
-			ResourceManager.getInstance().getString('analytics', 'contentInteractions'),
-			ResourceManager.getInstance().getString('analytics', 'contentContributions')]);
+		public var contentDtnDp:ArrayCollection = new ArrayCollection([
+			new LocalizedVo('topContent', 'topContent', 'analytics'),
+			new LocalizedVo('contentDropOff', 'contentDropOff', 'analytics'),
+			new LocalizedVo('contentInteractions', 'contentInteractions', 'analytics'),
+			new LocalizedVo('contentContributions', 'contentContributions', 'analytics')]);
 
 
 		/**
@@ -209,24 +210,21 @@ package com.kaltura.kmc.modules.analytics.model {
 		 */
 		public function get userDtnDp():ArrayCollection {
 			if (entitlementEnabled) {
-				return new ArrayCollection(
-					[ResourceManager.getInstance().getString('analytics', 'topContributors'),
+				return new ArrayCollection([
+					ResourceManager.getInstance().getString('analytics', 'topContributors'),
 					ResourceManager.getInstance().getString('analytics', 'mapOverlay'),
 					ResourceManager.getInstance().getString('analytics', 'topSyndications'),
 					ResourceManager.getInstance().getString('analytics', 'userEngagement')]);
 			}
 			else {
-				return new ArrayCollection(
-					[ResourceManager.getInstance().getString('analytics', 'topContributors'),
+				return new ArrayCollection([
+					ResourceManager.getInstance().getString('analytics', 'topContributors'),
 					ResourceManager.getInstance().getString('analytics', 'mapOverlay'),
 					ResourceManager.getInstance().getString('analytics', 'topSyndications')]);
 			}
 		}
 
 
-//		public var usageDtnDp : ArrayCollection = new ArrayCollection(
-//				[ 	ResourceManager.getInstance().getString('analytics', 'pbns'),
-//					ResourceManager.getInstance().getString('analytics', 'endUserStorage')]);
 
 		public function get usageDtnDp():ArrayCollection {
 			if (entitlementEnabled) {

@@ -39,8 +39,8 @@ package com.kaltura.kmc.modules.analytics.business
 		/**
 		 * the last selected item in dropdown 
 		 */
-		function get latestSelected():String;
-		function set latestSelected(value:String):void;
+		function get latestSelected():Object;
+		function set latestSelected(value:Object):void;
 		
 		
 		/**
@@ -53,6 +53,7 @@ package com.kaltura.kmc.modules.analytics.business
 		/**
 		 * return matching index in the dataProvider
 		 * @param filterVo
+		 * @return 	index of the required item in the ranges array
 		 */
 		function changeRangeByDate(filterVo:FilterVo):int;
 		
