@@ -47,9 +47,6 @@
 			[Bindable]
 			public var rowsComboLabel:String;
 			
-			[Bindable]
-			private var _outOfText:String;
-			
 
 			private var _showFirstLast:Boolean = false;
 
@@ -260,8 +257,7 @@
 				kalturaFilterPager.pageSize = pageSize;
 				
 				// texts:
-				prevString = resourceManager.getString('windows', 'prv');
-				rowsComboLabel = resourceManager.getString('windows', 'rowsInPage');
+				resourcesChanged();
 
 				// page size
 				var selectedFromSO:Boolean = true;
@@ -290,6 +286,14 @@
 					rowInPageCb.selectedIndex = defaultInd;
 					resultSizeChange();
 				}
+				
+				
+			}
+			
+			override protected function resourcesChanged():void {
+				super.resourcesChanged();
+				prevString = resourceManager.getString('windows', 'prv');
+				rowsComboLabel = resourceManager.getString('windows', 'rowsInPage');
 				
 			}
 
@@ -329,7 +333,6 @@
 	
 	<!-- out of -->
 	<mx:HBox id="labelContainer" styleName="pagerBox"/>
-	<!--<mx:Label text="{_outOfText}" styleName="selectRowsLable"/>-->
 	<mx:Spacer width="100%" />
 	<!-- rows in page -->
 	<mx:HBox visible="{_behavior.visible}" includeInLayout="{_behavior.visible}" verticalAlign="middle" paddingRight="5">

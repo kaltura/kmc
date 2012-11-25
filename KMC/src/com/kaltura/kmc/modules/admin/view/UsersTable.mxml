@@ -12,6 +12,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.vo.LocalizedVo;
 			import com.kaltura.kmc.events.KmcEvent;
 			import com.kaltura.types.KalturaUserStatus;
 			import com.kaltura.vo.KalturaUser;
@@ -166,35 +167,25 @@
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				comboDataProvider = new ArrayCollection();
 				//build the dataprovider items list :
-				comboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:'edit'});
-				comboDataProvider.addItem({label:resourceManager.getString('admin','un_block'),id:'unblock'});
-				comboDataProvider.addItem({label:resourceManager.getString('admin','delete'),id:'delete'});
+				comboDataProvider.addItem(new LocalizedVo('edit', 'edit', 'admin'));
+				comboDataProvider.addItem(new LocalizedVo('unblock', 'un_block', 'admin'));
+				comboDataProvider.addItem(new LocalizedVo('delete', 'delete', 'admin'));
+//				comboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:'edit'});
+//				comboDataProvider.addItem({label:resourceManager.getString('admin','un_block'),id:'unblock'});
+//				comboDataProvider.addItem({label:resourceManager.getString('admin','delete'),id:'delete'});
 				
 				crippledComboDataProvider = new ArrayCollection();
-				crippledComboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:'edit'});
+				crippledComboDataProvider.addItem(new LocalizedVo('edit', 'edit', 'admin'));
+//				crippledComboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:'edit'});
 				addEventListener("actionSelected", onActionSelected, false, 0, true);
+				
 			}
 
+			
 
 			// ==================================================================
 			// item-renderer functions
 			// ==================================================================
-
-			public function getActionsDP(data:Object):ArrayCollection {
-				var res:ArrayCollection;
-				var usr:KalturaUser = data as KalturaUser;
-				for each (var uid:String in crippledUsersIds) {
-					if (uid == usr.id) {
-						res = crippledComboDataProvider;
-						break;
-					}
-				} 
-				if (!res) {
-					res = comboDataProvider;
-				}
-				return res;
-			}
-			
 
 			/**
 			 * Remove single item from the combobox dataprovider by its id

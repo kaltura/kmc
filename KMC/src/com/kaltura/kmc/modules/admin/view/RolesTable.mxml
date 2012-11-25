@@ -13,6 +13,7 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.vo.LocalizedVo;
 			import com.kaltura.vo.KalturaUserRole;
 			
 			import mx.collections.ArrayCollection;
@@ -146,7 +147,7 @@
 			 * (used in item renderer)
 			 * */
 			public function onActionSelected(event:ListEvent):void {
-				switch (event.target.selectedItem.id) {
+				switch (event.target.selectedItem.value) {
 					case RolesTable.DRILL_DOWN:
 						editEntry();
 						break;
@@ -265,9 +266,12 @@
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				//build the dataprovider items list :
-				comboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:RolesTable.DRILL_DOWN});
-				comboDataProvider.addItem({label:resourceManager.getString('admin','duplicate'),id:RolesTable.DUPLICATE_ROLE});
-				comboDataProvider.addItem({label:resourceManager.getString('admin','delete'),id:RolesTable.DELETE_ROLE});
+				comboDataProvider.addItem(new LocalizedVo(RolesTable.DRILL_DOWN, 'edit', 'admin'));
+				comboDataProvider.addItem(new LocalizedVo(RolesTable.DUPLICATE_ROLE, 'duplicate', 'admin'));
+				comboDataProvider.addItem(new LocalizedVo(RolesTable.DELETE_ROLE, 'delete', 'admin'));
+//				comboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:RolesTable.DRILL_DOWN});
+//				comboDataProvider.addItem({label:resourceManager.getString('admin','duplicate'),id:RolesTable.DUPLICATE_ROLE});
+//				comboDataProvider.addItem({label:resourceManager.getString('admin','delete'),id:RolesTable.DELETE_ROLE});
 			}
 
 		]]>
