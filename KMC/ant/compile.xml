@@ -17,8 +17,8 @@
 	<!-- include flex tasks -->
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
 	
-	<!--  -->
-	<target name="build" description="general build" depends="clean, init, compile_locales, compile, pack">
+	<!-- , compile, pack -->
+	<target name="build" description="general build" depends="clean, init, compile_locales">
 		
 		<length property="length" mode="each">
 		    <fileset dir="${basedir}/../${KMC_VERSION}" >
@@ -45,6 +45,12 @@
 		</ant> 
 		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" > 
 			<property name="basedir" value="${basedir}/../KalturaLib"/>
+		</ant> 
+		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" > 
+			<property name="basedir" value="${basedir}/../AutoComplete"/>
+		</ant> 
+		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" > 
+			<property name="basedir" value="${basedir}/../vendors/Cairngorm"/>
 		</ant> 
 	</target>
 		
