@@ -20,6 +20,17 @@ kmc.functions = {
 	loadSwf : function() {
 
 		var kmc_swf_url = 'kmc.swf';
+		
+		var hash = location.hash; //.split("#")[1].split("|")
+		if (hash.indexOf('language') > -1) {
+			ar = hash.split("#")[1].split("|");
+			for (var i=0; i<ar.length; i++) {
+				var ar2 = ar[i].split('=');
+				if (ar2[0] == 'language') {
+					kmc.vars.language=ar2[1];
+				}
+			}
+		}
 
 		var flashvars = {
 			// kmc configuration
@@ -379,6 +390,7 @@ kmc.mediator =  {
 					extra[tmp2[0]] = tmp2[1];
 				}
 			}
+			
 
 			// Support old hash links
 			switch(module) {
