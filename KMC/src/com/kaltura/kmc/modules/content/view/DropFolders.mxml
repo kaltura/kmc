@@ -10,6 +10,12 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.control.events.KedEntryEvent;
+			import com.kaltura.edw.control.DataTabController;
+			import com.kaltura.edw.control.events.ModelEvent;
+			import com.kaltura.edw.control.KedController;
+			import com.kaltura.kmvc.control.KMvCEvent;
+			import com.kaltura.kmc.modules.content.view.itemrenderers.dropfolders.EntryIdRenderer;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.modules.content.model.DropFolderModel;
 			import com.kaltura.edw.model.types.DropFolderListType;
@@ -81,15 +87,20 @@
 				return '';
 			}
 			
+			
+			private function formatDate(timestamp:int):String {
+				if (timestamp==int.MIN_VALUE)
+					return '';
+				var date:Date = new Date(timestamp * 1000);
+				return dateDisplay.format(date);
+			}
+			
 			/**
 			 * Create suitable string to display in the "Created at" column
 			 * */
 			private function dateCreatedLabelFunc(item:Object, column:DataGridColumn): String {
 				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
-				if (curFile.createdAt==int.MIN_VALUE)
-					return '';
-				var date:Date = new Date(curFile.createdAt * 1000);
-				return dateDisplay.format(date);
+				return formatDate(curFile.createdAt);
 			}
 			
 			/**
@@ -283,8 +294,31 @@
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 				dg.addEventListener(CollectionEvent.COLLECTION_CHANGE, setSortIndicator);
+				dg.addEventListener(EntryIdRenderer.ID_CLICKED, openEntryDetails);
+			}
+			
+			/**
+			 * creates the string to show as tooltip for "created at" column
+			 * */
+			private function getDatesInfo(item:Object):String {
+				var file:KalturaDropFolderFile = item as KalturaDropFolderFile;
+				var str:String = resourceManager.getString('cms', 'dfUploadStart' , [formatDate(file.createdAt)] );
+				str += '\n' + resourceManager.getString('cms', 'dfUploadEnd',  [formatDate(file.uploadEndDetectedAt)] );
+				str += '\n' + resourceManager.getString('cms', 'dfTranserStart',  [formatDate(file.importStartedAt)] );
+				str += '\n' + resourceManager.getString('cms', 'dfTransferEnd',  [formatDate(file.importEndedAt)] );
+				return str;
 			}
 
+			private function openEntryDetails(event:Event):void {
+				var entryId:String = (event.target.data as KalturaDropFolderFile).entryId;
+				
+				// create the new model 
+				var cg:KMvCEvent = new ModelEvent(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL);
+				DataTabController.getInstance().dispatch(cg);
+				cg = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, entryId);
+				DataTabController.getInstance().dispatch(cg);
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:DateFormatter id="dateDisplay" formatString="MM/DD/YYYY JJ:NN"/>
@@ -316,11 +350,17 @@
 			<mx:DataGrid id="dg" dataProvider="{dropFolderModel.files}" rowCount="10" rowHeight="36" 
 						 width="100%" height="100%" allowMultipleSelection="true" >
 				<mx:columns>
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileEntryTitle')}" dataField="entryId"
+									   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.dropfolders.EntryIdRenderer"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileNameTitle')}" dataField="fileName"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFolderNameTitle')}" dataField="fileName" labelFunction="{folderNameFunc}"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileCreatedAtTitle')}" dataField="createdAt" labelFunction="{dateCreatedLabelFunc}"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileSizeTitle')}" dataField="fileSize" labelFunction="{fileSizeLabelFunc}"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileStatusTitle')}" dataField="status" labelFunction="{statusLabelFunc}"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFolderNameTitle')}" dataField="fileName" 
+									   labelFunction="{folderNameFunc}"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileCreatedAtTitle')}" 
+									   labelFunction="{dateCreatedLabelFunc}" dataTipFunction="{getDatesInfo}" showDataTips="true"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileSizeTitle')}" dataField="fileSize" 
+									   labelFunction="{fileSizeLabelFunc}"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileStatusTitle')}" dataField="status" 
+									   labelFunction="{statusLabelFunc}"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileErrTitle')}">
 						<mx:itemRenderer>
 							<mx:Component>
