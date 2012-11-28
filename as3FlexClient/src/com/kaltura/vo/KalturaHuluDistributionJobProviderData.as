@@ -48,10 +48,6 @@ package com.kaltura.vo
 		 **/
 		public var fileBaseName : String = null;
 
-		/**
-		 **/
-		public var captionLocalPaths : Array = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -60,7 +56,6 @@ package com.kaltura.vo
 			arr.push('thumbAssetFilePath');
 			arr.push('cuePoints');
 			arr.push('fileBaseName');
-			arr.push('captionLocalPaths');
 			return arr;
 		}
 

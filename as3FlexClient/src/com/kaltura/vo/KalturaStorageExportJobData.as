@@ -37,17 +37,11 @@ package com.kaltura.vo
 		 **/
 		public var force : Boolean;
 
-		/**
-		 * @see com.kaltura.types.KalturaAmazonS3StorageProfileFilesPermissionLevel
-		 **/
-		public var filesPermissionInS3 : String = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('force');
-			arr.push('filesPermissionInS3');
 			return arr;
 		}
 

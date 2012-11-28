@@ -34,7 +34,11 @@ package com.kaltura.vo
 	{
 		/**
 		 **/
-		public var filesForDistribution : Array = null;
+		public var assetLocalPaths : String = null;
+
+		/**
+		 **/
+		public var thumbLocalPaths : String = null;
 
 		/**
 		 * The remote URL of the video asset that was distributed
@@ -43,25 +47,19 @@ package com.kaltura.vo
 		public var remoteAssetFileUrls : String = null;
 
 		/**
-		 * The remote URL of the thumbnail asset that was distributed
+		 * The remote URL of the video asset that was distributed
 		 * 
 		 **/
 		public var remoteThumbnailFileUrls : String = null;
-
-		/**
-		 * The remote URL of the caption asset that was distributed
-		 * 
-		 **/
-		public var remoteCaptionFileUrls : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('filesForDistribution');
+			arr.push('assetLocalPaths');
+			arr.push('thumbLocalPaths');
 			arr.push('remoteAssetFileUrls');
 			arr.push('remoteThumbnailFileUrls');
-			arr.push('remoteCaptionFileUrls');
 			return arr;
 		}
 
