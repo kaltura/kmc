@@ -27,11 +27,10 @@
 // ===================================================================================================
 package com.kaltura.types
 {
-	public class KalturaCrossKalturaDistributionProfileOrderBy
+	public class KalturaDailymotionGeoBlockingMapping
 	{
-		public static const CREATED_AT_ASC : String = '+createdAt';
-		public static const CREATED_AT_DESC : String = '-createdAt';
-		public static const UPDATED_AT_ASC : String = '+updatedAt';
-		public static const UPDATED_AT_DESC : String = '-updatedAt';
+		public static const DISABLED : int = 0;
+		public static const ACCESS_CONTROL : int = 1;
+		public static const METADATA : int = 2;
 	}
 }
