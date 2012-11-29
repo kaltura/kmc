@@ -47,20 +47,13 @@
 			/**
 			 * optional field types
 			 * */
-			private var _typeList:Array;
+			private var _typeList:Array = [MetadataCustomFieldTypes.TEXT, MetadataCustomFieldTypes.DATE, MetadataCustomFieldTypes.LIST, MetadataCustomFieldTypes.OBJECT];
 			
-			private var _textType:String;
-			private var _dateType:String;
-			private var _listType:String;
-			private var _objectType:String;
-
 			[Bindable]
 			/**
 			 * optional values for max chars
 			 * */
-			private var _maxValuesList:Array;
-			private var _singleValue:String;
-			private var _unboundValues:String;
+			private var _maxValuesList:Array = [MetadataCustomFieldMaxOcuursTypes.SINGLE, MetadataCustomFieldMaxOcuursTypes.UNBOUND];
 
 			[Bindable]
 			/**
@@ -106,17 +99,10 @@
 			 * sets the displayed data and the data providers for the comboBoxes
 			 * */
 			private function onCreationComplete(event:Event):void {
-				_textType = resourceManager.getString('account', 'fieldTextType');
-				_dateType = resourceManager.getString('account', 'fieldDateType');
-				_listType = resourceManager.getString('account', 'fieldListType');
-				_objectType = resourceManager.getString('account', 'fieldObjectType');
-				_singleValue = resourceManager.getString('account', 'maxValuesSingleValue');
-				_unboundValues = resourceManager.getString('account', 'maxValuesUnbound');
+				
 				_appearYes = resourceManager.getString('account', 'customAppearInSearchTrue');
 				_appearNo = resourceManager.getString('account', 'customAppearInSearchFalse');
 
-				_typeList = new Array(_textType, _dateType, _listType, _objectType);
-				_maxValuesList = new Array(_singleValue, _unboundValues);
 				_appearInSearchList = new Array(_appearYes, _appearNo);
 
 				if (metadataField)
@@ -138,29 +124,25 @@
 				fieldNameInput.text = field.defaultLabel;
 				appearInSearchList.selectedItem = field.appearInSearch ? _appearYes : _appearNo;
 
+				fieldTypeList.selectedItem = field.type;
 				switch (field.type) {
 					case MetadataCustomFieldTypes.TEXT:
-						fieldTypeList.selectedItem = _textType;
 						break;
 					case MetadataCustomFieldTypes.DATE:
-						fieldTypeList.selectedItem = _dateType;
 						if (field.timeControl) {
 							timeControlCB.selected = true;
 						}
 						break;
 					case MetadataCustomFieldTypes.OBJECT:
-						fieldTypeList.selectedItem = _objectType;
 						break;
 					case MetadataCustomFieldTypes.LIST:
-						fieldTypeList.selectedItem = _listType;
 						if (field.optionalValues)
 							optionalValuesInput.text = field.optionalValues.join('\r');
 						break;
 				}
 
-			//	typeChanged();
 				appearInSearchList.selectedItem = field.appearInSearch ? _appearYes : _appearNo;
-				maxValuesList.selectedItem = field.maxNumberOfValues == MetadataCustomFieldMaxOcuursTypes.SINGLE ? _singleValue : _unboundValues;
+				maxValuesList.selectedItem = field.maxNumberOfValues;
 				descriptionInput.text = field.description;
 				fullDescriptionInput.text = field.fullDescription;
 			}
@@ -247,7 +229,7 @@
 					return;
 				}
 
-				if (fieldTypeList.selectedLabel == _listType && !StringUtil.trim(optionalValuesInput.text)) {
+				if (fieldTypeList.selectedItem == MetadataCustomFieldTypes.LIST && !StringUtil.trim(optionalValuesInput.text)) {
 					Alert.show(resourceManager.getString('account', 'customFieldsValuesMissingError'), resourceManager.getString('account', 'metadataInvalidInput'));
 					return;
 				}
@@ -274,28 +256,9 @@
 					metadataField = new MetadataFieldVO(FIELD_ID_PREFIX + UIDUtil.createUID());
 					metadataField.name = systemName;
 					updateField();
-					switch (maxValuesList.selectedLabel) {
-						case _singleValue:
-							metadataField.maxNumberOfValues = MetadataCustomFieldMaxOcuursTypes.SINGLE;
-							break;
-						case _unboundValues:
-							metadataField.maxNumberOfValues = MetadataCustomFieldMaxOcuursTypes.UNBOUND;
-							break;
-					}
-					switch (fieldTypeList.selectedLabel) {
-						case _textType:
-							metadataField.type = MetadataCustomFieldTypes.TEXT;
-							break;
-						case _dateType:
-							metadataField.type = MetadataCustomFieldTypes.DATE;
-							break;
-						case _objectType:
-							metadataField.type = MetadataCustomFieldTypes.OBJECT;
-							break;
-						case _listType:
-							metadataField.type = MetadataCustomFieldTypes.LIST;
-							break;
-					}
+					
+					metadataField.maxNumberOfValues = maxValuesList.selectedItem as int;
+					metadataField.type = fieldTypeList.selectedItem as int;
 
 					this.dispatchEvent(new AddMetadataFieldEvent(AddMetadataFieldEvent.ADD, metadataField));
 				}
@@ -323,7 +286,7 @@
 					metadataField.description = StringUtil.trim(descriptionInput.text);
 					metadataField.fullDescription = StringUtil.trim(fullDescriptionInput.text);
 
-					if (fieldTypeList.selectedLabel == _listType) {
+					if (fieldTypeList.selectedItem == MetadataCustomFieldTypes.LIST) {
 						var input:Array = optionalValuesInput.text.split('\r');
 						var output:ArrayCollection = new ArrayCollection();
 						for each (var val:String in input) {
@@ -338,7 +301,7 @@
 						metadataField.optionalValues = output.source;
 					}
 					
-					if (fieldTypeList.selectedLabel == _dateType) {
+					if (fieldTypeList.selectedItem == MetadataCustomFieldTypes.DATE) {
 						metadataField.timeControl = timeControlCB.selected;
 					}
 				}
@@ -352,17 +315,6 @@
 				_dirty = true;
 			}
 
-
-		/* 	private function typeChanged():void {
-				 if ((fieldTypeList.selectedItem == _dateType) || (fieldTypeList.selectedItem == _objectType)) {
-					appearInSearchList.selectedItem = _appearNo;
-					appearInSearchList.enabled = false;
-				} 
-				else {
-					appearInSearchList.selectedItem = _appearYes;
-					appearInSearchList.enabled = _editable;
-				}
-			} */
 
 			[Bindable]
 			/**
@@ -391,7 +343,41 @@
 			
 			private function fieldTypeList_changeHandler(event:ListEvent):void
 			{
-				appearInSearchList.selectedItem = fieldTypeList.selectedLabel != _dateType ? _appearYes : _appearNo;
+				appearInSearchList.selectedItem = fieldTypeList.selectedItem != MetadataCustomFieldTypes.DATE ? _appearYes : _appearNo;
+			}
+			
+			
+			
+			private function getMaxValsLabel(occursType:int):String {
+				var res:String = '';
+				switch (occursType) {
+					case MetadataCustomFieldMaxOcuursTypes.SINGLE:
+						res = resourceManager.getString('account', 'maxValuesSingleValue');
+						break;
+					case MetadataCustomFieldMaxOcuursTypes.UNBOUND:
+						res = resourceManager.getString('account', 'maxValuesUnbound');
+						break;
+				}
+				return res;
+			}
+			
+			private function getFieldTypeLabel(fieldType:int):String {
+				var res:String = '';
+				switch (fieldType) {
+					case MetadataCustomFieldTypes.TEXT:
+						res = resourceManager.getString('account', 'fieldTextType');
+						break;
+					case MetadataCustomFieldTypes.DATE:
+						res = resourceManager.getString('account', 'fieldDateType');
+						break;
+					case MetadataCustomFieldTypes.LIST:
+						res = resourceManager.getString('account', 'fieldListType');
+						break;
+					case MetadataCustomFieldTypes.OBJECT:
+						res = resourceManager.getString('account', 'fieldObjectType');
+						break;
+				}
+				return res;
 			}
 		]]>
 	</mx:Script>
@@ -403,13 +389,14 @@
 		<mx:Spacer height="{SPACER_HEIGHT}"/>
 		<mx:FormItem label="{resourceManager.getString('account','addFieldType')}" labelStyleName="metadataFormLabel">
 			<mx:ComboBox id="fieldTypeList" dataProvider="{_typeList}" width="180" paddingLeft="5" editable="false"
-						 enabled="{currentState!=EDIT_MODE_STATE}" change="fieldTypeList_changeHandler(event)"/>
+						 enabled="{currentState!=EDIT_MODE_STATE}" change="fieldTypeList_changeHandler(event)"
+						 labelFunction="getFieldTypeLabel"/>
 		</mx:FormItem>
 		<mx:Spacer height="{SPACER_HEIGHT}"/>
 		
 		<!-- optional values for text select list -->
-		<mx:HBox visible="{fieldTypeList.selectedItem == _listType}"
-				 includeInLayout="{fieldTypeList.selectedItem == _listType}">
+		<mx:HBox visible="{fieldTypeList.selectedItem == MetadataCustomFieldTypes.LIST}"
+				 includeInLayout="{fieldTypeList.selectedItem == MetadataCustomFieldTypes.LIST}">
 			<mx:VBox>
 				<mx:Label text="{resourceManager.getString('account','addFieldOptionalValues')}"
 						  styleName="metadataFormLabel"/>
@@ -422,8 +409,8 @@
 		</mx:HBox>
 		
 		<!-- time control for dates -->
-		<mx:HBox visible="{fieldTypeList.selectedItem == _dateType}"
-				 includeInLayout="{fieldTypeList.selectedItem == _dateType}">
+		<mx:HBox visible="{fieldTypeList.selectedItem == MetadataCustomFieldTypes.DATE}"
+				 includeInLayout="{fieldTypeList.selectedItem == MetadataCustomFieldTypes.DATE}">
 			<mx:CheckBox id="timeControlCB" label="{resourceManager.getString('account','addFieldIncludeTime')}"
 						 styleName="metadataFormLabel" change="changeHandler(event)" />
 		</mx:HBox>
@@ -432,7 +419,7 @@
 		<mx:FormItem label="{resourceManager.getString('account','addFieldMaxValues')}"
 					 labelStyleName="metadataFormLabel">
 			<mx:ComboBox id="maxValuesList" dataProvider="{_maxValuesList}" width="{ITEM_WIDTH}" paddingLeft="5"
-						 editable="false" enabled="{currentState!=EDIT_MODE_STATE}"/>
+						 editable="false" enabled="{currentState!=EDIT_MODE_STATE}" labelFunction="getMaxValsLabel"/>
 		</mx:FormItem>
 		<mx:Spacer height="{SPACER_HEIGHT}"/>
 		<mx:FormItem label="{resourceManager.getString('account','addFieldAppearInSearch')}"
