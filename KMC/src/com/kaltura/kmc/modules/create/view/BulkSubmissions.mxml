@@ -11,6 +11,10 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import mx.core.mx_internal;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
 			import com.kaltura.KalturaClient;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.create.BulkUploader;
@@ -21,14 +25,23 @@
 			import mx.collections.ArrayCollection;
 			import mx.events.ListEvent;
 			
+			/**
+			 * KalturaClient for API calls
+			 * */
 			public var client:KalturaClient;
-			
+
 			[Bindable]
+			/**
+			 * URL from which samples file can be loaded
+			 * */
 			public var samplesUrl:String;
+			
 			
 			[Bindable]
 			private var _bulkTypes:ArrayCollection = new ArrayCollection([BulkTypes.MEDIA, BulkTypes.CATEGORY, BulkTypes.USER, BulkTypes.CATEGORY_USER]);
 			
+			
+			private var _submissionAlert:Alert;
 			
 			/**
 			 * RnP: show media bulk uplooad button
@@ -116,6 +129,28 @@
 			 * tell content page to refresh bulk upload log
 			 * */
 			private function onBulkAdded(e:Event):void {
+				var string:String = resourceManager.getString('create', 'bulk_submitted');
+				_submissionAlert = Alert.show(string, '', Alert.OK, null, refreshOrClose);
+				_submissionAlert.mx_internal::alertForm.mx_internal::textField.htmlText = string;
+				_submissionAlert.mx_internal::alertForm.mx_internal::textField.htmlText = string;
+				_submissionAlert.mx_internal::alertForm.mx_internal::textField.addEventListener("link", gotoBulkLog);
+			}
+			
+			
+			private function gotoBulkLog(evet:Event = null):void {
+				// go to log
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "bulk", 
+					null, true));
+				// refresh log 
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "bulk", 
+					{kmcFunction: "content.refreshBulk"}, true));
+				// remove alert
+				PopUpManager.removePopUp(_submissionAlert);
+			}
+			
+			
+			private function refreshOrClose(event:CloseEvent):void {
+				// refresh log
 				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", 
 					{kmcFunction: "content.refreshBulk"}, true));
 			}
@@ -160,6 +195,7 @@
 				dropdown.selectedIndex = -1;
 			}
 
+			
 		]]>
 	</mx:Script>
 	
