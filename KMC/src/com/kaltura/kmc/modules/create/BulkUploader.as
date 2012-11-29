@@ -150,8 +150,8 @@ package com.kaltura.kmc.modules.create
 		 */		
 		protected function onComplete():void {
 			var string:String = ResourceManager.getInstance().getString('create', 'bulk_submitted');
-			var alert:Alert = Alert.show(string);
-			alert.mx_internal::alertForm.mx_internal::textField.htmlText = string;
+			/*var alert:Alert =*/ Alert.show(string);
+			/*alert.mx_internal::alertForm.mx_internal::textField.htmlText = string;*/
 			
 			// dispatch complete event
 			dispatchEvent(new Event(Event.COMPLETE));	
