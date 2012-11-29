@@ -9,9 +9,10 @@
 		[ResourceBundle("create")]
 		[ResourceBundle("common")]
 	</mx:Metadata>
-			
+
 	<mx:Script>
 		<![CDATA[
+			import flash.net.navigateToURL;
 			import com.kaltura.KalturaClient;
 			import com.kaltura.commands.conversionProfile.ConversionProfileList;
 			import com.kaltura.edw.business.permissions.PermissionManager;
@@ -26,7 +27,7 @@
 			import com.kaltura.kmc.modules.create.view.FileUploadSettings;
 			import com.kaltura.vo.KalturaConversionProfile;
 			import com.kaltura.vo.KalturaFilterPager;
-			
+
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.FlexEvent;
@@ -34,21 +35,37 @@
 
 			/**
 			 * extra config the plugin needs - files filters
-			 * @internal 
+			 * @internal
 			 * passed in from uiconf plugin node by KmcPluginManager
 			 * */
 			public var config:XML;
-			
+
 			[Bindable]
 			/**
 			 * url of samples file
-			 * @internal 
+			 * @internal
 			 * passed in from uiconf plugin node by KmcPluginManager
 			 * */
 			public var samplesUrl:String;
 			
+			[Bindable]
+			/**
+			 * show / hide aspera upload page link
+			 * (used by RnP)
+			 * */
+			public var showAsperaHomepage:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * show / hide aspera upgrade link
+			 * (used by RnP)
+			 * */
+			public var showAsperaUpgrade:Boolean = false;
+
 			public static const BTN_WIDTH:int = 162;
 			
+			
+
 			/*
 				WINDOW STATES
 			*/
@@ -72,18 +89,17 @@
 			 * @copy #client
 			 * */
 			private var _kc:KalturaClient;
-			
+
 			/**
 			 * files selector for media upload
 			 * */
 			private var _mmfs:MultipleMediaFilesSelector;
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
-				
 				PermissionManager.getInstance().applyAllAttributes(this, "addPanel");
 				menuScreen.invalidateSize();
 				validateSize(true);
-				
+
 				viewStack.height = menuScreen.measuredHeight;
 				this.height = viewStack.height + getStyle("paddingTop") + getStyle("paddingBottom"); 
 				visible = true;
@@ -125,13 +141,31 @@
 
 			
 			/**
+			 * open aspera upload page
+			 * */
+			protected function btnAspera_clickHandler(event:MouseEvent):void {
+				var urlreq:URLRequest = new URLRequest(config.aspera.homepage);
+				navigateToURL(urlreq, "_blank");
+			}
+
+
+			/**
+			 * show a kaltura corp upgrade page
+			 * */
+			protected function btnAsperaUpgrade_clickHandler(event:MouseEvent):void {
+				var urlreq:URLRequest = new URLRequest(config.aspera.upgrade);
+				navigateToURL(urlreq, "_blank");
+			}
+
+
+			/**
 			 * Opens a KCW with audio/video/image online services options only
 			 * */
 			protected function btnServices_clickHandler(event:MouseEvent):void {
 				_state = SERVICES_STATE;
 				showOptionsScreen(resourceManager.getString('create', 'services_state_title'));
 			}
-			
+
 
 
 			/**
@@ -161,8 +195,8 @@
 				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.createLiveEntry"}, true));
 				hidePanel();
 			}
-			
-			
+
+
 			/**
 			 * shows the options screen
 			 * @param title	text to show at the top of the screen
@@ -181,7 +215,7 @@
 					_kc.post(cpl);
 				}
 			}
-			
+
 			protected function onConvProfListed(e:KalturaEvent):void {
 				enabled = true;
 				if (e.type == KalturaEvent.FAILED) {
@@ -210,8 +244,8 @@
 			protected function cancel_clickHandler(event:MouseEvent):void {
 				resetPanel();
 			}
-			
-			
+
+
 			/**
 			 * open KCW with desired config
 			 * */
@@ -226,7 +260,7 @@
 				}
 				hidePanel();
 			}
-			
+
 			protected function resetPanel(e:Event = null):void {
 				_state = MENU_STATE;
 				viewStack.selectedChild = menuScreen;
@@ -238,10 +272,10 @@
 				_showingHandler.addEventListener(MenuHandler.MENU_REMOVED, resetPanel);
 				if (_approot) {
 					_showingHandler.setRoot(_approot);
-					
+
 				}
 			}
-			
+
 
 			public function setRoot(doc:DisplayObjectContainer):void {
 				_approot = doc;
@@ -278,12 +312,12 @@
 			public function positionPanel(right:Number):void {
 				_showingHandler.positionPanel(right);
 			}
-			
-			
+
+
 			public function togglePanel():void {
 				_showingHandler.togglePanel();
 			}
-			
+
 
 			/**
 			 * KalturaClient used for API calls
@@ -306,28 +340,29 @@
 			public function set flashvars(value:Object):void {
 				_flashvars = value;
 			}
-			
+
 
 			/**
 			 * @copy BulkSubmissions#addBulk()
-			 * 
+			 *
 			 * @internal
 			 * forwarding call
 			 * */
 			public function addMediaBulk():void {
 				bulkBox.addBulk(BulkTypes.MEDIA);
 			}
-			
+
 			/**
 			 * @copy BulkSubmissions#downloadSampleFiles()
-			 * 
+			 *
 			 * @internal
 			 * forwarding call
 			 * */
 			public function downloadSampleFiles():void {
 				bulkBox.downloadSampleFiles();
 			}
-			
+
+
 
 		]]>
 	</mx:Script>
@@ -340,6 +375,11 @@
 			<mx:VBox id="uploadBox" styleName="addPanelButtonBox" width="100%" horizontalAlign="center"
 					 visible="{btnUpload.visible || btnWebcam.visible || btnServices.visible}"
 					 includeInLayout="{btnUpload.includeInLayout || btnWebcam.includeInLayout || btnServices.includeInLayout}">
+				<mx:Button id="btnAspera" width="{BTN_WIDTH}" styleName="addPanelButton"
+						   click="btnAspera_clickHandler(event)" buttonMode="true"
+						   label="{resourceManager.getString('create', 'asp_homepage')}" 
+						   visible="{showAsperaHomepage &amp;&amp; btnUpload.visible}"
+						   includeInLayout="{showAsperaHomepage &amp;&amp; btnUpload.visible}"/>
 				<mx:Button id="btnUpload" click="addUpload(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
 						   label="{resourceManager.getString('create', 'upload_btn')}" buttonMode="true"/>
 				<mx:Button id="btnWebcam" click="btnWebcam_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
@@ -347,8 +387,12 @@
 				<mx:Button id="btnServices" click="btnServices_clickHandler(event)" width="{BTN_WIDTH}"
 						   styleName="addPanelButton" label="{resourceManager.getString('create', 'services_btn')}"
 						   buttonMode="true"/>
+				<mx:LinkButton id="btnAsperaUpgrade" click="btnAsperaUpgrade_clickHandler(event)" styleName="addPanelLinkButton"
+							   label="{resourceManager.getString('create', 'asp_upgrade')}" 
+							   visible="{showAsperaUpgrade &amp;&amp; btnUpload.visible}"
+							   includeInLayout="{showAsperaUpgrade &amp;&amp; btnUpload.visible}"/>
 			</mx:VBox>
-			
+
 			<!-- prepare -->
 			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'prepare_lbl')}"
 					  includeInLayout="{prepareBox.includeInLayout}" visible="{prepareBox.visible}"/>
@@ -362,15 +406,15 @@
 				<mx:Button id="btnLive" click="btnLive_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
 						   label="{resourceManager.getString('create', 'live_btn')}" buttonMode="true"/>
 			</mx:VBox>
-			
+
 			<!-- bulks -->
 			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'bulk_lbl')}"
 					  includeInLayout="{bulkBox.includeInLayout}" visible="{bulkBox.visible}"/>
 			<view:BulkSubmissions id="bulkBox" width="100%" hidePanel="hidePanel()" client="{_kc}" 
 								  samplesUrl="{samplesUrl}" />
-			
+
 		</mx:VBox> 
-		
+
 		<mx:VBox id="optionsScreen" styleName="noPadding" height="{menuScreen.height}" width="100%">
 			<mx:Label id="lblState" styleName="addPanelLabel" 
 					  htmlText="{resourceManager.getString('create', 'webcam_state_title')}" />
