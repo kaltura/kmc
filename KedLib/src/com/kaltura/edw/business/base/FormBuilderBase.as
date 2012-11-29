@@ -1,7 +1,7 @@
 package com.kaltura.edw.business.base
 {
 	import com.google.analytics.debug.Label;
-	import com.kaltura.base.types.MetadataCustomFieldMaxOcuursTypes;
+	import com.kaltura.base.types.MetadataCustomFieldMaxOccursTypes;
 	import com.kaltura.base.types.MetadataCustomFieldTypes;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.edw.business.MetadataDataParser;
@@ -188,7 +188,7 @@ package com.kaltura.edw.business.base
 				var parent:XML = mxml;
 				var multi:Boolean = false;
 				
-				if (field.maxNumberOfValues == MetadataCustomFieldMaxOcuursTypes.UNBOUND) {
+				if (field.maxNumberOfValues == MetadataCustomFieldMaxOccursTypes.UNBOUND) {
 					multi = true;
 					//List and Entry-ID linked list behaves different
 					if (field.type != MetadataCustomFieldTypes.LIST && field.type != MetadataCustomFieldTypes.OBJECT) {

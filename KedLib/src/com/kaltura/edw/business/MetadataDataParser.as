@@ -1,6 +1,6 @@
 package com.kaltura.edw.business
 {
-	import com.kaltura.base.types.MetadataCustomFieldMaxOcuursTypes;
+	import com.kaltura.base.types.MetadataCustomFieldMaxOccursTypes;
 	import com.kaltura.base.types.MetadataCustomFieldTypes;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.edw.model.MetadataDataObject;
@@ -92,7 +92,7 @@ package com.kaltura.edw.business
 				var attributes:Array = sortAttributes(nestedMetadata);
 				
 				if (currField.nestedFieldsArray && currField.nestedFieldsArray.length>0) {
-					if (currField.maxNumberOfValues == MetadataCustomFieldMaxOcuursTypes.UNBOUND) {
+					if (currField.maxNumberOfValues == MetadataCustomFieldMaxOccursTypes.UNBOUND) {
 						for each (var attribute:String in attributes) {
 							node = getNode(attr, parentAttr);	
 							result.appendChild(node);

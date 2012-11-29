@@ -1,6 +1,6 @@
 package com.kaltura.utils.parsers
 {
-	import com.kaltura.base.types.MetadataCustomFieldMaxOcuursTypes;
+	import com.kaltura.base.types.MetadataCustomFieldMaxOccursTypes;
 	import com.kaltura.base.types.MetadataCustomFieldTypes;
 	import com.kaltura.base.types.XSDConstants;
 	import com.kaltura.vo.MetadataFieldVO;
@@ -44,7 +44,7 @@ package com.kaltura.utils.parsers
 				
 				newNode.@id = fieldToAdd.id;
 				newNode.@name = fieldToAdd.name;
-				newNode.@maxOccurs = fieldToAdd.maxNumberOfValues == MetadataCustomFieldMaxOcuursTypes.SINGLE ?
+				newNode.@maxOccurs = fieldToAdd.maxNumberOfValues == MetadataCustomFieldMaxOccursTypes.SINGLE ?
 				 XSDConstants.MAX_OCCURS_SINGLE : XSDConstants.MAX_OCCURS_UNBOUNDED;
 				updateXMLfromField(fieldToAdd, newNode);
 				if (fieldToAdd.type != MetadataCustomFieldTypes.LIST)
@@ -200,7 +200,7 @@ package com.kaltura.utils.parsers
 			var field:MetadataFieldVO = new MetadataFieldVO(element.@id);
 			field.name = element.@name;
 			field.maxNumberOfValues = element.@maxOccurs == XSDConstants.MAX_OCCURS_SINGLE? 
-				MetadataCustomFieldMaxOcuursTypes.SINGLE : MetadataCustomFieldMaxOcuursTypes.UNBOUND;
+				MetadataCustomFieldMaxOccursTypes.SINGLE : MetadataCustomFieldMaxOccursTypes.UNBOUND;
 			field.type = setFieldType(element.@type);
 			field.xpath = xPathRoot + buildXpath(element.@name); 
 			
