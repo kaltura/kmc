@@ -5,14 +5,11 @@ package com.kaltura.kmc.modules.content.commands.dropfolder {
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.KMCDropFolderEvent;
-	import com.kaltura.types.KalturaDropFolderFileStatus;
-	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaDropFolderFile;
 	import com.kaltura.vo.KalturaDropFolderFileListResponse;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
-	import mx.resources.ResourceManager;
 
 	public class ListDropFoldersFilesCommand extends KalturaCommand {
 		// list_all / df_list_by_selected_folder_hierch / df_list_by_selected_folder_flat

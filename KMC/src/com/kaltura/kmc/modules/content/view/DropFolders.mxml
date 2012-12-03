@@ -126,6 +126,10 @@
 						return resourceManager.getString('cms','downloadingBtn');
 					case KalturaDropFolderFileStatus.PENDING:
 						return resourceManager.getString('cms','pendingBtn');
+					case KalturaDropFolderFileStatus.PROCESSING:
+						return resourceManager.getString('cms','processingBtn');
+					case KalturaDropFolderFileStatus.PARSED:
+						return resourceManager.getString('cms','parsedBtn');
 					case KalturaDropFolderFileStatus.WAITING:
 						return resourceManager.getString('cms','waitingBtn');
 					case KalturaDropFolderFileStatus.NO_MATCH:
@@ -249,6 +253,8 @@
 							KalturaDropFolderFileStatus.HANDLED + "," + 
 							KalturaDropFolderFileStatus.NO_MATCH + "," + 
 							KalturaDropFolderFileStatus.PENDING + "," + 
+							KalturaDropFolderFileStatus.PROCESSING + "," + 
+							KalturaDropFolderFileStatus.PARSED + "," + 
 							KalturaDropFolderFileStatus.UPLOADING + "," + 
 							KalturaDropFolderFileStatus.WAITING;
 					}
@@ -302,7 +308,7 @@
 			 * */
 			private function getDatesInfo(item:Object):String {
 				var file:KalturaDropFolderFile = item as KalturaDropFolderFile;
-				var str:String = resourceManager.getString('cms', 'dfUploadStart' , [formatDate(file.createdAt)] );
+				var str:String = resourceManager.getString('cms', 'dfUploadStart' , [formatDate(file.uploadStartDetectedAt)] );
 				str += '\n' + resourceManager.getString('cms', 'dfUploadEnd',  [formatDate(file.uploadEndDetectedAt)] );
 				str += '\n' + resourceManager.getString('cms', 'dfTranserStart',  [formatDate(file.importStartedAt)] );
 				str += '\n' + resourceManager.getString('cms', 'dfTransferEnd',  [formatDate(file.importEndedAt)] );
@@ -350,8 +356,6 @@
 			<mx:DataGrid id="dg" dataProvider="{dropFolderModel.files}" rowCount="10" rowHeight="36" 
 						 width="100%" height="100%" allowMultipleSelection="true" >
 				<mx:columns>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileEntryTitle')}" dataField="entryId"
-									   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.dropfolders.EntryIdRenderer"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileNameTitle')}" dataField="fileName"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFolderNameTitle')}" dataField="fileName" 
 									   labelFunction="{folderNameFunc}"/>
@@ -359,6 +363,8 @@
 									   labelFunction="{dateCreatedLabelFunc}" dataTipFunction="{getDatesInfo}" showDataTips="true"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileSizeTitle')}" dataField="fileSize" 
 									   labelFunction="{fileSizeLabelFunc}"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileEntryTitle')}" dataField="entryId"
+									   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.dropfolders.EntryIdRenderer"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileStatusTitle')}" dataField="status" 
 									   labelFunction="{statusLabelFunc}"/>
 					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileErrTitle')}">

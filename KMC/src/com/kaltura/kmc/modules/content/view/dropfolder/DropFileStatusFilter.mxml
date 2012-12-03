@@ -14,6 +14,8 @@
 					all.selected = true;
 					transferring.selected = false;
 					pending.selected = false;
+					processing.selected = false;
+					parsed.selected = false;
 					waiting.selected = false;
 					noMatch.selected = false;
 					dnlding.selected = false;
@@ -35,6 +37,12 @@
 								break;
 							case KalturaDropFolderFileStatus.PENDING:
 								pending.selected = true;
+								break;
+							case KalturaDropFolderFileStatus.PROCESSING:
+								processing.selected = true;
+								break;
+							case KalturaDropFolderFileStatus.PARSED:
+								parsed.selected = true;
 								break;
 							case KalturaDropFolderFileStatus.WAITING:
 								waiting.selected = true;
@@ -88,6 +96,12 @@
 					if (pending.selected) { // pending
 						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.PENDING);
 					}
+					if (processing.selected) { // processing
+						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.PROCESSING);
+					}
+					if (parsed.selected) { // parsed
+						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.PARSED);
+					}
 					if (dnlding.selected) { // downloading
 						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.DOWNLOADING);
 					}
@@ -116,7 +130,7 @@
 
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
-				_buttons = [all, transferring, pending, waiting, noMatch,
+				_buttons = [all, transferring, pending, processing, parsed, waiting, noMatch,
 					dnlding, handled, errHandling, errDeleting, errDnld];
 			}
 		]]>
@@ -126,6 +140,10 @@
 	<mx:CheckBox id="transferring" width="100%" label="{resourceManager.getString('cms', 'transferringBtn')}"
 				 styleName="innerFilterGroupButton" click="{onDynamicMemberClicked(event)}"/>
 	<mx:CheckBox id="pending" width="100%" label="{resourceManager.getString('cms', 'pendingBtn')}"
+				 styleName="innerFilterGroupButton" click="{onDynamicMemberClicked(event)}"/>
+	<mx:CheckBox id="processing" width="100%" label="{resourceManager.getString('cms', 'processingBtn')}"
+				 styleName="innerFilterGroupButton" click="{onDynamicMemberClicked(event)}"/>
+	<mx:CheckBox id="parsed" width="100%" label="{resourceManager.getString('cms', 'parsedBtn')}"
 				 styleName="innerFilterGroupButton" click="{onDynamicMemberClicked(event)}"/>
 	<mx:CheckBox id="waiting" width="100%" label="{resourceManager.getString('cms', 'waitingBtn')}"
 				 styleName="innerFilterGroupButton" click="{onDynamicMemberClicked(event)}"/>
