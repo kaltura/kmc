@@ -30,6 +30,7 @@
 					for each (var statusCode:int in dropStatusArr) {
 						switch (statusCode) {
 							case KalturaDropFolderFileStatus.UPLOADING:
+							case KalturaDropFolderFileStatus.DETECTED:
 								transferring.selected = true;
 								break;
 							case KalturaDropFolderFileStatus.DOWNLOADING:
@@ -84,7 +85,7 @@
 				var dropFolderFileStatusArray:Array = [];
 				
 				if (all.selected) {
-					dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.UPLOADING, KalturaDropFolderFileStatus.PENDING, 
+					dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.UPLOADING, KalturaDropFolderFileStatus.DETECTED, KalturaDropFolderFileStatus.PENDING, 
 						KalturaDropFolderFileStatus.DOWNLOADING, KalturaDropFolderFileStatus.WAITING, 
 						KalturaDropFolderFileStatus.NO_MATCH, KalturaDropFolderFileStatus.ERROR_HANDLING,
 						KalturaDropFolderFileStatus.ERROR_DELETING, KalturaDropFolderFileStatus.ERROR_DOWNLOADING,
@@ -92,6 +93,7 @@
 				} else {
 					if (transferring.selected) { // transferring
 						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.UPLOADING);
+						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.DETECTED);
 					}
 					if (pending.selected) { // pending
 						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.PENDING);
