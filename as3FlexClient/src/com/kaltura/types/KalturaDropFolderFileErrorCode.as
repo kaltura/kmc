@@ -29,6 +29,8 @@ package com.kaltura.types
 {
 	public class KalturaDropFolderFileErrorCode
 	{
+		public static const ERROR_ADDING_BULK_UPLOAD : String = 'dropFolderXmlBulkUpload.ERROR_ADDING_BULK_UPLOAD';
+		public static const ERROR_IN_BULK_UPLOAD : String = 'dropFolderXmlBulkUpload.ERROR_IN_BULK_UPLOAD';
 		public static const ERROR_WRITING_TEMP_FILE : String = 'dropFolderXmlBulkUpload.ERROR_WRITING_TEMP_FILE';
 		public static const LOCAL_FILE_WRONG_CHECKSUM : String = 'dropFolderXmlBulkUpload.LOCAL_FILE_WRONG_CHECKSUM';
 		public static const LOCAL_FILE_WRONG_SIZE : String = 'dropFolderXmlBulkUpload.LOCAL_FILE_WRONG_SIZE';
@@ -40,11 +42,9 @@ package com.kaltura.types
 		public static const ERROR_READING_FILE : String = '6';
 		public static const ERROR_DOWNLOADING_FILE : String = '7';
 		public static const ERROR_UPDATE_FILE : String = '8';
-		public static const NO_MATCH : String = '9';
-		public static const ERROR_ADDING_BULK_UPLOAD : String = '10';
-		public static const ERROR_ADDING_CONTENT_PROCESSOR : String = '11';
-		public static const ERROR_IN_BULK_UPLOAD : String = '12';
-		public static const ERROR_IN_CONTENT_PROCESSOR : String = '13';
-		public static const ERROR_DELETING_FILE : String = '14';
+		public static const ERROR_ADD_CONTENT_RESOURCE : String = '9';
+		public static const ERROR_ADDING_CONTENT_PROCESSOR : String = '10';
+		public static const ERROR_IN_CONTENT_PROCESSOR : String = '11';
+		public static const ERROR_DELETING_FILE : String = '12';
 	}
 }

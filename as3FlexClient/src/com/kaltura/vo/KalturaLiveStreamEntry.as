@@ -105,6 +105,12 @@ package com.kaltura.vo
 		 **/
 		public var urlManager : String = null;
 
+		/**
+		 * Array of key value protocol->live stream url objects
+		 * 
+		 **/
+		public var liveStreamConfigurations : Array = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -120,6 +126,7 @@ package com.kaltura.vo
 			arr.push('dvrStatus');
 			arr.push('dvrWindow');
 			arr.push('urlManager');
+			arr.push('liveStreamConfigurations');
 			return arr;
 		}
 

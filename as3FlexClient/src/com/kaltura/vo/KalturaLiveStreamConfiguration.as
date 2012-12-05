@@ -27,22 +27,39 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDistributionProfileFilter;
+	import com.kaltura.vo.BaseFlexVo;
 
 	[Bindable]
-	public dynamic class KalturaExampleDistributionProfileBaseFilter extends KalturaDistributionProfileFilter
+	public dynamic class KalturaLiveStreamConfiguration extends BaseFlexVo
 	{
-		override public function getUpdateableParamKeys():Array
+		/**
+		 * @see com.kaltura.types.KalturaPlaybackProtocol
+		 **/
+		public var protocol : String = null;
+
+		/**
+		 **/
+		public var url : String = null;
+
+		/** 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
-			arr = super.getUpdateableParamKeys();
+			arr = new Array();
+			arr.push('protocol');
+			arr.push('url');
 			return arr;
 		}
 
-		override public function getInsertableParamKeys():Array
+		/** 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
+		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
-			arr = super.getInsertableParamKeys();
+			arr = new Array();
 			return arr;
 		}
 	}

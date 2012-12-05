@@ -25,25 +25,42 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.liveStream
 {
-	import com.kaltura.vo.KalturaConfigurableDistributionProfileFilter;
+	import com.kaltura.delegates.liveStream.LiveStreamIsLiveDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaSynacorHboDistributionProfileBaseFilter extends KalturaConfigurableDistributionProfileFilter
+	/**
+	 * New action delivering the status of a live stream (on-air/offline) if it is possible
+	 * 
+	 **/
+	public class LiveStreamIsLive extends KalturaCall
 	{
-		override public function getUpdateableParamKeys():Array
+		public var filterFields : String;
+		
+		/**
+		 * @param id String
+		 * @param protocol String
+		 **/
+		public function LiveStreamIsLive( id : String,protocol : String )
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			return arr;
+			service= 'livestream';
+			action= 'isLive';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('id');
+			valueArr.push(id);
+			keyArr.push('protocol');
+			valueArr.push(protocol);
+			applySchema(keyArr, valueArr);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new LiveStreamIsLiveDelegate( this , config );
 		}
 	}
 }

@@ -25,25 +25,24 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.delegates.liveStream
 {
-	import com.kaltura.vo.KalturaComcastMrssDistributionProviderBaseFilter;
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	[Bindable]
-	public dynamic class KalturaComcastMrssDistributionProviderFilter extends KalturaComcastMrssDistributionProviderBaseFilter
+	public class LiveStreamIsLiveDelegate extends WebDelegateBase
 	{
-		override public function getUpdateableParamKeys():Array
+		public function LiveStreamIsLiveDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			return arr;
+			super(call, config);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function parse(result:XML) : *
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
+			return result.result.toString();
 		}
+
 	}
 }

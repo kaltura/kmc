@@ -25,25 +25,17 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.types
 {
-	import com.kaltura.vo.KalturaBaseJobFilter;
-
-	[Bindable]
-	public dynamic class KalturaMailJobBaseFilter extends KalturaBaseJobFilter
+	public class KalturaPlaybackProtocol
 	{
-		override public function getUpdateableParamKeys():Array
-		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			return arr;
-		}
-
-		override public function getInsertableParamKeys():Array
-		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
-		}
+		public static const APPLE_HTTP : String = 'applehttp';
+		public static const AUTO : String = 'auto';
+		public static const HDS : String = 'hds';
+		public static const HLS : String = 'hls';
+		public static const HTTP : String = 'http';
+		public static const RTMP : String = 'rtmp';
+		public static const RTSP : String = 'rtsp';
+		public static const SILVER_LIGHT : String = 'sl';
 	}
 }
