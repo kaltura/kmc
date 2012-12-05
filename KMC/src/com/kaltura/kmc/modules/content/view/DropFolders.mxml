@@ -7,9 +7,12 @@
 		 xmlns:controls="com.kaltura.controls.*"
 		 creationComplete="creationCompleteHandler(event)"
 		 width="100%" height="100%" xmlns:filter2="com.kaltura.edw.components.filter.*" xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*" xmlns:dropfolder="com.kaltura.kmc.modules.content.view.dropfolder.*">
-	
+	<mx:Metadata>
+		[ResourceBundle("dropfolders")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.utils.DropFolderTableStringUtil;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.DataTabController;
 			import com.kaltura.edw.control.events.ModelEvent;
@@ -34,16 +37,6 @@
 			import mx.events.FlexEvent;
 			import mx.formatters.DateFormatter;
 			
-			/**
-			 * used to convert to MegaByetes
-			 * */
-			private const MB_MULTIPLIER:int = 1024*1024;
-			
-			
-			/**
-			 * in files size: number of digits to show after the decimal point
-			 * */
-			private const DIGITS_AFTER_DEC_POINT:int = 2;
 			
 			[Bindable]
 			public var dropFolderModel:DropFolderModel;
@@ -88,98 +81,13 @@
 			}
 			
 			
-			private function formatDate(timestamp:int):String {
-				if (timestamp==int.MIN_VALUE)
-					return '';
-				var date:Date = new Date(timestamp * 1000);
-				return dateDisplay.format(date);
-			}
-			
-			/**
-			 * Create suitable string to display in the "Created at" column
-			 * */
-			private function dateCreatedLabelFunc(item:Object, column:DataGridColumn): String {
-				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
-				return formatDate(curFile.createdAt);
-			}
-			
-			/**
-			 * Create suitable string to display in the "File Size" column
-			 * */
-			private function fileSizeLabelFunc(item:Object, column:DataGridColumn): String {
-				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
-				if (curFile.fileSize==int.MIN_VALUE)
-					return '';
-				return ((curFile.fileSize/MB_MULTIPLIER).toFixed(DIGITS_AFTER_DEC_POINT)) + ' ' + resourceManager.getString('cms','megaBytes');
-				
-			}
-			
-			/**
-			 * Create suitable string to display in the "Status" column
-			 * */
-			private function statusLabelFunc(item:Object, column:DataGridColumn): String {
-				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
-				switch (curFile.status) {
-					case KalturaDropFolderFileStatus.UPLOADING:
-						return resourceManager.getString('cms','transferringBtn');
-					case KalturaDropFolderFileStatus.DOWNLOADING:
-						return resourceManager.getString('cms','downloadingBtn');
-					case KalturaDropFolderFileStatus.PENDING:
-						return resourceManager.getString('cms','pendingBtn');
-					case KalturaDropFolderFileStatus.PROCESSING:
-						return resourceManager.getString('cms','processingBtn');
-					case KalturaDropFolderFileStatus.PARSED:
-						return resourceManager.getString('cms','parsedBtn');
-					case KalturaDropFolderFileStatus.WAITING:
-						return resourceManager.getString('cms','waitingBtn');
-					case KalturaDropFolderFileStatus.NO_MATCH:
-						return resourceManager.getString('cms','noMatchBtn');
-					case KalturaDropFolderFileStatus.ERROR_HANDLING:
-						return resourceManager.getString('cms','errHandlingBtn');
-					case KalturaDropFolderFileStatus.ERROR_DELETING:
-						return resourceManager.getString('cms','errDeletingBtn');
-					case KalturaDropFolderFileStatus.HANDLED:
-						return resourceManager.getString('cms','handledBtn');
-					case KalturaDropFolderFileStatus.ERROR_DOWNLOADING:
-						return resourceManager.getString('cms','errDnldBtn');
-				}
-				return '';
-			}
-
-			/**
-			 * Create suitable string to display in the "error desctiption" column
-			 * */
-			public function getErrorDescription(item:Object) : String {
-				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
-				var errDescription:String = '';
-
-				switch (curFile.errorCode) {
-					case KalturaDropFolderFileErrorCode.ERROR_UPDATE_ENTRY:
-						errDescription = resourceManager.getString('cms','dfErrUpdateEntry');
-						break;
-					case KalturaDropFolderFileErrorCode.ERROR_ADD_ENTRY:
-						errDescription = resourceManager.getString('cms','dfErrAddEntry');
-						break;
-					case KalturaDropFolderFileErrorCode.FLAVOR_MISSING_IN_FILE_NAME:
-						errDescription = resourceManager.getString('cms','dfErrFlavorMissingInFile');
-						break;
-					case KalturaDropFolderFileErrorCode.FLAVOR_NOT_FOUND:
-						errDescription = resourceManager.getString('cms','dfErrFlavorNotFound', new Array(curFile.parsedFlavor));
-						break;
-					case KalturaDropFolderFileErrorCode.SLUG_REGEX_NO_MATCH:
-						errDescription = resourceManager.getString('cms','dfErrSlugRegex', new Array(curFile.fileName));
-						break;
-				}
-				
-				return errDescription;
-			}
 			
 			/**
 			 * user selects to delete files
 			 * */
 			private function deleteFiles():void {
 				if (!dg.selectedItem) {
-					Alert.show(resourceManager.getString('cms', 'selectDropFolderFiles'), resourceManager.getString('cms', 'selectDropFolderFilesTitle'));
+					Alert.show(resourceManager.getString('dropfolders', 'selectDropFolderFiles'), resourceManager.getString('dropfolders', 'selectDropFolderFilesTitle'));
 					return;
 				}
 				
@@ -188,7 +96,7 @@
 					delStr += '\n' + (item as KalturaDropFolderFile).fileName;
 				}
 				
-				Alert.show(resourceManager.getString('cms', 'deleteDropFoldersFilesQ') + delStr, resourceManager.getString('cms', 'deleteDropFolderFileTitle'), Alert.YES | Alert.NO, null, deleteResponseFunc);
+				Alert.show(resourceManager.getString('dropfolders', 'deleteDropFoldersFilesQ') + delStr, resourceManager.getString('dropfolders', 'deleteDropFolderFileTitle'), Alert.YES | Alert.NO, null, deleteResponseFunc);
 			}
 			
 			private function deleteResponseFunc(event:CloseEvent):void {
@@ -303,17 +211,6 @@
 				dg.addEventListener(EntryIdRenderer.ID_CLICKED, openEntryDetails);
 			}
 			
-			/**
-			 * creates the string to show as tooltip for "created at" column
-			 * */
-			private function getDatesInfo(item:Object):String {
-				var file:KalturaDropFolderFile = item as KalturaDropFolderFile;
-				var str:String = resourceManager.getString('cms', 'dfUploadStart' , [formatDate(file.uploadStartDetectedAt)] );
-				str += '\n' + resourceManager.getString('cms', 'dfUploadEnd',  [formatDate(file.uploadEndDetectedAt)] );
-				str += '\n' + resourceManager.getString('cms', 'dfTranserStart',  [formatDate(file.importStartedAt)] );
-				str += '\n' + resourceManager.getString('cms', 'dfTransferEnd',  [formatDate(file.importEndedAt)] );
-				return str;
-			}
 
 			private function openEntryDetails(event:Event):void {
 				var entryId:String = (event.target.data as KalturaDropFolderFile).entryId;
@@ -327,14 +224,12 @@
 			
 		]]>
 	</mx:Script>
-	<mx:DateFormatter id="dateDisplay" formatString="MM/DD/YYYY JJ:NN"/>
-	
 	
 	<mx:HBox width="100%" verticalAlign="middle">
 		<mx:Label id="pageLabel" text="{resourceManager.getString('cms', 'dropFoldersTitle')}" styleName="filterTitleHeader" 
 				  width="{filter.width}"/>
 		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{filter.width}" height="{pageLabel.height}"
-							 attribute="fileNameLike" defaultText="{resourceManager.getString('cms', 'searchFiles')}" />
+							 attribute="fileNameLike" defaultText="{resourceManager.getString('dropfolders', 'searchFiles')}" />
 		<indicators:Indicators id="indicators" width="100%" height="60"
 							   dataProvider="{filter.indicators}"
 							   boxClicked="filter.removeFilter(event.data)"/>
@@ -356,21 +251,30 @@
 			<mx:DataGrid id="dg" dataProvider="{dropFolderModel.files}" rowCount="10" rowHeight="36" 
 						 width="100%" height="100%" allowMultipleSelection="true" >
 				<mx:columns>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileNameTitle')}" dataField="fileName"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFolderNameTitle')}" dataField="fileName" 
+					<mx:DataGridColumn headerText="{resourceManager.getString('dropfolders','dropFileNameTitle')}" dataField="fileName"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('dropfolders','dropFolderNameTitle')}" dataField="fileName" 
 									   labelFunction="{folderNameFunc}"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileCreatedAtTitle')}" 
-									   labelFunction="{dateCreatedLabelFunc}" dataTipFunction="{getDatesInfo}" showDataTips="true"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileSizeTitle')}" dataField="fileSize" 
-									   labelFunction="{fileSizeLabelFunc}"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileEntryTitle')}" dataField="entryId"
+					<mx:DataGridColumn headerText="{resourceManager.getString('dropfolders','dropFileCreatedAtTitle')}" 
+									   labelFunction="{DropFolderTableStringUtil.dateCreatedLabelFunc}" 
+									   dataTipFunction="{DropFolderTableStringUtil.getDatesInfo}" showDataTips="true"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('dropfolders','dropFileSizeTitle')}" dataField="fileSize" 
+									   labelFunction="{DropFolderTableStringUtil.fileSizeLabelFunc}"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('dropfolders','dropFileEntryTitle')}" dataField="entryId"
 									   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.dropfolders.EntryIdRenderer"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileStatusTitle')}" dataField="status" 
-									   labelFunction="{statusLabelFunc}"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileErrTitle')}">
+					<mx:DataGridColumn headerText="{resourceManager.getString('dropfolders','dropFileStatusTitle')}" dataField="status" 
+									   labelFunction="{DropFolderTableStringUtil.statusLabelFunc}" 
+									   dataTipFunction="{DropFolderTableStringUtil.getStatusInfo}" showDataTips="true"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('dropfolders','dropFileErrTitle')}">
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:Label text="{outerDocument.getErrorDescription(data)}" paddingLeft="7"/>
+								<mx:Label text="{DropFolderTableStringUtil.getErrorDescription(data)}" paddingLeft="7">
+									<mx:Script>
+										<![CDATA[
+											import com.kaltura.kmc.modules.content.utils.DropFolderTableStringUtil;
+										]]>
+									</mx:Script>
+								</mx:Label>
+
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>

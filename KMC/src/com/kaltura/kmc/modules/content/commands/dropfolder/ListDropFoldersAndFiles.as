@@ -75,7 +75,7 @@ package com.kaltura.kmc.modules.content.commands.dropfolder {
 				
 				if (ar.length == 0) {
 					// show upsale alert
-					var str:String = rm.getString('cms', 'dfUpsale');
+					var str:String = rm.getString('dropfolders', 'dfUpsale');
 					var alert:Alert = Alert.show(str, rm.getString('cms', 'attention'));
 					alert.mx_internal::alertForm.mx_internal::textField.htmlText = str; // because it includes links and stuff
 					_model.decreaseLoadCounter();

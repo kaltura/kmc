@@ -3,6 +3,9 @@
 							layout="vertical" width="550" height="528" showCloseButton="true"
 							close="closeHandler(event)" showHelpButton="true" help="helpHandler(event)" visible="false"
 							creationComplete="creationCompleteHandler(event)">
+	<mx:Metadata>
+		[ResourceBundle("dropfolders")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
@@ -173,7 +176,7 @@
 				if (item.files) {
 					s = item.parsedSlug + " (" + item.files.length;
 					if (item.status == KalturaDropFolderFileStatus.WAITING) {
-						s += ", " + ResourceManager.getInstance().getString('cms', 'fileWaiting');
+						s += ", " + ResourceManager.getInstance().getString('dropfolders', 'fileWaiting');
 					}
 					s += ")";
 				}
@@ -231,7 +234,7 @@
 				modelSelectedEntry.referenceId = _selectedSlug.parsedSlug;
 				var ee:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SINGLE_ENTRY, _entry);
 				controller.dispatch(ee);
-				Alert.show(ResourceManager.getInstance().getString('cms', 'setRefidNotification'));
+				Alert.show(ResourceManager.getInstance().getString('dropfolders', 'setRefidNotification'));
 				closeHandler(null);
 			}
 
@@ -242,7 +245,7 @@
 			protected function submitHandler(event:MouseEvent):void {
 
 				if (!_selectedSlug) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'noSelectedFile'));
+					Alert.show(ResourceManager.getInstance().getString('dropfolders', 'noSelectedFile'));
 				}
 				else {
 					confirmAddFiles(_windowState == SINGLE_FLAVOUR);
@@ -303,10 +306,10 @@
 			 * */
 			protected function confirmAddFiles(isSingle:Boolean):void {
 				if (isSingle) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'addFilesConfirm'), '', Alert.YES | Alert.NO, null, updateSingleFile);
+					Alert.show(ResourceManager.getInstance().getString('dropfolders', 'addFilesConfirm'), '', Alert.YES | Alert.NO, null, updateSingleFile);
 				}
 				else {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'addFilesConfirm'), '', Alert.YES | Alert.NO, null, updateMediaFiles);
+					Alert.show(ResourceManager.getInstance().getString('dropfolders', 'addFilesConfirm'), '', Alert.YES | Alert.NO, null, updateMediaFiles);
 				}
 			}
 
@@ -433,23 +436,23 @@
 			protected function setAppearance(showGrouped:Boolean):void {
 				if (showGrouped) {
 					// header
-					headerLbl.htmlText = ResourceManager.getInstance().getString('cms', 'hdrLblSlug');
+					headerLbl.htmlText = ResourceManager.getInstance().getString('dropfolders', 'hdrLblSlug');
 					// instructions
-					instructionsTxt.htmlText = ResourceManager.getInstance().getString('cms', 'instrLblSlug');
+					instructionsTxt.htmlText = ResourceManager.getInstance().getString('dropfolders', 'instrLblSlug');
 					// submit
-					submitBtn.label = ResourceManager.getInstance().getString('cms', 'addFilesActionLabel');
+					submitBtn.label = ResourceManager.getInstance().getString('dropfolders', 'addFilesActionLabel');
 
-					slug.headerText = ResourceManager.getInstance().getString('cms', 'groupNameHeader');
+					slug.headerText = ResourceManager.getInstance().getString('dropfolders', 'groupNameHeader');
 				}
 				else {
 					// header
-					headerLbl.htmlText = ResourceManager.getInstance().getString('cms', 'hdrLblNoSlug');
+					headerLbl.htmlText = ResourceManager.getInstance().getString('dropfolders', 'hdrLblNoSlug');
 					// instructions
-					instructionsTxt.htmlText = ResourceManager.getInstance().getString('cms', 'instrLblNoSlug');
+					instructionsTxt.htmlText = ResourceManager.getInstance().getString('dropfolders', 'instrLblNoSlug');
 					// submit
-					submitBtn.label = ResourceManager.getInstance().getString('cms', 'addFileActionLabel');
+					submitBtn.label = ResourceManager.getInstance().getString('dropfolders', 'addFileActionLabel');
 
-					slug.headerText = ResourceManager.getInstance().getString('cms', 'fileNameHeader');
+					slug.headerText = ResourceManager.getInstance().getString('dropfolders', 'fileNameHeader');
 				}
 				// reference id field
 				refidHdrLbl.visible = refidHdrLbl.includeInLayout = showGrouped;
@@ -585,7 +588,7 @@
 					else {
 						// no drop folders, alert user and close popup
 						var rm:IResourceManager = ResourceManager.getInstance();
-						Alert.show(rm.getString('cms', 'noDropFolders'));
+						Alert.show(rm.getString('dropfolders', 'noDropFolders'));
 						closeHandler(null);
 					}
 				}
@@ -599,7 +602,7 @@
 	</mx:HBox>
 	<mx:Text id="instructionsTxt" width="100%" styleName="simpleText"/>
 	<mx:HBox width="100%">
-		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'searchLbl')}:" styleName="simpleBoldText"/>
+		<mx:Label text="{ResourceManager.getInstance().getString('dropfolders', 'searchLbl')}:" styleName="simpleBoldText"/>
 		<mx:HBox horizontalGap="0">
 			<mx:TextInput id="searchText" width="250" styleName="searchTextInput" enter="btnSearch_clickHandler()"
 						  change="searchText_changeHandler(event)"/>
@@ -624,18 +627,18 @@
 		</mx:rendererProviders>
 	</mx:AdvancedDataGrid>
 	<mx:HBox width="100%">
-		<mx:Label id="refidHdrLbl" text="{ResourceManager.getInstance().getString('cms', 'refid')}:"
+		<mx:Label id="refidHdrLbl" text="{ResourceManager.getInstance().getString('dropfolders', 'refid')}:"
 				  styleName="simpleBoldText"/>
 		<mx:Label id="refidLbl" styleName="simpleText" text="{getRefIdText(entry)}"/>
 		<mx:Spacer width="100%"/>
-		<mx:LinkButton label="{ResourceManager.getInstance().getString('cms', 'refreshDropFolder')}"
+		<mx:LinkButton label="{ResourceManager.getInstance().getString('dropfolders', 'refreshDropFolder')}"
 					   click="listFolderContents(event)" styleName="recycleIcon"/>
 	</mx:HBox>
 	<mx:ControlBar horizontalGap="10">
 		<mx:Button id="updateBtn" click="updateHandler(event)" visible="{_windowState == MULTI_FLAVOUR}"
 				   includeInLayout="{_windowState == MULTI_FLAVOUR}" enabled="false"
-				   label="{ResourceManager.getInstance().getString('cms', 'updateRefIdActionLabel')}"/>
+				   label="{ResourceManager.getInstance().getString('dropfolders', 'updateRefIdActionLabel')}"/>
 		<mx:Button id="submitBtn" click="submitHandler(event)" enabled="{_windowState == SINGLE_FLAVOUR}"
-				   label="{ResourceManager.getInstance().getString('cms', 'addFilesActionLabel')}"/>
+				   label="{ResourceManager.getInstance().getString('dropfolders', 'addFilesActionLabel')}"/>
 	</mx:ControlBar>
 </containers:HelpTitleWindow>

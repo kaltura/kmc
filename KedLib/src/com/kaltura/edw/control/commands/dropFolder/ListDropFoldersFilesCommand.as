@@ -154,7 +154,7 @@ package com.kaltura.edw.control.commands.dropFolder {
 			var dict:Object = new Object(); // slugs dictionary
 			var group:KalturaDropFolderFile; // dffs group (by slug)
 
-			var parseFailedStr:String = ResourceManager.getInstance().getString('cms', 'parseFailed');
+			var parseFailedStr:String = ResourceManager.getInstance().getString('dropfolders', 'parseFailed');
 			for each (var o:Object in lr.objects) {
 				if (o is KalturaDropFolderFile) {
 					dff = o as KalturaDropFolderFile;
