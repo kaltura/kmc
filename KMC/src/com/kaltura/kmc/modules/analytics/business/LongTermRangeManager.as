@@ -47,8 +47,8 @@ package com.kaltura.kmc.modules.analytics.business {
 			];*/
 			var today:Date = new Date();
 			
-			_latestSelected = _dateRange[0];
-			_latestFromDate = new Date(today.fullYear, 0, 1);
+			_latestSelected = _dateRange[1];
+			_latestFromDate = new Date(today.fullYear, today.month, 1);
 			_latestToDate = today;
 			
 		}
