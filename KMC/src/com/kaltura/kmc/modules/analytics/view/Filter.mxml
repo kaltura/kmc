@@ -147,11 +147,21 @@
 					}
 
 					// if there are categories on the filter vo, show them in autocomplete
-					if (_filterVo.categories == null) {
-						_selectedCategoriesArr = new ArrayCollection();
+					if (playbackContextFlag) {
+						if (_filterVo.playbackContext == null) {
+							_selectedCategoriesArr = new ArrayCollection();
+						}
+						else {
+							_selectedCategoriesArr = getCategoriesFromNames(_filterVo.playbackContext.split(','));
+						}
 					}
 					else {
-						_selectedCategoriesArr = getCategoriesFromNames(_filterVo.categories.split(','));
+						if (_filterVo.categories == null) {
+							_selectedCategoriesArr = new ArrayCollection();
+						}
+						else {
+							_selectedCategoriesArr = getCategoriesFromNames(_filterVo.categories.split(','));
+						}
 					}
 					onCategoriesChange();
 
@@ -311,13 +321,16 @@
 					if (playbackContextFlag) {
 						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectPlaybackContext');
 						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectPlaybackContextToolTip');
+						if (_filterVo.playbackContext) {
+							_filterVo.playbackContext = null;
+						}
 					}
 					else {
 						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectCategories');
 						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectCategoriesToolTip');
-					}
-					if (_filterVo.categories) {
-						_filterVo.categories = null;
+						if (_filterVo.categories) {
+							_filterVo.categories = null;
+						}
 					}
 
 				}
@@ -335,12 +348,14 @@
 					if (filterCats.lastIndexOf(',') == filterCats.length - 1) {
 						filterCats = filterCats.substr(0, filterCats.length - 1);
 					}
-					_filterVo.categories = filterCats;
+					
 					if (playbackContextFlag) {
+						_filterVo.playbackContext = filterCats;
 						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectedPlaybackContext') + ":\n" + tooltipCats;
 						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectedPlaybackContext') + "(" + _selectedCategoriesArr.length + ")";
 					}
 					else {
+						_filterVo.categories = filterCats;
 						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectedCategories') + ":\n" + tooltipCats;
 						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectedCategories') + "(" + _selectedCategoriesArr.length + ")";
 					}

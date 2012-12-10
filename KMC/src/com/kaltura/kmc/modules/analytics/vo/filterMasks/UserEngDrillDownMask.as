@@ -39,6 +39,13 @@ package com.kaltura.kmc.modules.analytics.vo.filterMasks
 			_filterVo.keywords = null;
 		}
 		
+		override public function get categories():String {
+			return null;
+		}
 		
+		override public function set categories(value:String):void {
+			throw new Error("trying to set invalid value on filter: categories");
+			_filterVo.categories = null;
+		}
 	}
 }

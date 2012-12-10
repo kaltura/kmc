@@ -51,6 +51,15 @@ package com.kaltura.kmc.modules.analytics.vo.filterMasks
 			_filterVo.categories = null;
 		}
 		
+		override public function get playbackContext():String {
+			return null;
+		}
+		
+		override public function set playbackContext(value:String):void {
+			throw new Error("trying to set invalid value on filter: playbackContext");
+			_filterVo.playbackContext = value;
+		}
+		
 		
 	}
 }

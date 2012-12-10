@@ -85,6 +85,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 				}
 				
 				keurif.userIds = fvo.userIds;
+				keurif.playbackContext = fvo.playbackContext;
 				keurif.categories = fvo.categories;
 				keurif.searchInTags = true;
 				keurif.searchInAdminTags = false;

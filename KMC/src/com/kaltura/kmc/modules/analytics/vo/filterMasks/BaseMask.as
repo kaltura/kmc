@@ -90,9 +90,6 @@ package com.kaltura.kmc.modules.analytics.vo.filterMasks
 		
 		/**
 		 * comma-separated list of categories full-names.
-		 *
-		 * @internal
-		 * when getting report, the command switches between categories and playbackContext according to required report
 		 */
 		override public function get categories():String {
 			return _filterVo.categories;
@@ -104,6 +101,22 @@ package com.kaltura.kmc.modules.analytics.vo.filterMasks
 		 */
 		override public function set categories(value:String):void {
 			_filterVo.categories = value;
+		}
+		
+		
+		/**
+		 * comma-separated list of categories full-names to be used as required playback context.
+		 */
+		override public function get playbackContext():String {
+			return _filterVo.playbackContext;
+		}
+		
+		
+		/**
+		 * @private
+		 */
+		override public function set playbackContext(value:String):void {
+			_filterVo.playbackContext = value;
 		}
 		
 		

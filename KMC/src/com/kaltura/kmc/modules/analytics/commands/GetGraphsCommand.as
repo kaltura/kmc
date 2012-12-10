@@ -81,8 +81,8 @@ package com.kaltura.kmc.modules.analytics.commands
 				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport(_model.getFilterForScreen(_screenType));
 				
 				//in the reports above we need to send playback context instead of categories
-				keurif.playbackContext = keurif.categories;
-				keurif.categories = null;
+//				keurif.playbackContext = keurif.categories;
+//				keurif.categories = null;
 				
 				reportGetGraphs = new ReportGetGraphs( (event as ReportEvent).reportType , keurif , _model.selectedReportData.selectedDim, objectIds);
 			}

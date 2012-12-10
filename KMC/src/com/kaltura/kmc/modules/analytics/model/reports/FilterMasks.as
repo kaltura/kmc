@@ -69,7 +69,13 @@ package com.kaltura.kmc.modules.analytics.model.reports
 			
 		}
 		
-		
+		/**
+		 * returns a reference to the actual filter object, not through any mask.
+		 * USE CAREFULLY!! 
+		 */		
+		public function getExposedFilter():FilterVo {
+			return _filterVo;
+		}
 		
 	}
 }

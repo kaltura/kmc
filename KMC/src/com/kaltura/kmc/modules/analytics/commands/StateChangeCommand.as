@@ -31,15 +31,24 @@ package com.kaltura.kmc.modules.analytics.commands {
 			_model.selectedEntry = null;
 		
 			switch (screenType) {
-				case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:
-				case ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN:
+				// content
+				case ScreenTypes.TOP_CONTENT:
+				case ScreenTypes.CONTENT_CONTRIBUTIONS:
+				// content drildowns
+				case ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT:
+				case ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF:
+				case ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS:
+				// users
 				case ScreenTypes.TOP_CONTRIBUTORS:
 				case ScreenTypes.END_USER_ENGAGEMENT:
 				case ScreenTypes.MAP_OVERLAY:
 				case ScreenTypes.TOP_SYNDICATIONS:
-				case ScreenTypes.CONTENT_CONTRIBUTIONS:
-				case ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE:
+				// users drilldowns	
+				case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:
+				case ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN:
+				// storage
 				case ScreenTypes.END_USER_STORAGE:
+				case ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE:
 					break;
 				
 				case ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN:
@@ -55,22 +64,41 @@ package com.kaltura.kmc.modules.analytics.commands {
 		
 		private function setUpBeforeReport(screenType:int):void {
 			switch (screenType) {
+				case ScreenTypes.TOP_CONTENT:
+				case ScreenTypes.CONTENT_DROPOFF:
+				case ScreenTypes.CONTENT_INTERACTIONS:
+				case ScreenTypes.CONTENT_CONTRIBUTIONS:
+					// if it's not drilldown make the name null
+					_model.drillDownName = null;
+					_model.tableSupportDrillDown = true;
+					// possibly leaving a content drilldown, reset playback context
+					// (current page filter will not have access to playbackContext, so we use the bare filter)
+					_model.filterMasks.getExposedFilter().playbackContext = null;
+					break;
+				
+				case ScreenTypes.END_USER_ENGAGEMENT:
+				case ScreenTypes.MAP_OVERLAY:
+				case ScreenTypes.TOP_SYNDICATIONS:
+					//if it's not drilldown make the name null
+					_model.drillDownName = null;
+					_model.tableSupportDrillDown = true;
+					break;
+				
 				case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:
 				case ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN:
-				case ScreenTypes.TOP_CONTRIBUTORS:
 				case ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE:
 					//if it's not drilldown make the name null
 					_model.drillDownName = null;
 					_model.tableSupportDrillDown = false;
 					break;
 				
-				case ScreenTypes.END_USER_ENGAGEMENT:
-				case ScreenTypes.MAP_OVERLAY:
-				case ScreenTypes.TOP_SYNDICATIONS:
-				case ScreenTypes.CONTENT_CONTRIBUTIONS:
+				case ScreenTypes.TOP_CONTRIBUTORS:
 					//if it's not drilldown make the name null
 					_model.drillDownName = null;
-					_model.tableSupportDrillDown = true;
+					_model.tableSupportDrillDown = false;
+					// possibly leaving a content drilldown, reset playback context
+					// (current page filter will not have access to playbackContext, so we use the bare filter)
+					_model.filterMasks.getExposedFilter().playbackContext = null;
 					break;
 				
 				case ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN:

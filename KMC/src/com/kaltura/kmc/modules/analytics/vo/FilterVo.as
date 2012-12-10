@@ -15,11 +15,13 @@ package com.kaltura.kmc.modules.analytics.vo {
 
 		/**
 		 * comma-separated list of categories full-names.
-		 * 
-		 * @internal
-		 * when getting report, the command switches between categories and playbackContext according to required report
 		 */
 		public var categories:String;
+		
+		/**
+		 * comma-separated list of categories full-names to be used as required playback context.
+		 */
+		public var playbackContext:String;
 
 		public var keywords:String;
 		
