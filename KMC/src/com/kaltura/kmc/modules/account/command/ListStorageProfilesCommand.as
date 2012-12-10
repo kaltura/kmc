@@ -15,6 +15,7 @@ package com.kaltura.kmc.modules.account.command
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.rpc.IResponder;
+	import mx.resources.ResourceManager;
 
 	public class ListStorageProfilesCommand implements ICommand, IResponder {
 		
@@ -36,7 +37,7 @@ package com.kaltura.kmc.modules.account.command
 			// add the "none" object
 			var rs:KalturaStorageProfile = new KalturaStorageProfile();
 			rs.id = KalturaClient.NULL_INT; // same as "delete value" of the client
-			rs.name = "N/A";
+			rs.name = ResourceManager.getInstance().getString('account', 'n_a');
 			temp.push(rs);
 			// add the rest of the storages
 			for each (var o:Object in event.data.objects) {

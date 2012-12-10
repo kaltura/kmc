@@ -75,7 +75,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 				case "added_storage":
 				case "deleted_storage":
 					var currValue:Number = Math.ceil(parseFloat(value))
-					return isNaN(currValue) ? "N/A" : currValue.toString();
+					return isNaN(currValue) ? ResourceManager.getInstance().getString('analytics', 'n_a') : currValue.toString();
 					break;
 				case "added_msecs":
 				case "deleted_msecs":
