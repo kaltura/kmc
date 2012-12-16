@@ -194,7 +194,7 @@
 				// filter
 				(model.getDataPack(FilterDataPack) as FilterDataPack).filterModel = new FilterModel();
 				
-				(model.getDataPack(CustomDataDataPack) as CustomDataDataPack).metadataDefaultUiconf = uiconf.uiconf.metadata.text().toString();
+				CustomDataDataPack.metadataDefaultUiconf = uiconf.uiconf.metadata.text().toString();
 				
 				(model.getDataPack(CuePointsDataPack)as CuePointsDataPack).cuepointsSamplesUrl = getFullUrl(uiconf.cuepoints.text().toString());
 				
@@ -329,7 +329,7 @@
 					//if we asked for metadata view, listen to propertyChangeEvent on the DP,
 					// only when appropriate event received ask for drilldown. otherwise open drilldown
 					var cddp:CustomDataDataPack = KMvCModel.getInstance().getDataPack(CustomDataDataPack) as CustomDataDataPack;
-					if (!cddp.metadataDefaultUiconfXML) {
+					if (!CustomDataDataPack.metadataDefaultUiconfXML) {
 						cddp.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onMetadataViewUiconfLoaded);
 						var getMetadataUiconf:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.GET_METADATA_UICONF);
 						DataTabController.getInstance().dispatch(getMetadataUiconf);
