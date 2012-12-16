@@ -101,6 +101,7 @@ package com.kaltura.kmc.modules.content.commands.dropfolder {
 							KalturaDropFolderFileStatus.PROCESSING + "," + 
 							KalturaDropFolderFileStatus.PARSED + "," + 
 							KalturaDropFolderFileStatus.UPLOADING + "," + 
+							KalturaDropFolderFileStatus.DETECTED + "," + 
 							KalturaDropFolderFileStatus.WAITING; 
 						_model.dropFolderModel.filter = _fileFilter;
 					}
