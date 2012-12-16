@@ -94,10 +94,9 @@ package com.kaltura.kmc.modules.content.commands
 								}
 							}
 							if (!isViewExist) {
-								var cddp:CustomDataDataPack = _model.entryDetailsModel.getDataPack(CustomDataDataPack) as CustomDataDataPack;
 								//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
-								if (cddp.metadataDefaultUiconfXML){
-									metadataProfile.viewXML = cddp.metadataDefaultUiconfXML.copy();
+								if (CustomDataDataPack.metadataDefaultUiconfXML){
+									metadataProfile.viewXML = CustomDataDataPack.metadataDefaultUiconfXML.copy();
 								}
 								fb.buildInitialMxml();
 							}

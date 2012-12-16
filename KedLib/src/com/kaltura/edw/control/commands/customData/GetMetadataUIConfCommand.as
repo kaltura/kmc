@@ -14,13 +14,11 @@ package com.kaltura.edw.control.commands.customData
 	 */
 	public class GetMetadataUIConfCommand extends KedCommand
 	{
-		private var _cddp:CustomDataDataPack;
 		
 		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
-			_cddp = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack
 
-			var uiconfRequest:UiConfGet = new UiConfGet(_cddp.metadataDefaultUiconf);
+			var uiconfRequest:UiConfGet = new UiConfGet(CustomDataDataPack.metadataDefaultUiconf);
 			uiconfRequest.addEventListener(KalturaEvent.COMPLETE, result);
 			uiconfRequest.addEventListener(KalturaEvent.FAILED, fault);
 			
@@ -31,7 +29,7 @@ package com.kaltura.edw.control.commands.customData
 			super.result(data);
 			var result:KalturaUiConf = data.data as KalturaUiConf;
 			if (result)
-				_cddp.metadataDefaultUiconfXML = new XML(result.confFile);
+				CustomDataDataPack.metadataDefaultUiconfXML = new XML(result.confFile);
 			
 			_model.decreaseLoadCounter();
 			

@@ -6,6 +6,9 @@ package com.kaltura.kmvc.model
 
 	public class KMvCModel extends EventDispatcher implements IModelLocator, IDataPackRepository {
 		
+		
+		
+		
 		/**
 		 * defines the value of the type property of the loadingFlagChanged event 
 		 */		
@@ -16,6 +19,7 @@ package com.kaltura.kmvc.model
 		private var _packMap:Object;
 		
 		public function KMvCModel(enforcer:Enforcer) {
+			
 			_packMap = new Object();
 		}
 		
@@ -155,4 +159,7 @@ package com.kaltura.kmvc.model
 
 class Enforcer {
 	
+	function Enforcer() {
+		
+	}
 }

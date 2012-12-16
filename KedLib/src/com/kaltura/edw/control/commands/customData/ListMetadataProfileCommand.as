@@ -14,7 +14,6 @@ package com.kaltura.edw.control.commands.customData {
 	import com.kaltura.types.KalturaMetadataProfileCreateMode;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KMCMetadataProfileVO;
-	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaMetadataProfile;
 	import com.kaltura.vo.KalturaMetadataProfileFilter;
 	import com.kaltura.vo.KalturaMetadataProfileListResponse;
@@ -122,10 +121,9 @@ package com.kaltura.edw.control.commands.customData {
 								}
 							}
 							if (!isViewExist) {
-								var cddp:CustomDataDataPack = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
 								//if no view was retruned, or no view with "KMC" name, we will set the default metadata view uiconf XML
-								if (cddp.metadataDefaultUiconfXML){
-									metadataProfile.viewXML = cddp.metadataDefaultUiconfXML.copy();
+								if (CustomDataDataPack.metadataDefaultUiconfXML){
+									metadataProfile.viewXML = CustomDataDataPack.metadataDefaultUiconfXML.copy();
 								}
 								// create the actual view:
 								fb.buildInitialMxml();

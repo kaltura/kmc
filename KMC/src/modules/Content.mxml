@@ -96,11 +96,6 @@
 			 * */
 			private var _entryData:EntryDataPack = KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack;
 
-			/**
-			 * custom data information
-			 * */
-			private var _customDataData:CustomDataDataPack = KMvCModel.getInstance().getDataPack(CustomDataDataPack) as CustomDataDataPack;
-
 			[Bindable]
 			/**
 			 * reference to the current files in the upload file list
@@ -274,7 +269,7 @@
 			 * */
 			private function getDefaultMetadataView():void {
 				if (_model.filterModel.enableCustomData) {
-					if (!_customDataData.metadataDefaultUiconfXML) {
+					if (!CustomDataDataPack.metadataDefaultUiconfXML) {
 						var getMetadataUiconf:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.GET_METADATA_UICONF);
 						DataTabController.getInstance().dispatch(getMetadataUiconf);
 					}
@@ -434,7 +429,7 @@
 				_model.context.panelsConfig = confFile.uiconf.entryDrilldown.panels[0];
 
 				// model:
-				_customDataData.metadataDefaultUiconf = confFile.uiconf.metadata.text().toString();
+				CustomDataDataPack.metadataDefaultUiconf = confFile.uiconf.metadata.text().toString();
 				(_model.entryDetailsModel.getDataPack(CuePointsDataPack)as CuePointsDataPack).cuepointsSamplesUrl = getFullUrl(confFile.cuepoints.text().toString());
 
 //				// Remove this later? - Biton.

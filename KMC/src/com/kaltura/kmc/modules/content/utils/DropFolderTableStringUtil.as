@@ -80,7 +80,7 @@ package com.kaltura.kmc.modules.content.utils
 		public static function getStatusInfo(item:Object):String {
 			var resourceManager:IResourceManager = ResourceManager.getInstance();
 			var file:KalturaDropFolderFile = item as KalturaDropFolderFile;
-			var str:String = '';
+			var str:String = file.status.toString();	// original value as default
 			switch (file.status) {
 				case KalturaDropFolderFileStatus.UPLOADING:
 					str = resourceManager.getString('dropfolders','transferringDesc');
@@ -159,28 +159,28 @@ package com.kaltura.kmc.modules.content.utils
 		 * */
 		public static function getErrorDescription(item:Object) : String {
 			var resourceManager:IResourceManager = ResourceManager.getInstance();
-			var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
-			var errDescription:String = '';
+			var file:KalturaDropFolderFile = item as KalturaDropFolderFile;
+			var err:String = file.errorDescription;	// keep server string as default description
 			
-			switch (curFile.errorCode) {
+			switch (file.errorCode) {
 				case KalturaDropFolderFileErrorCode.ERROR_UPDATE_ENTRY:
-					errDescription = resourceManager.getString('dropfolders','dfErrUpdateEntry');
+					err = resourceManager.getString('dropfolders','dfErrUpdateEntry');
 					break;
 				case KalturaDropFolderFileErrorCode.ERROR_ADD_ENTRY:
-					errDescription = resourceManager.getString('dropfolders','dfErrAddEntry');
+					err = resourceManager.getString('dropfolders','dfErrAddEntry');
 					break;
 				case KalturaDropFolderFileErrorCode.FLAVOR_MISSING_IN_FILE_NAME:
-					errDescription = resourceManager.getString('dropfolders','dfErrFlavorMissingInFile');
+					err = resourceManager.getString('dropfolders','dfErrFlavorMissingInFile');
 					break;
 				case KalturaDropFolderFileErrorCode.FLAVOR_NOT_FOUND:
-					errDescription = resourceManager.getString('dropfolders','dfErrFlavorNotFound', new Array(curFile.parsedFlavor));
+					err = resourceManager.getString('dropfolders','dfErrFlavorNotFound', new Array(file.parsedFlavor));
 					break;
 				case KalturaDropFolderFileErrorCode.SLUG_REGEX_NO_MATCH:
-					errDescription = resourceManager.getString('dropfolders','dfErrSlugRegex', new Array(curFile.fileName));
+					err = resourceManager.getString('dropfolders','dfErrSlugRegex', new Array(file.fileName));
 					break;
 			}
 			
-			return errDescription;
+			return err;
 		}
 	}
 }

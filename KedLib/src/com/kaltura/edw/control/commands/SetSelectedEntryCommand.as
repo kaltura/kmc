@@ -27,9 +27,8 @@ package com.kaltura.edw.control.commands
 				
 				_client.post(getEntry);
 			}
-//			else {
+
 			_edp.selectedEntry = (event as KedEntryEvent).entryVo;	
-//			}
 		}
 		
 		override public function result(data:Object):void {

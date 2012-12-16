@@ -15,13 +15,15 @@ package com.kaltura.edw.model.datapacks
 		public var metadataInfoArray:ArrayCollection;
 		
 		/**
-		 * uiconf id used with metadata
+		 * uiconf id used with metadata,
+		 * shared between all models
 		 * */
-		public var metadataDefaultUiconf:int;
+		public static var metadataDefaultUiconf:int;
 		
 		/**
-		 * default metadata view uiconf xml
+		 * default metadata view uiconf xml,
+		 * shared between all models
 		 * */
-		public var metadataDefaultUiconfXML:XML;
+		public static var metadataDefaultUiconfXML:XML;
 	}
 }
