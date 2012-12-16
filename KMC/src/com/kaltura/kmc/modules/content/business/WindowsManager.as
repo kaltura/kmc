@@ -373,8 +373,9 @@ package com.kaltura.kmc.modules.content.business
 			edw.addEventListener(KedDataEvent.OPEN_REPLACEMENT, handleKedEvents, false, 0, true);
 			edw.addEventListener(KedDataEvent.OPEN_ENTRY, handleKedEvents, false, 0, true);
 			edw.isNewEntry = state == EntryDetailsWindowState.NEW_ENTRY;
-			//get the selected entry from the server
-			if (state != EntryDetailsWindowState.NEW_ENTRY) {
+			// get the selected entry from the server
+			if (state != EntryDetailsWindowState.NEW_ENTRY && state != EntryDetailsWindowState.NORMAL_ENTRY_SA) {
+				// in the SA mode, we just got the entry. no need to fetch again
 				var getSelectedEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null,
 					_entryData.selectedEntry.id);
 				KedController.getInstance().dispatch(getSelectedEntry);

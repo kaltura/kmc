@@ -146,6 +146,7 @@
 					if (subtab == contentView.selectedChild.id && subtab != manage.id) {
 						return;
 					}
+					getDefaultMetadataView();
 					handleEntryId();
 					_model.filterModel.loadingRequired = true;
 					(_model.entryDetailsModel.getDataPack(FlavorsDataPack) as FlavorsDataPack).conversionProfileLoaded = false;
@@ -267,25 +268,26 @@
 			public function onRequestedDataLoaded():void {
 			}
 
-
+			
 			/**
-			 * if there is entryid to start with, open the entry drilldown
-			 * loads info required for drill down
+			 * get default metadata view if needed
 			 * */
-			protected function handleEntryId():void {
-				//get default metadata view if needed
+			private function getDefaultMetadataView():void {
 				if (_model.filterModel.enableCustomData) {
 					if (!_customDataData.metadataDefaultUiconfXML) {
 						var getMetadataUiconf:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.GET_METADATA_UICONF);
 						DataTabController.getInstance().dispatch(getMetadataUiconf);
 					}
 				}
+			}
+
+			
+			/**
+			 * if there is entryid to start with, open the entry drilldown
+			 * */
+			protected function handleEntryId():void {
 				// if there is entryid to start with, open the entry drilldown.
 				if (_model.attic.entryid) {
-					// need to set a dummy dispatcher, so we'll know when the entry is loaded.
-					_entryIdDispatcher = new EventDispatcher();
-					_entryIdDispatcher.addEventListener(KedDataEvent.OPEN_ENTRY, windowsManager.handleKedEvents, false, 0, true);
-					(_model.entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack).dispatcher = _entryIdDispatcher;
 					// get the entry
 					var kEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, _model.attic.entryid);
 					KedController.getInstance().dispatch(kEvent);
@@ -293,6 +295,19 @@
 				}
 			}
 
+			
+			/**
+			 * create a dummy dispatcher if one is required.
+			 * used in the scenraio of GET_ENTRY_AND_DRILLDOWN to open EDW after entry is loaded.
+			 * */
+			private function setDummyKedDispatcher():void {
+				if (!(_model.entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack).dispatcher) {
+					// if the dispatcher already exists, someone is already listening. we only need a single listener.
+					_entryIdDispatcher = new EventDispatcher();
+					_entryIdDispatcher.addEventListener(KedDataEvent.OPEN_ENTRY, windowsManager.handleKedEvents, false, 0, true);
+					(_model.entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack).dispatcher = _entryIdDispatcher;
+				}
+			}
 
 			/**
 			 * when opening KMC with a drilldown, need to supply ked with
@@ -322,7 +337,10 @@
 			 * */
 			private function initChildren(e:FlexEvent):void {
 				removeEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
-
+				
+				setDummyKedDispatcher();
+				
+				getDefaultMetadataView();
 				handleEntryId();
 
 				// roles and permissions 
@@ -336,7 +354,7 @@
 						rightBtnsHBox.removeChildAt(indexToRemove - leftBtnsHBox.numChildren);
 
 				}
-
+				
 				if (!_initialTab) {
 					_initialTab = "manage";
 				}
