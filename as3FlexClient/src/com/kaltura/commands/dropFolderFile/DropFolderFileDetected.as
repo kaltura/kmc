@@ -25,20 +25,41 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.commands.dropFolderFile
 {
-	public class KalturaConditionType
+	import com.kaltura.vo.KalturaDropFolderFile;
+	import com.kaltura.delegates.dropFolderFile.DropFolderFileDetectedDelegate;
+	import com.kaltura.net.KalturaCall;
+
+	/**
+	 * Allows you to add a new KalturaDropFolderFile object in status DETECTED
+	 * 
+	 **/
+	public class DropFolderFileDetected extends KalturaCall
 	{
-		public static const DS_WATERMARK : String = 'dsWatermarkAccessControl.dsWatermark';
-		public static const METADATA_FIELD_COMPARE : String = 'metadata.FieldCompare';
-		public static const METADATA_FIELD_MATCH : String = 'metadata.FieldMatch';
-		public static const AUTHENTICATED : String = '1';
-		public static const COUNTRY : String = '2';
-		public static const IP_ADDRESS : String = '3';
-		public static const SITE : String = '4';
-		public static const USER_AGENT : String = '5';
-		public static const FIELD_MATCH : String = '6';
-		public static const FIELD_COMPARE : String = '7';
-		public static const ASSET_PROPERTIES_COMPARE : String = '8';
+		public var filterFields : String;
+		
+		/**
+		 * @param dropFolderFile KalturaDropFolderFile
+		 **/
+		public function DropFolderFileDetected( dropFolderFile : KalturaDropFolderFile )
+		{
+			service= 'dropfolder_dropfolderfile';
+			action= 'detected';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+ 			keyValArr = kalturaObject2Arrays(dropFolderFile, 'dropFolderFile');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
+		}
+
+		override public function execute() : void
+		{
+			setRequestArgument('filterFields', filterFields);
+			delegate = new DropFolderFileDetectedDelegate( this , config );
+		}
 	}
 }

@@ -25,20 +25,33 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaConditionType
+	import com.kaltura.vo.KalturaObjectIdentifier;
+
+	[Bindable]
+	public dynamic class KalturaEntryIdentifier extends KalturaObjectIdentifier
 	{
-		public static const DS_WATERMARK : String = 'dsWatermarkAccessControl.dsWatermark';
-		public static const METADATA_FIELD_COMPARE : String = 'metadata.FieldCompare';
-		public static const METADATA_FIELD_MATCH : String = 'metadata.FieldMatch';
-		public static const AUTHENTICATED : String = '1';
-		public static const COUNTRY : String = '2';
-		public static const IP_ADDRESS : String = '3';
-		public static const SITE : String = '4';
-		public static const USER_AGENT : String = '5';
-		public static const FIELD_MATCH : String = '6';
-		public static const FIELD_COMPARE : String = '7';
-		public static const ASSET_PROPERTIES_COMPARE : String = '8';
+		/**
+		 * Identifier of the object
+		 * 
+		 * @see com.kaltura.types.KalturaEntryIdentifierField
+		 **/
+		public var identifier : int = int.MIN_VALUE;
+
+		override public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			arr.push('identifier');
+			return arr;
+		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
 	}
 }

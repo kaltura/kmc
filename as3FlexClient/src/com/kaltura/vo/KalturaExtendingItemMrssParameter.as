@@ -25,20 +25,55 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaConditionType
+	import com.kaltura.vo.KalturaObjectIdentifier;
+
+	import com.kaltura.vo.BaseFlexVo;
+
+	[Bindable]
+	public dynamic class KalturaExtendingItemMrssParameter extends BaseFlexVo
 	{
-		public static const DS_WATERMARK : String = 'dsWatermarkAccessControl.dsWatermark';
-		public static const METADATA_FIELD_COMPARE : String = 'metadata.FieldCompare';
-		public static const METADATA_FIELD_MATCH : String = 'metadata.FieldMatch';
-		public static const AUTHENTICATED : String = '1';
-		public static const COUNTRY : String = '2';
-		public static const IP_ADDRESS : String = '3';
-		public static const SITE : String = '4';
-		public static const USER_AGENT : String = '5';
-		public static const FIELD_MATCH : String = '6';
-		public static const FIELD_COMPARE : String = '7';
-		public static const ASSET_PROPERTIES_COMPARE : String = '8';
+		/**
+		 * XPath for the extending item
+		 * 
+		 **/
+		public var xpath : String = null;
+
+		/**
+		 * Object identifier
+		 * 
+		 **/
+		public var identifier : KalturaObjectIdentifier;
+
+		/**
+		 * Mode of extension - append to MRSS or replace the xpath content.
+		 * 
+		 * @see com.kaltura.types.KalturaMrssExtensionMode
+		 **/
+		public var extensionMode : int = int.MIN_VALUE;
+
+		/** 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
+		public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			arr.push('xpath');
+			arr.push('identifier');
+			arr.push('extensionMode');
+			return arr;
+		}
+
+		/** 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
 	}
 }
