@@ -192,10 +192,9 @@ package com.kaltura.kmc.modules.content.utils
 				case KalturaDropFolderFileErrorCode.ERROR_READING_FILE :
 					err = resourceManager.getString('dropfolders','dfErrReadFile');
 					break;
-//				case KalturaDropFolderFileErrorCode.ERROR_DOWNLOADING_FILE :
-//					// use server error, it includes file path
-//					err = resourceManager.getString('dropfolders','dfErrDnldFile');
-//					break;
+				case KalturaDropFolderFileErrorCode.ERROR_DOWNLOADING_FILE :
+					err = resourceManager.getString('dropfolders','dfErrDnldFile');
+					break;
 				case KalturaDropFolderFileErrorCode.ERROR_UPDATE_FILE :
 					err = resourceManager.getString('dropfolders','dfErrUpdateFile');
 					break;
@@ -208,10 +207,9 @@ package com.kaltura.kmc.modules.content.utils
 				case KalturaDropFolderFileErrorCode.ERROR_IN_CONTENT_PROCESSOR :
 					err = resourceManager.getString('dropfolders','dfErrProc');
 					break;
-//				case KalturaDropFolderFileErrorCode.ERROR_DELETING_FILE :
-//					// use server error, it includes file path
-//					err = resourceManager.getString('dropfolders','dfErrDelFile');
-//					break;
+				case KalturaDropFolderFileErrorCode.ERROR_DELETING_FILE :
+					err = resourceManager.getString('dropfolders','dfErrDelFile');
+					break;
 				case KalturaDropFolderFileErrorCode.MALFORMED_XML_FILE :
 					err = resourceManager.getString('dropfolders','dfErrMalformXml');
 					break;
