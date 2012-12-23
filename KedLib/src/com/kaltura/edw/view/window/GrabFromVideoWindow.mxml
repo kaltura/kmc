@@ -3,8 +3,13 @@
 				title="{resourceManager.getString('drilldown','grabFromVideo')}" showCloseButton="true"
 				horizontalAlign="center" close="{closeWindow(event)}" height="400" width="500"
 				creationComplete="{onCreationComplete()}">
+	<mx:Metadata>
+		[ResourceBundle("capturethumbs")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import mx.resources.ResourceManager;
+			import mx.resources.ResourceBundle;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.control.events.ThumbnailAssetEvent;
@@ -77,7 +82,7 @@
 				else {
 					var newUrl:String = context.protocol + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.captureThumbnailUiconf + "/nowrapper/1/a";
 					kdp3Loader.scaleContent = false;
-					kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain(), SecurityDomain.currentDomain);
+					kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain()/* , SecurityDomain.currentDomain */);
 					kdp3Loader.load(newUrl);
 				}
 			}
@@ -104,20 +109,35 @@
 				params.host = context.rootUrl;
 				params.debugMode = context.debugMode;
 				params.allowCookies = true;
+				params = overrideKDPStrings(params);
 				
-//				params.widgetId = "_" + context.kc.partnerId;
-//				params.autoPlay = "false";
-//				params.loop = "false";
-//				params.autoRewind = "false";
-//				params.sourceType = "entryId";
-//				if (context.captureThumbnailUiconf)
-//					params.uiConfId = context.captureThumbnailUiconf;
-//				params.cdnUrl = context.rootUrl;
 				_kdp3SwfLoader.content.addEventListener(KdpEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
 				_kdp3SwfLoader.content["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
 				_kdp3SwfLoader.content["init"]();
 
+			}
+			
+			
+			/**
+			 * override the messages KDP shows for captureThumbnail.
+			 * first get all en_US strings (last locale in chain), then override whatever appears in any previous locale
+			 * @param params	KDP parameters object
+			 * @return	adjusted parameters object with required strings, if they appear in locale file.
+			 * */
+			private function overrideKDPStrings(params:Object):Object {
+				var rb:ResourceBundle;
+				// get the first locale that has this resource bundle
+				for (var i:int = resourceManager.localeChain.length-1; i>=0; i--) {
+					rb = resourceManager.getResourceBundle(resourceManager.localeChain[i], 'capturethumbs') as ResourceBundle;
+					if (rb) {
+						// set strings
+						for (var key:String in rb.content) {
+							params["captureThumbnail." + key] = rb.content[key];							
+						}
+					}
+				}
+				return params;
 			}
 
 
