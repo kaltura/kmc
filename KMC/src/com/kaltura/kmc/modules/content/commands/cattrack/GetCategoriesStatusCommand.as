@@ -82,7 +82,12 @@ package com.kaltura.kmc.modules.content.commands.cattrack
 				KedJSGate.expired();
 			}
 			else if (er.errorMsg) {
-				var alert:Alert = Alert.show(er.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+				// only show error messages if they are "real errors" 
+				// (for some reason, sometimes this call fails, in this  
+				// case we get a flash error which we don't want to show)
+				if (er.errorMsg != 'Error #2032') {
+					var alert:Alert = Alert.show(er.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+				}
 			}
 		}
 	}
