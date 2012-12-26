@@ -27,18 +27,10 @@
 // ===================================================================================================
 package com.kaltura.types
 {
-	public class KalturaConditionType
+	public class KalturaCategoryIdentifierField
 	{
-		public static const ABC_WATERMARK : String = 'abcScreenersWatermarkAccessControl.abcWatermark';
-		public static const METADATA_FIELD_COMPARE : String = 'metadata.FieldCompare';
-		public static const METADATA_FIELD_MATCH : String = 'metadata.FieldMatch';
-		public static const AUTHENTICATED : String = '1';
-		public static const COUNTRY : String = '2';
-		public static const IP_ADDRESS : String = '3';
-		public static const SITE : String = '4';
-		public static const USER_AGENT : String = '5';
-		public static const FIELD_MATCH : String = '6';
-		public static const FIELD_COMPARE : String = '7';
-		public static const ASSET_PROPERTIES_COMPARE : String = '8';
+		public static const FULL_NAME : String = 'fullName';
+		public static const ID : String = 'id';
+		public static const REFERENCE_ID : String = 'referenceId';
 	}
 }
