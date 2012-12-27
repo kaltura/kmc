@@ -483,7 +483,10 @@
 
 				// GAtracking
 				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
-				ga.init(_modelLocator.userInfo.user.partnerId.toString(), _modelLocator.userInfo.user.id, this, "KMC", _flashvars.urchinnumber, "AS3", _flashvars.gaDebug == "true" ? true : false);
+				if (ga.enabled) {
+					// only if we didn't disable before..
+					ga.init(_modelLocator.userInfo.user.partnerId.toString(), _modelLocator.userInfo.user.id, this, "KMC", _flashvars.urchinnumber, "AS3", _flashvars.gaDebug == "true" ? true : false);
+				}
 
 				// load locale
 				loadLocale(getUrl(_uiconf.locale.path.toString()), _uiconf.locale.language.toString());
