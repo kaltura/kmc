@@ -69,14 +69,18 @@
 
 			//Handle List Playlist
 			////////////////////////////////////////////
-			public function listPlaylist():void {
+			
+			/**
+			 * get a list of all the partner's playlists
+			 * */
+			public function listPlaylists():void {
 				var pager:KalturaFilterPager = new KalturaFilterPager();
 				pager.pageIndex = 1;
-				pager.pageSize = 500;
+				pager.pageSize = 500;	// large number, should get all
 				var kplfilter:KalturaPlaylistFilter = new KalturaPlaylistFilter();
 				kplfilter.orderBy = KalturaPlaylistOrderBy.CREATED_AT_DESC;
 				var listPlaylist:PlaylistList = new PlaylistList(kplfilter, pager);
-				listPlaylist.addEventListener(KalturaEvent.COMPLETE, onPlaylistLoaded);
+				listPlaylist.addEventListener(KalturaEvent.COMPLETE, onPlaylistsLoaded);
 				listPlaylist.addEventListener(KalturaEvent.FAILED, fault);
 				Studio.kc.post(listPlaylist);
 			}
@@ -85,13 +89,12 @@
 			/**
 			 * All playlists were loaded - place them on the left side table
 			 */
-			private function onPlaylistLoaded(event:KalturaEvent):void {
-				var kplrl:KalturaPlaylistListResponse;
-				var kpl:KalturaPlaylist;
+			private function onPlaylistsLoaded(event:KalturaEvent):void {
 				var kmplf:KalturaMediaEntryFilterForPlaylist;
 
 				var arr:Array = new Array();
 				var plstVo:PlaylistVO;
+				// create a VO for each playlist and it them to dataProvider
 				// event.data is KalturaPlaylistListResponse
 				for each (var playlist:KalturaPlaylist in event.data.objects) {
 					plstVo = new PlaylistVO();
@@ -101,21 +104,18 @@
 					var playlistUrl:String = Studio.flashvars.protocol ? Studio.flashvars.protocol : "http://"; 
 					playlistUrl += Studio.flashvars.host + "/index.php/partnerservices2/executeplaylist?playlist_id=" + playlist.id + "&partner_id=" + playlist.partnerId + "&subp_id=" + (Number(playlist.partnerId) * 100).toString() + "&format=8" + "&ks={ks}";
 					plstVo.playlistUrl = encodeURIComponent(playlistUrl);
-					plstVo.createAtAsString = dateFormatter.format(new Date(int(playlist.createdAt) * 1000));
 					plstVo.duration = playlist.duration;
+					plstVo.createdAt = playlist.createdAt;
 					arr.push(plstVo);
 				}
 				_playlistsTableDP = new ArrayCollection(arr);
 				dispatchEvent(new Event(LIST_PLAYLIST_DONE));
-				setWidgetPlaylistXML(_contentXml);
-
 			}
 
 
 			private function fault(event:KalturaEvent):void {
 				var s:String = "Content fault: \n" + event.error.errorMsg;
 				dispatchEvent(new ErrorEvent(ApsWizard.ALERT_USER, false, false, s));
-
 			}
 
 
@@ -205,6 +205,14 @@
 			/**
 			 * label function for media type column
 			 * */
+			private function getCreateAtAsString(item:Object, column:DataGridColumn):String {
+				return dateFormatter.format(new Date(int(item.createdAt) * 1000));
+			}
+
+
+			/**
+			 * label function for media type column
+			 * */
 			private function getPlaylistMediaTypes(item:Object, column:DataGridColumn):String {
 				var res:String = '';
 				switch (item.mediaType) {
@@ -229,14 +237,26 @@
 			 * @return XML
 			 * */
 			public function getWidgetPlaylistXML():XML {
-				var str:String = "<playlistGroup id='' groupName=''>";
+				var plg:XML = <playlistGroup />;
+				var pl:XML;
 				for (var i:int = 0; i < _widgetPlstDP.length; i++) {
-					str += "<var key='kpl" + i + "EntryId'  value='" + (_widgetPlstDP[i] as PlaylistVO).entryId + "' />";
-					str += "<var key='playlistAPI.kpl" + i + "Url'  value='" + (_widgetPlstDP[i] as PlaylistVO).playlistUrl + "' />";
-					str += "<var key='playlistAPI.kpl" + i + "Name'  value='" + (_widgetPlstDP[i] as PlaylistVO).name + "' />";
+					pl = <var />;
+					pl.@key = "playlistAPI.kpl" + i + "Id";
+					pl.@value = (_widgetPlstDP[i] as PlaylistVO).entryId;
+					plg.appendChild(pl);
+						
+					pl = <var />;
+					pl.@key = "playlistAPI.kpl" + i + "Url";
+					pl.@value = (_widgetPlstDP[i] as PlaylistVO).playlistUrl;
+					plg.appendChild(pl);
+						
+					pl = <var />;
+					pl.@key = "playlistAPI.kpl" + i + "Name";
+					pl.@value = (_widgetPlstDP[i] as PlaylistVO).name;
+					plg.appendChild(pl);
+					
 				}
-				str += "</playlistGroup>";
-				return new XML(str);
+				return plg;
 			}
 
 
@@ -244,19 +264,18 @@
 			 * set selected lists
 			 * @param xml	representation of required playlists
 			 * */
-			public function setWidgetPlaylistXML(xml:XML):Boolean {
+			public function setWidgetPlaylistXML(xml:XML):void {
 				_widgetPlstDP.source = new Array();
 				_contentXml = xml;
 				var j:int = 0;
 				for each (var prop:XML in xml.children()) {
-					//Assumption that all the playlists are in _playlistsTableDP (no paging)!!
-					if (prop.@key == "kpl" + j + "EntryId") {
+					// Assumption that all the playlists are in _playlistsTableDP (no paging)!!
+					// change in player plugin API - take playlist entry ID if possible
+					if (prop.@key == "kpl" + j + "EntryId" || prop.@key == "playlistAPI.kpl" + j + "Id") {
 						addPlaylistByEntryId(prop.@value);
 						++j;
 					}
 				}
-
-				return true;
 			}
 
 
@@ -291,7 +310,7 @@
 										   headerText="{resourceManager.getString('aps', 'plTypeHeader')}" 
 										   labelFunction="getPlaylistMediaTypes" />
 							
-						<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="createAtAsString" width="140"
+						<mx:DataGridColumn paddingLeft="4" paddingRight="4" labelFunction="getCreateAtAsString" width="140"
 										   headerText="{resourceManager.getString('aps', 'plCreateHeader')}"/>
 					</mx:columns>
 				</mx:DataGrid>
@@ -321,7 +340,7 @@
 										   headerText="{resourceManager.getString('aps', 'plTypeHeader')}" 
 										   labelFunction="getPlaylistMediaTypes" />
 						
-						<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="createAtAsString" width="140"
+						<mx:DataGridColumn paddingLeft="4" paddingRight="4" labelFunction="getCreateAtAsString" width="140"
 										   headerText="{resourceManager.getString('aps', 'plCreateHeader')}"/>
 					</mx:columns>
 				</mx:DataGrid>

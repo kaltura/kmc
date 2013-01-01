@@ -28,8 +28,7 @@ package com.kaltura.kmc.modules.studio.vo
 		public var playerLoads : Number = 0;
 		public var plays : Number = 0;
 		public var rank : Number = 0;
-		public var createAt : Date;
-		public var createAtAsString : String;
+		public var createdAt : int;
 		public var modifiedAt : Date;
 		public var adminTags : String = "";
 		public var flags : int = 0;
@@ -69,7 +68,7 @@ package com.kaltura.kmc.modules.studio.vo
 			entry.playerLoads = this.playerLoads;
 			entry.plays = this.plays; 
 			entry.rank = this.rank;
-			entry.createAt = this.createAt;
+			entry.createdAt = this.createdAt;
 			entry.adminTags = this.adminTags;
 			entry.flags = this.flags;
 			entry.inVideoMix = this.inVideoMix;
@@ -115,7 +114,7 @@ package com.kaltura.kmc.modules.studio.vo
 			if( entry.playerLoads != this.playerLoads ) isIt = false;
 			if( entry.plays != this.plays ) isIt = false;
 			if( entry.rank != this.rank ) isIt = false;
-			if( entry.createAt != this.createAt ) isIt = false;
+			if( entry.createdAt != this.createdAt ) isIt = false;
 			if( entry.adminTags != this.adminTags ) isIt = false;
 			if( entry.flags != this.flags ) isIt = false;
 			if( entry.inVideoMix != this.inVideoMix ) isIt = false;

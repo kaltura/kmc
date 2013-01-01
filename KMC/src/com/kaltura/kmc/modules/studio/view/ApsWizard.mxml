@@ -264,7 +264,7 @@ The main window for new player wizard.
 			 * @return xml with content tab data
 			 * */
 			private function buildContentXML():XML {
-				//get all vars that holds 'k_pl_'
+				//get all vars that holds 'kpl'
 				var xmlList:XMLList = new XMLList(_playerUiConfVO.snapshot..descendants("var").(String(attribute("key").toString()).indexOf("kpl") > -1));
 				var plgroup:XML = <playlistGroup/>
 				plgroup.appendChild(xmlList);
@@ -476,9 +476,9 @@ The main window for new player wizard.
 					
 				}
 				setPanels();
-				//if this is multi playlist and the content tab is available, load the available playlists 
+				// if this is multi playlist and the content tab is available, load the available playlists 
 				if (_playerUiConfVO.isMultiPlaylistTemplate && contentPage.parent == wizardViewStack)
-					contentPage.listPlaylist();
+					contentPage.listPlaylists();
 			}
 			
 			
@@ -862,43 +862,7 @@ The main window for new player wizard.
 			}
 			
 			
-			/**
-			 * re-arrange the right side playlist table to match the selected playlists.
-			 * */
-			private function reRenderPlaylist():void {
-				_isContentChanged = false;
-				var arr:Array = new Array();
-				var currentPlayLists:XML = contentPage.getWidgetPlaylistXML();
-				var items:XMLList = currentPlayLists.children();
-				var playlistAmount:Number = items.length() / 3;
-				for (var i:uint = 0; i < playlistAmount; i++) {
-					//get a single playlist data - name & url
-					var singlePlaylist:XMLList = items.(String(attribute("key").toString()).indexOf("playlistAPI.kpl" + i + "") > -1);
-					var plUrl:String;
-					var plName:String;
-					for (var j:uint = 0; j < singlePlaylist.length(); j++) {
-						if (String(XML(singlePlaylist[j]).@key.toString()).indexOf("Name") > -1)
-							plName = XML(singlePlaylist[j] as XML).attribute("value")[0].toString();
-						if (String(XML(singlePlaylist[j]).@key.toString()).indexOf("Url") > -1)
-							plUrl = XML(singlePlaylist[j] as XML).attribute("value")[0].toString();
-					}
-					plUrl = unescape(plUrl);
-					var splitKSarray:Array = plUrl.split('{ks}');
-					plUrl = splitKSarray[0] + _context.ks;
-					var plObj:Object = new Object();
-					plObj.url = plUrl;
-					plObj.name = plName;
-					arr.push(plObj);
-				}
-				
-			}
-			
-			
 			private function onDtnChange():void {
-				if (_isContentChanged) {
-					reRenderPlaylist();
-				}
-				
 				if (linkDtn.selectedIndex != 1 || linkDtn.selectedIndex != 2) {
 					if (!wizardViewStack.visible)
 						closePreview();
@@ -956,27 +920,25 @@ The main window for new player wizard.
 			}
 			
 			
-			
-			public function onAllListLoaded(evt:Event = null):void {
-				if (_playerUiConfVO.isMultiPlaylistTemplate) {
-					//check if there is a custom playlist made in this player. if not - show default content
-					var uivars:XML = _playerUiConfVO.snapshot..uiVars[0];
-					var costomPlaylists:XMLList;
-					if (uivars)
-						costomPlaylists = uivars..descendants().(attribute("key") == "playlistAPI.kpl0Name");
-					if (costomPlaylists && costomPlaylists.length() > 0) {
-						var contentXML:XML = buildContentXML();
-						if (contentPage)
-							contentPage.setWidgetPlaylistXML(contentXML);
-						
-						reRenderPlaylist();
-						
-						//race condition - available playlists & KDP preview  
-						if (_shouldWaitForPreview) {
-							previewKdp();
-						}
-						_shouldWaitForPreview = false;
+			/**
+			 * after playlists are loaded, show saved playlists in content tab
+			 * */
+			private function onAllListLoaded(evt:Event = null):void {
+				// check if there is a custom playlist made in this player. if not - show default content
+				var uivars:XML = _playerUiConfVO.snapshot..uiVars[0];
+				var costomPlaylists:XMLList;
+				if (uivars)
+					costomPlaylists = uivars..descendants().(attribute("key") == "playlistAPI.kpl0Name");
+				if (costomPlaylists && costomPlaylists.length() > 0) {
+					var contentXML:XML = buildContentXML();
+					if (contentPage)
+						contentPage.setWidgetPlaylistXML(contentXML);
+					
+					// race condition - available playlists & KDP preview  
+					if (_shouldWaitForPreview) {
+						previewKdp();
 					}
+					_shouldWaitForPreview = false;
 				}
 			}
 			

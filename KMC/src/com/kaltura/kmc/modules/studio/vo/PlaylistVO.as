@@ -40,7 +40,7 @@ package com.kaltura.kmc.modules.studio.vo
 			plst.playerLoads = this.playerLoads;
 			plst.plays = this.plays; 
 			plst.rank = this.rank;
-			plst.createAt = this.createAt;
+			plst.createdAt = this.createdAt;
 			plst.adminTags = this.adminTags;
 			plst.flags = this.flags;
 			plst.inVideoMix = this.inVideoMix;
@@ -64,7 +64,6 @@ package com.kaltura.kmc.modules.studio.vo
 			plst.playlistWidth = this.playlistWidth;
 			plst.playlistHieght = this.playlistHieght;
 			plst.embedText = this.embedText;
-			plst.createAtAsString = this.createAtAsString;
 			
 			return plst;
 		}
