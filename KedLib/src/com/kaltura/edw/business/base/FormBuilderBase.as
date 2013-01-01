@@ -54,6 +54,9 @@ package com.kaltura.edw.business.base
 		
 		protected var _metadataProfile:KMCMetadataProfileVO;
 		
+		/**
+		 * HashMap holding linkage ids with a reference to the source (host) component instance  
+		 */
 		private var _objectsHM:HashMap;
 		
 		private var _metadataInfo:CustomMetadataDataVO;
@@ -131,7 +134,7 @@ package com.kaltura.edw.business.base
 				}
 			} 
 			
-			//cmoplex field
+			//complex field
 			else if (field.@id == CustomMetadataConstantTypes.CONTAINER) {
 				var arr:Array = valuesHashMap.getValue(field.@name.toString());
 				//if the container is used inside multi - we don't have nested hashmap
@@ -155,14 +158,9 @@ package com.kaltura.edw.business.base
 					}
 				}
 				else {
-//					metadataDataAttribute = field.@metadataData;
 					if (! handleNonVBoxFieldDataHook(field, valuesHashMap)){
 						field.@[field.@metadataData] = valuesHashMap.getValue(field.@name)[0];
 					}
-//					//in linked entry we want all the values array
-//					if (field.@id == CustomMetadataConstantTypes.ENTRY_LINK_TABLE)
-//						field.@[metadataDataAttribute] = valuesHashMap.getValue(field.@name);
-//					else
 				}
 			}
 		}
@@ -217,9 +215,6 @@ package com.kaltura.edw.business.base
 						break;
 					case MetadataCustomFieldTypes.OBJECT:
 						fieldNode = buildObjectFieldNodeHook(componentsMap, multi);
-//							fieldNode = XML(componentsMap.getValue(CustomMetadataConstantTypes.ENTRY_LINK_TABLE)).copy();
-//							if (!multi)
-//								fieldNode.@maxAllowedValues = "1";
 						break;
 					case MetadataCustomFieldTypes.LIST:
 						if (multi) {
@@ -293,13 +288,13 @@ package com.kaltura.edw.business.base
 					compInstance[attrName] = attrValue.split(",");
 				}
 				else {
-					//if the attribute should be bound to another component
+					// if the attribute should be bound to another component
 					if (BINDING_REGEXP.test(attrValue)) {
-						//remove brackets and split to object and property
+						// remove brackets and split to object and property
 						var chainArray:Array = attrValue.substring(1, attrValue.length -1).split(".");
 						BindingUtils.bindProperty(compInstance, attrName, _objectsHM.getValue(chainArray[0]), chainArray[1]);
 					}
-					else if (attrName != "compPackage" && attrName != "metadataData" && attrName != "dataType"/* && attrName != "label"*/) {
+					else if (attrName != "compPackage" && attrName != "metadataData" && attrName != "dataType") {
 						if (compInstance.hasOwnProperty(attrName)) {
 							var processedValue:Object = (attrValue == "true") ? true : ((attrValue == "false") ? false : attrValue);
 							compInstance[attrName] = processedValue;
@@ -308,27 +303,19 @@ package com.kaltura.edw.business.base
 							// try to set the property as a style
 							compInstance.setStyle(attrName, attrValue); 
 						}
-//						// if the style value is null the propery is not a style
-//						try {
-//							compInstance[attrName] = processedValue;
-//						}
-//						catch (e:Error) {
-//							//this case is ok, we have a few attributes that are only used for the building of the view
-//							trace("could not push", attrName, "=", attrValue, "to", getQualifiedClassName(compInstance));
-//						}
 						
 					}
 				}
 			}
 			
-			//if this suppose to be a unique id field and it wasn't initialized yet, we will generate id now
+			// if this suppose to be a unique id field and it wasn't initialized yet, we will generate id now
 			if ((component.@id == CustomMetadataConstantTypes.UNIQUE_ID) && (component.@text.toString() == "")) {
 				compInstance["text"] = UIDUtil.createUID();
 			}
 			
-			//the key of this object in the metadataDataObject
+			// the key of this object in the metadataDataObject
 			var newProperty:String = component.@name;
-			//if we have nested uiComponents
+			// if we have nested uiComponents
 			if (component.@id == CustomMetadataConstantTypes.MULTI || component.@id == CustomMetadataConstantTypes.VBox || component.@id == CustomMetadataConstantTypes.CONTAINER) {
 				boundModel[newProperty] = new MetadataDataObject();
 				if (compInstance is MultiComponent) {
@@ -349,8 +336,9 @@ package com.kaltura.edw.business.base
 				BindingUtils.bindProperty(boundModel, newProperty, compInstance, metadataProperty);
 			}
 			
-			//if this object will be used for binding
+			// define a linkage to a component so it can be used for binding
 			if (component.@linkage) {
+				// this object will be used for binding
 				_objectsHM.put(component.@linkage, compInstance);	
 			}
 			return compInstance;
