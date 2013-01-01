@@ -59,11 +59,6 @@
 			 * */
 			private var _context:Context;
 
-			/**
-			 * date formatter
-			 * */
-			private var _dateFormatter:DateFormatter;
-
 			[Bindable]
 			/**
 			 * dataprovider for the combobox of player and playlists
@@ -83,8 +78,6 @@
 
 			private function onCreationComplete():void {
 				resourceManager.addEventListener(Event.CHANGE, setComboTexts, false, 0, true);
-				_dateFormatter = new DateFormatter();
-				_dateFormatter.formatString = "DD-MMM H:NN";
 
 				comboDataProviderNormal = new ArrayCollection();
 				comboDataProviderNormal.addItem({label: resourceManager.getString('aps', 'edit'), id: 'edit'});
@@ -617,7 +610,7 @@
 		[Event(name="editPlayer", type="com.kaltura.kmc.modules.studio.events.ApsNavigationEvent")] 
 	</mx:Metadata>
 	
-	<mx:DateFormatter id="gridDateFormatter" formatString="YYYY-MM-DD HH:NN:SS"/>
+	<mx:DateFormatter id="gridDateFormatter" formatString="{resourceManager.getString('aps', 'plCreateFormatString')}"/>
 	
 	<mx:Label text="{resourceManager.getString('aps', 'playersList')}" styleName="filterTitleHeader"/>
 	<mx:VBox width="100%">

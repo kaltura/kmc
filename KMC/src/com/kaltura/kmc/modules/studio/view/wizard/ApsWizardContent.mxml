@@ -92,6 +92,7 @@
 
 				var arr:Array = new Array();
 				var plstVo:PlaylistVO;
+				// event.data is KalturaPlaylistListResponse
 				for each (var playlist:KalturaPlaylist in event.data.objects) {
 					plstVo = new PlaylistVO();
 					plstVo.entryId = playlist.id;
@@ -269,7 +270,7 @@
 		]]>
 	</mx:Script>
 	
-	<mx:DateFormatter id="dateFormatter" formatString="DD-MMM-YYYY H:NN" />
+	<mx:DateFormatter id="dateFormatter" formatString="{resourceManager.getString('aps', 'plCreateFormatString')}" />
 
 	<mx:HBox id="all" disabledOverlayAlpha="0" height="100%" width="100%">
 		<mx:VBox width="100%" height="100%">
@@ -280,6 +281,9 @@
 							 draggableColumns="false" sortableColumns="false" doubleClickEnabled="true"
 							 itemDoubleClick="{addPlaylistItem()}" dataProvider="{_playlistsTableDP}">
 					<mx:columns>
+						<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="entryId" width="80"
+										   headerText="{resourceManager.getString('aps', 'plIdHeader')}"/>
+						
 						<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="name"
 										   headerText="{resourceManager.getString('aps', 'plNameHeader')}"/>
 						
@@ -307,6 +311,9 @@
 							 sortableColumns="false" doubleClickEnabled="true" itemDoubleClick="{removePlaylistItem()}"
 							 dataProvider="{_widgetPlstDP}">
 					<mx:columns>
+						<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="entryId" width="80"
+										   headerText="{resourceManager.getString('aps', 'plIdHeader')}"/>
+						
 						<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="name"
 										   headerText="{resourceManager.getString('aps', 'plNameHeader')}"/>
 						
