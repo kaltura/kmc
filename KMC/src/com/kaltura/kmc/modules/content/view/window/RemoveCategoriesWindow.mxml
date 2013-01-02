@@ -7,6 +7,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.vo.KalturaCategory;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
@@ -30,7 +31,13 @@
 				// for each entry, if it has the category remove it.
 				// pass on the event the list of categories to remove.
 				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.REMOVE_CATEGORIES_ENTRIES, null);
-				cgEvent.data = lst.selectedItems;
+				var tmp:Array = [];
+				for each (var kcat:KalturaCategory in model.selectedEntriesCategories) {
+					if (kcat.selected) {
+						tmp.push(kcat);
+					}
+				}
+				cgEvent.data = tmp; // DO NOT use lst.selectedItems - it is not connected to checkboxes.
 				cgEvent.dispatch();
 				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 			}
