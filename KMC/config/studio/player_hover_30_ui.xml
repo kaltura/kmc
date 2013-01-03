@@ -81,7 +81,21 @@
             </HBox>
             <HBox id="ControllerScreen" width="100%" height="100%" horizontalGap="15" paddingLeft="25" paddingBottom="8" paddingRight="25" verticalAlign="middle">
               <Button id="playBtnControllerScreen" width="20" height="30" command="play" icon="playIcon_up" overIcon="playIcon_Hover" downIcon="playIcon_Down" disabeledIcon="playIcon_Disabled" selectedUpIcon="pauseIcon_Up" selectedOverIcon="pauseIcon_Hover" selectedDownIcon="pauseIcon_Down" selectedDisabledIcon="pauseIcon_Disabled"/>
-              <Button id="liveToggleStatus" toggle="true" color1="0xFF0000" color2="0xFF0000" upIcon="onAirIcon_Up" overIcon="onAirIcon_Hover" downIcon="onAirIcon_Down" disabeledIcon="onAirIcon_Disabled" selectedUpIcon="offlineIcon_up" selectedOverIcon="offlineIcon_Hover" selectedDownIcon="offlineIcon_Down" selectedDisabledIcon="offlineIcon_Disabled" isSelected="{mediaProxy.isOffline}" visible="{mediaProxy.isLive}" includeInLayout="{mediaProxy.isLive}" mouseEnable="false" useHandCursor=""/>
+            
+				<HBox id="liveBtns" width="56" height="30" paddingRight="0" paddingLeft="0" visible="{mediaProxy.isLive}" 
+					includeInLayout="{mediaProxy.isLive}" verticalAlign="middle" horizontalAlign="center">
+		
+				<Button id="liveToggleStatus" toggle="true" color1="0xFF0000" color2="0xFF0000"
+					upIcon="onAirIcon_Up" overIcon="onAirIcon_Hover" downIcon="onAirIcon_Down" disabeledIcon="onAirIcon_Disabled"
+					selectedUpIcon="offlineIcon_up" selectedOverIcon="offlineIcon_Hover"
+					selectedDownIcon="offlineIcon_Down" selectedDisabledIcon="offlineIcon_Disabled" visible="{not(mediaProxy.canSeek)}" includeInLayout="{not(mediaProxy.canSeek)}"
+					isSelected="{mediaProxy.isOffline}" mouseEnable="false" useHandCursor=""/>
+		
+				<Button id="goLiveBtn" buttonType="labelButton" textPadding="0" height="20" color1="0xCECECE" color2="0xFFFFFF" kClick="sendNotification('goLive')" visible="{mediaProxy.canSeek}"
+				includeInLayout="{mediaProxy.canSeek}" label="Live" styleName="controllerScreen"/>
+		
+			</HBox>  
+			         
               <Spacer id="buttonsPusher" width="100%"/>
               <!-- Combo box for captions control -->
               <ComboBox id="ccUnderComboBox" width="90" height="28" styleName="_kdp" selectedIndex="{closedCaptionsUnderPlayer.currentCCFileIndex}" kevent_change="sendNotification( 'closedCaptionsSelected' , ccUnderComboBox.selectedItem)" dataProvider="{closedCaptionsUnderPlayer.availableCCFilesLabels}" prompt="Captions" visible="{closedCaptionsUnderPlayer.hasCaptions}" includeInLayout="{closedCaptionsUnderPlayer.hasCaptions}"/>

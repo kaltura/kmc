@@ -21,18 +21,43 @@
       <HBox id="ControllerScreenHolder" width="100%" height="30" verticalAlign="middle" styleName="darkBg">
         <HBox id="ControllerScreen" width="100%" height="30" horizontalGap="9" paddingLeft="9" verticalAlign="middle" styleName="darkBg">
           <Button id="playBtnControllerScreen" command="play" buttonType="iconButton" focusRectPadding="0" icon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon" selectedUpIcon="pauseIcon" selectedOverIcon="pauseIcon" selectedDownIcon="pauseIcon" selectedDisabledIcon="pauseIcon" selectedTooltip="Pause" upTooltip="Play" tooltip="Play" k_buttonType="buttonIconControllerArea" color1="2236962" color2="0" color3="14540253" color4="16777215" color5="0" font="Arial"/>
-          <Button id="liveToggleStatus" toggle="true" color1="0xFF0000" color2="0xFF0000" upIcon="onAirIcon" overIcon="onAirIcon" downIcon="onAirIcon" disabeledIcon="onAirIcon" selectedUpIcon="offlineIcon" selectedOverIcon="offlineIcon" selectedDownIcon="offlineIcon" selectedDisabledIcon="offlineIcon" isSelected="{mediaProxy.isOffline}" visible="{mediaProxy.isLive}" includeInLayout="{mediaProxy.isLive}" mouseEnable="false" useHandCursor=""/>
-          <Button id="previousBtnControllerScreen" kClick="sendNotification('playlistPlayPrevious')" height="22" focusRectPadding="0" buttonType="iconButton" styleName="controllerScreen" icon="PreviousIcon" k_buttonType="buttonIconControllerArea" tooltip="Previous" color1="2236962" color2="0" color3="14540253" color4="16777215" color5="0" font="Arial"/>
-          <Button id="nextBtnControllerScreen" kClick="sendNotification('playlistPlayNext')" focusRectPadding="0" height="22" buttonType="iconButton" icon="NextIcon" styleName="controllerScreen" k_buttonType="buttonIconControllerArea" tooltip="Next" color1="2236962" color2="0" color3="14540253" color4="16777215" color5="0" font="Arial"/>
-          <VBox id="scrubberContainer" width="100%" height="30" verticalAlign="middle" verticalGap="-3" notVisible="{mediaProxy.isLive}" supportEnableGui="false">
-            <Spacer height="10"/>
-            <Scrubber id="scrubber" width="100%" height="10" styleName="" color1="2236962" color2="2236962"/>
-            <HBox width="100%">
-              <Timer id="timerControllerScreen1" width="60" styleName="timerProgressLeft" format="mm:ss" height="12" timerType="forwards"/>
-             
-              <Timer id="timerControllerScreen2" width="100%" styleName="timerProgressRight" format="mm:ss" height="12" timerType="total"/>
-            </HBox>
-          </VBox>
+           <HBox id="liveToggleBox" visible="{not(mediaProxy.canSeek)}" includeInLayout="{not(mediaProxy.canSeek)}" width="100%">
+			  <Button id="liveToggleStatus"
+						toggle="true"
+						color1="0xFF0000"
+						color2="0xFF0000"
+						upIcon="onAirIcon" 
+						overIcon="onAirIcon" 
+						downIcon="onAirIcon" 
+						disabeledIcon="onAirIcon" 
+						selectedUpIcon="offlineIcon"  
+						selectedOverIcon="offlineIcon"  
+						selectedDownIcon="offlineIcon"  
+						selectedDisabledIcon="offlineIcon"  
+						isSelected="{mediaProxy.isOffline}"
+						visible="{mediaProxy.isLive}"
+						includeInLayout="{mediaProxy.isLive}"
+						mouseEnable="false"
+						useHandCursor=""
+						/>
+				</HBox>
+			
+			
+          	<Button id="previousBtnControllerScreen" kClick="sendNotification('playlistPlayPrevious')" height="22" focusRectPadding="0" buttonType="iconButton" styleName="controllerScreen" icon="PreviousIcon" k_buttonType="buttonIconControllerArea" tooltip="Previous" color1="2236962" color2="0" color3="14540253" color4="16777215" color5="0" font="Arial"/>
+          	<Button id="nextBtnControllerScreen" kClick="sendNotification('playlistPlayNext')" focusRectPadding="0" height="22" buttonType="iconButton" icon="NextIcon" styleName="controllerScreen" k_buttonType="buttonIconControllerArea" tooltip="Next" color1="2236962" color2="0" color3="14540253" color4="16777215" color5="0" font="Arial"/>
+	          <HBox id="seekBox" width="100%" height="30" visible="{mediaProxy.canSeek}" includeInLayout="{mediaProxy.canSeek}" verticalAlign="middle" horizontalGap="9">
+				<Button id="goLiveBtn" buttonType="labelButton" textPadding="0" height="20" color1="0x000000" color2="0x000000" kClick="sendNotification('goLive')" visible="{mediaProxy.isLive}"
+						includeInLayout="{mediaProxy.isLive}" label="Live" styleName="controllerScreen"/>
+				 <VBox id="scrubberContainer" width="100%" height="30" verticalAlign="middle" verticalGap="-5" supportEnableGui="false">
+					<Spacer height="13"/>
+					<Scrubber id="scrubber" width="100%" height="10" styleName="" color1="0" color2="0"/>
+					<HBox width="100%">
+					  <Timer id="timerControllerScreen1" width="60" styleName="timerProgressLeft" format="mm:ss" height="13" timerType="forwards"/>
+					  <Spacer width="100%" height="10"/>
+					  <Timer id="timerControllerScreen2" width="60" styleName="timerProgressRight" format="mm:ss" height="13" timerType="total"/>
+					</HBox>
+				  </VBox>
+			</HBox>
           <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" height="20" buttonType="iconButton" tooltip="Change volume" color1="2236962" color2="0" color3="14540253" color4="16777215" color5="0" font="Arial"/>
           <FlavorCombo id="flavorComboControllerScreen"  width="80" streamerType="{configProxy.flashvars.streamerType}"
 		   flavorDataProvider="{mediaProxy.kalturaMediaFlavorArray}" autoString="Auto"

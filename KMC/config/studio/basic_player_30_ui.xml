@@ -91,24 +91,41 @@
 								icon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon"
 								selectedUpIcon="pauseIcon" selectedOverIcon="pauseIcon" selectedDownIcon="pauseIcon"
 								selectedDisabledIcon="pauseIcon" tooltip="Play" upTooltip="Play" selectedTooltip="Pause"/>
-						<Button id="liveToggleStatus" toggle="true" color1="0xFF0000" color2="0xFF0000"
-								upIcon="onAirIcon" overIcon="onAirIcon" downIcon="onAirIcon" disabeledIcon="onAirIcon"
-								selectedUpIcon="offlineIcon" selectedOverIcon="offlineIcon"
-								selectedDownIcon="offlineIcon" selectedDisabledIcon="offlineIcon"
-								isSelected="{mediaProxy.isOffline}" visible="{mediaProxy.isLive}"
-								includeInLayout="{mediaProxy.isLive}" mouseEnable="false" useHandCursor=""/>
-						<VBox id="scrubberContainer" width="100%" height="30" verticalAlign="middle" verticalGap="-3"
-							  visible="{not(mediaProxy.isLive)}" supportEnableGui="false">
-							<Spacer height="10"/>
-							<Scrubber id="scrubber" width="100%" height="10" styleName=""/>
-							<HBox width="100%">
-								<Timer id="timerControllerScreen1" width="40" styleName="timerProgressLeft"
-									   format="mm:ss" height="12" dynamicColor="true"/>
-								<Spacer width="100%" height="8"/>
-								<Timer id="timerControllerScreen2" width="40" styleName="timerProgressRight"
-									   format="mm:ss" height="12" timerType="total" dynamicColor="true"/>
-							</HBox>
-						</VBox>
+									<HBox id="liveToggleBox" visible="{not(mediaProxy.canSeek)}" includeInLayout="{not(mediaProxy.canSeek)}" width="100%">
+							<Button id="liveToggleStatus"
+								toggle="true"
+								color1="0xFF0000"
+								color2="0xFF0000"
+								upIcon="onAirIcon" 
+								overIcon="onAirIcon" 
+								downIcon="onAirIcon" 
+								disabeledIcon="onAirIcon" 
+								selectedUpIcon="offlineIcon"  
+								selectedOverIcon="offlineIcon"  
+								selectedDownIcon="offlineIcon"  
+								selectedDisabledIcon="offlineIcon"  
+								isSelected="{mediaProxy.isOffline}"
+								visible="{mediaProxy.isLive}"
+								includeInLayout="{mediaProxy.isLive}"
+								useHandCursor=""
+								mouseEnable="false"
+								/>
+						</HBox>
+							
+						<HBox id="seekBox" width="100%" height="30" visible="{mediaProxy.canSeek}" includeInLayout="{mediaProxy.canSeek}" verticalAlign="middle" horizontalGap="9">
+							<Button id="goLiveBtn" buttonType="labelButton" textPadding="0" height="20" color1="0xCECECE" color2="0xFFFFFF" kClick="sendNotification('goLive')" visible="{mediaProxy.isLive}"
+									includeInLayout="{mediaProxy.isLive}" label="Live" styleName="controllerScreen"/>
+							<VBox id="scrubberContainer" width="100%" height="30" verticalAlign="middle" verticalGap="-3" supportEnableGui="false">
+								<Spacer height="10" />	
+								<Scrubber id="scrubber" width="100%" height="10"  styleName="" color1="16777215" color2="16777215" />
+								<HBox width="100%">
+									<Timer id="timerControllerScreen1" width="60" styleName="timerProgressLeft" format="mm:ss" height="12"  />
+									<Spacer width="100%" height="8" />	
+									<Timer id="timerControllerScreen2" width="60" 
+									styleName="timerProgressRight" format="mm:ss" height="12" timerType="total" />	
+								</HBox>
+							</VBox>
+						</HBox>
 						<VolumeBar id="volumeBar" styleName="volumeBtn" buttonWidth="20" width="20" height="20"
 								   buttonType="iconButton" tooltip="Change volume"/>
 						<!-- Combo box for captions control -->
