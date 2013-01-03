@@ -147,6 +147,10 @@
 						_vo[key] = int.MIN_VALUE;
 					}
 					
+					// reset scheduling dates
+					endDate.selectedDate = null;
+					startDate.selectedDate = null;
+					
 					var ivo:IndicatorVo = new IndicatorVo();
 					ivo.attribute = attributes.join("~~");
 					dispatchChange(ivo, FilterComponentEvent.EVENT_KIND_REMOVE_ALL);
@@ -176,6 +180,11 @@
 					if (selectTheTitle) {
 						_buttons[0].selected = true;
 						onTitleClicked(null);
+						if (event.target == scheduled) {
+							// deselected the CB, clear dates
+							endDate.selectedDate = null;
+							startDate.selectedDate = null;
+						}
 						return;
 					}
 				}
@@ -225,6 +234,11 @@
 							_vo.endDateLessThanOrEqual = endTime;
 							_selectedEndDate = endTime;
 						}
+					}
+					else {
+						// deselected the CB, clear dates
+						endDate.selectedDate = null;
+						startDate.selectedDate = null;
 					}
 				}
 				
