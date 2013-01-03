@@ -623,7 +623,8 @@ package com.kaltura.kmc.modules.content.business
 			
 			if (model.openPlayer) {
 				//id, name, description, previewonly, is_playlist, uiconf_id 
-				JSGate.doPreviewEmbed(model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description), !model.showSingleEntryEmbedCode, false, model.attic.previewuiconf, bitrates, [], false);
+				JSGate.doPreviewEmbed(model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description), 
+					!model.showSingleEntryEmbedCode, false, model.attic.previewuiconf, bitrates, [], false);
 				model.attic.previewuiconf = null;
 			}
 			
@@ -641,7 +642,8 @@ package com.kaltura.kmc.modules.content.business
 			// open playlist preview
 			if (model.openPlaylist) {
 				var pl:KalturaPlaylist = entry as KalturaPlaylist;
-				JSGate.doPreviewEmbed(model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description), !model.showPlaylistEmbedCode, true, model.attic.previewuiconf, null, [], false);
+				JSGate.doPreviewEmbed(model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description), 
+					!model.showPlaylistEmbedCode, true, model.attic.previewuiconf, null, [], false);
 				model.attic.previewuiconf = null;
 				//first time funnel 
 				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED)) {
