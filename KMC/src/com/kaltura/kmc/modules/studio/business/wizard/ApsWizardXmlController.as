@@ -724,7 +724,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 						if (advo.trackCuePoints) {
 							overlay = player..Plugin.(@id == "overlay")[0];
 							delete overlay.attribute("displayDuration")[0];
-							delete overlay.attribute("swfUrls")[0];
+							//delete overlay.attribute("swfUrls")[0];
 							delete overlay.attribute("overlayStartAt")[0];
 							delete overlay.attribute("overlayInterval")[0];
 							overlay.@trackCuePoints = advo.trackCuePoints;
