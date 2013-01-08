@@ -254,6 +254,12 @@ package com.kaltura.kmc.modules.analytics.model {
 		public var partnerInfoLoaded:Boolean = false;
 		public var loadingApplicationsFlag:Boolean = false;
 		public var loadingBaseTotals:Boolean = false;
+		
+		/**
+		 * a flag indicating a call to export 2 csv is waiting for server response 
+		 */
+		public var processingCSVFlag:Boolean = false;
+		
 
 		//---------------------------------------------------------
 		//singleton methods

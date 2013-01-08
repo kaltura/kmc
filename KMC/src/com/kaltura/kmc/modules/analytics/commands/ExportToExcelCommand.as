@@ -7,8 +7,9 @@ package com.kaltura.kmc.modules.analytics.commands {
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.kmc.modules.analytics.view.core.FileManager;
 	import com.kaltura.vo.KalturaEndUserReportInputFilter;
+	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaReportInputFilter;
-
+	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
 	import mx.resources.ResourceManager;
@@ -22,6 +23,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
+			_model.processingCSVFlag = true;
 			var headers:String = "";
 
 			for (var j:int = 0; j < _model.selectedReportData.originalTotalHeaders.length; j++)
@@ -91,9 +93,14 @@ package com.kaltura.kmc.modules.analytics.commands {
 					break;
 			}
 			
+			// create a pager to add all entries to log, regardless of viewed entries
+			var pager:KalturaFilterPager = new KalturaFilterPager();
+			pager.pageIndex = 1;
+			pager.pageSize = _model.selectedReportData.totalCount;
+			
 			var export2Csv:ReportGetUrlForReportAsCsv = new ReportGetUrlForReportAsCsv(_model.selectedReportData.title,
 					message2Send, headers, _model.selectedReportData.type, krif, _model.selectedReportData.selectedDim,
-					_model.selectedReportData.pager, _model.selectedReportData.orderBy, _model.selectedReportData.objectIds);
+					pager, _model.selectedReportData.orderBy, _model.selectedReportData.objectIds);
 
 			export2Csv.addEventListener(KalturaEvent.COMPLETE, result);
 			export2Csv.addEventListener(KalturaEvent.FAILED, fault);
@@ -101,9 +108,13 @@ package com.kaltura.kmc.modules.analytics.commands {
 		}
 
 
-		public function result(result:Object):void {
+		public function result(data:Object):void {
 			_model.loadingFlag = false;
-			_fileUrl = result.data;
+			_model.processingCSVFlag = false;
+			var kEvent:KalturaEvent = data as KalturaEvent;
+			kEvent.target.removeEventListener(KalturaEvent.COMPLETE, result);
+			kEvent.target.removeEventListener(KalturaEvent.FAILED, fault);
+			_fileUrl = kEvent.data as String;
 			Alert.show(ResourceManager.getInstance().getString('analytics', 'csvReady'),
 				ResourceManager.getInstance().getString('analytics', 'csvReadyTitle'), Alert.OK, null, onClose);
 		}
@@ -117,7 +128,20 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 
 		public function fault(info:Object):void {
-			//_model.loadingFlag = false;
+			_model.loadingFlag = false;
+			_model.processingCSVFlag = false;
+			var kEvent:KalturaEvent = info as KalturaEvent;
+			kEvent.target.removeEventListener(KalturaEvent.COMPLETE, result);
+			kEvent.target.removeEventListener(KalturaEvent.FAILED, fault);
+			if (kEvent.error.errorCode == "POST_TIMEOUT") {
+				// report is taking more than client-timeout to process
+				Alert.show(ResourceManager.getInstance().getString('analytics', 'csvProcessTimeout'),
+					ResourceManager.getInstance().getString('analytics', 'error'));
+			}
+			else {
+				Alert.show(kEvent.error.errorMsg,
+					ResourceManager.getInstance().getString('analytics', 'error'));
+			}
 		}
 	}
 }
