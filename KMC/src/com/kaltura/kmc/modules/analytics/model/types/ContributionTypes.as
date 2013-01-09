@@ -13,7 +13,7 @@ package com.kaltura.kmc.modules.analytics.model.types
 			{
 				// mix entries have no source attribute in DB, so we get -1 for them.
 				case -1:
-					return ResourceManager.getInstance().getString('sourceTypes', 'KALTURA_EDITOR');
+					return ResourceManager.getInstance().getString('sourceTypes', 'UNKNOWN');
 					break;
 				case int(KalturaSourceType.FILE):
 					return ResourceManager.getInstance().getString('sourceTypes', 'FILE');
