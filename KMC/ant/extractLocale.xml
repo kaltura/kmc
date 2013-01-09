@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="extract locale files from all KMC projects" basedir="../../" default="build">
+	
+	<property name="LANGUAGE" value="ja_JP"/>
+	
+	<property name="TARGET_DIR" value="C:/Users/atar.shadmi/Desktop/${LANGUAGE}"/>
+	
+	<target name="build" depends="init, autocomplete, cairngorm, kalturalib, kedlib, kmc">
+		<echo>Version ${KMC_VERSION} packed successfully</echo>
+	</target>
+	
+	<target name="autocomplete" >
+		<mkdir dir="${TARGET_DIR}/autocomplete" description="Make sure there is a target directory"/>
+		<copy todir="${TARGET_DIR}/autocomplete">
+			<fileset dir="${basedir}/AutoComplete/locale/${LANGUAGE}" includes="**/*.properties"/>
+		</copy>
+    </target>
+	
+	<target name="cairngorm" >
+		<mkdir dir="${TARGET_DIR}/cairngorm" description="Make sure there is a target directory"/>
+		<copy todir="${TARGET_DIR}/cairngorm">
+			<fileset dir="${basedir}/vendors/Cairngorm/locale/${LANGUAGE}" includes="**/*.properties"/>
+		</copy>
+    </target>
+	
+	<target name="kalturalib" >
+		<mkdir dir="${TARGET_DIR}/kalturalib" description="Make sure there is a target directory"/>
+		<copy todir="${TARGET_DIR}/kalturalib">
+			<fileset dir="${basedir}/KalturaLib/locale/${LANGUAGE}" includes="**/*.properties"/>
+		</copy>
+    </target>
+	
+	<target name="kedlib" >
+		<mkdir dir="${TARGET_DIR}/kedlib" description="Make sure there is a target directory"/>
+		<copy todir="${TARGET_DIR}/kedlib">
+			<fileset dir="${basedir}/KedLib/locale/${LANGUAGE}" includes="**/*.properties"/>
+		</copy>
+    </target>
+	
+	<target name="kmc" >
+		<mkdir dir="${TARGET_DIR}/kmc" description="Make sure there is a target directory"/>
+		<copy todir="${TARGET_DIR}/kmc">
+			<fileset dir="${basedir}/KMC/locale/${LANGUAGE}" includes="**/*.properties"/>
+		</copy>
+    </target>
+	
+<!--
+	<target name="update_config" description="update version numbers in config file" depends="copy_root">
+		<replace file="${PACK_DEPLOY_DIR}/config.ini" token="@@KMC_VERSION@@" value="${KMC_VERSION}"/>
+		<replace file="${PACK_DEPLOY_DIR}/config.ini" token="@@KDP_VERSION@@" value="${KDP_VERSION}"/>
+		<replace file="${PACK_DEPLOY_DIR}/config.ini" token="@@KCLIP_VERSION@@" value="${KCLIP_VERSION}"/>
+		<replace file="${PACK_DEPLOY_DIR}/config.ini" token="@@KCW_VERSION@@" value="${KCW_VERSION}"/>
+		<replace file="${PACK_DEPLOY_DIR}/config.ini" token="@@HTML5_VERSION@@" value="${HTML5_VERSION}"/>
+	</target>
+	
+	<target name="copy_assets" description="copy required files to the version assets directory">
+		<copy todir="${PACK_DEPLOY_DIR}/assets/flags">
+			<fileset dir="${PACK_SOURCE_DIR}/assets/flags" includes="**/*"/>
+		</copy>
+		
+		<basename property="WS_DIRECTORY_NAME" file="${basedir}/../"/>
+		<echo>WS_DIRECTORY_NAME: ${WS_DIRECTORY_NAME}</echo>
+			
+		<copy file="${PACK_SOURCE_DIR}/workspaces/${WS_DIRECTORY_NAME}/KMC/assets/kmc_skin.swf" 
+			tofile="${PACK_DEPLOY_DIR}/assets/kmc_skin.swf" />
+    </target>
+	
+-->
+	<target name="init">
+		<mkdir dir="${TARGET_DIR}" description="Make sure there is a target directory"/>
+	</target>
+</project>
