@@ -3,77 +3,87 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.analytics.utils.FormattingUtil;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.formatters.DateFormatter;
-			
-//			[Bindable]
-//			private var _chartPoints:Object;
-			
-			public var dimName:String;
-			
+
+
 			[Bindable]
 			public var oneDayDate:Date;
-			public var dataUnits:String;
-			public var dataFormatFunc:Function;
 			
-			private function getDataTip(data:Object):String
-			{
-				var catAxis:CategoryAxis = colTimeAxis ;
-				var dateString:String = ! oneDayDate ? FormattingUtil.formatMonthString(data.item.x) : parseNormalDate(data.item.x as Number);
+			/**
+			 * units to use in tooltips
+			 * */
+			public var dataUnits:String;
+			
+			/**
+			 * function used to format item data (y-axis value). <br/>
+			 * if not set, toFixed(2) is used.
+			 * */
+			public var dataFormatFunc:Function;
+
+
+			private function getDataTip(data:Object):String {
+				// get x-axis value
+				var dateString:String = !oneDayDate ? FormattingUtil.formatMonthString(data.item.x) : parseNormalDate(data.item.x as Number);
 				var tipString:String = dateString + '\n';
-				
-				if (dataFormatFunc != null){
+
+				// y-axis value
+				if (dataFormatFunc != null) {
 					tipString += dataFormatFunc(data.item.y);
-				} else {
-					tipString += Number(data.item.y).toFixed(2)
 				}
-				
-				if (dataUnits != null){
+				else {
+					tipString += Number(data.item.y).toFixed(2);
+				}
+
+				// add units to y-axis value
+				if (dataUnits != null) {
 					tipString += " " + dataUnits;
 				}
-				
+
 				return tipString;
 			}
-			
-			override public function set dataProvider(value:Object):void{
-				if (oneDayDate && ! value){
+
+
+			override public function set dataProvider(value:Object):void {
+				if (oneDayDate && !value) {
 					value = new ArrayCollection();
 					(value as ArrayCollection).addItem({x: oneDayDate.time, y: 0});
 				}
 				super.dataProvider = value;
-				
-//				_chartPoints = value;
+
 				colTimeAxis.dataProvider = value;
 			}
-			
-			private function categoryLabelFunc(categoryValue:Object, previousCategoryValue:Object, axis:CategoryAxis, categoryItem:Object):String{
-				if (! oneDayDate){
+
+
+			private function categoryLabelFunc(categoryValue:Object, previousCategoryValue:Object, axis:CategoryAxis, categoryItem:Object):String {
+				if (!oneDayDate) {
 					var monthString:String = categoryValue as String;
 					return FormattingUtil.formatMonthString(monthString);
-				} else {
+				}
+				else {
 					return parseNormalDate(categoryValue as Number);
 				}
 			}
-			
-			private function parseNormalDate(value:Number):String{
+
+
+			private function parseNormalDate(value:Number):String {
 				var date:Date = new Date(value);
 				var dateFormatter:DateFormatter = new DateFormatter();
 				dateFormatter.formatString = resourceManager.getString("analytics", "dailyDateMask");
-				return dateFormatter.format(date) ; 
+				return dateFormatter.format(date);
 			}
-			
 		]]>
 	</mx:Script>
-		<mx:horizontalAxis>
-			<mx:CategoryAxis id='colTimeAxis'
-							 categoryField="x" title="{! oneDayDate ? resourceManager.getString('analytics', 'month') : resourceManager.getString('analytics', 'date')}" labelFunction="categoryLabelFunc"/>
-		</mx:horizontalAxis>
-		<mx:series>
-			<mx:ColumnSeries displayName="Usage" yField="y" xField="x">
-				<mx:fills>
-					<mx:SolidColor color="#9ab40c"/>
-				</mx:fills>
-			</mx:ColumnSeries>
-		</mx:series>
+	<mx:horizontalAxis>
+		<mx:CategoryAxis id='colTimeAxis' categoryField="x" labelFunction="categoryLabelFunc"
+						 title="{!oneDayDate ? resourceManager.getString('analytics', 'month') : resourceManager.getString('analytics', 'date')}"/>
+	</mx:horizontalAxis>
+	<mx:series>
+		<mx:ColumnSeries displayName="Usage" yField="y" xField="x">
+			<mx:fills>
+				<mx:SolidColor color="#9ab40c"/>
+			</mx:fills>
+		</mx:ColumnSeries>
+	</mx:series>
 </mx:ColumnChart>
