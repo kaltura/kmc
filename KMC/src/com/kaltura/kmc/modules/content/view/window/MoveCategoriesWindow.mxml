@@ -7,6 +7,7 @@
 							creationComplete="creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
+			import mx.collections.ArrayCollection;
 			import com.kaltura.KalturaClient;
 			import com.kaltura.autocomplete.controllers.KACCategoryController;
 			import com.kaltura.autocomplete.itemRenderers.selection.CategorySelectedItem;
@@ -158,7 +159,7 @@
 	<mx:HBox width="100%" >
 		<mx:RadioButton id="none" label="{resourceManager.getString('cms', 'noParentLbl')}" selected="true" click="none_clickHandler(event)"/>
 		<mx:Spacer width="30%" />
-		<components:AutoComplete id="catComplete" width="70%" labelField="name"
+		<components:AutoComplete id="catComplete" width="70%" labelField="name" disabledItems="{new ArrayCollection(_categories)}"
 								 prompt="{resourceManager.getString('drilldown', 'searchCats')}" 
 								 selectedItemStyleName="selectionBox" change="catComplete_changeHandler(event)" 
 								 searchChange="catComplete_searchChangeHandler(event)"
