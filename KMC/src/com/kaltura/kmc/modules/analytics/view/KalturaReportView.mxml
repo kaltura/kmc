@@ -600,18 +600,6 @@
 			}
 
 
-			private function changeToColChart():void {
-				showColumnChart = true;
-				showLineChart = false;
-			}
-
-
-			private function changeToLineChart():void {
-				showColumnChart = false;
-				showLineChart = true;
-			}
-
-
 			/**
 			 * open entry preview
 			 * */
@@ -630,7 +618,6 @@
 				var reportEvent:ReportEvent = new ReportEvent(ReportEvent.EXPORT_TO_EXCEL , reportType); 
 				reportEvent.dispatch();
 			}
-
 
 
 			private function getTable():void {
@@ -669,14 +656,6 @@
 				 showDrillDownNav="{showDrillDownNav}" drilldownSubjectId="{reportData.objectIds}" kc="{_model.kc}"
 				 dateRangeManager="{dateRanger}" apply="{getReports(event)}"/>
 
-	<!-- chart switch -->
-	<!--<mx:HBox width="100%" horizontalAlign="left" includeInLayout="{showChartSwitch}" visible="{showChartSwitch}">
-		<mx:Button styleName="barChartIcon" click="changeToColChart()" buttonMode="true" useHandCursor="true"
-				   toolTip="Show Bar Chart"/>
-		<mx:Button styleName="lineChartIcon" click="changeToLineChart()" buttonMode="true" useHandCursor="true"
-				   toolTip="Show Line Chart"/>
-	</mx:HBox>-->
-
 	<mx:Spacer height="5"/>
 	<mx:HRule width="100%"/>
 	<mx:Spacer height="5"/>
@@ -694,8 +673,6 @@
 	</mx:HBox>
 
 	<!-- charts -->
-	<!--<map:KMap id="kmap" width="100%" visible="{showMap}" includeInLayout="{showMap}"/>-->
-
 	<charts:KColumnChart id="columnChart" width="100%" enabled="{_isVisibleColumnChart}" visible="{showColumnChart}"
 						 includeInLayout="{showColumnChart}" createColumnsFromDp="{generalBarChartFlag}"/>
 
@@ -704,7 +681,7 @@
 					   visible="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}" minHAxisDate="{filterVo.fromDate}"
 					   maxHAxisDate="{filterVo.toDate}"/>
 
-	<charts:KDateColumnChart id="dateBarChart" dimName="{dimCb.selectedItem.label}" width="100%"
+	<charts:KDateColumnChart id="dateBarChart" width="100%"
 							 oneDayDate="{_isOneDay &amp;&amp; ! _isMonths ? filterVo.fromDate : null}"
 							 includeInLayout="{showLineChart &amp;&amp; (_isOneDay || _isMonths)}"
 							 visible="{showLineChart &amp;&amp; (_isOneDay || _isMonths)}"/>
