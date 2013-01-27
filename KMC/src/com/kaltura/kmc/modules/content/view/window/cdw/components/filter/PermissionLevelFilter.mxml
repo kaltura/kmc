@@ -14,12 +14,25 @@
 				// friendly name is only used for indicators, not required here
 			}
 			
+			
+			/**
+			 * return a string that represents the result of selecting "all" button.
+			 * */
+			public static function getEmptyFilterString():String {
+				var levelString:String = KalturaCategoryUserPermissionLevel.MEMBER + ",";
+				levelString += KalturaCategoryUserPermissionLevel.CONTRIBUTOR + ",";
+				levelString += KalturaCategoryUserPermissionLevel.MODERATOR + ",";
+				levelString += KalturaCategoryUserPermissionLevel.MANAGER;
+				return levelString;
+			}
+			
 			override public function get filter():Object {
 				var levelString:String = "";
 				//if non of the items are selected or all selected
 				if ((memberBtn.selected && contBtn.selected && modBtn.selected && managerBtn.selected) 
 					|| (!memberBtn.selected && !contBtn.selected && !modBtn.selected && !managerBtn.selected)) {
-					levelString = "";
+					//levelString = "";  // we only want the following permissions levels, not all:
+					levelString = getEmptyFilterString();
 				}
 				else {
 					if (memberBtn.selected) {

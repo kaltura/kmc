@@ -6,6 +6,7 @@
 				 xmlns:filter="com.kaltura.kmc.modules.content.view.window.cdw.components.filter.*">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.types.KalturaCategoryUserPermissionLevel;
 			import com.kaltura.vo.KalturaCategoryUserFilter;
 
 			import mx.events.FlexEvent;
@@ -15,6 +16,7 @@
 			 * */
 			public static function generateBaseFilter():KalturaCategoryUserFilter {
 				var kalturaFilter:KalturaCategoryUserFilter = new KalturaCategoryUserFilter();
+				kalturaFilter.permissionLevelIn = PermissionLevelFilter.getEmptyFilterString();
 				return kalturaFilter;
 			}
 
@@ -40,7 +42,7 @@
 				 width="100%" height="{accordion.height}" styleName="additinalFilterVBox" 
 				 creationComplete="setFilterValues()">
 			<filter:PermissionLevelFilter width="100%" attribute="permissionLevelIn" 
-										  valueChange="updateFilterValue(event)"/>
+										  valueChange="updateFilterValue(event)" id="permissionLevelPanel"/>
 			<filter:CategoryUserStatusFilter width="100%" attribute="statusIn" 
 											 valueChange="updateFilterValue(event)"/>
 			<filter:UpdateMethodFilter width="100%" attribute="updateMethodIn" 
