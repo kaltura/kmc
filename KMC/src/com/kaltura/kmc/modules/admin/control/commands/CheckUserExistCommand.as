@@ -33,7 +33,6 @@ package com.kaltura.kmc.modules.admin.control.commands
 		}
 		
 		override protected function result(data:Object):void {
-//			super.result(data);
 			if (data.success) {
 				/* Use case 4 - user already exist in the system and is associated with the current account. 
 				When creating a new user with an email address of a user that is already existed (active or 
