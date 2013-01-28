@@ -29,19 +29,26 @@
 			import mx.formatters.NumberFormatter;
 			import mx.managers.PopUpManager;
 
+			
+			private static const TABLE_ROW_HEIGHT:int = 27;
+			
+			
+			/**
+			 * player used in "old" report's entry section
+			 * */
 			public static var kdp:SWFLoader;
 
+			
+			/**
+			 * entry preview window for new reports
+			 * */
 			public static var pew:PreviewEntryWin;
 
-			private static var playerLoadedFlag:Boolean = false;
-			private static var playerReadyFlag:Boolean = false;
-
-			private static const TABLE_ROW_HEIGHT:int = 27;
 
 			/**
-			 * to load the kdp you must pass a context
+			 * parameters required for KDP functionality and load
 			 * */
-			public var context:Context;
+			public var kdpParams:Context;
 
 			[Bindable]
 			/**
@@ -93,6 +100,10 @@
 			 * */
 			public var backScreenType:int;
 
+			
+			/**
+			 * help anchor
+			 * */
 			public var helpUrl:String = "reportAndAnalyticsSection4";
 
 			//SHOW & HIDE FLAGS
@@ -118,7 +129,7 @@
 			/**
 			 * default: true
 			 * */
-			public var showDimention:Boolean = true;
+			public var showDimension:Boolean = true;
 			
 			[Bindable]
 			/**
@@ -153,14 +164,14 @@
 			 * Show or Hide the user filter UI <br>
 			 * default: true
 			 * */
-			public var filterUsersFlag:Boolean = true;
+			public var showUsersFilter:Boolean = true;
 
 			[Bindable]
 			/**
 			 * Show or Hide the application filter UI <br>
 			 * default: true
 			 * */
-			public var filterApplicationsFlag:Boolean = true;
+			public var showApplicationsFilter:Boolean = true;
 
 //			[Bindable]
 //			/**
@@ -536,7 +547,7 @@
 					kdp.height = 292.6;
 					kdp.loaderContext = new LoaderContext(false, new ApplicationDomain(), SecurityDomain.currentDomain);
 					kdp.addEventListener(Event.INIT, onKDP3Loaded);
-					var kdpUrl:String = context.protocol + context.rootUrl + "/index.php/kwidget/wid/_" + context.partnerId + "/uiconf_id/" + _model.kdpUiConf + "/nowrapper/1/";
+					var kdpUrl:String = kdpParams.protocol + kdpParams.rootUrl + "/index.php/kwidget/wid/_" + kdpParams.partnerId + "/uiconf_id/" + _model.kdpUiConf + "/nowrapper/1/";
 					kdp.source = kdpUrl;
 					kdp.scaleContent = false;
 					kdpSection.addChildAt(kdp, 0);
@@ -568,21 +579,21 @@
 				kdp.content.addEventListener("entryReady", showKdp);
 
 				var params:Object = new Object();
-				params.cdnHost = context.cdnHost;
-				params.host = context.hostName;
+				params.cdnHost = kdpParams.cdnHost;
+				params.host = kdpParams.hostName;
 				params.autoPlay = "false";
 				params.loop = "false";
 				params.autoRewind = "false";
 				params.sourceType = "entryId";
-				params.partnerId = context.partnerId;
-				params.widgetId = "_" + context.partnerId;
-				params.subpId = context.subpId;
+				params.partnerId = kdpParams.partnerId;
+				params.widgetId = "_" + kdpParams.partnerId;
+				params.subpId = kdpParams.subpId;
 				params.uiConfId = _model.kdpUiConf;
-				params.ks = context.ks;
+				params.ks = kdpParams.ks;
 				params.entryId = reportData.selectedMediaEntry.id;
 				params.allowCookies = true;
 
-				if (context.debugMode)
+				if (kdpParams.debugMode)
 					params.debugMode = "true";
 
 				// set flashvars
@@ -651,8 +662,8 @@
 	<!-- report filter -->
 	<view:Filter id="filter" width="100%" isLoading="{_isLoading}" filterVo="{filterVo}"
 				 applicationsList="{_model.applicationsList}" drillDownName="{_model.drillDownName}"
-				 playbackContextFlag="{playbackContextFlag}" filterUsersFlag="{filterUsersFlag}"
-				 filterApplicationsFlag="{filterApplicationsFlag}" dateOnlyFlag="{dateOnlyFlag}"
+				 playbackContextFlag="{playbackContextFlag}" filterUsersFlag="{showUsersFilter}"
+				 filterApplicationsFlag="{showApplicationsFilter}" dateOnlyFlag="{dateOnlyFlag}"
 				 showTimeUnits="{showTimeUnits}" showSearchFilter="{showSearchFilter}"
 				 showDrillDownNav="{showDrillDownNav}" drilldownSubjectId="{reportData.objectIds}" kc="{_model.kc}"
 				 dateRangeManager="{dateRanger}" apply="{getReports(event)}"/>
@@ -663,8 +674,8 @@
 
 	<!-- graph dimension -->
 	<mx:HBox width="100%">
-		<view:DimComboBox id="dimCb" width="310" dataProvider="{dimCbDp}" visible="{showDimention}"
-						  includeInLayout="{showDimention}" enabled="{!_isLoading}"/>
+		<view:DimComboBox id="dimCb" width="310" dataProvider="{dimCbDp}" visible="{showDimension}"
+						  includeInLayout="{showDimension}" enabled="{!_isLoading}"/>
 		<mx:Spacer width="100%"/>
 		<mx:Label visible="{_model.processingCSVFlag}" includeInLayout="{_model.processingCSVFlag}" 
 				  text="{resourceManager.getString('analytics','csvProcessing')}"/>
