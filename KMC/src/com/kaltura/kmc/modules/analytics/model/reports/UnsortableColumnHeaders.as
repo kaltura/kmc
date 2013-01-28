@@ -23,8 +23,8 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 //		public const syndicator:Array;
 
 //		public const publisherBandwidthNStorage:Array;
-		public var endUserStorage:Array = ['NAME', 'name'];
-//		public const specificEndUserStorage:Array;
+		public var endUserStorage:Array = ['NAME', 'name', 'total_entries', 'total_storage_mb', 'total_msecs'];
+		public var specificEndUserStorage:Array = ['total_entries', 'total_storage_mb', 'total_msecs'];
 
 		public var userEngagement:Array = ['user_id', 'name'];
 		public var userEngagementDrilldown:Array = ['count_video', 'entry_name'];
