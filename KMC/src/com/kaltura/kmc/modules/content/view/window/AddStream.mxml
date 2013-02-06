@@ -3,31 +3,54 @@
 	add new livestream window
 -->
 <HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:validators="com.kaltura.validators.*"
-				 xmlns="com.kaltura.containers.*" layout="vertical" creationComplete="{setTitle()}"
-				 help="{onHelp()}"
-				 showCloseButton="true" close="removeMe()">
+				 xmlns="com.kaltura.containers.*" layout="vertical" creationComplete="creationCompleteHandler(event)"
+				 help="{onHelp()}" styleName="TitleWindowType2" width="500" height="320" showCloseButton="true"
+				 close="removeMe()">
+	<mx:Metadata>
+		[ResourceBundle("live")]
+	</mx:Metadata>
 
 	<mx:Script>
 		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.events.ListEvent;
+			import com.kaltura.kmc.vo.LocalizedVo;
+			import mx.events.FlexEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.AddStreamEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.vo.StreamVo;
-			
+
 			import mx.controls.Alert;
 			import mx.resources.ResourceManager;
 
+			private const labelWidth:Number = 180;
+
 			[Bindable]
-			private var labelWidth:Number = 180;
+			/**
+			 * options for live stream types
+			 * */
+			private var _streamTypes:Array;
+
+			[Bindable]
+			/**
+			 * manual stream type selected
+			 * */
+			private var _isManualStream:Boolean = false;
 
 
-			private function setTitle():void {
-				title = ResourceManager.getInstance().getString('cms', 'liveStreamTitle');
+			private function creationCompleteHandler(event:FlexEvent):void {
+				title = ResourceManager.getInstance().getString('live', 'liveStreamTitle');
+				_streamTypes = [new LocalizedVo(StreamVo.STREAM_TYPE_UNIVERSAL, 'universalStream', 'live'),
+					new LocalizedVo(StreamVo.STREAM_TYPE_LEGACY, 'legacyStream', 'live'),
+					new LocalizedVo(StreamVo.STREAM_TYPE_MANUAL, 'manualStream', 'live')];
 			}
+
 
 			private function onHelp():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section_add_live_stream'));
 			}
+
 
 			/**
 			 * Remove current window command
@@ -38,60 +61,142 @@
 			}
 
 
+			private function streamType_changeHandler(event:ListEvent):void {
+				switch ((streamType.selectedItem as LocalizedVo).value) {
+					case StreamVo.STREAM_TYPE_UNIVERSAL:
+					case StreamVo.STREAM_TYPE_LEGACY:
+						_isManualStream = false;
+						forms.selectedIndex = 0;
+						break;
+					case StreamVo.STREAM_TYPE_MANUAL:
+						_isManualStream = true;
+						forms.selectedIndex = 1;
+						break;
+
+				}
+			}
+
+
 			/**
 			 * When click on save - validate. if pass - save, if not - alert the user and activate the validators.
 			 */
 			private function onSave():void {
-				var isNameValid:Boolean = streamNameValidator.validate().type == 'valid';
-				var isIp1Valid:Boolean = ipValidator1.validate().type == 'valid';
-				var isIp2Valid:Boolean = ipValidator2.validate().type == 'valid';
+				// validate stream name
+				var isValid:Boolean = streamNameValidator.validate().type == ValidationResultEvent.VALID;
 
-				if (isNameValid && isIp1Valid && isIp2Valid) {
-					var streamVo:StreamVo = new StreamVo(streamName.text, streamPrimaryIp.text,
-														 streamSecondaryIp.text, streamBroadcastPassword.text,
-														 streamDescription.text)
+				var streamVo:StreamVo = new StreamVo();
+				streamVo.streamName = streamName.text;
+				streamVo.description = streamDescription.text;
+				
+				if (streamTypeWrap.visible) {
+					// new options available, the first in dropdown is "universal"
+					streamVo.streamType = streamType.selectedItem ? (streamType.selectedItem as LocalizedVo).value : StreamVo.STREAM_TYPE_UNIVERSAL;
+				} 
+				else {
+					// only "legacy" stream available
+					streamVo.streamType = StreamVo.STREAM_TYPE_LEGACY;
+				}
+				
+				if (_isManualStream) {
+					hdsurlValidator.required = true;
+					hdsurlValidator.listener = hdsurl;
+					var isUrlValid:Boolean = hdsurlValidator.validate(hdsurl.text).type == ValidationResultEvent.VALID;
+					hdsurlValidator.required = false;
+					hdsurlValidator.listener = hlsurl;
+					isUrlValid ||= hdsurlValidator.validate(hlsurl.text).type == ValidationResultEvent.VALID;
+					
+					if (isUrlValid) {
+						streamVo.flashHDSURL = hdsurl.text;
+						streamVo.mobileHLSURL = hlsurl.text;
+					}
+					else {
+						isValid = false;
+					}
+				}
+				else {
+					// validate ips
+					ipValidator.listener = streamPrimaryIp;
+					var isIpValid:Boolean = ipValidator.validate(streamPrimaryIp.text).type == ValidationResultEvent.VALID;
+					ipValidator.listener = streamSecondaryIp;
+					isIpValid ||= ipValidator.validate(streamSecondaryIp.text).type == ValidationResultEvent.VALID;
+
+					if (isIpValid) {
+						streamVo.primaryIp = streamPrimaryIp.text;
+						streamVo.secondaryIp = streamSecondaryIp.text;
+						streamVo.password = streamBroadcastPassword.text;
+					}
+					else {
+						isValid = false;
+					}
+				}
+
+				if (isValid) {
+					// add stream
 					var cgEv:AddStreamEvent = new AddStreamEvent(AddStreamEvent.ADD_STREAM, streamVo);
 					cgEv.dispatch();
 				}
 				else {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'fillAllMandatoryCorrect'));
+					Alert.show(ResourceManager.getInstance().getString('live', 'fillAllMandatoryCorrect'));
 				}
 			}
 		]]>
 	</mx:Script>
-	<mx:StringValidator id="streamNameValidator" source="{streamName}" property="text" trigger="{saveButton}"
-						triggerEvent="click" minLength="5" maxLength="20"/>
-	<validators:IPAddressValidator id="ipValidator1" source="{streamPrimaryIp}" trigger="{saveButton}"
-								   triggerEvent="click" property="text"/>
-	<validators:IPAddressValidator id="ipValidator2" source="{streamSecondaryIp}" trigger="{saveButton}"
-								   triggerEvent="click" property="text"/>
+	<mx:StringValidator id="streamNameValidator" property="text" source="{streamName}" 
+						trigger="{saveButton}" triggerEvent="{MouseEvent.CLICK}" minLength="5" maxLength="20"/>
+	<validators:IPAddressValidator id="ipValidator" invalidIPError="{resourceManager.getString('live', 'invalidIP')}" />
+	<validators:URLValidator id="hdsurlValidator" invalidURLError="{resourceManager.getString('live', 'invalidURL')}" />
+
+	<mx:HBox width="100%" id="streamTypeWrap">
+		<mx:Label text="{ResourceManager.getInstance().getString('live', 'streamType')}" width="{labelWidth}"/>
+		<mx:ComboBox id="streamType" width="290" dataProvider="{_streamTypes}" change="streamType_changeHandler(event)"/>
+	</mx:HBox>
+	<mx:HRule width="100%" visible="{streamTypeWrap.visible}" includeInLayout="{streamTypeWrap.includeInLayout}"/>
 
 	<mx:HBox width="100%">
-		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'name')+'*'}" width="{labelWidth}"/>
-
+		<mx:Label text="{ResourceManager.getInstance().getString('live', 'name')}*" width="{labelWidth}"/>
 		<mx:TextInput id="streamName" width="100%"/>
 	</mx:HBox>
 	<mx:HBox width="100%">
-		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'liveDescription')}" width="{labelWidth}"/>
+		<mx:Label text="{ResourceManager.getInstance().getString('live', 'liveDescription')}" width="{labelWidth}"/>
 		<mx:TextInput id="streamDescription" width="100%"/>
 	</mx:HBox>
-	<mx:HBox width="100%">
-		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'primaryIp')+'*'}" width="{labelWidth}"/>
-		<mx:TextInput id="streamPrimaryIp" width="100%" restrict="0-9\.\-\/"/>
-	</mx:HBox>
-	<mx:HBox width="100%">
-		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'secondaryIp')+'*'}" width="{labelWidth}"/>
-		<mx:TextInput id="streamSecondaryIp" width="100%" restrict="0-9\.\-\/"/>
-	</mx:HBox>
-	<mx:HBox width="100%">
-		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'passwordOptional')}" width="{labelWidth}"/>
-		<mx:TextInput id="streamBroadcastPassword" width="100%"/>
-	</mx:HBox>
-	
-	<mx:Label text="{ResourceManager.getInstance().getString('cms', 'mandatory')}" width="{labelWidth}"/>
-	
-	<mx:HBox width="100%" horizontalAlign="center">
-		<mx:Button id="saveButton" label="{ResourceManager.getInstance().getString('cms', 'save')}" click="onSave()"/>
-	</mx:HBox>
+
+	<mx:ViewStack id="forms" width="100%" height="100%">
+		<!-- form for universal and legacy -->
+		<mx:VBox styleName="noPadding" width="100%" height="100%">
+			<mx:HBox width="100%">
+				<mx:Label text="{ResourceManager.getInstance().getString('live', 'primaryIp')}*" width="{labelWidth}"/>
+				<mx:TextInput id="streamPrimaryIp" width="100%" restrict="0-9\.\-\/"/>
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:Label text="{ResourceManager.getInstance().getString('live', 'secondaryIp')}*" width="{labelWidth}"/>
+				<mx:TextInput id="streamSecondaryIp" width="100%" restrict="0-9\.\-\/"/>
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:Label text="{ResourceManager.getInstance().getString('live', 'passwordOptional')}"
+						  width="{labelWidth}"/>
+				<mx:TextInput id="streamBroadcastPassword" width="100%"/>
+			</mx:HBox>
+		</mx:VBox>
+
+		<!-- form for manual -->
+		<mx:VBox styleName="noPadding" width="100%" height="100%">
+			<mx:HBox width="100%">
+				<mx:Label text="{ResourceManager.getInstance().getString('live', 'hdsurl')}*" width="{labelWidth}"/>
+				<mx:TextInput id="hdsurl" width="100%" />
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:Label text="{ResourceManager.getInstance().getString('live', 'hlsurl')}" width="{labelWidth}"/>
+				<mx:TextInput id="hlsurl" width="100%" />
+			</mx:HBox>
+		</mx:VBox>
+	</mx:ViewStack>
+
+	<mx:Label text="{ResourceManager.getInstance().getString('live', 'mandatory')}" width="100%"/>
+
+	<mx:ControlBar>
+		<mx:Button id="saveButton" label="{ResourceManager.getInstance().getString('live', 'createLiveBtn')}"
+				   click="onSave()"/>
+	</mx:ControlBar>
 
 </HelpTitleWindow>
