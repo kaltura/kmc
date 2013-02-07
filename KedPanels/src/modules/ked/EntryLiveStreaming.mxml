@@ -406,11 +406,10 @@ live streaming control tab of EntryDetailsWin
 			 * */
 			private function populateManualBox(cfgs:Array):void
 			{
-				var cfg:KalturaLiveStreamConfiguration;
 				var line:FormLine;
-				for (var i:int = 0; i<cfgs.length; i++) {
-					cfg = cfgs[i] as KalturaLiveStreamConfiguration;
+				for each (var cfg:KalturaLiveStreamConfiguration in cfgs) {
 					line = new FormLine();
+					line.prefixesWidth = _prefixesWidth; 
 					// allow protocol name override by locale:
 					line.label = resourceManager.getString('drilldown', cfg.protocol) ? resourceManager.getString('drilldown', cfg.protocol) : cfg.protocol
 					line.label += resourceManager.getString('drilldown', 'streamUrl');
@@ -584,7 +583,7 @@ live streaming control tab of EntryDetailsWin
 	<mx:VBox id="manualWrap" width="100%" styleName="noPadding" 
 			 visible="{_selectedEntry.sourceType == KalturaSourceType.MANUAL_LIVE_STREAM}"
 			 includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.MANUAL_LIVE_STREAM}">
-		<live:FormLine prefixesWidth="{_prefixesWidth}" broadcastingWidth="{_broadcastingWidth}"
+		<live:FormLine prefixesWidth="{_prefixesWidth}" 
 					   label="{resourceManager.getString('drilldown', 'hlsStreamUrl')}" value="{ _selectedEntry.hlsStreamUrl}" />
 	</mx:VBox>
 </mx:Module>
