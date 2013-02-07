@@ -152,8 +152,8 @@ package com.kaltura.kmc.modules.analytics.commands {
 			// spread received data through the model
 			var i:int;
 			var currHeader:String;
-			var tablesArr:Array = _tableData.data.split(";");
-			var headersArr:Array = _tableData.header.split(",");
+			var tablesArr:Array = _tableData.data.split(";"); // each array element is a line in the table (comma seperated values)
+			var headersArr:Array = _tableData.header.split(","); // each array elememt is column header
 			var originalHeaders:Array = headersArr.slice();
 			
 			var totalCounters:Object = new Object();
@@ -195,11 +195,11 @@ package com.kaltura.kmc.modules.analytics.commands {
 				headersArr = tempHeaders;
 			}
 			
-			var arrCol:ArrayCollection = new ArrayCollection();
+			var arrCol:ArrayCollection = new ArrayCollection(); // table data provider
 			
 			for (i = 0; i < tablesArr.length; i++) {
 				if (tablesArr[i]) {
-					var propArr:Array = tablesArr[i].split(",");
+					var propArr:Array = tablesArr[i].split(","); // each element is a value in the line
 
 					var obj:Object = new Object();
 					var propCounter:int = 0;
@@ -211,11 +211,11 @@ package com.kaltura.kmc.modules.analytics.commands {
 							continue;
 						}
 						if (_addTotals && currHeader.indexOf("total") != -1){
-							
 							// Adding the previous deleted (negative) and added (positive) to the current total.
 							totalCounters[currHeader] += (parseFloat(propArr[propCounter - 1]) * -1) + parseFloat(propArr[propCounter - 2]);
 							obj[currHeader] = FormatReportParam.format(currHeader, totalCounters[currHeader]);
-						} else {
+						} 
+						else {
 							obj[currHeader] = FormatReportParam.format(currHeader, propArr[propCounter]);
 							propCounter++;
 						}
