@@ -4,13 +4,17 @@ live streaming control tab of EntryDetailsWin
 -->
 <mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
 		   implements="com.kaltura.edw.business.IDrilldownPanel"
-		   label="{resourceManager.getString('drilldown', 'liveStream')}">
+		   label="{resourceManager.getString('drilldown', 'liveStream')}" xmlns:live="com.kaltura.edw.view.live.*">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="panelDataSaved", type="com.kaltura.edw.events.InternalKedEvent")] 
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.vo.KalturaLiveStreamConfiguration;
+			import com.kaltura.types.KalturaSourceType;
+			import mx.formatters.DateFormatter;
+			import com.kaltura.types.KalturaDVRStatus;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
@@ -23,16 +27,16 @@ live streaming control tab of EntryDetailsWin
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaLiveStreamBitrate;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.core.UIComponent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
-			
+
 			private const _broadcastingWidth:Number = 270;
 			private const _prefixesWidth:Number = 130;
-			
+
 			[Bindable]
 			/**
 			 * available bitrates
@@ -41,43 +45,56 @@ live streaming control tab of EntryDetailsWin
 				'500', '650', '800', '950', '1000',
 				'1200', '1500', '1800', '2000',
 				'2500', '14000']);
-			
+
 			private var _pop:SettingsExample;
-			
+
 			[Bindable]
 			private var _selectedEntry:KalturaLiveStreamAdminEntry;
-			
+
 			[Bindable]
 			private var _bitrates:ArrayCollection;
-			
+
 			private var _dpModel:IDataPackRepository;
-			public var rootUrl:String;
 			
-			
+
+
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (value is KalturaLiveStreamAdminEntry) {
 					_selectedEntry = value as KalturaLiveStreamAdminEntry;
+					
+					// clear any previous values (don't remove hlsStreamUrl):
+					while (manualWrap.numChildren > 1) {
+						manualWrap.removeChildAt(manualWrap.numChildren-1);
+					}
+					if (_selectedEntry.sourceType == KalturaSourceType.MANUAL_LIVE_STREAM) {
+						populateManualBox(_selectedEntry.liveStreamConfigurations);
+					}
 				}
-				else _selectedEntry = null;
+				else
+					_selectedEntry = null;
 			}
-			
+
+
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
-			
-			public function get dataPackModel():IDataPackRepository{
+
+
+			public function get dataPackModel():IDataPackRepository {
 				return _dpModel;
 			}
-			public function set dataPackModel(value:IDataPackRepository):void{
+
+
+			public function set dataPackModel(value:IDataPackRepository):void {
 				_dpModel = value;
-				var cdp:ContextDataPack = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
-				BindingUtils.bindProperty(this, "rootUrl", cdp, "rootUrl");
 			}
-			
-			public function get helpAnchor():String{
+
+
+			public function get helpAnchor():String {
 				return "section_live_stream";
 			}
-			
+
+
 			public function initData():void {
 				if (_selectedEntry) {
 					_bitrates = new ArrayCollection(_selectedEntry.bitrates);
@@ -87,13 +104,14 @@ live streaming control tab of EntryDetailsWin
 					setSelectedValueToCombo(bitrateCombo3, bitrate3.selected);
 				}
 			}
-			
+
+
 			public function validate():void {
-				var success:Boolean = true;	// validation result
+				var success:Boolean = true; // validation result
 				var errorMessage:String;
 				var errorTitle:String;
 				var bitrates:Array = getBitrates();
-				
+
 				if (!bitrates) {
 					//failed validation
 					success = false;
@@ -103,27 +121,30 @@ live streaming control tab of EntryDetailsWin
 				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, success, errorMessage, errorTitle);
 				dispatchEvent(e);
 			}
-			
+
+
 			public function destroy():void {
 			}
-			
+
+
 			public function clear():void {
 			}
-			
+
+
 			public function init():void {
-				
+
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.LIVE_STREAM_PANEL);
 			}
-			
-			
+
+
 			public function isChanged():Boolean {
 				return _bitrates.source.toString() != getBitrates().toString();
 			}
-			
-			
+
+
 			/**
-			 * build the bitrates array. 
-			 * @return array of <code>KalturaLiveStreamBitrate</code> 
+			 * build the bitrates array.
+			 * @return array of <code>KalturaLiveStreamBitrate</code>
 			 * 		(possibly empty), or null if failed validation
 			 * */
 			private function getBitrates():Array {
@@ -155,7 +176,8 @@ live streaming control tab of EntryDetailsWin
 				}
 				return arr;
 			}
-			
+
+
 			public function save():void {
 				var bitrates:Array = getBitrates();
 				if (bitrates != null) {
@@ -163,7 +185,8 @@ live streaming control tab of EntryDetailsWin
 				}
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.PANEL_DATA_SAVED));
 			}
-			
+
+
 			/**
 			 * Recieves a combobox refference and sets its selected to be its value if it findes
 			 * it in the _bitratese values array.
@@ -178,9 +201,9 @@ live streaming control tab of EntryDetailsWin
 					}
 				}
 			}
-			
-			
-			
+
+
+
 			private function onRollOver(value:Number):void {
 				_pop = new SettingsExample();
 				switch (value) {
@@ -189,7 +212,7 @@ live streaming control tab of EntryDetailsWin
 						_pop.imageClass = 'url1';
 						_pop.imgWidth = 351;
 						_pop.imgHeight = 156;
-						
+
 						break;
 					case 2:
 						_pop.stringToShow = resourceManager.getString('drilldown', 'screenshot1');
@@ -198,8 +221,7 @@ live streaming control tab of EntryDetailsWin
 						_pop.imgHeight = 191;
 						break;
 					case 3:
-						_pop.stringToShow = resourceManager.getString('drilldown', 'screenshot3') +
-						"\n" + resourceManager.getString('drilldown', 'screenshot1');
+						_pop.stringToShow = resourceManager.getString('drilldown', 'screenshot3') + "\n" + resourceManager.getString('drilldown', 'screenshot1');
 						_pop.imageClass = 'url3';
 						_pop.imgWidth = 289;
 						_pop.imgHeight = 100;
@@ -208,16 +230,18 @@ live streaming control tab of EntryDetailsWin
 				PopUpManager.addPopUp(_pop, this, true);
 				PopUpManager.centerPopUp(_pop);
 			}
-			
+
+
 			private function onHelp(event:TextEvent):void {
 				var e:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(EntryDetailsWin.HELP_REQUEST, true);
 				e.data = helpAnchor;
 				dispatchEvent(e);
 			}
-			
-			
+
+
 			private function fmeExport():void {
-				var xml:XML = <flashmedialiveencoder_profile>
+				var xml:XML =
+					<flashmedialiveencoder_profile>
 						<preset>
 							<name>Custom</name>
 							<description></description>
@@ -325,160 +349,242 @@ live streaming control tab of EntryDetailsWin
 							<level></level>
 							<directory></directory>
 						</log>
-					</flashmedialiveencoder_profile>;
-				
+					</flashmedialiveencoder_profile>
+					;
+
 				//assign outputs 
 				var outputXML:XML = xml.output[0];
 				(outputXML.rtmp.url[0] as XML).appendChild(_selectedEntry.primaryBroadcastingUrl);
 				(outputXML.rtmp.backup_url[0] as XML).appendChild(_selectedEntry.secondaryBroadcastingUrl);
 				(outputXML.rtmp.stream[0] as XML).appendChild(_selectedEntry.streamName);
-				
+
 				//assign bitrates
 				var bitratesString:String = "";
 				var dimenssionsStrings:String = "";
 				if (bitrate1.selected) {
 					bitratesString += bitrateCombo1.value.toString() + ";";
-					dimenssionsStrings += bitrate1Width.value.toString() + "x" +
-						bitrate1Height.value.toString() + ";";
+					dimenssionsStrings += bitrate1Width.value.toString() + "x" + bitrate1Height.value.toString() + ";";
 				}
 				if (bitrate2.selected) {
 					bitratesString += bitrateCombo2.value.toString() + ";";
-					dimenssionsStrings += bitrate2Width.value.toString() + "x" +
-						bitrate2Height.value.toString() + ";";
+					dimenssionsStrings += bitrate2Width.value.toString() + "x" + bitrate2Height.value.toString() + ";";
 				}
 				if (bitrate3.selected) {
 					bitratesString += bitrateCombo3.value.toString() + ";";
-					dimenssionsStrings += bitrate3Width.value.toString() + "x" +
-						bitrate3Height.value.toString() + ";";
+					dimenssionsStrings += bitrate3Width.value.toString() + "x" + bitrate3Height.value.toString() + ";";
 				}
 				var encode:XML = xml.encode[0] as XML;
 				(encode.video.datarate[0] as XML).appendChild(bitratesString);
 				(encode.video.outputsize[0] as XML).appendChild(dimenssionsStrings);
-				
+
 				var myFile:FileReference = new FileReference();
-				myFile.save(xml.toXMLString(),
-					resourceManager.getString('drilldown', 'ExportToFme.xml'));
-				
+				myFile.save(xml.toXMLString(), resourceManager.getString('drilldown', 'ExportToFme.xml'));
+
 			}
+			
+			private function getDVRStatus (entry:KalturaLiveStreamAdminEntry):String {
+				var result:String = '';
+				if (entry.dvrStatus == KalturaDVRStatus.DISABLED) {
+					result = resourceManager.getString('drilldown', 'off');
+				}
+				else if (entry.dvrStatus == KalturaDVRStatus.ENABLED) {
+					result = resourceManager.getString('drilldown', 'on');
+				}
+				return result;
+			}
+			
+			private function getDVRWindow (entry:KalturaLiveStreamAdminEntry):String {
+				var frmt:DateFormatter = new DateFormatter();
+				frmt.formatString = resourceManager.getString('drilldown', 'dvrWinFormat');
+				return frmt.format(entry.dvrWindow);
+			}
+			
+			
+			/**
+			 * add lines for each stream url
+			 * @param cfgs	list of KalturaLiveStreamConfiguration to present 
+			 * */
+			private function populateManualBox(cfgs:Array):void
+			{
+				var cfg:KalturaLiveStreamConfiguration;
+				var line:FormLine;
+				for (var i:int = 0; i<cfgs.length; i++) {
+					cfg = cfgs[i] as KalturaLiveStreamConfiguration;
+					line = new FormLine();
+					// allow protocol name override by locale:
+					line.label = resourceManager.getString('drilldown', cfg.protocol) ? resourceManager.getString('drilldown', cfg.protocol) : cfg.protocol
+					line.label += resourceManager.getString('drilldown', 'streamUrl');
+					line.value = cfg.url;
+					manualWrap.addChild(line);
+				}
+			}
+			
 		]]>
 	</mx:Script>
-	<!--<mx:Label text="{resourceManager.getString('drilldown', 'BroadcastingInfo')}"
-	styleName="drillDownTitleLabel"/>-->
-	<mx:Label text="{resourceManager.getString('drilldown', 'brodcastingSettings')}" styleName="drillDownLabel"/>
+
+	<mx:VBox width="100%" styleName="noPadding" visible="{_selectedEntry.sourceType != KalturaSourceType.MANUAL_LIVE_STREAM}"
+			 includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.MANUAL_LIVE_STREAM}">
+		<mx:Label text="{resourceManager.getString('drilldown', 'brodcastingSettings')}" styleName="drillDownLabel"/>
+		<mx:Text width="100%" htmlText="{resourceManager.getString('drilldown', 'broadcastingText')}" link="onHelp(event)"/>
+		<mx:Spacer height="20"/>
 	
-	<mx:Text width="100%" htmlText="{resourceManager.getString('drilldown', 'broadcastingText')}" link="onHelp(event)"/>
-	<!--<mx:LinkButton label="{resourceManager.getString('drilldown', 'liveLink')}"
-				   click="{onHelp()}"/>-->
+		<!-- broadcast urls -->
+		<mx:Label text="{resourceManager.getString('drilldown', 'Broadcastingurls')}" styleName="drillDownLabel"/>
 	
-	<mx:Spacer height="20"/>
-	<mx:Label text="{resourceManager.getString('drilldown', 'Broadcastingurls')}" styleName="drillDownLabel"/>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown', 'PrimaryURL')}" width="{_prefixesWidth}"
+					  styleName="drillDownLabel"/>
+			<mx:Label id="primaryUrl" text="{_selectedEntry.primaryBroadcastingUrl}" selectable="true"
+					  width="{_broadcastingWidth}"/>
+		</mx:HBox>
 	
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('drilldown', 'PrimaryURL')}" width="{_prefixesWidth}"
-				  styleName="drillDownLabel"/>
-		<mx:Label id="primaryUrl" text="{_selectedEntry.primaryBroadcastingUrl}" selectable="true"
-				  width="{_broadcastingWidth}"/>
-	</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown', 'BackupURL')}" width="{_prefixesWidth}"
+					  styleName="drillDownLabel"/>
+			<mx:Label id="backupUrl" text="{_selectedEntry.secondaryBroadcastingUrl}" selectable="true"
+					  width="{_broadcastingWidth}"/>
+			<mx:Spacer width="30"/>
+			<mx:Button styleName="help" click="{onRollOver(1)}" buttonMode="true"/>
+		</mx:HBox>
 	
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('drilldown', 'BackupURL')}" width="{_prefixesWidth}"
-				  styleName="drillDownLabel"/>
-		<mx:Label id="backupUrl" text="{_selectedEntry.secondaryBroadcastingUrl}" selectable="true"
-				  width="{_broadcastingWidth}"/>
-		<mx:Spacer width="30"/>
-		<mx:Button styleName="help" click="{onRollOver(1)}" buttonMode="true"/>
-	</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown', 'streamName')}" width="{_prefixesWidth}"
+					  styleName="drillDownLabel"/>
+			<mx:Label id="streamName" text="{_selectedEntry.streamName}" selectable="true" width="{_broadcastingWidth}"/>
+		</mx:HBox>
 	
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('drilldown', 'streamName')}" width="{_prefixesWidth}"
-				  styleName="drillDownLabel"/>
-		<mx:Label id="streamName"
-				  text="{_selectedEntry.streamName}"
-				  selectable="true" width="{_broadcastingWidth}"/>
-	</mx:HBox>
+		<mx:Spacer height="20"/>
 	
-	<mx:Spacer height="20"/>
+		<!-- stream config -->
+		<mx:VBox styleName="noPadding" width="100%"  
+				 visible="{_selectedEntry.sourceType == KalturaSourceType.AKAMAI_UNIVERSAL_LIVE}"
+				 includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.AKAMAI_UNIVERSAL_LIVE}">
+			<mx:Label text="{resourceManager.getString('drilldown', 'streamCfg')}" styleName="drillDownLabel"/>
+		
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('drilldown', 'hlsStreamUrl')}" width="{_prefixesWidth}"
+						  styleName="drillDownLabel"/>
+				<mx:Label id="hlsStreamUrl" text="{_selectedEntry.hlsStreamUrl}" selectable="true" width="{_broadcastingWidth}"/>
+			</mx:HBox>
+		
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('drilldown', 'externalStreamId')}" width="{_prefixesWidth}"
+						  styleName="drillDownLabel"/>
+				<mx:Label id="externalStreamId" text="{_selectedEntry.externalStreamId}" selectable="true"
+						  width="{_broadcastingWidth}"/>
+			</mx:HBox>
+		
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('drilldown', 'dvrStatus')}" width="{_prefixesWidth}"
+						  styleName="drillDownLabel"/>
+				<mx:Label id="dvrStatus" text="{getDVRStatus(_selectedEntry)}" selectable="true" width="{_broadcastingWidth}"/>
+			</mx:HBox>
+		
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('drilldown', 'dvrWin')}" width="{_prefixesWidth}"
+						  styleName="drillDownLabel"/>
+				<mx:Label id="dvrWin" text="{getDVRWindow(_selectedEntry)}" selectable="true" width="{_broadcastingWidth}"/>
+			</mx:HBox>
+		
+			<mx:Spacer height="20"/>
+		</mx:VBox>
+		
+		<!-- bitrate config -->
+		<mx:Label text="{resourceManager.getString('drilldown', 'bitrateConfiguration')}" styleName="drillDownLabel"/>
+		<mx:Text width="100%" text="{resourceManager.getString('drilldown', 'bitrateText')}"/>
 	
-	<mx:Label text="{resourceManager.getString('drilldown', 'bitrateConfiguration')}" styleName="drillDownLabel"/>
-	<mx:Text width="100%" text="{resourceManager.getString('drilldown', 'bitrateText')}"/>
+		<mx:Canvas width="100%" height="25">
+			<mx:Label text="{resourceManager.getString('drilldown', 'bitRate')}" styleName="drillDownLabel" y="5"
+					  x="{bitrateCombo1.x}"/>
+			<mx:Label text="{resourceManager.getString('drilldown', 'widthTitle')}" styleName="drillDownLabel" y="5"
+					  x="{bitrate1Width.x}"/>
+			<mx:Label text="{resourceManager.getString('drilldown', 'heightTitle')}" styleName="drillDownLabel" y="5"
+					  x="{bitrate1Height.x}"/>
+		</mx:Canvas>
+		<mx:HBox width="100%" id="bitrate1Info" disabledOverlayAlpha="0">
+			<mx:CheckBox id="bitrate1" label="1." labelPlacement="left" selected="{_bitrates.getItemAt(0).width}"/>
+			<mx:ComboBox id="bitrateCombo1" editable="true" text="{_bitrates.getItemAt(0).bitrate}"
+						 dataProvider="{_bitratese}" enabled="{bitrate1.selected}"/>
+			<mx:Label text="Kbps"/>
+			<mx:Spacer width="10"/>
+			<mx:NumericStepper id="bitrate1Width" width="55" maximum="9999" enabled="{bitrate1.selected}"
+							   value="{_bitrates.getItemAt(0).width}"/>
+			<mx:Label text="x"/>
+			<mx:NumericStepper id="bitrate1Height" width="55" maximum="9999" enabled="{bitrate1.selected}"
+							   value="{_bitrates.getItemAt(0).height}"/>
+			<mx:Spacer width="30"/>
+		</mx:HBox>
+		<mx:HBox width="100%" id="bitrate2Info" disabledOverlayAlpha="0">
+			<mx:CheckBox id="bitrate2" label="2." labelPlacement="left" selected="{_bitrates.getItemAt(1).width}"/>
+			<mx:ComboBox id="bitrateCombo2" editable="true" text="{_bitrates.getItemAt(1).bitrate}"
+						 dataProvider="{_bitratese}" enabled="{bitrate2.selected}"/>
+			<mx:Label text="Kbps"/>
+			<mx:Spacer width="10"/>
+			<mx:NumericStepper id="bitrate2Width" width="55" maximum="9999" enabled="{bitrate2.selected}"
+							   value="{_bitrates.getItemAt(1).width}"/>
+			<mx:Label text="x"/>
+			<mx:NumericStepper id="bitrate2Height" width="55" maximum="9999" enabled="{bitrate2.selected}"
+							   value="{_bitrates.getItemAt(1).height}"/>
+			<mx:Spacer width="30"/>
+			<mx:Button styleName="help" click="{onRollOver(3)}" buttonMode="true"/>
+		</mx:HBox>
+		<mx:HBox width="100%" id="bitrate3Info" disabledOverlayAlpha="0">
+			<mx:CheckBox id="bitrate3" label="3." labelPlacement="left" selected="{_bitrates.getItemAt(2).width}"/>
+			<mx:ComboBox id="bitrateCombo3" editable="true" text="{_bitrates.getItemAt(2).bitrate}"
+						 dataProvider="{_bitratese}" enabled="{bitrate3.selected}"/>
+			<mx:Label text="Kbps"/>
+			<mx:Spacer width="10"/>
+			<mx:NumericStepper id="bitrate3Width" width="55" maximum="9999" enabled="{bitrate3.selected}"
+							   value="{_bitrates.getItemAt(2).width}"/>
+			<mx:Label text="x"/>
+			<mx:NumericStepper id="bitrate3Height" width="55" maximum="9999" enabled="{bitrate3.selected}"
+							   value="{_bitrates.getItemAt(2).height}"/>
+			<mx:Spacer width="30"/>
+		</mx:HBox>
 	
-	<mx:Canvas width="100%" height="25">
-		<mx:Label text="{resourceManager.getString('drilldown', 'bitRate')}" styleName="drillDownLabel" y="5" x="{bitrateCombo1.x}" />
-		<mx:Label text="{resourceManager.getString('drilldown', 'widthTitle')}" styleName="drillDownLabel" y="5" x="{bitrate1Width.x}" />
-		<mx:Label text="{resourceManager.getString('drilldown', 'heightTitle')}" styleName="drillDownLabel" y="5" x="{bitrate1Height.x}" />
-	</mx:Canvas>
-	<mx:HBox width="100%" id="bitrate1Info" disabledOverlayAlpha="0">
-		<mx:CheckBox id="bitrate1" label="1." labelPlacement="left" selected="{_bitrates.getItemAt(0).width}"/>
-		<mx:ComboBox id="bitrateCombo1" editable="true" text="{_bitrates.getItemAt(0).bitrate}"
-					 dataProvider="{_bitratese}" enabled="{bitrate1.selected}"/>
-		<mx:Label text="Kbps"/>
-		<mx:Spacer width="10"/>
-		<mx:NumericStepper id="bitrate1Width" width="55" maximum="9999" enabled="{bitrate1.selected}"
-						   value="{_bitrates.getItemAt(0).width}"/>
-		<mx:Label text="x"/>
-		<mx:NumericStepper id="bitrate1Height" width="55" maximum="9999" enabled="{bitrate1.selected}"
-						   value="{_bitrates.getItemAt(0).height}"/>
-		<mx:Spacer width="30"/>
-	</mx:HBox>
-	<mx:HBox width="100%" id="bitrate2Info" disabledOverlayAlpha="0">
-		<mx:CheckBox id="bitrate2" label="2." labelPlacement="left" selected="{_bitrates.getItemAt(1).width}"/>
-		<mx:ComboBox id="bitrateCombo2" editable="true" text="{_bitrates.getItemAt(1).bitrate}"
-					 dataProvider="{_bitratese}" enabled="{bitrate2.selected}"/>
-		<mx:Label text="Kbps"/>
-		<mx:Spacer width="10"/>
-		<mx:NumericStepper id="bitrate2Width" width="55" maximum="9999" enabled="{bitrate2.selected}"
-						   value="{_bitrates.getItemAt(1).width}"/>
-		<mx:Label text="x"/>
-		<mx:NumericStepper id="bitrate2Height" width="55" maximum="9999" enabled="{bitrate2.selected}"
-						   value="{_bitrates.getItemAt(1).height}"/>
-		<mx:Spacer width="30"/>
-		<mx:Button styleName="help" click="{onRollOver(3)}" buttonMode="true"/>
-	</mx:HBox>
-	<mx:HBox width="100%" id="bitrate3Info" disabledOverlayAlpha="0">
-		<mx:CheckBox id="bitrate3" label="3." labelPlacement="left" selected="{_bitrates.getItemAt(2).width}"/>
-		<mx:ComboBox id="bitrateCombo3" editable="true" text="{_bitrates.getItemAt(2).bitrate}"
-					 dataProvider="{_bitratese}" enabled="{bitrate3.selected}"/>
-		<mx:Label text="Kbps"/>
-		<mx:Spacer width="10"/>
-		<mx:NumericStepper id="bitrate3Width" width="55" maximum="9999" enabled="{bitrate3.selected}"
-						   value="{_bitrates.getItemAt(2).width}"/>
-		<mx:Label text="x"/>
-		<mx:NumericStepper id="bitrate3Height" width="55" maximum="9999" enabled="{bitrate3.selected}"
-						   value="{_bitrates.getItemAt(2).height}"/>
-		<mx:Spacer width="30"/>
-	</mx:HBox>
+		<mx:Spacer height="20"/>
 	
-	<mx:Spacer height="20"/>
-	<mx:Label text="{resourceManager.getString('drilldown', 'broadcastinCredential')}"
-			  styleName="drillDownLabel"/>
+		<!-- broadcast credentials -->
+		<mx:Label text="{resourceManager.getString('drilldown', 'broadcastinCredential')}" styleName="drillDownLabel"/>
 	
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('drilldown', 'userName')}" width="{_prefixesWidth}"
-				  styleName="drillDownLabel"/>
-		<mx:Label id="userName" text="{_selectedEntry.streamUsername}" selectable="true"/>
-		<mx:Spacer width="30"/>
-		<mx:Button styleName="help" click="{onRollOver(2)}" buttonMode="true"/>
-	</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown', 'userName')}" width="{_prefixesWidth}"
+					  styleName="drillDownLabel"/>
+			<mx:Label id="userName" text="{_selectedEntry.streamUsername}" selectable="true" width="{_broadcastingWidth}"/>
+			<mx:Spacer width="30"/>
+			<mx:Button styleName="help" click="{onRollOver(2)}" buttonMode="true"/>
+		</mx:HBox>
 	
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('drilldown', 'password')}" width="{_prefixesWidth}"
-				  styleName="drillDownLabel"/>
-		<mx:Label id="password" text="{_selectedEntry.streamPassword}" selectable="true"/>
-	</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown', 'password')}" width="{_prefixesWidth}"
+					  styleName="drillDownLabel"/>
+			<mx:Label id="password" text="{_selectedEntry.streamPassword}" selectable="true" width="{_broadcastingWidth}"/>
+		</mx:HBox>
 	
-	<mx:Spacer height="20"/>
-	<mx:Label text="{resourceManager.getString('drilldown', 'encodingIp')}" styleName="drillDownLabel"/>
+		<mx:Spacer height="20"/>
 	
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('drilldown', 'primaryIp')}" width="{_prefixesWidth}"
-				  styleName="drillDownLabel"/>
-		<mx:Label id="primaryIp" text="{_selectedEntry.encodingIP2}" selectable="true"/>
-	</mx:HBox>
+		<!-- IPs -->
+		<mx:Label text="{resourceManager.getString('drilldown', 'encodingIp')}" styleName="drillDownLabel"/>
 	
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('drilldown', 'secondaryIp')}" width="{_prefixesWidth}"
-				  styleName="drillDownLabel"/>
-		<mx:Label id="secondaryIp" text="{_selectedEntry.encodingIP2}" selectable="true"/>
-	</mx:HBox>
-	<mx:Button id="exportBtn" label="{resourceManager.getString('drilldown', 'exportToFme')}" click="{fmeExport()}"/>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown', 'primaryIp')}" width="{_prefixesWidth}"
+					  styleName="drillDownLabel"/>
+			<mx:Label id="primaryIp" text="{_selectedEntry.encodingIP2}" selectable="true" width="{_broadcastingWidth}"/>
+		</mx:HBox>
+	
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown', 'secondaryIp')}" width="{_prefixesWidth}"
+					  styleName="drillDownLabel"/>
+			<mx:Label id="secondaryIp" text="{_selectedEntry.encodingIP2}" selectable="true" width="{_broadcastingWidth}"/>
+		</mx:HBox>
+		<mx:Button id="exportBtn" label="{resourceManager.getString('drilldown', 'exportToFme')}" click="{fmeExport()}"/>
+	</mx:VBox>
+	
+	<!-- manual stream -->
+	<mx:VBox id="manualWrap" width="100%" styleName="noPadding" 
+			 visible="{_selectedEntry.sourceType == KalturaSourceType.MANUAL_LIVE_STREAM}"
+			 includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.MANUAL_LIVE_STREAM}">
+		<live:FormLine prefixesWidth="{_prefixesWidth}" broadcastingWidth="{_broadcastingWidth}"
+					   label="{resourceManager.getString('drilldown', 'hlsStreamUrl')}" value="{ _selectedEntry.hlsStreamUrl}" />
+	</mx:VBox>
 </mx:Module>
