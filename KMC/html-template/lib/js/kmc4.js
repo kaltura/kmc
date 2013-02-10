@@ -38,7 +38,7 @@ kmc.functions = {
 
 			//permission uiconf id:
 			permission_uiconf	: kmc.vars.kmc_permissions_uiconf,
-
+			protocol			: kmc.vars.protocol ? kmc.vars.protocol : "http://",
 			host				: kmc.vars.host,
 			cdnhost				: kmc.vars.cdn_host,
 			srvurl				: "api_v3/index.php",
