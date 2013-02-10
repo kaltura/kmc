@@ -54,6 +54,9 @@ package com.kaltura.kmc.modules.analytics.model {
 		 */
 		public var drillDownName:String = "";
 		
+		/**
+		 * keys are screen types, values are ReportData object 
+		 */
 		public var reportDataMap:Object = new Object();
 
 		/**
