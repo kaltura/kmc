@@ -25,30 +25,30 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaReportType
+	import com.kaltura.vo.KalturaJobData;
+
+	[Bindable]
+	public dynamic class KalturaDeleteFileJobData extends KalturaJobData
 	{
-		public static const TOP_CONTENT : int = 1;
-		public static const CONTENT_DROPOFF : int = 2;
-		public static const CONTENT_INTERACTIONS : int = 3;
-		public static const MAP_OVERLAY : int = 4;
-		public static const TOP_CONTRIBUTORS : int = 5;
-		public static const TOP_SYNDICATION : int = 6;
-		public static const CONTENT_CONTRIBUTIONS : int = 7;
-		public static const USER_ENGAGEMENT : int = 11;
-		public static const SPEFICIC_USER_ENGAGEMENT : int = 12;
-		public static const USER_TOP_CONTENT : int = 13;
-		public static const USER_CONTENT_DROPOFF : int = 14;
-		public static const USER_CONTENT_INTERACTIONS : int = 15;
-		public static const APPLICATIONS : int = 16;
-		public static const USER_USAGE : int = 17;
-		public static const SPECIFIC_USER_USAGE : int = 18;
-		public static const VAR_USAGE : int = 19;
-		public static const TOP_CREATORS : int = 20;
-		public static const REPORT_TYPE_PLATFORMS : int = 21;
-		public static const REPORT_TYPE_OPERATION_SYSTEM : int = 22;
-		public static const REPORT_TYPE_BROWSERS : int = 23;
-		public static const PARTNER_USAGE : int = 201;
+		/**
+		 **/
+		public var localFileSyncPath : String = null;
+
+		override public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			arr.push('localFileSyncPath');
+			return arr;
+		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
 	}
 }
