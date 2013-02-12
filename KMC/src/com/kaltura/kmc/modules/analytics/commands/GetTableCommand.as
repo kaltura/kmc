@@ -277,7 +277,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 				reportData.totalCount = _tableData.totalCount;
 
 			if (_addTotals) {
-				_model.selectedReportData.pager.pageSize = arrCol.length;
+				reportData.pager.pageSize = arrCol.length;
 			}
 			
 			_model.selectedReportData = null; //refresh
