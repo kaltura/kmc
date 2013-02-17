@@ -1,4 +1,4 @@
-<layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf" isPlaylist="true">
+<layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/falcon/skin/v3.7/skin.swf" isPlaylist="true">
   <VBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
       <Plugin id="playlistAPI" width="0%" height="0%" includeInLayout="false"/>
@@ -24,26 +24,16 @@
         <HBox id="ControllerScreen" width="100%" height="30" horizontalGap="9" paddingLeft="9" verticalAlign="middle" styleName="darkBg">
           <Button id="playBtnControllerScreen" command="play" buttonType="iconButton" focusRectPadding="0" icon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon" selectedUpIcon="pauseIcon" selectedOverIcon="pauseIcon" selectedDownIcon="pauseIcon" selectedDisabledIcon="pauseIcon" selectedTooltip="Pause" upTooltip="Play" tooltip="Play" k_buttonType="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
          
-         <HBox id="liveToggleBox" visible="{not(mediaProxy.canSeek)}" includeInLayout="{not(mediaProxy.canSeek)}" width="100%">
-					<Button id="liveToggleStatus"
-						toggle="true"
-						color1="0xFF0000"
-						color2="0xFF0000"
-						upIcon="onAirIcon" 
-						overIcon="onAirIcon" 
-						downIcon="onAirIcon" 
-						disabeledIcon="onAirIcon" 
-						selectedUpIcon="offlineIcon"  
-						selectedOverIcon="offlineIcon"  
-						selectedDownIcon="offlineIcon"  
-						selectedDisabledIcon="offlineIcon"  
-						isSelected="{mediaProxy.isOffline}"
-						visible="{mediaProxy.isLive}"
-						includeInLayout="{mediaProxy.isLive}"
-						useHandCursor=""
-						mouseEnable="false"
-						/>
-				</HBox>
+         <Button id="liveToggleStatus" buttonType="iconButton" focusRectPadding="0" 
+				icon="onAirIcon" overIcon="onAirIcon" downIcon="onAirIcon" disabeledIcon="onAirIcon" 
+				selectedUpIcon="offlineIcon" selectedOverIcon="offlineIcon" selectedDownIcon="offlineIcon" selectedDisabledIcon="offlineIcon" 
+				k_buttonType="buttonIconControllerArea" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0"
+				isSelected="{mediaProxy.isOffline}"
+				visible="{mediaProxy.isLive}"
+				includeInLayout="{mediaProxy.isLive}"
+				toggle="true"
+				useHandCursor=""
+				mouseEnable="false"/>
 
           <Button id="previousBtnControllerScreen" kClick="sendNotification('playlistPlayPrevious')" height="22" focusRectPadding="0" buttonType="iconButton" styleName="controllerScreen" icon="PreviousIcon" k_buttonType="buttonIconControllerArea" tooltip="Previous" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
           <Button id="nextBtnControllerScreen" kClick="sendNotification('playlistPlayNext')" focusRectPadding="0" height="22" buttonType="iconButton" icon="NextIcon" styleName="controllerScreen" k_buttonType="buttonIconControllerArea" tooltip="Next" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
@@ -68,7 +58,9 @@
 		   autoMessage="Automatically switches between bitrates"
 		   preferedFlavorBR="{mediaProxy.preferedFlavorBR}" tooltip="{flavorComboControllerScreen.selectedMessage}"
 		   usePixels="{mediaProxy.displayFlavorPixels}"
-		   isAutoSwitch="{mediaProxy.autoSwitchFlavors}"/>
+		   isAutoSwitch="{mediaProxy.autoSwitchFlavors}"
+		   	visible="{not(mediaProxy.isLive)}"
+			includeInLayout="{not(mediaProxy.isLive)}"/>
           <Button id="kalturaShareBtnControllerScreen" buttonType="iconButton" kClick="sendNotification('showAdvancedShare')" height="22" styleName="controllerScreen" focusRectPadding="0" icon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="48502" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
           <Button id="fullScreenBtnControllerScreen" command="fullScreen" buttonType="iconButton" height="22" styleName="controllerScreen" icon="openFullScreenIcon" selectedUpIcon="closeFullScreenIcon" selectedOverIcon="closeFullScreenIcon" selectedDownIcon="closeFullScreenIcon" selectedDisabledIcon="closeFullScreenIcon" focusRectPadding="0" k_buttonType="buttonIconControllerArea" tooltip="Toggle fullscreen" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
         </HBox>

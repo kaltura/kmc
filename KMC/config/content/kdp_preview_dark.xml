@@ -1,4 +1,4 @@
-<layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
+<layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/falcon/skin/v3.7/skin.swf">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
@@ -29,42 +29,32 @@
       <HBox id="ControllerScreenHolder" width="100%" height="30" verticalAlign="middle"  styleName="darkBg">
         <HBox id="ControllerScreen" width="100%" height="30" paddingLeft="10" horizontalGap="9" verticalAlign="middle" styleName="darkBg">
           <Button id="playBtnControllerScreen" command="play" buttonType="iconButton" focusRectPadding="0" icon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon" selectedUpIcon="pauseIcon" selectedOverIcon="pauseIcon" selectedDownIcon="pauseIcon" selectedDisabledIcon="pauseIcon" k_buttonType="buttonIconControllerArea" tooltip="Play" upTooltip="Play" selectedTooltip="Pause" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
-				
-				<HBox id="liveToggleBox" visible="{not(mediaProxy.canSeek)}" includeInLayout="{not(mediaProxy.canSeek)}" width="100%">
-					<Button id="liveToggleStatus"
-						toggle="true"
-						color1="0xFF0000"
-						color2="0xFF0000"
-						upIcon="onAirIcon" 
-						overIcon="onAirIcon" 
-						downIcon="onAirIcon" 
-						disabeledIcon="onAirIcon" 
-						selectedUpIcon="offlineIcon"  
-						selectedOverIcon="offlineIcon"  
-						selectedDownIcon="offlineIcon"  
-						selectedDisabledIcon="offlineIcon"  
-						isSelected="{mediaProxy.isOffline}"
-						visible="{mediaProxy.isLive}"
-						includeInLayout="{mediaProxy.isLive}"
-						useHandCursor=""
-						mouseEnable="false"
-						/>
-				</HBox>
+		  
+		  <Button id="liveToggleStatus" buttonType="iconButton" focusRectPadding="0" 
+				icon="onAirIcon" overIcon="onAirIcon" downIcon="onAirIcon" disabeledIcon="onAirIcon" 
+				selectedUpIcon="offlineIcon" selectedOverIcon="offlineIcon" selectedDownIcon="offlineIcon" selectedDisabledIcon="offlineIcon" 
+				k_buttonType="buttonIconControllerArea" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0"
+				isSelected="{mediaProxy.isOffline}"
+				visible="{mediaProxy.isLive}"
+				includeInLayout="{mediaProxy.isLive}"
+				toggle="true"
+				useHandCursor=""
+				mouseEnable="false"/>
 					
-				<HBox id="seekBox" width="100%" height="30" visible="{mediaProxy.canSeek}" includeInLayout="{mediaProxy.canSeek}" verticalAlign="middle" horizontalGap="9">
-					<Button id="goLiveBtn" buttonType="labelButton" textPadding="0" height="20" color1="0xCECECE" color2="0xFFFFFF" kClick="sendNotification('goLive')" visible="{mediaProxy.isLive}"
-							includeInLayout="{mediaProxy.isLive}" label="Live" styleName="controllerScreen"/>
-					<VBox id="scrubberContainer" width="100%" height="30" verticalAlign="middle" verticalGap="-3" supportEnableGui="false">
-						<Spacer height="10" />	
-						<Scrubber id="scrubber" width="100%" height="10"  styleName="" color1="16777215" color2="16777215" />
-						<HBox width="100%">
-							<Timer id="timerControllerScreen1" width="60" styleName="timerProgressLeft" format="mm:ss" height="12"  />
-							<Spacer width="100%" height="8" />	
-							<Timer id="timerControllerScreen2" width="60" 
-							styleName="timerProgressRight" format="mm:ss" height="12" timerType="total" />	
-						</HBox>
-					</VBox>
-				</HBox>
+			<HBox id="seekBox" width="100%" height="30" visible="{mediaProxy.canSeek}" includeInLayout="{mediaProxy.canSeek}" verticalAlign="middle" horizontalGap="9">
+				<Button id="goLiveBtn" buttonType="labelButton" textPadding="0" height="20" color1="0xCECECE" color2="0xFFFFFF" kClick="sendNotification('goLive')" visible="{mediaProxy.isLive}"
+						includeInLayout="{mediaProxy.isLive}" label="Live" styleName="controllerScreen"/>
+				<VBox id="scrubberContainer" width="100%" height="30" verticalAlign="middle" verticalGap="-3" supportEnableGui="false">
+					<Spacer height="10" />	
+					<Scrubber id="scrubber" width="100%" height="10"  styleName="" color1="16777215" color2="16777215" />
+					<HBox width="100%">
+						<Timer id="timerControllerScreen1" width="60" styleName="timerProgressLeft" format="mm:ss" height="12"  />
+						<Spacer width="100%" height="8" />	
+						<Timer id="timerControllerScreen2" width="60" 
+						styleName="timerProgressRight" format="mm:ss" height="12" timerType="total" />	
+					</HBox>
+				</VBox>
+			</HBox>
 
           <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" height="20" buttonType="iconButton" tooltip="Change volume" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
           <FlavorCombo id="flavorComboControllerScreen"  width="80" streamerType="{configProxy.flashvars.streamerType}"
@@ -73,7 +63,10 @@
 		   autoMessage="Automatically switches between bitrates"
 		   preferedFlavorBR="{mediaProxy.preferedFlavorBR}" tooltip="{flavorComboControllerScreen.selectedMessage}"
 		   usePixels="{mediaProxy.displayFlavorPixels}"
-			isAutoSwitch="{mediaProxy.autoSwitchFlavors}"/>
+			isAutoSwitch="{mediaProxy.autoSwitchFlavors}"
+			visible="{not(mediaProxy.isLive)}"
+			includeInLayout="{not(mediaProxy.isLive)}"/>
+			
           <Button id="kalturaShareBtnControllerScreen" buttonType="iconButton" kClick="sendNotification('showAdvancedShare')" height="22" styleName="controllerScreen" focusRectPadding="0" icon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
           <Button id="fullScreenBtnControllerScreen" command="fullScreen" buttonType="iconButton" height="22" styleName="controllerScreen" icon="openFullScreenIcon" selectedUpIcon="closeFullScreenIcon" selectedOverIcon="closeFullScreenIcon" selectedDownIcon="closeFullScreenIcon" selectedDisabledIcon="closeFullScreenIcon" focusRectPadding="0" k_buttonType="buttonIconControllerArea" tooltip="Toggle fullscreen" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
         </HBox>
