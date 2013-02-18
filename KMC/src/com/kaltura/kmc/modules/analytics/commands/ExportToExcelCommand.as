@@ -133,7 +133,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 			var kEvent:KalturaEvent = info as KalturaEvent;
 			kEvent.target.removeEventListener(KalturaEvent.COMPLETE, result);
 			kEvent.target.removeEventListener(KalturaEvent.FAILED, fault);
-			if (kEvent.error.errorCode == "POST_TIMEOUT") {
+			if (kEvent.error.errorCode == "POST_TIMEOUT" || kEvent.error.errorCode == "CONNECTION_TIMEOUT") {
 				// report is taking more than client-timeout to process
 				Alert.show(ResourceManager.getInstance().getString('analytics', 'csvProcessTimeout'),
 					ResourceManager.getInstance().getString('analytics', 'error'));
