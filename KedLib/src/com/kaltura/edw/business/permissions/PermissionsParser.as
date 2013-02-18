@@ -77,6 +77,46 @@ package com.kaltura.edw.business.permissions {
 		
 		
 		/**
+		 * check if a module should be hidden according to its direct permissions 
+		 * @param module			module's ui mapping
+		 * @param permissionsList	role + partner permission ids
+		 * @param minNodes			minimum number of permissions required to keep this tab
+		 * @return true if a module should be visible, false otherwise
+		 */
+		private function showModuleByPermissions(module:XML, permissionsList:Array):Boolean {
+			// support min attribute - minimum amount of nodes to show this tab
+			var minNodes:int = 1;
+			if (module.attribute("min").toString())
+				minNodes = Number(module.attribute("min"));
+			
+			// count the permissions needed to show the tab
+			var count:int = 0;
+			// this is a main tab that has no subtabs. 
+			var modulePermissions:XMLList = module.permission;
+			if (!modulePermissions.length()) {
+				// no general module permissions
+				return true;
+			}
+			// found permission - check its id
+			for each (var permission:XML in modulePermissions) {
+				// If one id is in the permissionsList - this module should not be hidden
+				if (isStringInArray(permission.@id , permissionsList)) {
+					// Found one - count it. 
+					count ++;
+					// if already have enough, no need to continue.
+					if (count >= minNodes) {
+						break;
+					}
+				}
+			}
+			// need at least minNodes non-denied permissions to show the tab
+			if (count >= minNodes) {
+				return true;
+			}
+			return false;
+		}
+		
+		/**
 		 * The function creates an array of tabs and sub-tabs that should be hidden
 		 * from the user because of roles and permissions logic.
 		 * @param uimapping				ui mapping part of the permissions uiconf
@@ -89,44 +129,19 @@ package com.kaltura.edw.business.permissions {
 			
 			// iterate modules 
 			for each (var module:XML in modules) {
-				var hideTab:Boolean = true;
-				var subtabsList:XMLList = module.tab;
-				// support min attribute - minimum amount of nodes to show this tab
-				var subtabs:int = subtabsList.length();
-				var minNodes:int = 1;
-				if (module.attribute("min").toString())
-					minNodes = Number(module.attribute("min"));
-				// check for sub-tabs 
-				if (subtabs == 0) {
-					// count the permissions needed to show the tab
-					var count:int = 0;
-					// this is a main tab that has no subtabs. 
-					var modulePermissions:XMLList = module.permission;
-					if (!modulePermissions.length()) {
-						// no inner permission - move to next module
+				var showTab:Boolean = false;
+				
+				// do we have required module permissions?
+				showTab = showModuleByPermissions(module, permissionsList);
+				
+				if (showTab) {
+					var subtabsList:XMLList = module.tab;
+					var subtabs:int = subtabsList.length();
+					if (subtabs == 0) {
+						// this module doesn't have configuration for subtabs
 						continue;
 					}
-					// found permission - check its id
-					for each (var permission:XML in modulePermissions) {
-						// If one id is in the permissionsList - this module should not be hidden
-						if (isStringInArray(permission.@id , permissionsList)) {
-							// Found one - count it. 
-							count ++;
-							
-							// if already have enough, no need to continue.
-							if (count >= minNodes) {
-								break;
-							}
-						}
-					}
-					// need at least minNodes non-denied permissions to show the tab
-					if (count >= minNodes) {
-						hideTab = false;
-					}
-				}
-				else {
-					// this top tab has sub-tabs and we need to scan each subtab.
-					// if no subtabs are left, we also hide the module.
+					// scan each subtab.
 					for each (var subtabXml:XML in subtabsList) {
 						//get all restrictions of current subtab
 						var subtabPermissions:XMLList = subtabXml.permission;
@@ -134,7 +149,7 @@ package com.kaltura.edw.business.permissions {
 						var hideSubTab:Boolean = true;
 						for each (var subTabPermission:XML in subtabPermissions) {
 							//if one id is in the permissionsList - this subtab should not be hidden
-							if (isStringInArray(subTabPermission.@id ,permissionsList )) {
+							if (isStringInArray(subTabPermission.@id, permissionsList)) {
 								//Found one - no need to hide the subtab or the tab. 
 								hideSubTab = false;
 								//No need to search for any other permissions
@@ -147,17 +162,21 @@ package com.kaltura.edw.business.permissions {
 							// this subtab will be hidden, one less visible one:
 							subtabs--;
 						}
-						else {
-							hideTab = false;
+					}
+					
+					// if no subtabs are left, check keepOnEmpty  
+					if (subtabs == 0) {
+						// may this module be removed ?
+						var keepOnEmpty:Boolean = module.attribute("keepOnEmpty").length() > 0;
+						keepOnEmpty &&= module.attribute("keepOnEmpty").toString() == "true";
+						if (!keepOnEmpty) {
+							// remove module
+							arr.push(module.@id.toString());		
 						}
 					}
 				}
-				// may this module be removed ?
-				var keepOnEmpty:Boolean = module.attribute("keepOnEmpty").length() > 0;
-				keepOnEmpty &&= module.attribute("keepOnEmpty").toString() == "true"; 
-				
-				// remove module if needed
-				if (hideTab && !keepOnEmpty) {
+				else {
+					// remove module
 					arr.push(module.@id.toString());
 				}
 				
