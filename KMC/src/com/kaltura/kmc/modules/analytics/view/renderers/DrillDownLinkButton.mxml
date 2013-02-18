@@ -34,22 +34,44 @@
 			private function onItemClick( event : MouseEvent ) : void
 			{
 				// "data" is of type Object. it's attributes match table headers as received from server for the current report.
+				// get required object name
 				var object_name : String;
-				
-				if(data.country) object_name = data.country;
-				else if(data.entry_media_source_name) object_name = data.entry_media_source_name;
-				else if(data.entry_name) object_name = data.entry_name;
-				else if(data.domain_name) object_name = data.domain_name;
-				else if(data.name) object_name = data.name;
-				else if(data.NAME) object_name = data.NAME;
-				
+				if (data.country) {
+					object_name = data.country;
+				}
+				else if (data.entry_media_source_name) {
+					object_name = data.entry_media_source_name;
+				}
+				else if (data.entry_name) {
+					object_name = data.entry_name;
+				}
+				else if (data.domain_name) {
+					object_name = data.domain_name;
+				}
+				else if (data.name) {
+					object_name = data.name;
+				}
+				else if (data.NAME) {
+					object_name = data.NAME;
+				}
+				else if (data.device) {
+					object_name = data.device;
+				}
+				else if (data.os) {
+					object_name = data.os;
+				}
+				else if (data.browser) {
+					object_name = data.browser;
+				}
+
+				// dispatch event
 				var drillDownEvent : DrillDownEvent;
-				
-				//if we drill down a user
-				if(data.name || data.NAME)
+				if (data.object_id) { 
+					drillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN , data.object_id , 0 , object_name);
+				}
+				else { 
 					drillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN , object_name , 0 , object_name);
-				else // else we drill down an entry
-					drillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN , data.object_id , 0 , object_name); //data.entry_id
+				}
 				
 				drillDownEvent.dispatch();	
 			}

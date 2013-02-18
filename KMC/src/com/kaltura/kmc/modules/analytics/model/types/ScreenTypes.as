@@ -108,5 +108,30 @@ package com.kaltura.kmc.modules.analytics.model.types
 		 * End User Storage Drilldown Report 
 		 */
 		public static const END_USER_STORAGE_DRILL_DOWN : int = 18;
+		
+		
+		// ------------------------------------------------------------------
+		// Platform Reports
+		// ------------------------------------------------------------------
+		
+		/**
+		 * Platform Report 
+		 */
+		public static const PLATFORM : int = 19;
+		
+		/**
+		 * Platform drilldown Report 
+		 */
+		public static const PLATFORM_DRILL_DOWN : int = 20;
+		
+		/**
+		 * Operating System Report 
+		 */
+		public static const OS : int = 21;
+		
+		/**
+		 * Browsers Report 
+		 */
+		public static const BROWSER : int = 22;
 	}
 }

@@ -25,5 +25,10 @@ package com.kaltura.kmc.modules.analytics.model.reports
 		public var userEngagement : Array = ['user_id','videos','count_user_plays','sum_time_viewed','avg_time_viewed','avg_view_drop_off','count_loads','load_play_ratio'];
 		public var userEngagementDrilldown : Array = ['count_video','count_user_plays','sum_time_viewed','avg_time_viewed','avg_view_drop_off','count_loads','load_play_ratio'];
 
+		public var platforms : Array = ['platform', 'count_plays', 'sum_time_viewed', 'avg_time_viewed', 'count_loads', 'load_play_ratio'];
+		public var opsys : Array = ['opsys', 'count_plays', 'sum_time_viewed', 'avg_time_viewed', 'count_loads', 'load_play_ratio'];
+		public var browsers : Array = ['browser', 'count_plays', 'sum_time_viewed', 'avg_time_viewed', 'count_loads', 'load_play_ratio'];
+		public var platformDrilldown : Array = ['opsys', 'count_plays', 'sum_time_viewed', 'avg_time_viewed', 'count_loads', 'load_play_ratio'];
+
 	}
 }

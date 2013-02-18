@@ -148,6 +148,19 @@ package com.kaltura.kmc.modules.analytics.model {
 				case ScreenTypes.END_USER_STORAGE_DRILL_DOWN :
 					res = filterMasks.specificEndUserStorage;  
 					break;
+				
+				case ScreenTypes.PLATFORM :
+					res = filterMasks.platforms;
+					break;
+				case ScreenTypes.PLATFORM_DRILL_DOWN :
+					res = filterMasks.platforms;
+					break;
+				case ScreenTypes.OS :
+					res = filterMasks.opsys;  
+					break;
+				case ScreenTypes.BROWSER :
+					res = filterMasks.browsers;  
+					break;
 			}
 			return res;
 		}
@@ -240,6 +253,15 @@ package com.kaltura.kmc.modules.analytics.model {
 					[ResourceManager.getInstance().getString('analytics', 'pbns')]);
 			}
 		}
+		
+		/**
+		 * dataprovider for content reports tab sub-navigation
+		 */
+		public var platformDtnDp:ArrayCollection = new ArrayCollection([
+			new LocalizedVo('platforms', 'platforms', 'analytics'),
+			new LocalizedVo('opsyss', 'opsyss', 'analytics'),
+			new LocalizedVo('browsers', 'browsers', 'analytics')]);
+
 
 		//---------------------------------------------------------
 		/**

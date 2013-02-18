@@ -16,5 +16,10 @@ package com.kaltura.kmc.modules.analytics.model.reports
 		public var endUserStorage : Array = ['added_storage_mb', 'deleted_storage_mb', 'total_storage_mb', 'added_entries', 'deleted_entries', 'total_entries', 'added_msecs', 'deleted_msecs', 'total_msecs'];
 		
 		public var userEngagement : Array = [ 'count_plays','sum_time_viewed','avg_time_viewed','count_loads']; 
+		
+		public var platform : Array = [ 'count_plays','sum_time_viewed','avg_time_viewed','count_loads']; 
+		public var opsys : Array = [ 'count_plays','sum_time_viewed','avg_time_viewed','count_loads']; 
+		public var browsers : Array = [ 'count_plays','sum_time_viewed','avg_time_viewed','count_loads']; 
+		public var platformDrilldown : Array = [ 'count_plays','sum_time_viewed','avg_time_viewed','count_loads']; 
 	}
 }

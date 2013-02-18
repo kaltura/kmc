@@ -6,6 +6,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.analytics.business.IDateRangeManager;
@@ -138,9 +139,10 @@
 
 			[Bindable]
 			/**
-			 * default: false
+			 * tooltip for report message button.
+			 * if no value set, the button doesn't appear.
 			 * */
-			public var showMessageTip:Boolean = false;
+			public var messageTip:String = '';
 
 			[Bindable]
 			/**
@@ -304,13 +306,6 @@
 			
 			[Bindable]
 			/**
-			 * default:false
-			 * */
-			public var generalBarChartFlag:Boolean = false;
-
-			
-			[Bindable]
-			/**
 			 * report time interval is months
 			 * */
 			private var _isMonths:Boolean = false;
@@ -331,23 +326,9 @@
 
 				if (dimCbDp == _model.reportDimension.endUserStorage || dimCbDp == _model.reportDimension.publisherStorageNBandwidth) {
 					dateBarChart.dataFormatFunc = roundUpValue;
-//					dateBarChart.dataUnits = resourceManager.getString('analytics', 'MB');
 					lineChart.dataFormatFunc = roundUpValue;
-//					lineChart.dataUnits = resourceManager.getString('analytics', 'MB');
 				}
 			}
-
-
-//			/**
-//			 * triggered when localeChain changes / resources file completes loading
-//			 * */
-//			override protected function resourcesChanged():void {
-//				super.resourcesChanged();
-//				if (dimCbDp == _model.reportDimension.endUserStorage || dimCbDp == _model.reportDimension.publisherStorageNBandwidth) {
-//					dateBarChart.dataUnits = resourceManager.getString('analytics', 'MB');
-//					lineChart.dataUnits = resourceManager.getString('analytics', 'MB');
-//				}
-//			}
 
 
 			/**
@@ -473,10 +454,23 @@
 							dateBarChart.dataProvider = rdtc.chartDp;
 						}
 						else {
+							if (rdtc.type == KalturaReportType.PLATFORMS) {
+								lineChart.yFields = rdtc.selectedChartHeaders;
+								legend.visible = true;
+							}
+							else {
+								lineChart.yFields = ["y"];
+								legend.visible = false;
+							}
 							lineChart.dataProvider = rdtc.chartDp;
 						}
 					}
 					else if (showColumnChart) {
+						if (rdtc.type == KalturaReportType.OPERATION_SYSTEM 
+							|| rdtc.type == KalturaReportType.BROWSERS
+							|| rdtc.type == KalturaReportType.PLATFORMS) {
+							columnChart.categoryField = "x"; 
+						}
 						columnChart.dataProvider = rdtc.chartDp;
 					}
 
@@ -685,18 +679,21 @@
 
 	<!-- charts -->
 	<charts:KColumnChart id="columnChart" width="100%" enabled="{_isVisibleColumnChart}" visible="{showColumnChart}"
-						 includeInLayout="{showColumnChart}" createColumnsFromDp="{generalBarChartFlag}"/>
+						 includeInLayout="{showColumnChart}" />
 
-	<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}"
-					   includeInLayout="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}"
-					   visible="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}"
-					   minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>
+	<mx:Canvas width="100%">
+		<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}"
+						   includeInLayout="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}"
+						   visible="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}"
+						   minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>
+		<mx:Legend id="legend" dataProvider="{lineChart}" right="{legend.width - 10}" visible="false" styleName="analyticsGraphLegend"/>
+	</mx:Canvas>
 
 	<charts:KDateColumnChart id="dateBarChart" width="100%"
 							 oneDayDate="{_isOneDay &amp;&amp; ! _isMonths ? filterVo.fromDate : null}"
 							 includeInLayout="{showLineChart &amp;&amp; (_isOneDay || _isMonths)}"
 							 visible="{showLineChart &amp;&amp; (_isOneDay || _isMonths)}"/>
-
+	
 	<!-- loader -->
 	<mx:VBox width="{this.width-150}" height="200" paddingTop="-150" horizontalAlign="center" clipContent="false"
 			 includeInLayout="false" visible="{_loadChart}">
@@ -707,8 +704,8 @@
 	<mx:HBox width="100%">
 		<mx:Text id="searchNote" htmlText="{reportData.message}" link="searchNote_linkHandler(event)"
 				 styleName="pageTitle2"/>
-		<mx:Button id="ttBtn" styleName="toolTipHelp" visible="{showMessageTip}" includeInLayout="{showMessageTip}"
-				   toolTip="{resourceManager.getString('analytics', 'sinceUserReports')}"/>
+		<mx:Button id="ttBtn" styleName="toolTipHelp" visible="{ttBtn.toolTip != ''}" includeInLayout="{ttBtn.toolTip != ''}"
+				   toolTip="{messageTip}"/>
 	</mx:HBox>
 	<mx:Label width="100%" styleName="pageTitle3" text="{reportData.filterMessage}"
 			  includeInLayout="{reportData.filterMessage != ''}"/>

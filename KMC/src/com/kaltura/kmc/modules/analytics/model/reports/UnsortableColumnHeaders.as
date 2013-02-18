@@ -28,6 +28,12 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 
 		public var userEngagement:Array = ['user_id', 'name'];
 		public var userEngagementDrilldown:Array = ['count_video', 'entry_name'];
+		
+		
+		public var platforms:Array = ['platform', 'name'];
+		public var opsys:Array = ['opsys', 'name'];
+		public var platformDrilldown:Array = ['opsys', 'name'];
+		public var browsers:Array = ['browser', 'name'];
 
 	}
 }

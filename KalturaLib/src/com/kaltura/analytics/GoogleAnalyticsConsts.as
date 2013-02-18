@@ -369,6 +369,7 @@ package com.kaltura.analytics {
 		// ==================================================================
 		// page views
 		// ==============================
+		public static const ANALYTICS_PLATFORM:String = "Platform Reports";
 		public static const ANALYTICS_BANDWIDTH_USAGE:String = "BandWidth Usage";
 		public static const ANALYTICS_CONTENT_REPORTS:String = "Content Reports";
 		public static const ANALYTICS_USERS_AND_COMMUNITY_REPORTS:String = "Users And Community Reports";
@@ -398,6 +399,12 @@ package com.kaltura.analytics {
 		public static const ANALYTICS_VIDEO_DRILL_DOWN:String = "Content Reports>Video Drill Down";
 		public static const ANALYTICS_CONTENT_DRILL_DOWN_INTERACTION:String = "Content Reports>Content Drill Down Interaction";
 		public static const ANALYTICS_VIDEO_DRILL_DOWN_DROPOFF:String = "Content Reports>Video Drill Down Dropoff";
+		
+		
+		public static const ANALYTICS_PLATFORM_PLATFORMS:String = "Platform Reports>Platforms";
+		public static const ANALYTICS_PLATFORM_PLATFORMS_DRILL_DOWN:String = "Platform Reports>Platform DrillDown";
+		public static const ANALYTICS_PLATFORM_OS:String = "Platform Reports>Operating Systems";
+		public static const ANALYTICS_PLATFORM_BROWSERS:String = "Platform Reports>Browsers";
 		
 
 		// ==================================================================

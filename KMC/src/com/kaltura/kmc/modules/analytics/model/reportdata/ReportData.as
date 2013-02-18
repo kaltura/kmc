@@ -87,6 +87,17 @@ package com.kaltura.kmc.modules.analytics.model.reportdata {
 		public var selectedDim:String;
 		
 		/**
+		 * chart headers data by report dimension id 
+		 */
+		public var dimToChartHeadersMap:Object = new Object();
+		
+		/**
+		 * list of strings to be used as yFields in lineChart if more than 1 line.
+		 * strings should be the names of the props on the vo in graph dataProvider (chartDp).
+		 */
+		public var selectedChartHeaders:Array;
+		
+		/**
 		 * in entry reports, the selected entry 
 		 */		
 		public var selectedMediaEntry:KalturaBaseEntry;

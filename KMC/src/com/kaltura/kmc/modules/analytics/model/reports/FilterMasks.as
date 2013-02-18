@@ -8,6 +8,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 	import com.kaltura.kmc.modules.analytics.vo.filterMasks.UnitsDatesUsersMask;
 	import com.kaltura.kmc.modules.analytics.vo.filterMasks.UserEngDrillDownMask;
 	import com.kaltura.kmc.modules.analytics.vo.filterMasks.UserEngMask;
+	import com.kaltura.kmc.modules.analytics.vo.filterMasks.PlatformMask;
 
 	[Bindable]
 	/**
@@ -42,7 +43,10 @@ package com.kaltura.kmc.modules.analytics.model.reports
 		public var endUserStorage : FilterVo;
 		public var specificEndUserStorage : FilterVo;
 		
-		
+		// Platform
+		public var platforms : FilterVo;
+		public var opsys : FilterVo;
+		public var browsers : FilterVo;
 
 		
 		public function FilterMasks(fvo:FilterVo)
@@ -66,6 +70,10 @@ package com.kaltura.kmc.modules.analytics.model.reports
 			publisherBandwidthNStorage = new UnitsDatesMask(fvo);
 			endUserStorage = new UnitsDatesUsersMask(fvo);
 			specificEndUserStorage = new UnitsDatesUsersMask(fvo);
+			
+			platforms = new PlatformMask(fvo);
+			opsys = new PlatformMask(fvo);
+			browsers = new PlatformMask(fvo);
 			
 		}
 		

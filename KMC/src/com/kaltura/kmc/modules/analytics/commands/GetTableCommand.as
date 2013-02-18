@@ -60,11 +60,19 @@ package com.kaltura.kmc.modules.analytics.commands {
 			}
 
 			var objectIds:String = '';
-			if (_model.selectedEntry && (_screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT || _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF || _screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS || _screenType == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN || _screenType == ScreenTypes.MAP_OVERLAY_DRILL_DOWN || _screenType == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN || _screenType == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN || _screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)) {
+			if (_model.selectedEntry && (_screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT 
+					|| _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF 
+					|| _screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS
+					|| _screenType == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN 
+					|| _screenType == ScreenTypes.MAP_OVERLAY_DRILL_DOWN 
+					|| _screenType == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN
+					|| _screenType == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN 
+					|| _screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN
+					|| _screenType == ScreenTypes.PLATFORM_DRILL_DOWN)) {
 				objectIds = selectedReportData.objectIds = _model.selectedEntry;
 			}
 
-			if ((event as ReportEvent).orderBy)
+			if (reportEvt.orderBy)
 				selectedReportData.orderBy = reportEvt.orderBy;
 
 			var reportGetTable:ReportGetTable;
@@ -259,6 +267,10 @@ package com.kaltura.kmc.modules.analytics.commands {
 				&& _screenType != ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN 
 				&& _screenType != ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE 
 				&& _screenType != ScreenTypes.END_USER_STORAGE_DRILL_DOWN 
+				&& _screenType != ScreenTypes.PLATFORM 
+				&& _screenType != ScreenTypes.OS 
+				&& _screenType != ScreenTypes.BROWSER 
+				&& _screenType != ScreenTypes.PLATFORM_DRILL_DOWN 
 				&& !(_model.entitlementEnabled && (_screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT 
 												|| _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF
 												|| _screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS))) {

@@ -87,6 +87,8 @@ package com.kaltura.kmc.modules.analytics.commands {
 				case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:
 				case ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN:
 				case ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE:
+				case ScreenTypes.BROWSER:
+				case ScreenTypes.OS:
 					//if it's not drilldown make the name null
 					_model.drillDownName = null;
 					_model.tableSupportDrillDown = false;

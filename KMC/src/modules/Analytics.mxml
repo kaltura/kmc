@@ -52,6 +52,7 @@
 			
 			
 			// the following const values match *keys* in locale, not values.
+			private static const PLATFORM:String = "platformReports";
 			private static const BANDWIDTH_USAGE:String = "usageTabTitle";
 			private static const CONTENT:String = "contentDashboard";
 			private static const USERS_AND_COMMUNITY:String = "usersandCommunity";
@@ -101,6 +102,7 @@
 				usage.init();
 				content.init();
 				community.init();
+				platform.init();
 				
 				if (stage) {
 					onAddedToStage();
@@ -141,6 +143,10 @@
 						onItemClick(new ItemClickEvent("itemClick", false, false, "dummy", 2))
 						contentView.selectedIndex = 2;
 						break;
+					case PLATFORM:
+						onItemClick(new ItemClickEvent("itemClick", false, false, "dummy", 3))
+						contentView.selectedIndex = 3;
+						break;
 					default:
 						trace("din't get annea dese, eh got " + subtab);
 				}
@@ -173,11 +179,13 @@
 					listCategories.dispatch();
 				}
 				setModuleReady();
+				
 				// Roles and permission code here
-				// At the current - no need to map - the analytics is a whole top tab-hide feature
-				// permissionManager.applyAllAttributes(this,NAME);				
-
 				permissionManager.applyAllAttributes(this, NAME);
+				var tabsToHide:Array = permissionManager.getRelevantSubTabsToHide(NAME);
+				for each (var subtabName:String in tabsToHide) {
+					contentView.removeChild(this[subtabName]);
+				}
 			}
 			
 			
@@ -246,6 +254,19 @@
 					stateEvent = new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE);
 					stateEvent.dispatch();
 				}
+				else if (event.index == 3) {
+					// trackers:
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ANALYTICS_PLATFORM , GoogleAnalyticsConsts.ANALYTICS);
+					//KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ANALYTICS,KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_TAB,
+					//	"Main Menu>Bandwidth Usage Tab");
+					JSGate.writeUrlHash(Analytics.NAME, PLATFORM);
+					
+					if (platform.platforms && platform.dtn.selectedIndex == 0)
+						platform.platforms.onShow();
+					
+					stateEvent = new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.PLATFORM);
+					stateEvent.dispatch();
+				}
 				
 			}
 			
@@ -259,6 +280,9 @@
 						break;
 					case community:
 						community.help();
+						break;
+					case platform:
+						platform.help();
 						break;
 				}
 			}
@@ -297,6 +321,9 @@
 			
 			<view:Usage id='usage' horizontalScrollPolicy="off" verticalScrollPolicy="off" width="100%" height="100%"
 						label="{resourceManager.getString('analytics','usageTabTitle')}" styleName="pageStyle"/>
+			
+			<view:Platform id='platform' horizontalScrollPolicy="off" verticalScrollPolicy="off" width="100%" height="100%"
+						label="{resourceManager.getString('analytics','platformReports')}" styleName="pageStyle"/>
 		</mx:ViewStack>
 		
 	</mx:VBox>

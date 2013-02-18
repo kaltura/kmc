@@ -11,11 +11,6 @@
 			 * */
 			private var _countPlaysDp : Array;
 			
-			[Bindable]
-			/**
-			 * should graph DP be created from the default DP or from the given one
-			 * */
-			public var createColumnsFromDp:Boolean = false;
 			
 	 		private function init():void {
 	 			_countPlaysDp = [ resourceManager.getString('analytics','count_plays') ,
@@ -25,10 +20,20 @@
  							   resourceManager.getString('analytics','count_plays_100') ];
 	 		}
 	 		
-	 		override public function set dataProvider(value:Object):void {
-	 			super.dataProvider = value;
-	 			columnSeries.dataProvider = value;
-	 		}
+			
+			/**
+			 * set horizontal axis's category field
+			 * */
+			public function set categoryField (field:String):void {
+				if (field) {
+					catAxis.dataProvider = null;
+					catAxis.categoryField = field;
+				}
+				else {
+					catAxis.dataProvider = _countPlaysDp;
+					catAxis.categoryField = null;
+				}
+			}
 			
 	 	]]>
 	 </mx:Script>
@@ -37,7 +42,7 @@
  	 <mx:SolidColor id="sc1" color="#9ab40c" />
 
 	 <mx:horizontalAxis>
-		 <mx:CategoryAxis id="catAxis" dataProvider="{createColumnsFromDp ? dataProvider : _countPlaysDp}"  />
+		 <mx:CategoryAxis id="catAxis" dataProvider="{_countPlaysDp}"  />
      </mx:horizontalAxis>
      
      <mx:verticalAxis>
