@@ -17,13 +17,15 @@ package com.kaltura.kmc.modules.content.commands {
 	import mx.rpc.IResponder;
 	import com.kaltura.vo.KalturaLiveStreamConfiguration;
 	import com.kaltura.types.KalturaPlaybackProtocol;
+	import mx.resources.IResourceManager;
 
 	[ResourceBundle("live")]
 	
 	public class AddStreamCommand extends KalturaCommand {
 
+		private var _sourceType:String = null;
+		
 		override public function execute(event:CairngormEvent):void {
-			var sourceType:String = null;
 			var streamVo:StreamVo = (event as AddStreamEvent).streamVo;
 			var liveEntry:KalturaLiveStreamAdminEntry = new KalturaLiveStreamAdminEntry();
 			liveEntry.mediaType = KalturaMediaType.LIVE_STREAM_FLASH;
@@ -49,7 +51,7 @@ package com.kaltura.kmc.modules.content.commands {
 				else
 					liveEntry.streamPassword = streamVo.password;
 				
-				sourceType = KalturaSourceType.AKAMAI_UNIVERSAL_LIVE;
+				_sourceType = KalturaSourceType.AKAMAI_UNIVERSAL_LIVE;
 			}
 			else if (streamVo.streamType == StreamVo.STREAM_TYPE_MANUAL) {
 				liveEntry.hlsStreamUrl = streamVo.mobileHLSURL;
@@ -58,10 +60,10 @@ package com.kaltura.kmc.modules.content.commands {
 				cfg.url = streamVo.flashHDSURL;
 				liveEntry.liveStreamConfigurations = [cfg];
 				
-				sourceType = KalturaSourceType.MANUAL_LIVE_STREAM;
+				_sourceType = KalturaSourceType.MANUAL_LIVE_STREAM;
 			}
 
-			var addEntry:LiveStreamAdd = new LiveStreamAdd(liveEntry, sourceType);
+			var addEntry:LiveStreamAdd = new LiveStreamAdd(liveEntry, _sourceType);
 			addEntry.addEventListener(KalturaEvent.COMPLETE, result);
 			addEntry.addEventListener(KalturaEvent.FAILED, fault);
 			_model.increaseLoadCounter();
@@ -71,7 +73,14 @@ package com.kaltura.kmc.modules.content.commands {
 
 		override public function result(data:Object):void {
 			super.result(data);
-			Alert.show(ResourceManager.getInstance().getString('live', 'liveEntryTimeMessage'), ResourceManager.getInstance().getString('live', 'liveEntryTimeMessageTitle'));
+			var rm:IResourceManager = ResourceManager.getInstance();
+			if (_sourceType == KalturaSourceType.MANUAL_LIVE_STREAM) {
+				Alert.show(rm.getString('live', 'manualLiveEntryCreatedMessage'), rm.getString('live', 'manualLiveEntryCreatedMessageTitle'));
+			}
+			else {
+				Alert.show(rm.getString('live', 'liveEntryTimeMessage'), rm.getString('live', 'liveEntryTimeMessageTitle'));
+			}
+			
 			_model.decreaseLoadCounter();
 
 			var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
