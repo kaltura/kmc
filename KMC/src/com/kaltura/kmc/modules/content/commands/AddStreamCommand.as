@@ -75,7 +75,7 @@ package com.kaltura.kmc.modules.content.commands {
 			super.result(data);
 			var rm:IResourceManager = ResourceManager.getInstance();
 			if (_sourceType == KalturaSourceType.MANUAL_LIVE_STREAM) {
-				Alert.show(rm.getString('live', 'manualLiveEntryCreatedMessage'), rm.getString('live', 'manualLiveEntryCreatedMessageTitle'));
+				Alert.show(rm.getString('live', 'manualLiveEntryCreatedMessage', [(data as KalturaLiveStreamAdminEntry).id]), rm.getString('live', 'manualLiveEntryCreatedMessageTitle'));
 			}
 			else {
 				Alert.show(rm.getString('live', 'liveEntryTimeMessage'), rm.getString('live', 'liveEntryTimeMessageTitle'));
