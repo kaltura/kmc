@@ -1,4 +1,4 @@
-<layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf" isPlaylist="true">
+<layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/falcon/skin/v3.7/skin.swf" isPlaylist="true">
 	<VBox id="topLevel" width="100%" height="100%">
 		<VBox id="player" width="100%" height="100%" styleName="black">
 			<Plugin id="playlistAPI" width="0%" height="0%" includeInLayout="false"/>
@@ -95,26 +95,16 @@
 								icon="playIcon" overIcon="playIcon" downIcon="playIcon" disabeledIcon="playIcon"
 								selectedUpIcon="pauseIcon" selectedOverIcon="pauseIcon" selectedDownIcon="pauseIcon"
 								selectedDisabledIcon="pauseIcon" tooltip="Play" upTooltip="Play" selectedTooltip="Pause"/>
-						 <HBox id="liveToggleBox" visible="{not(mediaProxy.canSeek)}" includeInLayout="{not(mediaProxy.canSeek)}" width="100%">
-							<Button id="liveToggleStatus"
-								toggle="true"
-								color1="0xFF0000"
-								color2="0xFF0000"
-								upIcon="onAirIcon" 
-								overIcon="onAirIcon" 
-								downIcon="onAirIcon" 
-								disabeledIcon="onAirIcon" 
-								selectedUpIcon="offlineIcon"  
-								selectedOverIcon="offlineIcon"  
-								selectedDownIcon="offlineIcon"  
-								selectedDisabledIcon="offlineIcon"  
+						  <Button id="liveToggleStatus" buttonType="iconButton" focusRectPadding="0" 
+								icon="onAirIcon" overIcon="onAirIcon" downIcon="onAirIcon" disabeledIcon="onAirIcon" 
+								selectedUpIcon="offlineIcon" selectedOverIcon="offlineIcon" selectedDownIcon="offlineIcon" selectedDisabledIcon="offlineIcon" 
+								k_buttonType="buttonIconControllerArea" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0"
 								isSelected="{mediaProxy.isOffline}"
 								visible="{mediaProxy.isLive}"
 								includeInLayout="{mediaProxy.isLive}"
+								toggle="true"
 								useHandCursor=""
-								mouseEnable="false"
-								/>
-						</HBox>
+								mouseEnable="false"/>
 						<Button id="previousBtnControllerScreen" kClick="sendNotification('playlistPlayPrevious')"
 								height="22" focusRectPadding="0" buttonType="iconButton" styleName="controllerScreen"
 								icon="PreviousIcon" tooltip="Previous"/>
@@ -171,7 +161,9 @@
 									 preferedFlavorBR="{mediaProxy.preferedFlavorBR}"
 									 tooltip="{flavorComboControllerScreen.selectedMessage}"
 									 usePixels="{mediaProxy.displayFlavorPixels}"
-									 isAutoSwitch="{mediaProxy.autoSwitchFlavors}"/>
+									 isAutoSwitch="{mediaProxy.autoSwitchFlavors}"
+									 visible="{not(mediaProxy.isLive)}"
+									 includeInLayout="{not(mediaProxy.isLive)}"/>
 						<Button id="fullScreenBtnControllerScreen" command="fullScreen" buttonType="iconButton"
 								height="22" label="" styleName="controllerScreen" icon="openFullScreenIcon"
 								selectedUpIcon="closeFullScreenIcon" selectedOverIcon="closeFullScreenIcon"
