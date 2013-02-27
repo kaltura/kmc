@@ -29,6 +29,37 @@ package com.kaltura.utils
 	            return dateFormatter.format(pTimeMS);
 	        }
 	    }
+		
+		
+		/**
+		 * formats a time string without using Flash's Date object
+		 * @param secs
+		 * @param showHours
+		 * @param showSeconds
+		 * @return given value, formatted as {HH}:MM:{SS }
+		 * 
+		 */
+		public static function formatTime2(secs:int, showHours:Boolean = true, showSeconds:Boolean = true):String {
+			var h:int = Math.floor(secs / 3600); // 60 * 60 = 3600
+			var sh:int = h * 3600;	// hours in seconds
+			var m:int = Math.floor((secs - sh) / 60);
+			var sm:int = m * 60;	// minutes in seconds
+			var s:int = secs - sh - sm;
+			
+			var result:String = '';
+			if (showHours) {
+				result += addZero(h) + ':'; 
+			}
+			result += addZero(m);
+			if (showSeconds) {
+				result += ':' + addZero(s);
+			}
+			return result;
+		}
+		
+		private static function addZero(n:int):String {
+			return (n<10 ? '0' : '') + n;
+		}
 
 	}
 }

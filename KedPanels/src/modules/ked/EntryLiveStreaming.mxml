@@ -11,6 +11,7 @@ live streaming control tab of EntryDetailsWin
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KalturaLiveStreamConfiguration;
 			import com.kaltura.types.KalturaSourceType;
 			import mx.formatters.DateFormatter;
@@ -394,9 +395,11 @@ live streaming control tab of EntryDetailsWin
 			}
 			
 			private function getDVRWindow (entry:KalturaLiveStreamAdminEntry):String {
-				var frmt:DateFormatter = new DateFormatter();
-				frmt.formatString = resourceManager.getString('drilldown', 'dvrWinFormat');
-				return frmt.format(entry.dvrWindow);
+//				var frmt:DateFormatter = new DateFormatter();
+//				frmt.formatString = resourceManager.getString('drilldown', 'dvrWinFormat');
+//				// value should be Date
+//				return frmt.format(entry.dvrWindow);
+				return resourceManager.getString('drilldown', 'dvrWinFormat', [KTimeUtil.formatTime2(entry.dvrWindow*60, true, false)]);
 			}
 			
 			
@@ -463,14 +466,15 @@ live streaming control tab of EntryDetailsWin
 			<mx:HBox width="100%">
 				<mx:Label text="{resourceManager.getString('drilldown', 'hlsStreamUrl')}" width="{_prefixesWidth}"
 						  styleName="drillDownLabel"/>
-				<mx:Label id="hlsStreamUrl" text="{_selectedEntry.hlsStreamUrl}" selectable="true" width="{_broadcastingWidth}"/>
+				<mx:Label id="hlsStreamUrl" text="{_selectedEntry.hlsStreamUrl}" selectable="true" width="{_broadcastingWidth}"
+						  truncateToFit="false"/>
 			</mx:HBox>
 		
 			<mx:HBox width="100%">
 				<mx:Label text="{resourceManager.getString('drilldown', 'externalStreamId')}" width="{_prefixesWidth}"
 						  styleName="drillDownLabel"/>
-				<mx:Label id="externalStreamId" text="{_selectedEntry.externalStreamId}" selectable="true"
-						  width="{_broadcastingWidth}"/>
+				<mx:Label id="externalStreamId" text="{_selectedEntry.streamRemoteId}" selectable="true"
+						  width="{_broadcastingWidth}" />
 			</mx:HBox>
 		
 			<mx:HBox width="100%">
