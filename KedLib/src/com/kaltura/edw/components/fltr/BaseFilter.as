@@ -160,6 +160,7 @@ package com.kaltura.edw.components.fltr
 			var items:Array = (_kalturaFilter.advancedSearch as KalturaSearchOperator).items;
 			var i:int;
 			var found:Boolean;
+			if (items) {
 			// if distribution filter:
 			if (filterId == "distributionProfiles") {
 				// find the distribtion search item and remove it.
@@ -200,6 +201,7 @@ package com.kaltura.edw.components.fltr
 				if (!addOnly || !found) {
 					(_kalturaFilter.advancedSearch as KalturaSearchOperator).items.push(searchItem);
 				}
+			}
 			}
 		}
 		
