@@ -25,18 +25,39 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.commands.widevineDrm
 {
-	public class KalturaAssetType
+	import com.kaltura.delegates.widevineDrm.WidevineDrmGetLicenseDelegate;
+	import com.kaltura.net.KalturaCall;
+
+	/**
+	 * Get license for encrypted content playback
+	 * 
+	 **/
+	public class WidevineDrmGetLicense extends KalturaCall
 	{
-		public static const ATTACHMENT : String = 'attachment.Attachment';
-		public static const CAPTION : String = 'caption.Caption';
-		public static const DOCUMENT : String = 'document.Document';
-		public static const IMAGE : String = 'document.Image';
-		public static const PDF : String = 'document.PDF';
-		public static const SWF : String = 'document.SWF';
-		public static const WIDEVINE_FLAVOR : String = 'widevine.WidevineFlavor';
-		public static const FLAVOR : String = '1';
-		public static const THUMBNAIL : String = '2';
+		public var filterFields : String;
+		
+		/**
+		 * @param flavorAssetId String
+		 **/
+		public function WidevineDrmGetLicense( flavorAssetId : String )
+		{
+			service= 'widevine_widevinedrm';
+			action= 'getLicense';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('flavorAssetId');
+			valueArr.push(flavorAssetId);
+			applySchema(keyArr, valueArr);
+		}
+
+		override public function execute() : void
+		{
+			setRequestArgument('filterFields', filterFields);
+			delegate = new WidevineDrmGetLicenseDelegate( this , config );
+		}
 	}
 }

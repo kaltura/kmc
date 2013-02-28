@@ -25,18 +25,25 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaAssetType
+	import com.kaltura.vo.KalturaFlavorParamsOutput;
+
+	[Bindable]
+	public dynamic class KalturaWidevineFlavorParamsOutput extends KalturaFlavorParamsOutput
 	{
-		public static const ATTACHMENT : String = 'attachment.Attachment';
-		public static const CAPTION : String = 'caption.Caption';
-		public static const DOCUMENT : String = 'document.Document';
-		public static const IMAGE : String = 'document.Image';
-		public static const PDF : String = 'document.PDF';
-		public static const SWF : String = 'document.SWF';
-		public static const WIDEVINE_FLAVOR : String = 'widevine.WidevineFlavor';
-		public static const FLAVOR : String = '1';
-		public static const THUMBNAIL : String = '2';
+		override public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			return arr;
+		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
 	}
 }

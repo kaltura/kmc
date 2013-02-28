@@ -25,18 +25,24 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.delegates.widevineDrm
 {
-	public class KalturaAssetType
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
+
+	public class WidevineDrmGetLicenseDelegate extends WebDelegateBase
 	{
-		public static const ATTACHMENT : String = 'attachment.Attachment';
-		public static const CAPTION : String = 'caption.Caption';
-		public static const DOCUMENT : String = 'document.Document';
-		public static const IMAGE : String = 'document.Image';
-		public static const PDF : String = 'document.PDF';
-		public static const SWF : String = 'document.SWF';
-		public static const WIDEVINE_FLAVOR : String = 'widevine.WidevineFlavor';
-		public static const FLAVOR : String = '1';
-		public static const THUMBNAIL : String = '2';
+		public function WidevineDrmGetLicenseDelegate(call:KalturaCall, config:KalturaConfig)
+		{
+			super(call, config);
+		}
+
+		override public function parse(result:XML) : *
+		{
+			return result.result.toString();
+		}
+
 	}
 }

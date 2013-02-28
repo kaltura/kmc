@@ -25,18 +25,46 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaAssetType
+	import com.kaltura.vo.KalturaFlavorAsset;
+
+	[Bindable]
+	public dynamic class KalturaWidevineFlavorAsset extends KalturaFlavorAsset
 	{
-		public static const ATTACHMENT : String = 'attachment.Attachment';
-		public static const CAPTION : String = 'caption.Caption';
-		public static const DOCUMENT : String = 'document.Document';
-		public static const IMAGE : String = 'document.Image';
-		public static const PDF : String = 'document.PDF';
-		public static const SWF : String = 'document.SWF';
-		public static const WIDEVINE_FLAVOR : String = 'widevine.WidevineFlavor';
-		public static const FLAVOR : String = '1';
-		public static const THUMBNAIL : String = '2';
+		/**
+		 * License distribution window start date
+		 * 
+		 **/
+		public var widevineDistributionStartDate : int = int.MIN_VALUE;
+
+		/**
+		 * License distribution window end date
+		 * 
+		 **/
+		public var widevineDistributionEndDate : int = int.MIN_VALUE;
+
+		/**
+		 * License distribution window end date
+		 * 
+		 **/
+		public var widevineAssetId : int = int.MIN_VALUE;
+
+		override public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			arr.push('widevineDistributionStartDate');
+			arr.push('widevineDistributionEndDate');
+			arr.push('widevineAssetId');
+			return arr;
+		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
 	}
 }

@@ -27,99 +27,67 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaMediaEntry;
+	import com.kaltura.vo.KalturaProvisionJobData;
 
 	[Bindable]
-	public dynamic class KalturaLiveStreamEntry extends KalturaMediaEntry
+	public dynamic class KalturaAkamaiUniversalProvisionJobData extends KalturaProvisionJobData
 	{
 		/**
-		 * The message to be presented when the stream is offline
-		 * 
 		 **/
-		public var offlineMessage : String = null;
-
-		/**
-		 * The stream id as provided by the provider
-		 * 
-		 **/
-		public var streamRemoteId : String = null;
-
-		/**
-		 * The backup stream id as provided by the provider
-		 * 
-		 **/
-		public var streamRemoteBackupId : String = null;
-
-		/**
-		 * Array of supported bitrates
-		 * 
-		 **/
-		public var bitrates : Array = null;
+		public var streamId : int = int.MIN_VALUE;
 
 		/**
 		 **/
-		public var primaryBroadcastingUrl : String = null;
+		public var systemUserName : String = null;
 
 		/**
 		 **/
-		public var secondaryBroadcastingUrl : String = null;
+		public var systemPassword : String = null;
 
 		/**
 		 **/
-		public var streamName : String = null;
+		public var domainName : String = null;
 
 		/**
-		 * The stream url
-		 * 
-		 **/
-		public var streamUrl : String = null;
-
-		/**
-		 * HLS URL - URL for live stream playback on mobile device
-		 * 
-		 **/
-		public var hlsStreamUrl : String = null;
-
-		/**
-		 * DVR Status Enabled/Disabled
-		 * 
 		 * @see com.kaltura.types.KalturaDVRStatus
 		 **/
-		public var dvrStatus : int = int.MIN_VALUE;
+		public var dvrEnabled : int = int.MIN_VALUE;
 
 		/**
-		 * Window of time which the DVR allows for backwards scrubbing (in minutes)
-		 * 
 		 **/
 		public var dvrWindow : int = int.MIN_VALUE;
 
 		/**
-		 * URL Manager to handle the live stream URL (for instance, add token)
-		 * 
 		 **/
-		public var urlManager : String = null;
+		public var primaryContact : String = null;
 
 		/**
-		 * Array of key value protocol->live stream url objects
-		 * 
 		 **/
-		public var liveStreamConfigurations : Array = null;
+		public var secondaryContact : String = null;
+
+		/**
+		 * @see com.kaltura.types.KalturaAkamaiUniversalStreamType
+		 **/
+		public var streamType : String = null;
+
+		/**
+		 **/
+		public var notificationEmail : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('offlineMessage');
-			arr.push('bitrates');
-			arr.push('primaryBroadcastingUrl');
-			arr.push('secondaryBroadcastingUrl');
-			arr.push('streamName');
-			arr.push('streamUrl');
-			arr.push('hlsStreamUrl');
-			arr.push('dvrStatus');
+			arr.push('streamId');
+			arr.push('systemUserName');
+			arr.push('systemPassword');
+			arr.push('domainName');
+			arr.push('dvrEnabled');
 			arr.push('dvrWindow');
-			arr.push('urlManager');
-			arr.push('liveStreamConfigurations');
+			arr.push('primaryContact');
+			arr.push('secondaryContact');
+			arr.push('streamType');
+			arr.push('notificationEmail');
 			return arr;
 		}
 
