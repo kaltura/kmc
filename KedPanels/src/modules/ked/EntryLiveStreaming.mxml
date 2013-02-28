@@ -410,14 +410,34 @@ live streaming control tab of EntryDetailsWin
 			private function populateManualBox(cfgs:Array):void
 			{
 				var line:FormLine;
+				var i:int;
+				
+				// create all lines
 				for each (var cfg:KalturaLiveStreamConfiguration in cfgs) {
 					line = new FormLine();
-					line.prefixesWidth = _prefixesWidth; 
+					//line.prefixesWidth = 160; 
 					// allow protocol name override by locale:
 					line.label = resourceManager.getString('drilldown', cfg.protocol) ? resourceManager.getString('drilldown', cfg.protocol) : cfg.protocol
 					line.label += resourceManager.getString('drilldown', 'streamUrl');
 					line.value = cfg.url;
 					manualWrap.addChild(line);
+				}
+				manualWrap.validateNow();
+				
+				// get max line width
+				var maxLength:int = 0;
+				for (i = 0; i<manualWrap.numChildren; i++) {
+					line = manualWrap.getChildAt(i) as FormLine;
+					if (!line) continue;
+					trace(line.prefixWidth);
+					maxLength = Math.max(maxLength, line.prefixWidth); 
+				}
+				
+				// set to all lines
+				for (i = 0; i<manualWrap.numChildren; i++) {
+					line = manualWrap.getChildAt(i) as FormLine;
+					if (!line) continue;
+					line.prefixWidth = maxLength; 
 				}
 			}
 			
@@ -437,14 +457,14 @@ live streaming control tab of EntryDetailsWin
 			<mx:Label text="{resourceManager.getString('drilldown', 'PrimaryURL')}" width="{_prefixesWidth}"
 					  styleName="drillDownLabel"/>
 			<mx:Label id="primaryUrl" text="{_selectedEntry.primaryBroadcastingUrl}" selectable="true"
-					  width="{_broadcastingWidth}"/>
+					  width="{_broadcastingWidth}" styleName="drillDownSubLabel"/>
 		</mx:HBox>
 	
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('drilldown', 'BackupURL')}" width="{_prefixesWidth}"
 					  styleName="drillDownLabel"/>
 			<mx:Label id="backupUrl" text="{_selectedEntry.secondaryBroadcastingUrl}" selectable="true"
-					  width="{_broadcastingWidth}"/>
+					  width="{_broadcastingWidth}" styleName="drillDownSubLabel"/>
 			<mx:Spacer width="30"/>
 			<mx:Button styleName="help" click="{onRollOver(1)}" buttonMode="true"/>
 		</mx:HBox>
@@ -452,7 +472,8 @@ live streaming control tab of EntryDetailsWin
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('drilldown', 'streamName')}" width="{_prefixesWidth}"
 					  styleName="drillDownLabel"/>
-			<mx:Label id="streamName" text="{_selectedEntry.streamName}" selectable="true" width="{_broadcastingWidth}"/>
+			<mx:Label id="streamName" text="{_selectedEntry.streamName}" selectable="true" width="{_broadcastingWidth}"
+					  styleName="drillDownSubLabel"/>
 		</mx:HBox>
 	
 		<mx:Spacer height="20"/>
@@ -467,26 +488,28 @@ live streaming control tab of EntryDetailsWin
 				<mx:Label text="{resourceManager.getString('drilldown', 'hlsStreamUrl')}" width="{_prefixesWidth}"
 						  styleName="drillDownLabel"/>
 				<mx:Label id="hlsStreamUrl" text="{_selectedEntry.hlsStreamUrl}" selectable="true" width="{_broadcastingWidth}"
-						  truncateToFit="false"/>
+						  truncateToFit="false" styleName="drillDownSubLabel"/>
 			</mx:HBox>
 		
 			<mx:HBox width="100%">
 				<mx:Label text="{resourceManager.getString('drilldown', 'externalStreamId')}" width="{_prefixesWidth}"
 						  styleName="drillDownLabel"/>
 				<mx:Label id="externalStreamId" text="{_selectedEntry.streamRemoteId}" selectable="true"
-						  width="{_broadcastingWidth}" />
+						  width="{_broadcastingWidth}" styleName="drillDownSubLabel"/>
 			</mx:HBox>
 		
 			<mx:HBox width="100%">
 				<mx:Label text="{resourceManager.getString('drilldown', 'dvrStatus')}" width="{_prefixesWidth}"
 						  styleName="drillDownLabel"/>
-				<mx:Label id="dvrStatus" text="{getDVRStatus(_selectedEntry)}" selectable="true" width="{_broadcastingWidth}"/>
+				<mx:Label id="dvrStatus" text="{getDVRStatus(_selectedEntry)}" selectable="true" width="{_broadcastingWidth}"
+						  styleName="drillDownSubLabel"/>
 			</mx:HBox>
 		
 			<mx:HBox width="100%">
 				<mx:Label text="{resourceManager.getString('drilldown', 'dvrWin')}" width="{_prefixesWidth}"
 						  styleName="drillDownLabel"/>
-				<mx:Label id="dvrWin" text="{getDVRWindow(_selectedEntry)}" selectable="true" width="{_broadcastingWidth}"/>
+				<mx:Label id="dvrWin" text="{getDVRWindow(_selectedEntry)}" selectable="true" width="{_broadcastingWidth}"
+						  styleName="drillDownSubLabel"/>
 			</mx:HBox>
 		
 			<mx:Spacer height="20"/>
@@ -553,7 +576,8 @@ live streaming control tab of EntryDetailsWin
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('drilldown', 'userName')}" width="{_prefixesWidth}"
 					  styleName="drillDownLabel"/>
-			<mx:Label id="userName" text="{_selectedEntry.streamUsername}" selectable="true" width="{_broadcastingWidth}"/>
+			<mx:Label id="userName" text="{_selectedEntry.streamUsername}" selectable="true" width="{_broadcastingWidth}"
+					  styleName="drillDownSubLabel"/>
 			<mx:Spacer width="30"/>
 			<mx:Button styleName="help" click="{onRollOver(2)}" buttonMode="true"/>
 		</mx:HBox>
@@ -561,7 +585,8 @@ live streaming control tab of EntryDetailsWin
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('drilldown', 'password')}" width="{_prefixesWidth}"
 					  styleName="drillDownLabel"/>
-			<mx:Label id="password" text="{_selectedEntry.streamPassword}" selectable="true" width="{_broadcastingWidth}"/>
+			<mx:Label id="password" text="{_selectedEntry.streamPassword}" selectable="true" width="{_broadcastingWidth}"
+					  styleName="drillDownSubLabel"/>
 		</mx:HBox>
 	
 		<mx:Spacer height="20"/>
@@ -572,13 +597,15 @@ live streaming control tab of EntryDetailsWin
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('drilldown', 'primaryIp')}" width="{_prefixesWidth}"
 					  styleName="drillDownLabel"/>
-			<mx:Label id="primaryIp" text="{_selectedEntry.encodingIP2}" selectable="true" width="{_broadcastingWidth}"/>
+			<mx:Label id="primaryIp" text="{_selectedEntry.encodingIP2}" selectable="true" width="{_broadcastingWidth}"
+					  styleName="drillDownSubLabel"/>
 		</mx:HBox>
 	
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('drilldown', 'secondaryIp')}" width="{_prefixesWidth}"
 					  styleName="drillDownLabel"/>
-			<mx:Label id="secondaryIp" text="{_selectedEntry.encodingIP2}" selectable="true" width="{_broadcastingWidth}"/>
+			<mx:Label id="secondaryIp" text="{_selectedEntry.encodingIP2}" selectable="true" width="{_broadcastingWidth}"
+					  styleName="drillDownSubLabel"/>
 		</mx:HBox>
 		<mx:Button id="exportBtn" label="{resourceManager.getString('drilldown', 'exportToFme')}" click="{fmeExport()}"/>
 	</mx:VBox>
@@ -587,7 +614,7 @@ live streaming control tab of EntryDetailsWin
 	<mx:VBox id="manualWrap" width="100%" styleName="noPadding" 
 			 visible="{_selectedEntry.sourceType == KalturaSourceType.MANUAL_LIVE_STREAM}"
 			 includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.MANUAL_LIVE_STREAM}">
-		<live:FormLine prefixesWidth="{_prefixesWidth}" 
+		<live:FormLine prefixWidth="{_prefixesWidth}" 
 					   label="{resourceManager.getString('drilldown', 'hlsStreamUrl')}" value="{ _selectedEntry.hlsStreamUrl}" />
 	</mx:VBox>
 </mx:Module>
