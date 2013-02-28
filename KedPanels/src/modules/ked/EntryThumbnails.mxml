@@ -63,12 +63,19 @@ Thumbnails tab of EntryDetailsWin
 					return;
 				_selectedEntry = value;
 				
-				//set the available operations for current entry
+				// set the available operations for current entry:
+				// you can always upload
 				_uploadThumbnailActionsDP = new Array(resourceManager.getString('drilldown', 'upload'));
-				if ((_selectedEntry.status != KalturaEntryStatus.NO_CONTENT) && ((_selectedEntry is KalturaMixEntry) || (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO))) {
+				
+				// entry has content + either mix or video = can grab from video
+				if (_selectedEntry.status != KalturaEntryStatus.NO_CONTENT 
+					&& (_selectedEntry is KalturaMixEntry || _selectedEntry.mediaType == KalturaMediaType.VIDEO)) {
 					_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'grabFromVideo'));
-					if (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO)
+					
+					// if it's a video, you can crop (??)
+					if (_selectedEntry.mediaType == KalturaMediaType.VIDEO) {
 						_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'cropNewThumbnail'));
+					}
 				}
 			}
 			
