@@ -452,6 +452,7 @@ Flavours tab of EntryDetailsWin
 				dg.removeEventListener(FlavorsTable.DELETE_FLAVOR, actionHandler);
 				dg.removeEventListener(FlavorsTable.DOWNLOAD_FLAVOR, actionHandler);
 				dg.removeEventListener(FlavorsTable.PREVIEW_FLAVOR, actionHandler);
+				dg.removeEventListener(FlavorsTable.WV_FLAVOR_DETAILS, actionHandler);
 				_distributionData.clearFlavorUpdates();
 				if (_flavorsWatcher)
 					_flavorsWatcher.unwatch();
@@ -484,29 +485,33 @@ Flavours tab of EntryDetailsWin
 				dg.addEventListener(FlavorsTable.DELETE_FLAVOR, actionHandler);
 				dg.addEventListener(FlavorsTable.DOWNLOAD_FLAVOR, actionHandler);
 				dg.addEventListener(FlavorsTable.PREVIEW_FLAVOR, actionHandler);
+				dg.addEventListener(FlavorsTable.WV_FLAVOR_DETAILS, actionHandler);
 			}
 			
 			
 			private function actionHandler(event:Event):void {
 				var _flavorWithParams:FlavorAssetWithParamsVO = event.target.data as FlavorAssetWithParamsVO;
+				var faEvent:FlavorAssetEvent;
 				switch (event.type) {
 					case FlavorsTable.CONVERT_FLAVOR:
-						var convEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.CREATE_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
-						controller.dispatch(convEvent);
+						faEvent = new FlavorAssetEvent(FlavorAssetEvent.CREATE_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
 						break;
 					case FlavorsTable.DELETE_FLAVOR:
-						var delEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.DELETE_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
-						controller.dispatch(delEvent);
+						faEvent = new FlavorAssetEvent(FlavorAssetEvent.DELETE_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
 						break;
 					case FlavorsTable.DOWNLOAD_FLAVOR:
-						var dlEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.DOWNLOAD_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
-						controller.dispatch(dlEvent);
+						faEvent = new FlavorAssetEvent(FlavorAssetEvent.DOWNLOAD_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_DOWNLOAD, "EntryDrillDown>FlavorTab>DownloadAsset", _flavorWithParams.kalturaFlavorAssetWithParams.entryId);
 						break;
 					case FlavorsTable.PREVIEW_FLAVOR:
-						var preEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.PREVIEW_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
-						controller.dispatch(preEvent);
+						faEvent = new FlavorAssetEvent(FlavorAssetEvent.PREVIEW_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
 						break;
+					case FlavorsTable.WV_FLAVOR_DETAILS:
+						faEvent = new FlavorAssetEvent(FlavorAssetEvent.VIEW_WV_ASSET_DETAILS, _flavorWithParams.kalturaFlavorAssetWithParams);
+						break;
+				}
+				if (faEvent) {
+					controller.dispatch(faEvent);
 				}
 			}
 			

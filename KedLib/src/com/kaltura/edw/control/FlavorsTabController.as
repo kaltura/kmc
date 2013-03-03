@@ -43,6 +43,7 @@ package com.kaltura.edw.control
 			addCommand(FlavorAssetEvent.DELETE_FLAVOR_ASSET, DeleteFlavorAssetCommand);
 			addCommand(FlavorAssetEvent.DOWNLOAD_FLAVOR_ASSET, DownloadFlavorAsset);
 			addCommand(FlavorAssetEvent.PREVIEW_FLAVOR_ASSET, PreviewFlavorAsset);
+			addCommand(FlavorAssetEvent.VIEW_WV_ASSET_DETAILS, ViewWVAssetDetails);
 			
 		}
 	}

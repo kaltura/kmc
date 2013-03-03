@@ -9,6 +9,7 @@ package com.kaltura.edw.control.events
 		public static const DELETE_FLAVOR_ASSET : String = "content_deleteFlavorAsset";
 		public static const DOWNLOAD_FLAVOR_ASSET : String = "content_downloadFlavorAsset";
 		public static const PREVIEW_FLAVOR_ASSET : String = "content_previewFlavorAsset";
+		public static const VIEW_WV_ASSET_DETAILS : String = "content_viewWVAssetDetails";
 		
 		public function FlavorAssetEvent(type:String, dataVo:KalturaFlavorAssetWithParams, bubbles:Boolean=false, cancelable:Boolean=false)
 		{

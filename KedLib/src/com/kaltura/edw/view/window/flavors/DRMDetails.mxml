@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
+							layout="vertical" width="360" height="200" showCloseButton="true"
+							close="helptitlewindow1_closeHandler(event)" showHelpButton="false" >
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import com.kaltura.vo.KalturaWidevineFlavorAsset;
+			import mx.events.CloseEvent;
+			
+			public var flavorAsset:KalturaWidevineFlavorAsset;
+			
+			protected function helptitlewindow1_closeHandler(event:CloseEvent):void {
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:DateFormatter id="formatter" formatString="{resourceManager.getString('drilldown', 'drm_dist_time_format')}" />
+	<mx:Form>
+		<mx:FormItem label="{resourceManager.getString('drilldown','drm_dist_start')}">
+			<mx:Label text="{formatter.format(new Date(flavorAsset.widevineDistributionStartDate*1000))}" />
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('drilldown','drm_dist_end')}">
+			<mx:Label text="{formatter.format(new Date(flavorAsset.widevineDistributionEndDate*1000))}" />
+		</mx:FormItem>
+	</mx:Form>
+	
+</containers:HelpTitleWindow>

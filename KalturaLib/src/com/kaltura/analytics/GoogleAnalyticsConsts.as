@@ -189,6 +189,7 @@ package com.kaltura.analytics {
 		public static const CONTENT_DRILLDOWN_FLAVOR_MATCH:String = "DrillDown/Match Flavor"; 
 		public static const CONTENT_DRILLDOWN_FLAVOR_PREVIEW:String = "DrillDown/Preview Flavor"; 
 		public static const CONTENT_DRILLDOWN_FLAVOR_CONVERT:String = "DrillDown/Convert Flavor";
+		public static const CONTENT_DRILLDOWN_FLAVOR_WV_DETAILS:String = "DrillDown/view DRM details";
 		
 		// replace media actions
 		public static const CONTENT_DRILLDOWN_FLAVORS_UPLOAD:String = "DrillDown/Replace Content>Upload"; 

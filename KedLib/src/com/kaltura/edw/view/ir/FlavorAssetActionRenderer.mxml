@@ -6,6 +6,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.vo.KalturaWidevineFlavorAsset;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.view.FlavorsTable;
@@ -28,12 +29,6 @@
 			static public var allowLink:Boolean = true;
 			static public var allowImport:Boolean = true;
 			
-			
-//			[Bindable]
-//			/**
-//			 * is the parent docuemnt is entryFlavors allow all actions
-//			 * */
-//			private var _isFlavorsView:Boolean;
 
 			/**
 			 * add the "upload" action to the actions list
@@ -71,19 +66,6 @@
 			override public function set data(value:Object):void {
 				super.data = value;
 				_flavorWithParams = value as FlavorAssetWithParamsVO;
-//				if (parentDocument is DistributionDetailsWindow) {
-//					_isFlavorsView = false;
-//				}
-//				else 
-//				if (parentDocument is EntryFlavors) {
-////					_isFlavorsView = true;
-//					//sets actions according to r&p
-//					_allowUpload = parentDocument.allowUpload && parentDocument.multiFlavorsIngestionAllowed;
-//					_allowMatch = parentDocument.allowMatchFromDrop && parentDocument.multiFlavorsIngestionAllowed;
-//					_allowLink = parentDocument.allowLink && parentDocument.multiFlavorsIngestionAllowed;
-//					_allowImport = parentDocument.allowImport && parentDocument.multiFlavorsIngestionAllowed;
-//				}
-
 				setActions();
 			}
 
@@ -95,9 +77,9 @@
 
 
 			private function setActions():void {
-
 				_actionArr = new Array();
 				if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset == null) {
+					// no asset, only params
 					if (_flavorWithParams.hasOriginal) {
 						this.currentState = null;
 						_actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
@@ -113,6 +95,7 @@
 				}
 				else {
 					if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isOriginal) {
+						// source flavor asset
 						var status:int = _flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.status;
 						if ((status == KalturaFlavorAssetStatus.CONVERTING) || (status == KalturaFlavorAssetStatus.QUEUED) || (status == KalturaFlavorAssetStatus.IMPORTING) || (status == KalturaFlavorAssetStatus.VALIDATING)) {
 							this.currentState = "convertingState";
@@ -182,7 +165,10 @@
 								if (_flavorWithParams.hasOriginal) {
 									_actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
 								}
-
+								if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset is KalturaWidevineFlavorAsset) {
+									_actionArr.push(resourceManager.getString('cms', 'wvDetailsActionLabel'));
+								}
+								
 								break;
 							}
 						}
@@ -215,47 +201,52 @@
 			private function launchAction(actionName:String):void {
 				var gaEvent:String;
 				switch (actionName) {
-					case resourceManager.getString('cms', 'previewActionLabel'):  {
+					case resourceManager.getString('cms', 'previewActionLabel'):  
 						dispatchEvent(new Event(FlavorsTable.PREVIEW_FLAVOR, true));
 						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_PREVIEW;
 						break;
-					}
-					case resourceManager.getString('cms', 'downloadActionLabel'):  {
+					
+					case resourceManager.getString('cms', 'downloadActionLabel'): 
 						dispatchEvent(new Event(FlavorsTable.DOWNLOAD_FLAVOR, true));
 						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_DNLD;
 						break;
-					}
-					case resourceManager.getString('cms', 'deleteActionLabel'):  {
+					
+					case resourceManager.getString('cms', 'deleteActionLabel'):  
 						dispatchEvent(new Event(FlavorsTable.DELETE_FLAVOR, true));
 						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_DELETE;
 						break;
-					}
+					
 					case resourceManager.getString('cms', 'reconvertActionLabel'):
-					case resourceManager.getString('cms', 'convertActionLabel'):  {
+					case resourceManager.getString('cms', 'convertActionLabel'):  
 						dispatchEvent(new Event(FlavorsTable.CONVERT_FLAVOR, true));
 						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_CONVERT;
 						break;
-					}
-					case resourceManager.getString('cms', 'uploadActionLabel'):  {
+					
+					case resourceManager.getString('cms', 'uploadActionLabel'):
 						dispatchEvent(new Event(FlavorsTable.UPLOAD_FLAVOR, true));
 						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_UPLOAD;
 						break;
-					}
-					case resourceManager.getString('cms', 'matchActionLabel'):  {
+					
+					case resourceManager.getString('cms', 'matchActionLabel'):
 						dispatchEvent(new Event(FlavorsTable.MATCH_FLAVOR, true));
 						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_MATCH;
 						break;
-					}
-					case resourceManager.getString('cms', 'linkActionLabel'):  {
+					
+					case resourceManager.getString('cms', 'linkActionLabel'):
 						dispatchEvent(new Event(FlavorsTable.LINK_FLAVOR, true));
 						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_LINK;
 						break;
-					}
-					case resourceManager.getString('cms', 'importActionLabel'):  {
+					
+					case resourceManager.getString('cms', 'importActionLabel'):
 						dispatchEvent(new Event(FlavorsTable.IMPORT_FLAVOR, true));
 						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_IMPORT;
 						break;
-					}
+					
+					case resourceManager.getString('cms', 'wvDetailsActionLabel'):
+						dispatchEvent(new Event(FlavorsTable.WV_FLAVOR_DETAILS, true));
+						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_WV_DETAILS;
+						break;
+					
 				}
 				if (gaEvent) {
 					GoogleAnalyticsTracker.getInstance().sendToGA(gaEvent);
@@ -295,7 +286,4 @@
 				 change="onActionChange(event)" styleName="dataGridComboBox"
 				 prompt="{resourceManager.getString('cms','selectActionLabel')}">
 	</mx:ComboBox>
-<!--	<mx:Button label="{resourceManager.getString('cms', 'previewActionLabel')}" click="{onOneActionClick(event)}"
-			   visible="{_showPreviewBtn}" includeInLayout="{_showPreviewBtn}" styleName="dataGridBtn" 
-			   fontSize="10" width="110"/>-->
 </ir:FlavorAssetRendererBase>
