@@ -11,6 +11,7 @@ Thumbnails tab of EntryDetailsWin
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.business.EntryDataHelper;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.business.permissions.PermissionManager;
@@ -68,16 +69,21 @@ Thumbnails tab of EntryDetailsWin
 				_uploadThumbnailActionsDP = new Array(resourceManager.getString('drilldown', 'upload'));
 				
 				// entry has content + either mix or video = can grab from video
-				if (_selectedEntry.status != KalturaEntryStatus.NO_CONTENT 
-					&& (_selectedEntry is KalturaMixEntry || _selectedEntry.mediaType == KalturaMediaType.VIDEO)) {
-					_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'grabFromVideo'));
-					
-					// if it's a video, you can crop (??)
-					if (_selectedEntry.mediaType == KalturaMediaType.VIDEO) {
+				if (_selectedEntry.status != KalturaEntryStatus.NO_CONTENT) {
+					if (_selectedEntry is KalturaMixEntry) {
+						_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'grabFromVideo'));
+					}
+					else if (_selectedEntry.mediaType == KalturaMediaType.VIDEO) {
+						// if it's a video, you can crop (??)
 						_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'cropNewThumbnail'));
+						// see if we can grab (requires source)
+						if (EntryDataHelper.entryHasSource(_distributionModel.flavorParamsAndAssetsByEntryId)) {
+							_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'grabFromVideo'));		
+						}
 					}
 				}
 			}
+			
 			
 			
 			/**
