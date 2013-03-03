@@ -96,7 +96,14 @@ package com.kaltura.kmc.modules.analytics.commands {
 			// create a pager to add all entries to log, regardless of viewed entries
 			var pager:KalturaFilterPager = new KalturaFilterPager();
 			pager.pageIndex = 1;
-			pager.pageSize = _model.selectedReportData.totalCount;
+			if (_model.selectedReportData.totalCount > 0) {
+				pager.pageSize = _model.selectedReportData.totalCount;
+			}
+			else {
+				// reports where the totals are too heavy to count return 0 for total. in this case we 
+				// still want to export "all" (this will not break cases where there actually is no data)
+				pager.pageSize = 1000000;
+			}
 			
 			var export2Csv:ReportGetUrlForReportAsCsv = new ReportGetUrlForReportAsCsv(_model.selectedReportData.title,
 					message2Send, headers, _model.selectedReportData.type, krif, _model.selectedReportData.selectedDim,
