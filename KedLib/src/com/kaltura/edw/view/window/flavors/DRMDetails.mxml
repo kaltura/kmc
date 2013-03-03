@@ -1,29 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
-							layout="vertical" width="360" height="200" showCloseButton="true"
+							layout="vertical" width="360" height="180" showCloseButton="true"
 							close="helptitlewindow1_closeHandler(event)" showHelpButton="false" >
 	<mx:Script>
 		<![CDATA[
-			import mx.managers.PopUpManager;
 			import com.kaltura.vo.KalturaWidevineFlavorAsset;
-			import mx.events.CloseEvent;
+			import com.kaltura.vo.KalturaFlavorAssetWithParams;
+			import mx.managers.PopUpManager;
 			
-			public var flavorAsset:KalturaWidevineFlavorAsset;
 			
-			protected function helptitlewindow1_closeHandler(event:CloseEvent):void {
+			[Bindable]
+			private var _flavorAsset:KalturaWidevineFlavorAsset;
+			
+			public function set flavorAssetWithParams(awp:KalturaFlavorAssetWithParams):void {
+				title = resourceManager.getString('drilldown', 'drm_details', [awp.flavorParams.name]);
+				_flavorAsset = awp.flavorAsset as KalturaWidevineFlavorAsset;
+			}
+			
+			protected function helptitlewindow1_closeHandler(event:Event):void {
 				PopUpManager.removePopUp(this);
 			}
+			
 			
 		]]>
 	</mx:Script>
 	<mx:DateFormatter id="formatter" formatString="{resourceManager.getString('drilldown', 'drm_dist_time_format')}" />
 	<mx:Form>
 		<mx:FormItem label="{resourceManager.getString('drilldown','drm_dist_start')}">
-			<mx:Label text="{formatter.format(new Date(flavorAsset.widevineDistributionStartDate*1000))}" />
+			<mx:Label text="{formatter.format(new Date(_flavorAsset.widevineDistributionStartDate*1000))}" />
 		</mx:FormItem>
 		<mx:FormItem label="{resourceManager.getString('drilldown','drm_dist_end')}">
-			<mx:Label text="{formatter.format(new Date(flavorAsset.widevineDistributionEndDate*1000))}" />
+			<mx:Label text="{formatter.format(new Date(_flavorAsset.widevineDistributionEndDate*1000))}" />
 		</mx:FormItem>
 	</mx:Form>
 	
+	<mx:ControlBar>
+		<mx:Button label="{resourceManager.getString('drilldown', 'close')}" click="helptitlewindow1_closeHandler(event)" />
+	</mx:ControlBar>
 </containers:HelpTitleWindow>
