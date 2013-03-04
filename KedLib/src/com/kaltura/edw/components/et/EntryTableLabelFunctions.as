@@ -67,7 +67,7 @@ package com.kaltura.edw.components.et
 		 * format the timer
 		 */
 		public static function getTimeFormat(item:Object, column:DataGridColumn):String {
-			return KTimeUtil.formatTime(item.duration);
+			return KTimeUtil.formatTime2(item.duration, true, true);
 		}
 		
 		

@@ -47,7 +47,7 @@ package com.kaltura.utils
 			var s:int = secs - sh - sm;
 			
 			var result:String = '';
-			if (showHours) {
+			if (showHours && h>0) {
 				result += addZero(h) + ':'; 
 			}
 			result += addZero(m);
