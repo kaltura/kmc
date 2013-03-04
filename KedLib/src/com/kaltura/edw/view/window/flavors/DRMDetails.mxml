@@ -21,16 +21,27 @@
 				PopUpManager.removePopUp(this);
 			}
 			
+			protected function getFormattedDate(timestamp:int):String {
+				var result:String;
+				if (timestamp == int.MIN_VALUE) {
+					result = resourceManager.getString('drilldown', 'notAppStatus');
+				}
+				else {
+					result = formatter.format(new Date(timestamp*1000));
+				}
+				return result;
+			}
+			
 			
 		]]>
 	</mx:Script>
 	<mx:DateFormatter id="formatter" formatString="{resourceManager.getString('drilldown', 'drm_dist_time_format')}" />
 	<mx:Form>
 		<mx:FormItem label="{resourceManager.getString('drilldown','drm_dist_start')}">
-			<mx:Label text="{formatter.format(new Date(_flavorAsset.widevineDistributionStartDate*1000))}" />
+			<mx:Label text="{getFormattedDate(_flavorAsset.widevineDistributionStartDate)}" />
 		</mx:FormItem>
 		<mx:FormItem label="{resourceManager.getString('drilldown','drm_dist_end')}">
-			<mx:Label text="{formatter.format(new Date(_flavorAsset.widevineDistributionEndDate*1000))}" />
+			<mx:Label text="{getFormattedDate(_flavorAsset.widevineDistributionEndDate)}" />
 		</mx:FormItem>
 	</mx:Form>
 	
