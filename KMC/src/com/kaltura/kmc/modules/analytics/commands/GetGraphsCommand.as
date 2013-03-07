@@ -102,7 +102,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 		/**
 		 * uses data previously saved in <code>_graphDataArr</code>.
 		 * (a) create dimArrColl and populate with received reports, add totals if required.
-		 * (b) normalize poits data and set them in dimToChartDpMap (by report id key)
+		 * (b) normalize points data and set them in dimToChartDpMap (by report id key)
 		 */
 		private function parseData():void {
 			var reportData:ReportData = _model.reportDataMap[_screenType];
