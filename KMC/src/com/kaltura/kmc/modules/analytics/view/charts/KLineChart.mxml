@@ -5,6 +5,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.kmc.modules.analytics.utils.TimeConsts;
 			
 			import mx.charts.HitData;
@@ -75,7 +76,8 @@
 						for (var k:int = 0; k < provider.length; k++) {
 							var firstDate:Date = new Date(provider[k].x);
 							if (firstDate.date == secondDate.date && firstDate.fullYear == secondDate.fullYear && firstDate.month == secondDate.month) {
-								provider[k] = arrCol[i];
+								// need to copy values, so we will keep fields with "0" (no value)
+								ObjectUtil.copyObject(arrCol[i], provider[k]); 
 								break;
 							}
 						}
