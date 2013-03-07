@@ -194,6 +194,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 						}
 						else {
 							if (String(xYArr[0]).length == 8) {
+								//TODO need a better way to identify 8digit dates, this also takes in OS report's mac_os_x and probably more
 								obj = generateFullDateVo(String(xYArr[0]), yVal, krp.id);
 							}
 							else {
