@@ -59,42 +59,12 @@ package com.kaltura.kmc.modules.analytics.commands {
 				selectedReportData.pager.pageSize = 500;
 			}
 
-			var objectIds:String = '';
-			if (_model.selectedEntry && (_screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT 
-					|| _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF 
-					|| _screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS
-					|| _screenType == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN 
-					|| _screenType == ScreenTypes.MAP_OVERLAY_DRILL_DOWN 
-					|| _screenType == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN
-					|| _screenType == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN 
-					|| _screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN
-					|| _screenType == ScreenTypes.PLATFORM_DRILL_DOWN)) {
-				objectIds = selectedReportData.objectIds = _model.selectedEntry;
-			}
-
-			if (reportEvt.orderBy)
-				selectedReportData.orderBy = reportEvt.orderBy;
-
-			var reportGetTable:ReportGetTable;
-			//If we have a user report call we need to have another filter (that supports application and users) 
-			//when we generate the report get total call
-			if (_screenType == ScreenTypes.END_USER_ENGAGEMENT || _screenType == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN || _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT || _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF || _screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS || _screenType == ScreenTypes.END_USER_STORAGE || _screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN) {
-				var keurif:KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport(_model.getFilterForScreen(_screenType));
-
-				//in the reports above we need to send playback context instead of categories
-//				keurif.playbackContext = keurif.categories;
-//				keurif.categories = null;
-
-				reportGetTable = new ReportGetTable(reportEvt.reportType, keurif,
-					selectedReportData.pager,
-					selectedReportData.orderBy, objectIds);
-			}
-			else {
-				var krif:KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport(_model.getFilterForScreen(_screenType));
-				reportGetTable = new ReportGetTable(reportEvt.reportType, krif,
-					selectedReportData.pager,
-					selectedReportData.orderBy, objectIds);
-			}
+			var krif:KalturaReportInputFilter = ExecuteReportHelper.createFilterFromReport(_model.getFilterForScreen(_screenType), _screenType);
+			var reportGetTable:ReportGetTable = new ReportGetTable(reportEvt.reportType,
+				krif,
+				selectedReportData.pager,
+				selectedReportData.orderBy,
+				ExecuteReportHelper.getObjectIds(_screenType));
 
 			reportGetTable.queued = false;
 			reportGetTable.addEventListener(KalturaEvent.COMPLETE, result);

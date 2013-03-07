@@ -35,35 +35,11 @@ package com.kaltura.kmc.modules.analytics.commands {
 				_screenType = _model.currentScreenState;
 			}
 
-			var objectIds:String = '';
-			if (_model.selectedEntry && (_screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT 
-					|| _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF 
-					|| _screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS 
-					|| _screenType == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN 
-					|| _screenType == ScreenTypes.MAP_OVERLAY_DRILL_DOWN 
-					|| _screenType == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN 
-					|| _screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN
-					|| _screenType == ScreenTypes.PLATFORM_DRILL_DOWN)) {
-				objectIds = _model.selectedReportData.objectIds = _model.selectedEntry;
-			}
-
-			var reportGetTotal:ReportGetTotal;
-			//If we have a user report call we need to have another filter (that support application and users) 
-			//when we generate the report get total call
-			if (_model.entitlementEnabled && (_screenType == ScreenTypes.END_USER_ENGAGEMENT || _screenType == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN || _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT || _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF || _screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS || _screenType == ScreenTypes.END_USER_STORAGE || _screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)) {
-				var keurif:KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport(_model.getFilterForScreen(_screenType));
-
-				//in the reports above we need to send playback context and instead of categories
-//				keurif.playbackContext = keurif.categories;
-//				keurif.categories = null;
-
-				reportGetTotal = new ReportGetTotal((event as ReportEvent).reportType, keurif, objectIds);
-			}
-			else {
-				var krif:KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport(_model.getFilterForScreen(_screenType));
-				reportGetTotal = new ReportGetTotal((event as ReportEvent).reportType, krif, objectIds);
-			}
-
+			var krif:KalturaReportInputFilter = ExecuteReportHelper.createFilterFromReport(_model.getFilterForScreen(_screenType), _screenType);
+			var reportGetTotal:ReportGetTotal = new ReportGetTotal((event as ReportEvent).reportType,
+				krif,
+				ExecuteReportHelper.getObjectIds(_screenType));
+			
 			reportGetTotal.queued = false;
 			reportGetTotal.addEventListener(KalturaEvent.COMPLETE, result);
 			reportGetTotal.addEventListener(KalturaEvent.FAILED, fault);

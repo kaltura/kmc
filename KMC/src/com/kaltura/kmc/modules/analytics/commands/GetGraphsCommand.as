@@ -12,7 +12,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 	import com.kaltura.vo.KalturaReportBaseTotal;
 	import com.kaltura.vo.KalturaReportGraph;
 	import com.kaltura.vo.KalturaReportInputFilter;
-	
+
 	import mx.binding.utils.BindingUtils;
 	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayCollection;
@@ -53,33 +53,11 @@ package com.kaltura.kmc.modules.analytics.commands {
 				_screenType = _model.currentScreenState;
 			}
 
-			var objectIds:String = '';
-			if (_model.selectedEntry && (_screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT 
-					|| _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF 
-					|| _screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS 
-					|| _screenType == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN 
-					|| _screenType == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN 
-					|| _screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN
-					|| _screenType == ScreenTypes.PLATFORM_DRILL_DOWN)) {
-				objectIds = _model.selectedReportData.objectIds = _model.selectedEntry;
-			}
-
-			var reportGetGraphs:ReportGetGraphs;
-			//If we have a user report call we need to have another filter (that support application and users) 
-			//when we generate the report get total call
-			if (_screenType == ScreenTypes.END_USER_ENGAGEMENT || _screenType == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN || _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT || _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF || _screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS || _screenType == ScreenTypes.END_USER_STORAGE || _screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN) {
-				var keurif:KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport(_model.getFilterForScreen(_screenType));
-
-				//in the reports above we need to send playback context instead of categories
-//				keurif.playbackContext = keurif.categories;
-//				keurif.categories = null;
-
-				reportGetGraphs = new ReportGetGraphs((event as ReportEvent).reportType, keurif, _model.selectedReportData.selectedDim, objectIds);
-			}
-			else {
-				var krif:KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport(_model.getFilterForScreen(_screenType));
-				reportGetGraphs = new ReportGetGraphs((event as ReportEvent).reportType, krif, _model.selectedReportData.selectedDim, objectIds);
-			}
+			var krif:KalturaReportInputFilter = ExecuteReportHelper.createFilterFromReport(_model.getFilterForScreen(_screenType), _screenType);
+			var reportGetGraphs:ReportGetGraphs = new ReportGetGraphs((event as ReportEvent).reportType,
+																		krif,
+																		_model.selectedReportData.selectedDim,
+																		ExecuteReportHelper.getObjectIds(_screenType));
 
 			reportGetGraphs.queued = false;
 			reportGetGraphs.addEventListener(KalturaEvent.COMPLETE, result);
@@ -120,15 +98,15 @@ package com.kaltura.kmc.modules.analytics.commands {
 			}
 		}
 
-		
+
 		/**
 		 * uses data previously saved in <code>_graphDataArr</code>.
 		 * (a) create dimArrColl and populate with received reports, add totals if required.
 		 * (b) normalize poits data and set them in dimToChartDpMap (by report id key)
 		 */
 		private function parseData():void {
-			var reportData:ReportData = _model.reportDataMap[_screenType]; 
-			
+			var reportData:ReportData = _model.reportDataMap[_screenType];
+
 			reportData.dimToChartDpMap = new Object();
 			reportData.dimArrColl = new ArrayCollection();
 
@@ -136,32 +114,32 @@ package com.kaltura.kmc.modules.analytics.commands {
 			for (var i:int = 0; i < _graphDataArr.length; i++) {
 				parseSingleReport(_graphDataArr[i] as KalturaReportGraph, reportData);
 			}
-			
+
 			var initDim:String = null; // initial dimension of the graph 
 			// use the first received report as default graph dimension
 			if (_graphDataArr.length > 0)
 				initDim = (_graphDataArr[0] as KalturaReportGraph).id;
-			
+
 			// set chart DP
 			setChartDp(reportData, initDim);
 
 			_model.selectedReportData = null; //refresh
 			_model.selectedReportData = reportData;
 		}
-		
-		
+
+
 		private function parseSingleReport(krp:KalturaReportGraph, reportData:ReportData):void {
 			var obj:Object;
 			var j:int;
-			var addTotalsReport:Boolean = _addTotals && krp.id.substr(0, 5) == "added";	// this report should be followed by a "totals" report
+			var addTotalsReport:Boolean = _addTotals && krp.id.substr(0, 5) == "added"; // this report should be followed by a "totals" report
 			// for totals calculation
-			var totalsGraphPoints:ArrayCollection;	// points for totals graph
-			var totalsSum:Number;	// sums up y values
-			
+			var totalsGraphPoints:ArrayCollection; // points for totals graph
+			var totalsSum:Number; // sums up y values
+
 			reportData.dimArrColl.addItem(createDimObject(krp.id));
 			if (!reportData.selectedDim)
 				reportData.selectedDim = krp.id;
-			
+
 			if (addTotalsReport) {
 				// add graph dimension for relevant "total"
 				totalsGraphPoints = new ArrayCollection();
@@ -170,23 +148,23 @@ package com.kaltura.kmc.modules.analytics.commands {
 				var totalDimObj:Object = createDimObject(totalDimName);
 				reportData.dimArrColl.addItem(totalDimObj);
 			}
-			
-			var pointsArr:Array = krp.data.split(";");	// each element is string: x,y
+
+			var pointsArr:Array = krp.data.split(";"); // each element is string: x,y
 			var graphPoints:ArrayCollection = new ArrayCollection();
-			
+
 			if (_screenType == ScreenTypes.PLATFORM) {
 				// multiple lines in graph, need to save chartHeaders and create complex vo 
-				var chartHeadersObj:Object = {}; 	// for multiple lines graph
+				var chartHeadersObj:Object = {}; // for multiple lines graph
 				for (j = 0; j < pointsArr.length; j++) {
 					if (pointsArr[j]) {
-						var xyArr:Array = pointsArr[j].split(",");	// [x, propName1:propVal1, propName2:propVal2, ..] 
+						var xyArr:Array = pointsArr[j].split(","); // [x, propName1:propVal1, propName2:propVal2, ..] 
 						obj = new Object();
 						obj.x = getTimeStampFromString(xyArr[0]);
-						for (var k:int = 1; k<xyArr.length; k++) {
+						for (var k:int = 1; k < xyArr.length; k++) {
 							// get prop names and values
 							var yValAr:Array = xyArr[k].split(":"); // [propName, propValue] 
 							obj[yValAr[0]] = yValAr[1];
-							
+
 							// set prop name on chartHeaders to true, to know it exists
 							chartHeadersObj[yValAr[0]] = true;
 						}
@@ -214,16 +192,16 @@ package com.kaltura.kmc.modules.analytics.commands {
 							obj.x = ResourceManager.getInstance().getString('analytics', xYArr[0]);
 							obj.y = yVal;
 						}
-						else { 
+						else {
 							if (String(xYArr[0]).length == 8) {
 								obj = generateFullDateVo(String(xYArr[0]), yVal, krp.id);
 							}
 							else {
 								obj.x = xYArr[0];
 								obj.y = standartize(yVal, krp.id);
-								
+
 							}
-							
+
 							if (addTotalsReport) {
 								totalsSum += yVal;
 								totalsGraphPoints.addItem({x: obj.x, y: standartize(totalsSum, totalDimName)});
@@ -232,16 +210,16 @@ package com.kaltura.kmc.modules.analytics.commands {
 						graphPoints.addItem(obj);
 					}
 				}
-				
+
 				if (addTotalsReport) {
 					reportData.dimToChartDpMap[totalDimName] = totalsGraphPoints;
 				}
 			}
-			
-			reportData.dimToChartDpMap[krp.id] = graphPoints;
-		}		
 
-		
+			reportData.dimToChartDpMap[krp.id] = graphPoints;
+		}
+
+
 		/**
 		 * For full dates (i.e, 20130112), create a Date from given values and use its timestamp
 		 * @param xVal	the string that represents the date to be used as x value
@@ -250,10 +228,10 @@ package com.kaltura.kmc.modules.analytics.commands {
 		 * @return data vo
 		 */
 		private function generateFullDateVo(xVal:String, yVal:Number, krpid:String):Object {
-			return {x:getTimeStampFromString(xVal), y:standartize(yVal, krpid)};
+			return {x: getTimeStampFromString(xVal), y: standartize(yVal, krpid)};
 		}
-		
-		
+
+
 		private function getTimeStampFromString(sdate:String):Number {
 			var year:String = sdate.substring(0, 4);
 			var month:String = sdate.substring(4, 6);
@@ -261,12 +239,13 @@ package com.kaltura.kmc.modules.analytics.commands {
 			var date:Date = new Date(Number(year), Number(month) - 1, Number(day));
 			return date.time;
 		}
-		
+
+
 		/**
-		 * sets the initial dataprovider for the chart 
+		 * sets the initial dataprovider for the chart
 		 * @param reportData	report data to mutate
 		 * @param defaultDimension
-		 */		
+		 */
 		private function setChartDp(reportData:ReportData, defaultDimension:String):void {
 			if (_screenType == ScreenTypes.CONTENT_DROPOFF) {
 				reportData.chartDp = reportData.dimToChartDpMap["content_dropoff"];
@@ -288,6 +267,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 				}
 			}
 		}
+
 
 		/**
 		 * Standrtizes values that should be presented in a different scale than what they are received from the server.
@@ -322,7 +302,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 
 		/**
-		 * retreive base total value from model 
+		 * retreive base total value from model
 		 * @param totalDim	 dimension for which we want the total
 		 * @return base total value
 		 */
