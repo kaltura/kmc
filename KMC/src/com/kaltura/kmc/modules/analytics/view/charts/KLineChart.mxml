@@ -13,7 +13,7 @@
 			import mx.graphics.Stroke;
 			
 
-		//	private const strokeColors:Array = [0x9ab40c, 0x683CBD, 0x42E726, 0x3426E7, 0x2E4E28, 0x, 0x, 0x, 0x, 0x];
+			private const strokeColors:Array = [0x0099cb, 0x9bbb2f, 0xe6171a, 0x0ec34e, 0xe9a219, 0x026a8a,0xdbd103];
 				
 			[Bindable]
 			/**
@@ -149,7 +149,7 @@
 				var line:LineSeries;
 				var stroke:Stroke;
 				var tmp:Array = [];
-				var lastColor:uint = 0x9ab40c;
+				var i:int = 0;
 				for each (var field:String in fields) {
 					line = new LineSeries();
 					line.xField = 'x';
@@ -158,8 +158,7 @@
 					if (!line.displayName) line.displayName = field;
 					stroke = new Stroke();
 					stroke.weight = 3;
-					stroke.color = lastColor; // keep first line in original color
-					lastColor += Math.random() * uint.MAX_VALUE;
+					stroke.color = strokeColors[(i++%strokeColors.length)]; // keep first line in original color
 					line.setStyle('lineStroke', stroke);
 					line.setStyle('showDataEffect', rearrangeData);
 					tmp.push(line);
