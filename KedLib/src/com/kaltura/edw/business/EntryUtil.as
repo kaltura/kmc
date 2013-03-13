@@ -73,8 +73,6 @@ package com.kaltura.edw.business {
 
 			var context:ContextDataPack = model.getDataPack(ContextDataPack) as ContextDataPack;
 			if (context.openPlayerFunc) {
-				var html5Compatible:Boolean = selectedEntry is KalturaMediaEntry && (selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.VIDEO;
-				var ddp:DistributionDataPack = model.getDataPack(DistributionDataPack) as DistributionDataPack;
 				var bitrates:Array;
 				if (selectedEntry is KalturaLiveStreamAdminEntry) {
 					bitrates = [];
@@ -87,8 +85,7 @@ package com.kaltura.edw.business {
 						bitrates.push(o);
 					}
 				}
-				KedJSGate.doPreviewEmbed(context.openPlayerFunc, selectedEntry.id, selectedEntry.name, selectedEntry.description, previewOnly, false, null, bitrates, allFlavorAssets(ddp.flavorParamsAndAssetsByEntryId),
-					html5Compatible);
+				KedJSGate.doPreviewEmbed(context.openPlayerFunc, selectedEntry.id, selectedEntry.name, selectedEntry.description, previewOnly, false, null, bitrates);
 			}
 			GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED, GoogleAnalyticsConsts.CONTENT);
 			KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_OPEN_PREVIEW_AND_EMBED, "content>Open Preview and Embed");

@@ -83,14 +83,11 @@ package com.kaltura.kmc.business
 		 * @param is_playlist		the entry is a playlist
 		 * @param uiconfId			initial player uiconf to use
 		 * @param live_bitrates		list of bitrate objects {bitrate, width, height}
-		 * @param flavors			all entry flavors
-		 * @param isHtml5			should the html5 part of the p&e be shown
 		 */
 		public static function doPreviewEmbed(functionName:String, entryId:String, entryName:String, entryDescription:String, 
-											  previewOnly:Boolean, is_playlist:Boolean, uiconfId:String, live_bitrates:Array, 
-											  flavors:Array, isHtml5:Boolean):void {
+											  previewOnly:Boolean, is_playlist:Boolean, uiconfId:String, live_bitrates:Array):void {
 			KedJSGate.doPreviewEmbed(functionName, entryId, entryName, entryDescription, 
-				previewOnly, is_playlist, uiconfId, live_bitrates, flavors, isHtml5);
+				previewOnly, is_playlist, uiconfId, live_bitrates);
 		}
 		
 		
@@ -121,30 +118,24 @@ package com.kaltura.kmc.business
 		
 		/**
 		 * open the change user name popup window 
-		 * @param fName	user's current first name
-		 * @param lName	user's current last name
-		 * @param email	user's current email
 		 */
-		public static function openChangeName(fName:String, lName:String, email:String):void {
-//			ExternalInterface.call("kmc.functions.openChangeName", fName, lName, email);
-			ExternalInterface.call("kmc.user.changeSetting", 'name', {fname: fName, lname: lName, email: email} );
+		public static function openChangeName():void {
+			ExternalInterface.call("kmc.user.changeSetting", 'name');
 		}
 		
 		/**
 		 * open the change user password popup window 
 		 */
-		public static function openChangePwd(mail:String):void {
-//			ExternalInterface.call("kmc.functions.openChangePwd", mail);
-			ExternalInterface.call("kmc.user.changeSetting", 'password', {email: mail});
+		public static function openChangePwd():void {
+			ExternalInterface.call("kmc.user.changeSetting", 'password');
 		}
 		
 		/**
 		 * open the change user email popup window
 		 * @param mail	user's current email 
 		 */
-		public static function openChangeEmail(mail:String):void {
-//			ExternalInterface.call("kmc.functions.openChangeEmail", mail);
-			ExternalInterface.call("kmc.user.changeSetting", 'email', {email: mail});
+		public static function openChangeEmail():void {
+			ExternalInterface.call("kmc.user.changeSetting", 'email');
 		}
 		
 		

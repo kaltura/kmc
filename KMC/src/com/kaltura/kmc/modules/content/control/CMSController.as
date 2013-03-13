@@ -37,7 +37,6 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(RuleBasedTypeEvent.ONE_RULE, SetPreviewTypeCommand);
 			//execute playlist to see current entries in a rule based running
 			addCommand(KMCEntryEvent.GET_RULE_BASED_PLAYLIST, GetRuleBasedPlaylistCommand);
-			addCommand(KMCEntryEvent.GET_FLAVOR_ASSETS_FOR_PREVIEW, ListFlavorAssetsByEntryIdForPreviewCommand);
 
 			addCommand(KMCEntryEvent.RESET_RULE_BASED_DATA, ResetRuleBasedDataCommand);
 

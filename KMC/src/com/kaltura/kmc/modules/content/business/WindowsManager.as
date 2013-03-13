@@ -624,7 +624,7 @@ package com.kaltura.kmc.modules.content.business
 			if (model.openPlayer) {
 				//id, name, description, previewonly, is_playlist, uiconf_id 
 				JSGate.doPreviewEmbed(model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description), 
-					!model.showSingleEntryEmbedCode, false, model.attic.previewuiconf, bitrates, [], false);
+					!model.showSingleEntryEmbedCode, false, model.attic.previewuiconf, bitrates);
 				model.attic.previewuiconf = null;
 			}
 			
@@ -643,7 +643,7 @@ package com.kaltura.kmc.modules.content.business
 			if (model.openPlaylist) {
 				var pl:KalturaPlaylist = entry as KalturaPlaylist;
 				JSGate.doPreviewEmbed(model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description), 
-					!model.showPlaylistEmbedCode, true, model.attic.previewuiconf, null, [], false);
+					!model.showPlaylistEmbedCode, true, model.attic.previewuiconf, null);
 				model.attic.previewuiconf = null;
 				//first time funnel 
 				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED)) {
@@ -659,8 +659,9 @@ package com.kaltura.kmc.modules.content.business
 		private function openEntryPreview(entry:KalturaBaseEntry):void {
 			// open regular entry preview
 			if (model.openPlayer) {
-				var cgEvent:KMCEntryEvent = new KMCEntryEvent(KMCEntryEvent.GET_FLAVOR_ASSETS_FOR_PREVIEW, entry);
-				cgEvent.dispatch();
+				JSGate.doPreviewEmbed(model.openPlayer, entry.id, entry.name, StringUtil.cutTo512Chars(entry.description),
+					!model.showSingleEntryEmbedCode, false, model.attic.previewuiconf, null);
+				model.attic.previewuiconf = null;
 			}
 			//First time funnel
 			if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED)) {

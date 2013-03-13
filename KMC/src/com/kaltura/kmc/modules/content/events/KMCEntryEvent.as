@@ -9,7 +9,6 @@ package com.kaltura.kmc.modules.content.events
 		public static const LIST_ENTRY_MODERATION : String = "content_listEntryModeration";
 		
 		public static const GET_FLAVOR_PARAMS : String = "content_getFlavorParams";
-		public static const GET_FLAVOR_ASSETS_FOR_PREVIEW : String = "content_getFlavorAssetsForPreview";
 		
 		/**
 		 * execute playlist to see current entries
