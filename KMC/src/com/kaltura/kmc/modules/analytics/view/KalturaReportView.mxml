@@ -345,6 +345,18 @@
 				handleTimeUnitChange();
 			}
 
+			private function isOneDay(fromDate:Date, toDate:Date):Boolean {
+				if (fromDate.day != toDate.day) {
+					return false;
+				}
+				if (fromDate.month != toDate.month) {
+					return false;
+				}
+				if (fromDate.fullYear != toDate.fullYear) {
+					return false;
+				}
+				return true;
+			}
 
 			/**
 			 * recalculate _isMonths/_isOneDay and change table headers
@@ -356,9 +368,7 @@
 				else {
 					_isMonths = false;
 				}
-
-				_isOneDay = (filterVo.toDate.time - filterVo.fromDate.time) <= TimeConsts.DAY;
-
+				_isOneDay = isOneDay(filterVo.fromDate, filterVo.toDate);
 				// QC 3885 - Changing from "Date" to "Month" in the table headers.
 				if (tableHeaders && tableHeaders.length > 1) {
 					if (_isMonths && tableHeaders[0] == "date_id") {
@@ -368,7 +378,6 @@
 						tableHeaders[0] = "date_id";
 					}
 				}
-
 				ktable.headerDataProvider = tableHeaders;
 			}
 
@@ -450,7 +459,16 @@
 			protected function onReportDataChange(rdtc:ReportData):void {
 				if (rdtc && this.visible) {
 					if (showLineChart) {
+						// if linechart requested and only one day - we show barchart instead
 						if (_isMonths || _isOneDay) {
+							if (rdtc.type == KalturaReportType.PLATFORMS) {
+								dateBarChart.yFields = rdtc.selectedChartHeaders;
+								legend.visible = true;
+							}
+							else {
+								dateBarChart.yFields = ["y"];
+								legend.visible = false;
+							}
 							dateBarChart.dataProvider = rdtc.chartDp;
 						}
 						else {
