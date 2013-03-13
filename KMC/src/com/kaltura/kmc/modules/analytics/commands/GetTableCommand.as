@@ -58,6 +58,9 @@ package com.kaltura.kmc.modules.analytics.commands {
 			if (_addTotals) {
 				selectedReportData.pager.pageSize = 500;
 			}
+			
+			if (reportEvt.orderBy)
+				selectedReportData.orderBy = reportEvt.orderBy;
 
 			var krif:KalturaReportInputFilter = ExecuteReportHelper.createFilterFromReport(_model.getFilterForScreen(_screenType), _screenType);
 			var reportGetTable:ReportGetTable = new ReportGetTable(reportEvt.reportType,
