@@ -4,7 +4,6 @@ package com.kaltura.kmc.modules.analytics.control
 
 	public class ReportEvent extends CairngormEvent
 	{
-		public static const GET_MULTI_DATA : String = "analytics_getMultiData";
 		public static const GET_GRAPH : String = "analytics_getGraph";
 		public static const GET_TOTAL : String = "analytics_getTotal";
 		public static const GET_TABLE : String = "analytics_getTable";

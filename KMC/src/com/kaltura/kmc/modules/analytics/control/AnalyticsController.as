@@ -20,7 +20,6 @@ package com.kaltura.kmc.modules.analytics.control
 			addCommand( ReportEvent.GET_TOTAL , GetTotalCommand );
 			addCommand( ReportEvent.GET_TABLE , GetTableCommand );
 			addCommand( ReportEvent.GET_BASE_TOTALS , GetBaseTotalsCommand );
-			addCommand( ReportEvent.GET_MULTI_DATA , GetAllReportsCommand );
 			addCommand( ReportEvent.EXPORT_TO_EXCEL , ExportToExcelCommand );
 			
 			addCommand( ReportDataEvent.SET_REPORT_DATA, SetReportDataCommand );
