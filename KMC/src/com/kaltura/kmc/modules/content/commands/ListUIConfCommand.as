@@ -22,16 +22,17 @@ package com.kaltura.kmc.modules.content.commands
 		{
 			_model.increaseLoadCounter();
 			
-		 /* 	getListUIConfs.addEventListener(KalturaEvent.COMPLETE, result);
-			getListUIConfs.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(getListUIConfs);	  */
 			
 			var mr:MultiRequest = new MultiRequest();
 			
-			var getUIConfTemplates:UiConfListTemplates = new UiConfListTemplates();
+			var filter:KalturaUiConfFilter = new KalturaUiConfFilter();
+			filter.partnerIdEqual = 0; // we assume the general partner is always 0
+			filter.tagsMultiLikeAnd = "autodeploy,kmc_v"+ KMC.VERSION +",kmc_previewembed"; 
+			
+			var getUIConfTemplates:UiConfListTemplates = new UiConfListTemplates(filter);
 			mr.addAction(getUIConfTemplates);
 			
-			var filter:KalturaUiConfFilter = (event as UIConfEvent).uiConfFilter;
+			filter = (event as UIConfEvent).uiConfFilter;
 			var getListUIConfs:UiConfList = new UiConfList(filter);
 			mr.addAction(getListUIConfs);
 		
