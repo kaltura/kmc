@@ -25,46 +25,11 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.types
 {
-	import com.kaltura.vo.KalturaFlavorAsset;
-
-	[Bindable]
-	public dynamic class KalturaWidevineFlavorAsset extends KalturaFlavorAsset
+	public class KalturaLimitFlavorsRestrictionType
 	{
-		/**
-		 * License distribution window start date
-		 * 
-		 **/
-		public var widevineDistributionStartDate : int = int.MIN_VALUE;
-
-		/**
-		 * License distribution window end date
-		 * 
-		 **/
-		public var widevineDistributionEndDate : int = int.MIN_VALUE;
-
-		/**
-		 * Widevine unique asset id
-		 * 
-		 **/
-		public var widevineAssetId : int = int.MIN_VALUE;
-
-		override public function getUpdateableParamKeys():Array
-		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('widevineDistributionStartDate');
-			arr.push('widevineDistributionEndDate');
-			arr.push('widevineAssetId');
-			return arr;
-		}
-
-		override public function getInsertableParamKeys():Array
-		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
-		}
+		public static const RESTRICT_LIST : int = 0;
+		public static const ALLOW_LIST : int = 1;
 	}
 }

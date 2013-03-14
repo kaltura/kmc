@@ -25,46 +25,36 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.tag
 {
-	import com.kaltura.vo.KalturaFlavorAsset;
+	import com.kaltura.delegates.tag.TagDeletePendingDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaWidevineFlavorAsset extends KalturaFlavorAsset
+	/**
+	 * Action goes over all tags with instanceCount==0 and checks whether they need to be removed from the DB. Returns number of removed tags.
+	 * 
+	 **/
+	public class TagDeletePending extends KalturaCall
 	{
+		public var filterFields : String;
+		
 		/**
-		 * License distribution window start date
-		 * 
 		 **/
-		public var widevineDistributionStartDate : int = int.MIN_VALUE;
-
-		/**
-		 * License distribution window end date
-		 * 
-		 **/
-		public var widevineDistributionEndDate : int = int.MIN_VALUE;
-
-		/**
-		 * Widevine unique asset id
-		 * 
-		 **/
-		public var widevineAssetId : int = int.MIN_VALUE;
-
-		override public function getUpdateableParamKeys():Array
+		public function TagDeletePending(  )
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('widevineDistributionStartDate');
-			arr.push('widevineDistributionEndDate');
-			arr.push('widevineAssetId');
-			return arr;
+			service= 'tagsearch_tag';
+			action= 'deletePending';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			applySchema(keyArr, valueArr);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new TagDeletePendingDelegate( this , config );
 		}
 	}
 }

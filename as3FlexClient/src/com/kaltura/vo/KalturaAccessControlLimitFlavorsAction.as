@@ -27,36 +27,28 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaFlavorAsset;
+	import com.kaltura.vo.KalturaAccessControlAction;
 
 	[Bindable]
-	public dynamic class KalturaWidevineFlavorAsset extends KalturaFlavorAsset
+	public dynamic class KalturaAccessControlLimitFlavorsAction extends KalturaAccessControlAction
 	{
 		/**
-		 * License distribution window start date
+		 * Comma separated list of flavor ids
 		 * 
 		 **/
-		public var widevineDistributionStartDate : int = int.MIN_VALUE;
+		public var flavorParamsIds : String = null;
 
 		/**
-		 * License distribution window end date
-		 * 
+		 * @see com.kaltura.types.kalturaBoolean
 		 **/
-		public var widevineDistributionEndDate : int = int.MIN_VALUE;
-
-		/**
-		 * Widevine unique asset id
-		 * 
-		 **/
-		public var widevineAssetId : int = int.MIN_VALUE;
+		public var isBlockedList : Boolean;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('widevineDistributionStartDate');
-			arr.push('widevineDistributionEndDate');
-			arr.push('widevineAssetId');
+			arr.push('flavorParamsIds');
+			arr.push('isBlockedList');
 			return arr;
 		}
 

@@ -25,46 +25,24 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.delegates.tag
 {
-	import com.kaltura.vo.KalturaFlavorAsset;
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	[Bindable]
-	public dynamic class KalturaWidevineFlavorAsset extends KalturaFlavorAsset
+	public class TagDeletePendingDelegate extends WebDelegateBase
 	{
-		/**
-		 * License distribution window start date
-		 * 
-		 **/
-		public var widevineDistributionStartDate : int = int.MIN_VALUE;
-
-		/**
-		 * License distribution window end date
-		 * 
-		 **/
-		public var widevineDistributionEndDate : int = int.MIN_VALUE;
-
-		/**
-		 * Widevine unique asset id
-		 * 
-		 **/
-		public var widevineAssetId : int = int.MIN_VALUE;
-
-		override public function getUpdateableParamKeys():Array
+		public function TagDeletePendingDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('widevineDistributionStartDate');
-			arr.push('widevineDistributionEndDate');
-			arr.push('widevineAssetId');
-			return arr;
+			super(call, config);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function parse(result:XML) : *
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
+			return result.result.toString();
 		}
+
 	}
 }

@@ -27,36 +27,30 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaFlavorAsset;
+	import com.kaltura.vo.KalturaBaseRestriction;
 
 	[Bindable]
-	public dynamic class KalturaWidevineFlavorAsset extends KalturaFlavorAsset
+	public dynamic class KalturaLimitFlavorsRestriction extends KalturaBaseRestriction
 	{
 		/**
-		 * License distribution window start date
+		 * Limit flavors restriction type (Allow or deny)
 		 * 
+		 * @see com.kaltura.types.KalturaLimitFlavorsRestrictionType
 		 **/
-		public var widevineDistributionStartDate : int = int.MIN_VALUE;
+		public var limitFlavorsRestrictionType : int = int.MIN_VALUE;
 
 		/**
-		 * License distribution window end date
+		 * Comma separated list of flavor params ids to allow to deny
 		 * 
 		 **/
-		public var widevineDistributionEndDate : int = int.MIN_VALUE;
-
-		/**
-		 * Widevine unique asset id
-		 * 
-		 **/
-		public var widevineAssetId : int = int.MIN_VALUE;
+		public var flavorParamsIds : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('widevineDistributionStartDate');
-			arr.push('widevineDistributionEndDate');
-			arr.push('widevineAssetId');
+			arr.push('limitFlavorsRestrictionType');
+			arr.push('flavorParamsIds');
 			return arr;
 		}
 
