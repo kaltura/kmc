@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 width="100%" styleName="acpPopUpSectionBox">
+		 width="100%" styleName="acpPopUpSectionBox" implements="com.kaltura.edw.view.window.accessControl.IRestrictionsPanel">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.types.KalturaCountryRestrictionType;
@@ -35,7 +35,7 @@
 			
 			public var isOk:Boolean = true;
 			
-			public function setCountriesRestrictions():void {
+			public function setRestrictions():void {
 				var restrictionFound:Boolean = false;
 				for each (var restriction:KalturaBaseRestriction in profile.restrictions) {
 					if (restriction is KalturaCountryRestriction) {
@@ -58,7 +58,7 @@
 				allCountriesRaddioBtn.selected = !restrictionFound;
 			}
 			
-			public function updateCountriesRestrictions():void {
+			public function updateRestrictions():void {
 				if (allCountriesRaddioBtn.selected != true) {
 					var countryRestriction:KalturaCountryRestriction = new KalturaCountryRestriction();
 					countryRestriction.countryRestrictionType = approvedCountriesRadioBtn.selected ? KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST : KalturaCountryRestrictionType.RESTRICT_COUNTRY_LIST;
@@ -90,6 +90,11 @@
 				return countriesList;
 			}
 			
+			/**
+			 * populate an array with values that match the values given by the string.
+			 * @param ac	the list to which objects should be added
+			 * @param itemStr	a list of comma separated country codes
+			 * */
 			private function setCountriesFromString(ac:ArrayCollection, itemStr:String):void {
 				var arr:Array = itemStr.split(',');
 				for each (var countryCode:String in arr) {

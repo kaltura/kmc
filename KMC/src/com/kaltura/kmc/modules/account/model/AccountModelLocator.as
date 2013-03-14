@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.account.model {
 	import com.adobe.cairngorm.model.IModelLocator;
 	import com.kaltura.kmc.modules.account.model.states.WindowsStates;
 	import com.kaltura.kmc.modules.account.vo.AdminVO;
-	import com.kaltura.kmc.modules.account.vo.FlavorVO;
+	import com.kaltura.vo.FlavorVO;
 	import com.kaltura.kmc.modules.account.vo.PackagesVO;
 	import com.kaltura.kmc.modules.account.vo.PartnerVO;
 	import com.kaltura.types.KalturaAccessControlOrderBy;

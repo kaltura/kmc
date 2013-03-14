@@ -13,7 +13,7 @@ package com.kaltura.kmc.modules.account.command {
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.utils.ListConversionProfilesUtil;
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
-	import com.kaltura.kmc.modules.account.vo.FlavorVO;
+	import com.kaltura.vo.FlavorVO;
 	import com.kaltura.vo.KalturaConversionProfile;
 	import com.kaltura.vo.KalturaConversionProfileAssetParamsListResponse;
 	import com.kaltura.vo.KalturaConversionProfileListResponse;

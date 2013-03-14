@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+
+	 This popup window is used to add or remove a flavor(s) from the Flavors Restriction list
+
+-->
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+							title="{rm.getString('windows', 'addRemoveFlavorsTitle')}" close="closeWindow(event)" height="350"
+							xmlns:containers="com.kaltura.containers.*" showCloseButton="true" width="450"
+							showHelpButton="false" defaultButton="{saveBtn}">
+	<containers:states>
+		<mx:State name="{RESTRICT_STATE}">
+			<mx:SetProperty target="{label1}" name="text" value="{rm.getString('windows', 'flavorsToRestrictLabel')}"/>
+		</mx:State>
+	</containers:states>
+	
+	<mx:Metadata>
+		[ResourceBundle("windows")]
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.FlavorVO;
+			import com.kaltura.utils.KArrayUtil;
+			import com.adobe.utils.ArrayUtil;
+			import com.kaltura.vo.KalturaFlavorParams;
+			
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			import mx.resources.IResourceManager;
+			import mx.resources.ResourceBundle;
+			import mx.resources.ResourceManager;
+
+			public static const RESTRICT_STATE:String = "restrict state";
+			
+			/**
+			 * all partner's flavors
+			 * FlavorVO objects
+			 * */
+			public var allFlavors:ArrayCollection;
+
+			[Bindable]
+			private var rm:IResourceManager = ResourceManager.getInstance();
+
+
+			[Bindable]
+			/**
+			 * selected flavors (right side list)
+			 */
+			private var _selectedData:ArrayCollection = new ArrayCollection();
+
+			[Bindable]
+			/**
+			 * non selected flavors (left side list)
+			 */
+			private var _noneSelectedFlavors:ArrayCollection = new ArrayCollection();
+
+
+			/**
+			 *
+			 */
+			[Bindable]
+			public function get selectedData():ArrayCollection {
+				return _selectedData;
+			}
+
+
+			/**
+			 *
+			 */
+			public function set selectedData(selectedDataArr:ArrayCollection):void {
+				_selectedData = selectedDataArr;
+				removeElementsFromAllFlavorsList();
+			}
+
+
+			/**
+			 * get the full array, remove the selected from it.
+			 */
+			private function removeElementsFromAllFlavorsList():void {
+				_noneSelectedFlavors = new ArrayCollection();
+				for each (var kFlavor:FlavorVO in allFlavors) {
+					if (!ArrayUtil.arrayContainsValue(_selectedData.source, kFlavor)) {
+						_noneSelectedFlavors.addItem(kFlavor);
+					}
+				}
+			}
+
+
+			/**
+			 *  close window event - when pressing the X button, cancel button or after saving the data
+			 */
+			private function closeWindow(event:Event):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+			/**
+			 *
+			 */
+			private function saveData(event:Event):void {
+				selectedData.removeAll();
+				for each (var flavor:FlavorVO in selectedFlavorsList.dataProvider) {
+					selectedData.addItem(flavor);
+				}
+				PopUpManager.removePopUp(this);
+			}
+
+
+			/**
+			 *
+			 */
+			private function onClickShift(event:Event):void {
+				var clickedBtn:Button = event.target as Button;
+				var fromList:List = (clickedBtn.id == 'shiftLeftBtn') ? allFlavorsList : selectedFlavorsList;
+				var toList:List = (clickedBtn.id == 'shiftLeftBtn') ? selectedFlavorsList : allFlavorsList;
+
+				var selectedItems:Array = fromList.selectedItems;
+				var allItems:Array = (fromList.dataProvider as ArrayCollection).source;
+				fromList.dataProvider = new ArrayCollection(KArrayUtil.subtract(allItems, selectedItems));
+				var oldSelectedItems:Array = (toList.dataProvider as ArrayCollection).source;
+				toList.dataProvider = new ArrayCollection(oldSelectedItems.concat(selectedItems).sortOn('name'));
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" height="100%">
+		<mx:VBox height="100%" width="100%">
+			<mx:Label text="{rm.getString('windows', 'allFlavorsLabel')}"/>
+			<mx:List id="allFlavorsList" height="100%" width="100%" allowMultipleSelection="true" 
+					 dataProvider="{_noneSelectedFlavors}" styleName="accessControlFlavorsList"
+					 itemRenderer="com.kaltura.renderers.FlavorsListItemRenderer">
+			</mx:List>
+		</mx:VBox>
+		<mx:VBox height="100%" horizontalAlign="center" verticalAlign="middle" paddingLeft="2" paddingRight="2">
+			<mx:Button label="{rm.getString('windows', 'shiftLeftBtn')}" id="shiftLeftBtn" useHandCursor="true"
+					   buttonMode="true" click='onClickShift(event)'/>
+			<mx:Button label="{rm.getString('windows', 'shiftRightBtn')}" id="shiftRightBtn" useHandCursor="true"
+					   buttonMode="true" click='onClickShift(event)'/>
+		</mx:VBox>
+		<mx:VBox height="100%" width="100%">
+			<mx:Label text="{rm.getString('windows', 'flavorsToAllowLabel')}" id="label1"/>
+			<mx:List id="selectedFlavorsList" height="100%" width="100%" allowMultipleSelection="true" 
+					 dataProvider="{new ArrayCollection(selectedData.toArray())}" styleName="accessControlFlavorsList"
+					 itemRenderer="com.kaltura.renderers.FlavorsListItemRenderer">
+			</mx:List>
+		</mx:VBox>
+	</mx:HBox>
+
+	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
+				   paddingTop="2">
+		<mx:Button id="saveBtn" label="{rm.getString('windows', 'saveCountirsBtn')}" useHandCursor="true"
+				   buttonMode="true" click="saveData(event)"/>
+	</mx:ControlBar>
+</containers:HelpTitleWindow>

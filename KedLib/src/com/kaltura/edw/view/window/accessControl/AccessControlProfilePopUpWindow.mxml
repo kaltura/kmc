@@ -18,32 +18,26 @@
 		</mx:State>
 	</containers:states>
 
+	<mx:Metadata>
+		[ResourceBundle("windows")]
+	</mx:Metadata>
+	
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.view.EntryDetailsWin;
 			import com.kaltura.types.KalturaNullableBoolean;
-			import com.kaltura.types.KalturaSiteRestrictionType;
-			import com.kaltura.utils.KArrayUtil;
 			import com.kaltura.vo.AccessControlProfileVO;
 			import com.kaltura.vo.KalturaAccessControl;
-			import com.kaltura.vo.KalturaBaseRestriction;
-			import com.kaltura.vo.KalturaSiteRestriction;
-			import com.kaltura.windows.popUpWindows.AddNewDomainPopUpWindow;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
-			import mx.controls.LinkButton;
-			import mx.controls.List;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.IResourceManager;
 			import mx.resources.ResourceBundle;
 			import mx.resources.ResourceManager;
-
-			[ResourceBundle("windows")]
-			private static var rb:ResourceBundle;
 
 
 			// events const
@@ -79,6 +73,7 @@
 				domains.editable = false;
 				ips.editable = false;
 				countries.editable = false;
+				flavors.editable = false;
 				advanced.editable = false
 				submitBtn.visible = false;
 			}
@@ -95,7 +90,6 @@
 			/**
 			 * get the accessControlProfile(acp)
 			 */
-			[Bindable]
 			public function get accessControlProfile():AccessControlProfileVO {
 				return _accessControlProfile;
 			}
@@ -108,6 +102,12 @@
 				_accessControlProfile = accessControlProfile;
 			}
 
+			
+			[Bindable]
+			/**
+			 * FlavorVO objects
+			 * */
+			public var allFlavors:ArrayCollection;
 
 			/**
 			 * creation complete of the main window, for edit we clone 
@@ -133,11 +133,11 @@
 			 */
 			private function setAccessControlProfileData():void {
 				setDefaultProfileSettings();
-				domains.setSiteRestrictions();
-				ips.setIPRestrictions();
-				countries.setCountriesRestrictions();
-				advanced.setSessionRestriction();
-				advanced.setPreviewRestrictions();
+				domains.setRestrictions();
+				ips.setRestrictions();
+				countries.setRestrictions();
+				flavors.setRestrictions();
+				advanced.setRestrictions();
 			}
 
 
@@ -163,7 +163,7 @@
 				// update
 				updateProperties();
 				// validate
-				if (countries.isOk && domains.isOk && ips.isOk) {
+				if (countries.isOk && flavors.isOk && domains.isOk && ips.isOk) {
 					// save
 					saveAndClose();
 				}
@@ -172,6 +172,7 @@
 					msg += domains.isOk ? msg : rm.getString('windows', 'noSitesWereSelected');
 					msg = countries.isOk ? msg : msg + "\n" + rm.getString('windows', 'noCountriesWereSelected');
 					msg = ips.isOk ? msg : msg + "\n" + rm.getString('windows', 'noIPsWereSelected');
+					msg = flavors.isOk ? msg : msg + "\n" + rm.getString('windows', 'noFlavorsWereSelected');
 
 					msg = msg + "\n\n\t" + rm.getString('windows', 'noSelectionQuestion');
 					Alert.show(msg, rm.getString('windows', 'alertTitle'), Alert.YES | Alert.NO, null, alertResponseHandler);
@@ -203,11 +204,11 @@
 				updateName();
 				updateDescription();
 				clearRestrictions();
-				domains.updateSiteRestrictions();
-				ips.updateIPsRestrictions();
-				countries.updateCountriesRestrictions();
-				advanced.updateSessionRestrictions();
-				advanced.UpdatePreviewRestrictions();
+				domains.updateRestrictions();
+				ips.updateRestrictions();
+				countries.updateRestrictions();
+				flavors.updateRestrictions();
+				advanced.updateRestrictions();
 			}
 
 
@@ -279,10 +280,10 @@
 			<mx:Form width="100%" textAlign="left" paddingLeft="0">
 				<mx:FormItem label="{rm.getString('windows', 'nameLabel')}" width="100%">
 					<mx:TextInput id='profileNameTi' width="100%" change='validateInput(event)'
-								  text="{accessControlProfile.profile.name}"/>
+								  text="{_accessControlProfile.profile.name}"/>
 				</mx:FormItem>
 				<mx:FormItem label="{rm.getString('windows', 'descriptionLabel')}" width="100%">
-					<mx:TextArea id='descriptionTa' width="100%" text="{accessControlProfile.profile.description}"/>
+					<mx:TextArea id='descriptionTa' width="100%" text="{_accessControlProfile.profile.description}"/>
 				</mx:FormItem>
 			</mx:Form>
 		</mx:VBox>
@@ -295,6 +296,9 @@
 		
 		<!-- IP restriction -->
 		<acp:IPRestrictions id="ips" profile="{_accessControlProfile.profile}" />
+		
+		<!-- Flavor restriction -->
+		<acp:FlavorRestrictions id="flavors" profile="{_accessControlProfile.profile}" flavors="{allFlavors}"/>
 
 		<!-- advanced -->
 		<acp:Advanced id="advanced" profile="{_accessControlProfile.profile}"/>

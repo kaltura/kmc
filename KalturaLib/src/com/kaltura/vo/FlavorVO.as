@@ -1,8 +1,6 @@
-package com.kaltura.kmc.modules.account.vo {
+package com.kaltura.vo {
 	import com.adobe.cairngorm.vo.IValueObject;
 	import com.kaltura.utils.ObjectUtil;
-	import com.kaltura.vo.KalturaConversionProfileAssetParams;
-	import com.kaltura.vo.KalturaFlavorParams;
 	
 	import flash.events.Event;
 	

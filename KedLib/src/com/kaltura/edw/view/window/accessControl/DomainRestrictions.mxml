@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" styleName="acpPopUpSectionBox">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" styleName="acpPopUpSectionBox"
+		 implements="com.kaltura.edw.view.window.accessControl.IRestrictionsPanel">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.types.KalturaSiteRestrictionType;
@@ -40,7 +41,7 @@
 			 * */
 			private var _selectedList:List;
 			
-			public function setSiteRestrictions():void {
+			public function setRestrictions():void {
 				var restrictionFound:Boolean = false;
 				for each (var restriction:KalturaBaseRestriction in profile.restrictions) {
 					if (restriction is KalturaSiteRestriction) {
@@ -64,7 +65,7 @@
 			}
 		
 			
-			public function updateSiteRestrictions():void {
+			public function updateRestrictions():void {
 				if (anySiteRaddioBtn.selected != true) {
 					var siteRestriction:KalturaSiteRestriction = new KalturaSiteRestriction();
 					siteRestriction.siteRestrictionType = approvedSitesRadioBtn.selected ? KalturaSiteRestrictionType.ALLOW_SITE_LIST : KalturaSiteRestrictionType.RESTRICT_SITE_LIST;

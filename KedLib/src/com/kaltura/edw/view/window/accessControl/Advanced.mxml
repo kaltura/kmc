@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="com.kaltura.controls.*"
-	width="100%" styleName="acpPopUpSectionBox">
+	width="100%" styleName="acpPopUpSectionBox" implements="com.kaltura.edw.view.window.accessControl.IRestrictionsPanel">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.vo.KalturaAccessControl;
@@ -20,7 +20,15 @@
 			public var editable:Boolean = true;
 			
 			
-			public function setSessionRestriction():void {
+			
+			
+			
+			public function setRestrictions():void {
+				setSessionRestriction();
+				setPreviewRestrictions();
+			}
+			
+			private function setSessionRestriction():void {
 				var restrictionFound:Boolean = false;
 				for each (var restriction:KalturaBaseRestriction in profile.restrictions) {
 					if (restriction is KalturaSessionRestriction) {
@@ -30,7 +38,7 @@
 				}
 			}
 			
-			public function setPreviewRestrictions():void {
+			private function setPreviewRestrictions():void {
 				var restrictionFound:Boolean = false;
 				for each (var restriction:KalturaBaseRestriction in profile.restrictions) {
 					if (restriction is KalturaPreviewRestriction) {
@@ -43,14 +51,19 @@
 				}
 			}
 			
-			public function updateSessionRestrictions():void {
+			public function updateRestrictions():void {
+				updateSessionRestrictions();
+				UpdatePreviewRestrictions();
+			}
+			
+			private function updateSessionRestrictions():void {
 				if (secureKSCBBtn.selected == true) {
 					var sessionRestriction:KalturaSessionRestriction = new KalturaSessionRestriction();
 					profile.restrictions.push(sessionRestriction);
 				}
 			}
 			
-			public function UpdatePreviewRestrictions():void {
+			private function UpdatePreviewRestrictions():void {
 				if (freePerviewCBBtn.selected == true) {
 					var previewRestriction:KalturaPreviewRestriction = new KalturaPreviewRestriction();
 					previewRestriction.previewLength = (freePreviewDuration.minute * 60) + freePreviewDuration.second;

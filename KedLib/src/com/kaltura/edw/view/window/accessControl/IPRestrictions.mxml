@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 width="100%" styleName="acpPopUpSectionBox">
+		 width="100%" styleName="acpPopUpSectionBox" implements="com.kaltura.edw.view.window.accessControl.IRestrictionsPanel">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.types.KalturaIpAddressRestrictionType;
@@ -44,7 +44,7 @@
 			 * */
 			private var _selectedList:List;
 			
-			public function setIPRestrictions():void {
+			public function setRestrictions():void {
 				var restrictionFound:Boolean = false;
 				for each (var restriction:KalturaBaseRestriction in profile.restrictions) {
 					if (restriction is KalturaIpAddressRestriction) {
@@ -68,7 +68,7 @@
 			}
 			
 			
-			public function updateIPsRestrictions():void {
+			public function updateRestrictions():void {
 				if (allIPsRaddioBtn.selected != true) {
 					var ipRestriction:KalturaIpAddressRestriction = new KalturaIpAddressRestriction();
 					ipRestriction.ipAddressRestrictionType = approvedIPsRadioBtn.selected ? KalturaIpAddressRestrictionType.ALLOW_LIST : KalturaIpAddressRestrictionType.RESTRICT_LIST;

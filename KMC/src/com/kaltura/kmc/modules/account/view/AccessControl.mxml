@@ -7,6 +7,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.view.window.accessControl.AccessControlProfilePopUpWindow;
 			import com.kaltura.kmc.events.KmcEvent;
@@ -59,6 +60,7 @@
 				var addNewProfileWin:AccessControlProfilePopUpWindow = new AccessControlProfilePopUpWindow();
 				addNewProfileWin.rootUrl = rootUrl;
 				addNewProfileWin.currentState = 'newProfileState';
+				addNewProfileWin.allFlavors = AccountModelLocator.getInstance().flavorsData;
 
 				PopUpManager.addPopUp(addNewProfileWin, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(addNewProfileWin);
@@ -126,6 +128,7 @@
 			
 			public function init():void {
 				loadAccessControlsList();
+				loadFlavors();
 			}
 
 
@@ -135,6 +138,13 @@
 				addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfileFunc);
 				PermissionManager.getInstance().applyAllAttributes(this, NAME);
 			}
+			
+			private function loadFlavors():void
+			{
+				var getFlavorsEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
+				getFlavorsEvent.dispatch();
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:Text styleName="filterTitleHeader" text="{resourceManager.getString('account','accessControlProfiles')}"/>

@@ -6,7 +6,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
-	import com.kaltura.kmc.modules.account.vo.FlavorVO;
+	import com.kaltura.vo.FlavorVO;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaFlavorParams;
 	import com.kaltura.vo.KalturaFlavorParamsListResponse;

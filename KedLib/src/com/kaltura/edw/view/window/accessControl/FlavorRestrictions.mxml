@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 width="100%" styleName="acpPopUpSectionBox" implements="com.kaltura.edw.view.window.accessControl.IRestrictionsPanel">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.FlavorVO;
+			import com.kaltura.vo.KalturaFlavorParams;
+			import com.kaltura.types.KalturaLimitFlavorsRestrictionType;
+			import com.kaltura.vo.KalturaAccessControl;
+			import com.kaltura.vo.KalturaBaseRestriction;
+			import com.kaltura.vo.KalturaLimitFlavorsRestriction;
+			import com.kaltura.windows.popUpWindows.AddRemoveFlavorsPopUpWindow;
+			
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			
+			/**
+			 * the access control object being edited
+			 * */	
+			public var profile:KalturaAccessControl;
+			
+			[Bindable]
+			/**
+			 * are controls in the panel editable
+			 * */
+			public var editable:Boolean = true;
+			
+			[Bindable]
+			private var allowedFlavorsArr:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			private var notAllowedFlavorsArr:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * all the partner's flavor params 
+			 * FlavorVO objects
+			 * */
+			public var flavors:ArrayCollection;
+			
+			
+			public var isOk:Boolean = true;
+			
+			public function setRestrictions():void {
+				var restrictionFound:Boolean = false;
+				for each (var restriction:KalturaBaseRestriction in profile.restrictions) {
+					if (restriction is KalturaLimitFlavorsRestriction) {
+						restrictionFound = true;
+						var arr:ArrayCollection;
+						if ((restriction as KalturaLimitFlavorsRestriction).limitFlavorsRestrictionType == KalturaLimitFlavorsRestrictionType.ALLOW_LIST) {
+							approvedFlavorsRadioBtn.selected = true;
+							arr = allowedFlavorsArr;
+						}
+						else {
+							notApprovedFlavorsRadioBtn.selected = true;
+							arr = notAllowedFlavorsArr;
+						}
+						
+						setFlavorsFromString(arr, (restriction as KalturaLimitFlavorsRestriction).flavorParamsIds);
+						break;
+					}
+				}
+				
+				allFlavorsRaddioBtn.selected = !restrictionFound;
+			}
+			
+			public function updateRestrictions():void {
+				if (allFlavorsRaddioBtn.selected != true) {
+					var flavorRestriction:KalturaLimitFlavorsRestriction = new KalturaLimitFlavorsRestriction();
+					flavorRestriction.limitFlavorsRestrictionType = approvedFlavorsRadioBtn.selected ? KalturaLimitFlavorsRestrictionType.ALLOW_LIST : KalturaLimitFlavorsRestrictionType.RESTRICT_LIST;
+					
+					var list:List = (approvedFlavorsRadioBtn.selected == true) ? approvedFlavorsList : notApprovedFlavorsList;
+					flavorRestriction.flavorParamsIds = getFlavorsList(list.dataProvider as ArrayCollection);
+					
+					if ((list.dataProvider as ArrayCollection).length > 0) {
+						isOk = true;
+						profile.restrictions.push(flavorRestriction);
+					}
+					else {
+						isOk = false;
+					}
+				}
+				else {
+					isOk = true;
+				}
+			}
+			
+			
+			/**
+			 * @param ac	list of KalturaFlavorParams
+			 * @return comma seperated list of flavor params ids
+			 * */
+			private function getFlavorsList(ac:ArrayCollection):String {
+				var flavorsList:String = "";
+				for each (var item:FlavorVO in ac) {
+					flavorsList += item.kFlavor.id + ',';
+				}
+				// remove last ","
+				if (flavorsList.length > 0) {
+					flavorsList = flavorsList.substr(0, flavorsList.length - 1)
+				}
+				return flavorsList;
+			}
+			
+			
+			/**
+			 * populate an array with values that match the values given by the string.
+			 * @param ac	the list to which objects should be added
+			 * @param itemStr	Comma separated list of flavor params ids to allow to deny
+			 * */
+			private function setFlavorsFromString(ac:ArrayCollection, itemStr:String):void {
+				var ids:Array = itemStr.split(',');
+				for each (var flavorParamsId:int in ids) {
+					// get matching flavor from array
+					for each (var flavor:FlavorVO in flavors) {
+						if (flavor.kFlavor.id == flavorParamsId) {
+							ac.addItem(flavor);
+							break;
+						}
+					}
+				}
+			}
+			
+			/**
+			 * shows the add / remove Flavors popup
+			 * @param event
+			 * @param list the list from which we want to remove the selected items
+			 */
+			private function showAddRemoveFlavorsPopUp(event:Event, list:List):void {
+				var addRmvFlavorsPopUp:AddRemoveFlavorsPopUpWindow = new AddRemoveFlavorsPopUpWindow();
+				addRmvFlavorsPopUp.allFlavors = flavors;
+				if ((event.target as LinkButton).id == "restrictFlavorsLinkButton") {
+					addRmvFlavorsPopUp.currentState = AddRemoveFlavorsPopUpWindow.RESTRICT_STATE;
+				}
+				addRmvFlavorsPopUp.selectedData = list.dataProvider as ArrayCollection;
+				
+				PopUpManager.addPopUp(addRmvFlavorsPopUp, this, true);
+				PopUpManager.centerPopUp(addRmvFlavorsPopUp);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label text="{resourceManager.getString('windows', 'authoFlavorsBigLabel')}" styleName="acpPopUpTitleLabel"/>
+	<mx:Spacer height="10"/>
+	<mx:RadioButtonGroup id='authoFlavorsGroup'/>
+	<mx:Form width="100%">
+		<mx:Label text="{resourceManager.getString('windows', 'authoFlavorsSmallLabel')}"
+				  styleName="acpPopUpSmallTitleLabel"/>
+		<!-- flavor restriction restriction : any flavor -->
+		<mx:FormItem>
+			<mx:RadioButton label="{resourceManager.getString('windows', 'anyflavorRadioBtn')}"
+							groupName="authoFlavorsGroup" id='allFlavorsRaddioBtn' selected="true"
+							styleName="acpRadioButton" enabled="{editable}"/>
+		</mx:FormItem>
+		<!-- flavor restriction restriction : allowed Flavors -->
+		<mx:FormItem width="100%">
+			<mx:VBox width="100%" height="100%">
+				<mx:RadioButton label="{resourceManager.getString('windows', 'authoFlavorsRadioBtn')}"
+								groupName="authoFlavorsGroup" id="approvedFlavorsRadioBtn"
+								styleName="acpRadioButton" enabled="{editable}"/>
+				<mx:HBox width="100%">
+					<mx:Label text="{resourceManager.getString('windows', 'flavorsLabel')}"
+							  enabled="{approvedFlavorsRadioBtn.selected}"/>
+					<mx:List width="100%" id="approvedFlavorsList" dataProvider="{allowedFlavorsArr}"
+							 enabled="{approvedFlavorsRadioBtn.selected}" rowCount="5" selectable="false"
+							 itemRenderer="com.kaltura.renderers.FlavorsListItemRenderer"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:HBox>
+				<mx:LinkButton id="addRemoveFlavorsBtn" 
+							   label="{resourceManager.getString('windows', 'addRemoveFlavorsBtn')}"
+							   enabled="{approvedFlavorsRadioBtn.selected &amp;&amp; editable}"
+							   click="showAddRemoveFlavorsPopUp(event, approvedFlavorsList)"
+							   styleName="acpLinkButton"/>
+			</mx:HBox>
+		</mx:FormItem>
+		<!-- flavor restriction restriction : restricted Flavors -->
+		<mx:FormItem width="100%">
+			<mx:VBox width="100%" height="100%">
+				<mx:RadioButton label="{resourceManager.getString('windows', 'noAuthoFlavorsRadioBtn')}"
+								groupName="authoFlavorsGroup" id="notApprovedFlavorsRadioBtn"
+								styleName="acpRadioButton" enabled="{editable}"/>
+				<mx:HBox width="100%">
+					<mx:Label text="{resourceManager.getString('windows', 'flavorsLabel')}"
+							  enabled="{notApprovedFlavorsRadioBtn.selected}"/>
+					<mx:List width="100%" id="notApprovedFlavorsList" dataProvider="{notAllowedFlavorsArr}"
+							 enabled="{notApprovedFlavorsRadioBtn.selected}" rowCount="5" selectable="false"
+							 itemRenderer="com.kaltura.renderers.FlavorsListItemRenderer"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:HBox>
+				<mx:LinkButton id="restrictFlavorsLinkButton"
+							   label="{resourceManager.getString('windows', 'addRemoveFlavorsBtn')}"
+							   enabled="{notApprovedFlavorsRadioBtn.selected &amp;&amp; editable}"
+							   click="showAddRemoveFlavorsPopUp(event, notApprovedFlavorsList)"
+							   styleName="acpLinkButton"/>
+			</mx:HBox>
+		</mx:FormItem>
+	</mx:Form>
+</mx:VBox>
