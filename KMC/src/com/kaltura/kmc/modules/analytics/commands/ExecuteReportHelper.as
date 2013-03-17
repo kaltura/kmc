@@ -41,6 +41,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 				|| screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS 
 				|| screenType == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN 
 				|| screenType == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN 
+				|| screenType == ScreenTypes.MAP_OVERLAY_DRILL_DOWN 
 				|| screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN
 				|| screenType == ScreenTypes.PLATFORM_DRILL_DOWN)) {
 				objectIds = _model.selectedReportData.objectIds = _model.selectedEntry;
