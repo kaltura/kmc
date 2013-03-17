@@ -19,7 +19,20 @@
 
 
 			[Bindable]
+			/**
+			 * should countries column be visible
+			 * @internal
+			 * used directly by RnP
+			 * */
 			public var showIp2Loc:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * should flavors column be visible
+			 * @internal
+			 * used directly by RnP
+			 * */
+			public var showFlavors:Boolean = true;
 
 
 			override public function set dataProvider(data:Object):void {
@@ -69,7 +82,7 @@
 							break;
 						}
 
-						case resourceManager.getString('account', 'kalturaDirectoryColumnTitle'):  {
+						case resourceManager.getString('account', 'authorizedFlavorsColumnTitle'):  {
 							orederByStr = sortDir ? KalturaAccessControlOrderBy.CREATED_AT_ASC : KalturaAccessControlOrderBy.CREATED_AT_DESC;
 							break;
 						}
@@ -145,8 +158,10 @@
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlAuthoCountriesRenderer"/>
 
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','authorizedIPsColumnTitle')}"
-						   dataField="authoIps"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlAuthoIpsRenderer"/>
+
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','authorizedFlavorsColumnTitle')}" visible="{showFlavors}"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlAuthoFlavorsRenderer"/>
 
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','advancedSecurityColumnTitle')}"
 						   dataField="advance"

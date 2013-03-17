@@ -18,11 +18,10 @@ access control tab of EntryDetailsWin
 			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.datapacks.FilterDataPack;
+			import com.kaltura.edw.model.util.EntryAccessControlUtil;
 			import com.kaltura.edw.view.window.accessControl.AccessControlProfilePopUpWindow;
-			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.types.*;
-			import com.kaltura.utils.KCountriesUtil;
 			import com.kaltura.vo.*;
 			
 			import mx.binding.utils.BindingUtils;
@@ -91,7 +90,7 @@ access control tab of EntryDetailsWin
 					var getAllProfilesEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.LIST_ACCESS_CONTROLS_PROFILES);
 					controller.dispatch(getAllProfilesEvent);
 				}
-				
+				EntryAccessControlUtil.setModel(filterModel);
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.ACCESS_CONTROL_PANEL);
 			}
 			
@@ -131,30 +130,33 @@ access control tab of EntryDetailsWin
 			
 			private function updateAccessSection():void {
 				var acProfiles:ArrayCollection = new ArrayCollection();
-				var itemsCounter:int = 0;
 				var selectedItemIndex:int = 0;
 				var defualtProfile:AccessControlProfileVO;
+				// create dropdown dp
 				for each (var acProfile:AccessControlProfileVO in _accessControlData) {
 					if (acProfile.profile.isDefault == KalturaNullableBoolean.TRUE_VALUE) {
 						defualtProfile = acProfile;
 					}
 					else {
-						acProfiles.addItem({label: acProfile.profile.name, profile: acProfile});
+						acProfiles.addItem(acProfile);
 					}
 				}
-				
+				// add default profile on top of list
 				if (defualtProfile != null) {
-					acProfiles.addItemAt({label: defualtProfile.profile.name, profile: defualtProfile}, 0);
+					acProfiles.addItemAt(defualtProfile, 0);
 				}
 				
-				for each (var acProfile1:Object in acProfiles) {
-					if (_selectedEntry != null) {
-						if ((acProfile1.profile as AccessControlProfileVO).profile.id == _selectedEntry.accessControlId) {
-							selectedItemIndex = itemsCounter;
+				if (_selectedEntry != null) {
+					// get the entry's profile
+					var acProfile1:AccessControlProfileVO;
+					for (var i:int = 0; i<acProfiles.length; i++) {
+						acProfile1 = acProfiles[i] as AccessControlProfileVO;
+						if (acProfile1.profile.id == _selectedEntry.accessControlId) {
+							selectedItemIndex = i;
 						}
-						itemsCounter++;
 					}
 				}
+				// set dropdown dp
 				acProfsCB.dataProvider = acProfiles;
 				if (acProfsCB.dropdown) {
 					acProfsCB.dropdown.dataProvider = acProfiles;
@@ -167,6 +169,7 @@ access control tab of EntryDetailsWin
 			private function openNewAccessControlPopUpWindow(event:Event):void {
 				var newProfileWin:AccessControlProfilePopUpWindow = new AccessControlProfilePopUpWindow();
 				newProfileWin.currentState = "newProfileState";
+				newProfileWin.allFlavors = EntryAccessControlUtil.wrapInFlavorVo(filterModel.flavorParams);
 				PopUpManager.addPopUp(newProfileWin, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(newProfileWin);
 				
@@ -187,16 +190,17 @@ access control tab of EntryDetailsWin
 			
 			private function onAccessControlChange(event:Event):void {
 				if (acProfsCB.selectedItem == null) {
-					// this only happen because creationPolicy set to all?
 					return;
 				}
 				
-				var selectedAC:AccessControlProfileVO = acProfsCB.selectedItem.profile;
+				var selectedAC:AccessControlProfileVO = acProfsCB.selectedItem as AccessControlProfileVO;
 				if (selectedAC == null) {
+					// reset all fields
 					acNameLabel.text = '';
 					acDescriptionLabel.text = '';
 					acAuthoSitesLabel.text = '';
 					acAuthoIPsLabel.text = '';
+					acAuthoFlavorsLabel.text = '';
 					acAuthoCountriesLabel.text = '';
 					acAdvancedLabel.text = '';
 					if (_selectedEntry != null) {
@@ -207,63 +211,65 @@ access control tab of EntryDetailsWin
 				else {
 					acNameLabel.text = selectedAC.profile.name;
 					acDescriptionLabel.text = selectedAC.profile.description;
-					acAdvancedLabel.text = "";
+					// parse restrictions:
 					var foundSitesRestriction:Boolean = false;
 					var foundIPsRestriction:Boolean = false;
+					var foundFlavorsRestriction:Boolean = false;
 					var foundCountriesRestriction:Boolean = false;
-					var foundKalDirRestriction:Boolean = false;
+					var foundAdvancedRestriction:Boolean = false;
 					for each (var rstrct:KalturaBaseRestriction in selectedAC.profile.restrictions) {
 						if (rstrct is KalturaSiteRestriction) {
 							foundSitesRestriction = true;
-							if ((rstrct as KalturaSiteRestriction).siteRestrictionType == KalturaSiteRestrictionType.ALLOW_SITE_LIST) {
-								acAuthoSitesLabel.text = resourceManager.getString('drilldown', 'ALLOW_SITES') + ":  ";
-							}
-							else {
-								acAuthoSitesLabel.text = resourceManager.getString('drilldown', 'RESTRICT_SITES') + ":  ";
-							}
-							
-							acAuthoSitesLabel.text += (rstrct as KalturaSiteRestriction).siteList;
+							acAuthoSitesLabel.text = EntryAccessControlUtil.getSiteRestrictionText(rstrct as KalturaSiteRestriction);
 						}
 						else if (rstrct is KalturaIpAddressRestriction) {
 							foundIPsRestriction = true;
-							if ((rstrct as KalturaIpAddressRestriction).ipAddressRestrictionType == KalturaIpAddressRestrictionType.ALLOW_LIST) {
-								acAuthoIPsLabel.text = resourceManager.getString('drilldown', 'ALLOW_IPS') + ":  ";
-							}
-							else {
-								acAuthoIPsLabel.text = resourceManager.getString('drilldown', 'RESTRICT_IPS') + ":  ";
-							}
-							acAuthoIPsLabel.text += (rstrct as KalturaIpAddressRestriction).ipAddressList;
+							acAuthoIPsLabel.text = EntryAccessControlUtil.getIPRestrictionText(rstrct as KalturaIpAddressRestriction);
+						}
+						else if (rstrct is KalturaLimitFlavorsRestriction) {
+							foundFlavorsRestriction = true;
+							acAuthoFlavorsLabel.text = EntryAccessControlUtil.getFlavorRestrictionText(rstrct as KalturaLimitFlavorsRestriction);
 						}
 						else if (rstrct is KalturaCountryRestriction) {
 							foundCountriesRestriction = true;
-							if ((rstrct as KalturaCountryRestriction).countryRestrictionType == KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST) {
-								acAuthoCountriesLabel.text = resourceManager.getString('drilldown', 'ALLOW_COUNTRIES') + ": "
-							}
-							else {
-								acAuthoCountriesLabel.text = resourceManager.getString('drilldown', 'RESTRICT_COUNTRIES') + ": ";
-							}
-							
-							acAuthoCountriesLabel.text += "\n" + getCountriesList((rstrct as KalturaCountryRestriction).countryList);
+							acAuthoCountriesLabel.text = EntryAccessControlUtil.getCountryRestrictionText(rstrct as KalturaCountryRestriction);
 						}
 						
 						if (rstrct is KalturaSessionRestriction) {
-							acAdvancedLabel.text = resourceManager.getString('drilldown', 'KS_SHORT_CUT') + ", ";
+							foundAdvancedRestriction = true;
+							acAdvancedLabel.text += resourceManager.getString('drilldown', 'KS_SHORT_CUT') + ", ";
 						}
 						
 						if (rstrct is KalturaPreviewRestriction) {
+							foundAdvancedRestriction = true;
 							acAdvancedLabel.text += resourceManager.getString('drilldown', 'PREVIEW');
 							var len:int = (rstrct as KalturaPreviewRestriction).previewLength;
 							var min:int = Math.floor(len / 60);
 							var sec:int = len % 60;
-							acAdvancedLabel.text += "(" + min + "m:" + sec + "s)  ";
+							acAdvancedLabel.text += "(" + min + "m:" + sec + "s), ";
 						}
 					}
+					// default texts:
+					if (!foundSitesRestriction) {
+						acAuthoSitesLabel.text = resourceManager.getString('drilldown', 'ANY_SITE');
+					}
+					if (!foundIPsRestriction) {
+						acAuthoIPsLabel.text = resourceManager.getString('drilldown', 'ANY_IP');
+					}
+					if (!foundFlavorsRestriction) {
+						acAuthoFlavorsLabel.text = resourceManager.getString('drilldown', 'ANY_FLAVOR');
+					}
+					if (!foundCountriesRestriction) {
+						acAuthoCountriesLabel.text = resourceManager.getString('drilldown', 'ANY_COUNTRY');
+					}
+					if (!foundAdvancedRestriction) {
+						acAdvancedLabel.text = '';
+					}
+					else {
+						acAdvancedLabel.text = acAdvancedLabel.text.substr(0, acAdvancedLabel.text.length - 2);
+					}
 					
-					acAuthoSitesLabel.text = foundSitesRestriction ? acAuthoSitesLabel.text : resourceManager.getString('drilldown', 'ANY_SITE');
-					acAuthoIPsLabel.text = foundIPsRestriction ? acAuthoIPsLabel.text : resourceManager.getString('drilldown', 'ANY_IP');
-					acAuthoCountriesLabel.text = foundCountriesRestriction ? acAuthoCountriesLabel.text : resourceManager.getString('drilldown', 'ANY_COUNTRY');
-					acAdvancedLabel.text = (acAdvancedLabel.text.length > 0) ? acAdvancedLabel.text.substr(0, acAdvancedLabel.text.length - 2) : '';
-					
+					// update entry
 					if (_selectedEntry != null) {
 						if (_selectedEntry.accessControlId != selectedAC.profile.id) {
 							_selectedEntry.accessControlId = selectedAC.profile.id;
@@ -274,19 +280,9 @@ access control tab of EntryDetailsWin
 			}
 			
 			
-			private function getCountriesList(countriesCodesList:String):String {
-				var cArr:Array = countriesCodesList.split(',');
-				var countriesList:String = '';
-				for each (var countryCode:String in cArr) {
-					countriesList += KCountriesUtil.instance.getCountryName(countryCode) + ', ';
-				}
-				
-				return countriesList.substr(0, countriesList.length - 2);
-			}
-			
 			
 			public function getSelectedAccessControlProfile():AccessControlProfileVO {
-				return (acProfsCB.selectedItem == null) ? null : acProfsCB.selectedItem.profile;
+				return (acProfsCB.selectedItem == null) ? null : acProfsCB.selectedItem as AccessControlProfileVO;
 			}
 			
 			
@@ -311,7 +307,7 @@ access control tab of EntryDetailsWin
 	<control:AccessTabController id="controller"/>
 	<mx:HBox width="100%">
 		<mx:Label text="{resourceManager.getString('drilldown', 'acpSectionTitle')}" styleName="drillDownLabel"/>
-		<mx:ComboBox id='acProfsCB' change="onAccessControlChange(event)" width="200"/>
+		<mx:ComboBox id="acProfsCB" change="onAccessControlChange(event)" width="200" labelFunction="EntryAccessControlUtil.dropdownLabelFunction"/>
 		<mx:LinkButton id="addBtn" label="{resourceManager.getString('drilldown', 'addProfileBtn')}"
 					   click="openNewAccessControlPopUpWindow(event)"/>
 	</mx:HBox>
@@ -321,8 +317,8 @@ access control tab of EntryDetailsWin
 				<mx:Label text="{resourceManager.getString('drilldown', 'nameLabel')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
 			<mx:GridItem width="100%" horizontalAlign="left" verticalAlign="middle">
-				<mx:Label width="280" id="acNameLabel" toolTip="{acNameLabel.text}" color="black"
-						  styleName="drillDownSubLabel"/>
+				<mx:Label width="100%" id="acNameLabel" toolTip="{acNameLabel.text}" color="black"
+						  styleName="drillDownSubLabel" />
 			</mx:GridItem>
 		</mx:GridRow>
 		<mx:GridRow width="100%">
@@ -358,6 +354,15 @@ access control tab of EntryDetailsWin
 			</mx:GridItem>
 			<mx:GridItem width="100%" horizontalAlign="left" verticalAlign="middle">
 				<mx:Text id="acAuthoIPsLabel" width="100%" height="100%" color="black" toolTip="{acAuthoIPsLabel.text}"
+						 styleName="drillDownSubLabel"/>
+			</mx:GridItem>
+		</mx:GridRow>
+		<mx:GridRow width="100%" id="flavors">
+			<mx:GridItem horizontalAlign="left" verticalAlign="top" width="{ITEM_WIDTH}">
+				<mx:Label text="{resourceManager.getString('drilldown', 'authoFlavors')}" styleName="drillDownLabel"/>
+			</mx:GridItem>
+			<mx:GridItem width="100%" horizontalAlign="left" verticalAlign="middle">
+				<mx:Text id="acAuthoFlavorsLabel" width="100%" height="100%" color="black" toolTip="{acAuthoFlavorsLabel.text}"
 						 styleName="drillDownSubLabel"/>
 			</mx:GridItem>
 		</mx:GridRow>

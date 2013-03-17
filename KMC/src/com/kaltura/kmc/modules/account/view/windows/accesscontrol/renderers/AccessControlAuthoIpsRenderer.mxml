@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<renderers:AccessControlRendererBase xmlns:mx="http://www.adobe.com/2006/mxml"
-									 creationComplete="onCreationComplete(event)" width="100%"
+<renderers:AccessControlRendererBase xmlns:mx="http://www.adobe.com/2006/mxml" width="100%"
 									 horizontalScrollPolicy="off" styleName="tableCellBoxRendererStyle" paddingLeft="4"
 									 xmlns:renderers="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.*">
 	<mx:Script>
@@ -10,35 +9,34 @@
 			import com.kaltura.vo.KalturaBaseRestriction;
 			import com.kaltura.vo.KalturaIpAddressRestriction;
 			
+			[Bindable]
+			private var _text:String;
 			
-			private function onCreationComplete(event:Event = null):void {
-				var acProfile:AccessControlProfileVO = this.data as AccessControlProfileVO;
-				if (acProfile != null) {
-					var foundRestriction:Boolean = false;
-					for each (var restriction:KalturaBaseRestriction in acProfile.profile.restrictions) {
-						if (restriction is KalturaIpAddressRestriction) {
-							foundRestriction = true;
-							siteLabel.text = (restriction as KalturaIpAddressRestriction).ipAddressRestrictionType == KalturaIpAddressRestrictionType.ALLOW_LIST 
-								? resourceManager.getString('account', 'ALLOW_IPS') + ":  " 
-								: resourceManager.getString('account', 'RESTRICT_IPS') + ":  ";
-							
-							siteLabel.text += (restriction as KalturaIpAddressRestriction).ipAddressList;
-							siteLabel.toolTip = siteLabel.text;
-							break;
-						}
+			override public function set data(value:Object):void {
+				super.data = value;
+				if (!value || !(value is AccessControlProfileVO)) return;
+				
+				var acProfile:AccessControlProfileVO = value as AccessControlProfileVO;
+				var foundRestriction:Boolean = false;
+				for each (var restriction:KalturaBaseRestriction in acProfile.profile.restrictions) {
+					if (restriction is KalturaIpAddressRestriction) {
+						foundRestriction = true;
+						_text = (restriction as KalturaIpAddressRestriction).ipAddressRestrictionType == KalturaIpAddressRestrictionType.ALLOW_LIST 
+							? resourceManager.getString('account', 'ALLOW_IPS') + ":  " 
+							: resourceManager.getString('account', 'RESTRICT_IPS') + ":  ";
+						
+						_text += (restriction as KalturaIpAddressRestriction).ipAddressList;
+						break;
 					}
 					
-					siteLabel.text = foundRestriction ? siteLabel.text : resourceManager.getString('account', 'ANY_IP');
+					if (!foundRestriction) {
+						_text = resourceManager.getString('account', 'ANY_IP');
+					}
 				}
 			}
 			
-			
-			override public function validateNow():void {
-				super.validateNow();
-				onCreationComplete();
-			}
 		]]>
 	</mx:Script>
 	
-	<mx:Label id='siteLabel' width="100%"/>
+	<mx:Label id='siteLabel' text="{_text}" toolTip="{_text}" width="100%"/>
 </renderers:AccessControlRendererBase>

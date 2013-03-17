@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<renderers:AccessControlRendererBase xmlns:mx="http://www.adobe.com/2006/mxml" width="100%"
+									 horizontalScrollPolicy="off" styleName="tableCellBoxRendererStyle" paddingLeft="4"
+									 xmlns:renderers="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.FlavorVO;
+			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
+			import com.kaltura.types.KalturaLimitFlavorsRestrictionType;
+			import com.kaltura.vo.KalturaLimitFlavorsRestriction;
+			import com.kaltura.types.KalturaIpAddressRestrictionType;
+			import com.kaltura.vo.AccessControlProfileVO;
+			import com.kaltura.vo.KalturaBaseRestriction;
+			import com.kaltura.vo.KalturaIpAddressRestriction;
+			
+			private static var _model:AccountModelLocator = AccountModelLocator.getInstance(); 
+			
+			[Bindable]
+			private var _text:String;
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				if (!value || !(value is AccessControlProfileVO)) return;
+				
+				var acProfile:AccessControlProfileVO = value as AccessControlProfileVO;
+				var foundRestriction:Boolean = false;
+				for each (var restriction:KalturaBaseRestriction in acProfile.profile.restrictions) {
+					if (restriction is KalturaLimitFlavorsRestriction) {
+						foundRestriction = true;
+						// header:
+						if ((restriction as KalturaLimitFlavorsRestriction).limitFlavorsRestrictionType == KalturaLimitFlavorsRestrictionType.ALLOW_LIST) {
+							_text = resourceManager.getString('account', 'ALLOW_IPS') + ":  ";  
+						}
+						else {
+							_text = resourceManager.getString('account', 'RESTRICT_IPS') + ":  ";
+						}
+						// values:
+						var flavorsIds:Array = (restriction as KalturaLimitFlavorsRestriction).flavorParamsIds.split(','); 
+						for each (var flavorParamsId:int in flavorsIds) {
+							_text += getFlavorNameById(flavorParamsId) + ",";
+						}
+						break;
+					}
+				}
+				
+				if (!foundRestriction) {
+					_text = resourceManager.getString('account', 'ANY_IP');
+				}
+			}
+			
+			
+			private function getFlavorNameById(flavorParamsId:int):String {
+				for each (var flavorVo:FlavorVO in _model.flavorsData) {
+					if (flavorVo.kFlavor.id == flavorParamsId) {
+						return flavorVo.kFlavor.name;
+					}
+				}
+				return '';
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Label id='siteLabel' text="{_text}" toolTip="{_text}" width="100%"/>
+</renderers:AccessControlRendererBase>

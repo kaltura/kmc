@@ -2,6 +2,7 @@ package com.kaltura.vo {
 	import com.adobe.cairngorm.vo.IValueObject;
 	
 	import mx.utils.ObjectProxy;
+	import flash.utils.flash_proxy;
 
 	[Bindable]
 	/**
@@ -81,6 +82,12 @@ package com.kaltura.vo {
 					kir.ipAddressRestrictionType = (restriction as KalturaIpAddressRestriction).ipAddressRestrictionType;
 					kir.ipAddressList = (restriction as KalturaIpAddressRestriction).ipAddressList;
 					newAcp.profile.restrictions.push(kir);
+				}
+				else if (restriction is KalturaLimitFlavorsRestriction) {
+					var klf:KalturaLimitFlavorsRestriction = new KalturaLimitFlavorsRestriction();
+					klf.limitFlavorsRestrictionType = (restriction as KalturaLimitFlavorsRestriction).limitFlavorsRestrictionType;
+					klf.flavorParamsIds = (restriction as KalturaLimitFlavorsRestriction).flavorParamsIds;
+					newAcp.profile.restrictions.push(klf);
 				}
 			}
 
