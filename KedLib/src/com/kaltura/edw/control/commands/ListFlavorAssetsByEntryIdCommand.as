@@ -57,7 +57,6 @@ package com.kaltura.edw.control.commands {
 
 		private function setDataInModel(arrCol:Array):void {
 			var flavorParamsAndAssetsByEntryId:ArrayCollection = new ArrayCollection();
-//			flavorParamsAndAssetsByEntryId.removeAll();
 			var tempAc:ArrayCollection = new ArrayCollection();
 			var foundIsOriginal:Boolean = false;
 			for each (var assetWithParam:KalturaFlavorAssetWithParams in arrCol) {
@@ -92,7 +91,6 @@ package com.kaltura.edw.control.commands {
 				}
 			}
 			(_model.getDataPack(DistributionDataPack) as DistributionDataPack).flavorParamsAndAssetsByEntryId = flavorParamsAndAssetsByEntryId;
-		
 		}
 	}
 }
