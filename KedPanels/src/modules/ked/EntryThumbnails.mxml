@@ -196,6 +196,9 @@ Thumbnails tab of EntryDetailsWin
 					}
 				}
 				_uploadThumbnailActionsDP = temp;
+				if (actionCB.dropdown) {
+					actionCB.dropdown.dataProvider = temp;
+				}
 			}
 			
 			private function setGrabAllowed(flavors:ArrayCollection):void {
@@ -205,7 +208,12 @@ Thumbnails tab of EntryDetailsWin
 					temp.push(resourceManager.getString('drilldown', 'grabFromVideo'));		
 				}
 				_uploadThumbnailActionsDP = temp;
-				_flavorsCW.unwatch();
+				if (actionCB.dropdown) {
+					actionCB.dropdown.dataProvider = temp;
+				}
+				if (_flavorsCW) {
+					_flavorsCW.unwatch();
+				}
 			}
 			
 			public function destroy():void {
