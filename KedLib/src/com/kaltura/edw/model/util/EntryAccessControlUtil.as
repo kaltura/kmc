@@ -74,6 +74,10 @@ package com.kaltura.edw.model.util
 			for each (var flavorParamsId:int in tmp) {
 				result += getFlavorNameById(flavorParamsId) + ", ";
 			}
+			if (tmp.length) {
+				// at least one flavor
+				result = result.substr(0, result.length - 2);
+			}
 			return result;
 		}
 		
