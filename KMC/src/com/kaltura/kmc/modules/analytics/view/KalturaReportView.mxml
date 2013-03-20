@@ -463,22 +463,22 @@
 						if (_isMonths || _isOneDay) {
 							if (rdtc.type == KalturaReportType.PLATFORMS) {
 								dateBarChart.yFields = rdtc.selectedChartHeaders;
-								legend.visible = true;
+								//barLegend.visible = true;
 							}
 							else {
 								dateBarChart.yFields = ["y"];
-								legend.visible = false;
+								//barLegend.visible = false;
 							}
 							dateBarChart.dataProvider = rdtc.chartDp;
 						}
 						else {
 							if (rdtc.type == KalturaReportType.PLATFORMS) {
 								lineChart.yFields = rdtc.selectedChartHeaders;
-								legend.visible = true;
+								//lineLegend.visible = true;
 							}
 							else {
 								lineChart.yFields = ["y"];
-								legend.visible = false;
+								//lineLegend.visible = false;
 							}
 							lineChart.dataProvider = rdtc.chartDp;
 						}
@@ -704,13 +704,18 @@
 						   includeInLayout="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}"
 						   visible="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}"
 						   minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>
-		<mx:Legend id="legend" dataProvider="{lineChart}" right="{legend.width - 10}" visible="false" styleName="analyticsGraphLegend"/>
+		<mx:Legend id="lineLegend" dataProvider="{lineChart}" right="{lineLegend.width - 10}" 
+				   visible="{lineChart.visible}" styleName="analyticsGraphLegend"/>
 	</mx:Canvas>
 
-	<charts:KDateColumnChart id="dateBarChart" width="100%"
-							 oneDayDate="{_isOneDay &amp;&amp; ! _isMonths ? filterVo.fromDate : null}"
-							 includeInLayout="{showLineChart &amp;&amp; (_isOneDay || _isMonths)}"
-							 visible="{showLineChart &amp;&amp; (_isOneDay || _isMonths)}"/>
+	<mx:Canvas width="100%">
+		<charts:KDateColumnChart id="dateBarChart" width="100%"
+								 oneDayDate="{_isOneDay &amp;&amp; ! _isMonths ? filterVo.fromDate : null}"
+								 includeInLayout="{showLineChart &amp;&amp; (_isOneDay || _isMonths)}"
+								 visible="{showLineChart &amp;&amp; (_isOneDay || _isMonths)}"/>
+		<mx:Legend id="barLegend" dataProvider="{dateBarChart}" right="{barLegend.width - 10}" 
+				   visible="{dateBarChart.visible}" styleName="analyticsGraphLegend" />
+	</mx:Canvas>
 	
 	<!-- loader -->
 	<mx:VBox width="{this.width-150}" height="200" paddingTop="-150" horizontalAlign="center" clipContent="false"
