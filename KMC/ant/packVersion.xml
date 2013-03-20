@@ -6,13 +6,14 @@
 	<property name="HTML5_VERSION" value="v1.7.2"/>
 	<property name="KCLIP_VERSION" value="v1.1.2.1"/>
 	<property name="KCW_VERSION" value="v2.1.6.7"/>
+	<property name="KCW_VERSION_ONPREM" value="v2.2"/>
 	
 	<property name="PACK_DEPLOY_DIR" value="${basedir}/../${KMC_VERSION}"/>
 	
 	<property name="PACK_SOURCE_DIR" value="${basedir}/bin-debug"/>
 	
 	
-	<target name="build" depends="clean, init, update_config, copy_assets, copy_locale, copy_modules, copy_xml">
+	<target name="build" depends="clean, init, update_config, update_onprem_config, copy_assets, copy_locale, copy_modules, copy_xml">
 		<echo>Version ${KMC_VERSION} packed successfully</echo>
 	</target>
 	
@@ -35,12 +36,26 @@
 		
     </target>
 	
-	<target name="update_config" description="update version numbers in config file" depends="copy_root">
+	<target name="create_onprem_config" description="create config file for on-prem deployment" depends="copy_root">
+		<copy file="${PACK_DEPLOY_DIR}/config.ini" 
+					tofile="${PACK_DEPLOY_DIR}/config.template.ini" />
+	</target>
+	
+	<target name="update_config" description="update version numbers in config file" depends="create_onprem_config">
 		<replace file="${PACK_DEPLOY_DIR}/config.ini" token="@@KMC_VERSION@@" value="${KMC_VERSION}"/>
 		<replace file="${PACK_DEPLOY_DIR}/config.ini" token="@@KDP_VERSION@@" value="${KDP_VERSION}"/>
+		<replace file="${PACK_DEPLOY_DIR}/config.ini" token="@@HTML5_VERSION@@" value="${HTML5_VERSION}"/>
 		<replace file="${PACK_DEPLOY_DIR}/config.ini" token="@@KCLIP_VERSION@@" value="${KCLIP_VERSION}"/>
 		<replace file="${PACK_DEPLOY_DIR}/config.ini" token="@@KCW_VERSION@@" value="${KCW_VERSION}"/>
-		<replace file="${PACK_DEPLOY_DIR}/config.ini" token="@@HTML5_VERSION@@" value="${HTML5_VERSION}"/>
+	</target>
+	
+	<target name="update_onprem_config" description="create config file for on-prem deployment" depends="create_onprem_config">
+		<replace file="${PACK_DEPLOY_DIR}/config.template.ini" token="@@KMC_VERSION@@" value="${KMC_VERSION}"/>
+		<replace file="${PACK_DEPLOY_DIR}/config.template.ini" token="@@KDP_VERSION@@" value="${KDP_VERSION}"/>
+		<replace file="${PACK_DEPLOY_DIR}/config.template.ini" token="@@HTML5_VERSION@@" value="${HTML5_VERSION}"/>
+		<replace file="${PACK_DEPLOY_DIR}/config.template.ini" token="@@KCLIP_VERSION@@" value="${KCLIP_VERSION}"/>
+		<echo>KCW_VERSION_ONPREM: ${KCW_VERSION_ONPREM}</echo>
+		<replace file="${PACK_DEPLOY_DIR}/config.template.ini" token="@@KCW_VERSION@@" value="${KCW_VERSION_ONPREM}"/>
 	</target>
 	
 	<target name="copy_assets" description="copy required files to the version assets directory">
