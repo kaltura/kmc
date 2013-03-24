@@ -458,6 +458,7 @@
 			 * */
 			protected function onReportDataChange(rdtc:ReportData):void {
 				if (rdtc && this.visible) {
+					lineLegend.visible = false;
 					if (showLineChart) {
 						// if linechart requested and only one day - we show barchart instead
 						if (_isMonths || _isOneDay) {
@@ -474,11 +475,11 @@
 						else {
 							if (rdtc.type == KalturaReportType.PLATFORMS) {
 								lineChart.yFields = rdtc.selectedChartHeaders;
-								//lineLegend.visible = true;
+								lineLegend.visible = true;
 							}
 							else {
 								lineChart.yFields = ["y"];
-								//lineLegend.visible = false;
+								lineLegend.visible = false;
 							}
 							lineChart.dataProvider = rdtc.chartDp;
 						}
@@ -705,7 +706,7 @@
 						   visible="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}"
 						   minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>
 		<mx:Legend id="lineLegend" dataProvider="{lineChart}" right="{lineLegend.width - 10}" 
-				   visible="{lineChart.visible}" styleName="analyticsGraphLegend"/>
+				   styleName="analyticsGraphLegend"/>
 	</mx:Canvas>
 
 	<mx:Canvas width="100%">
