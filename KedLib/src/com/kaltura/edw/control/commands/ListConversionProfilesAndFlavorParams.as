@@ -23,6 +23,7 @@ package com.kaltura.edw.control.commands {
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import com.kaltura.vo.KalturaWidevineFlavorParams;
+	import com.kaltura.edw.model.util.FlavorParamsUtil;
 
 	public class ListConversionProfilesAndFlavorParams extends KedCommand {
 
@@ -94,7 +95,7 @@ package com.kaltura.edw.control.commands {
 				}
 				// conversion profiles
 				// flavor params
-				var params:Array = (event.data[startIndex] as KalturaFlavorParamsListResponse).objects;
+				var params:Array = FlavorParamsUtil.makeManyFlavorParams((event.data[startIndex] as KalturaFlavorParamsListResponse).objects);
 				
 				var cpaps:Array = (event.data[startIndex+1] as KalturaConversionProfileAssetParamsListResponse).objects;
 				

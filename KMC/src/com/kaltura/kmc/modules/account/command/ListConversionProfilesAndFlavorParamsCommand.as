@@ -28,6 +28,7 @@ package com.kaltura.kmc.modules.account.command {
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
+	import com.kaltura.edw.model.util.FlavorParamsUtil;
 
 	public class ListConversionProfilesAndFlavorParamsCommand implements ICommand, IResponder {
 		private var _model:AccountModelLocator = AccountModelLocator.getInstance();
@@ -87,11 +88,13 @@ package com.kaltura.kmc.modules.account.command {
 			var flvorsTmpArrCol:ArrayCollection = new ArrayCollection();
 			var flavorsRespones:KalturaFlavorParamsListResponse = (kEvent.data as Array)[0] as KalturaFlavorParamsListResponse;
 			for each (var kFlavor:Object in flavorsRespones.objects) {
-				if (kFlavor is KalturaFlavorParams) {
-					var flavor:FlavorVO = new FlavorVO();
-					flavor.kFlavor = kFlavor as KalturaFlavorParams;
-					flvorsTmpArrCol.addItem(flavor);
+				if (!(kFlavor is KalturaFlavorParams)) {
+					kFlavor = FlavorParamsUtil.makeFlavorParams(kFlavor);
 				}
+				var flavor:FlavorVO = new FlavorVO();
+				flavor.kFlavor = kFlavor as KalturaFlavorParams;
+				flvorsTmpArrCol.addItem(flavor);
+				
 			}
 			
 			// conversion profs

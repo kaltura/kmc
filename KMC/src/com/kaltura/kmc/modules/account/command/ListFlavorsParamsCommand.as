@@ -16,6 +16,7 @@ package com.kaltura.kmc.modules.account.command
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	import com.kaltura.vo.KalturaWidevineFlavorParams;
+	import com.kaltura.edw.model.util.FlavorParamsUtil;
 	
 	public class ListFlavorsParamsCommand implements ICommand, IResponder
 	{
@@ -37,9 +38,10 @@ package com.kaltura.kmc.modules.account.command
 		{
 			_model.loadingFlag = false;
 			var response:KalturaFlavorParamsListResponse = event.data as KalturaFlavorParamsListResponse;
+			var flavorsParams:Array = FlavorParamsUtil.makeManyFlavorParams(response.objects);
 			var tempArrCol:ArrayCollection = new ArrayCollection();
 			var flavor:FlavorVO;
-			for each(var kFlavor:Object in response.objects)
+			for each(var kFlavor:Object in flavorsParams)
 			{
 				if (kFlavor is KalturaFlavorParams) {
 					flavor = new FlavorVO();

@@ -13,6 +13,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
+	import com.kaltura.edw.model.util.FlavorParamsUtil;
 
 	public class ListFlavorsParamsCommand extends KalturaCommand implements ICommand, IResponder {
 		public static const DEFAULT_PAGE_SIZE:int = 500;
@@ -44,6 +45,9 @@ package com.kaltura.kmc.modules.content.commands {
 				for each (var kFlavor:Object in response.objects) {
 					if (kFlavor is KalturaFlavorParams) {
 						tempFlavorParamsArr.addItem(kFlavor);
+					}
+					else {
+						tempFlavorParamsArr.addItem(FlavorParamsUtil.makeFlavorParams(kFlavor));
 					}
 				}
 				_model.filterModel.flavorParams = tempFlavorParamsArr;

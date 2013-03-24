@@ -46,6 +46,7 @@ package com.kaltura.edw.control.commands
 	import mx.collections.SortField;
 	import mx.resources.ResourceManager;
 	import mx.rpc.xml.SimpleXMLEncoder;
+	import com.kaltura.edw.model.util.FlavorParamsUtil;
 
 	/**
 	 * load all data that is relevant for filter:
@@ -178,6 +179,9 @@ package com.kaltura.edw.control.commands
 			for each (var kFlavor:Object in response.objects) {
 				if (kFlavor is KalturaFlavorParams) {
 					tempFlavorParamsArr.addItem(kFlavor);
+				}
+				else {
+					tempFlavorParamsArr.addItem(FlavorParamsUtil.makeFlavorParams(kFlavor));
 				}
 			}
 			_filterModel.flavorParams = tempFlavorParamsArr;
