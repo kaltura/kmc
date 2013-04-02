@@ -71,6 +71,8 @@ package com.kaltura.kmc.modules.content.commands.cattrack
 		}
 		
 		override public function fault(info:Object):void {
+			if (!info || !(info is KalturaEvent)) return;
+			
 			var er:KalturaError = (info as KalturaEvent).error;
 			if (!er) return;
 			
