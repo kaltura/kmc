@@ -7,6 +7,7 @@
 			import com.kaltura.edw.components.et.business.EntryTableActions;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			
 			import mx.controls.listClasses.BaseListData;
 			import mx.controls.listClasses.IDropInListItemRenderer;
@@ -54,8 +55,14 @@
 						// work on dummy array so binding to CB will be triggered
 						a = allActions.concat();
 						if ((value as KalturaBaseEntry).status != KalturaEntryStatus.READY) {
+							// remove "embed"
 							a.splice(0, 1);
+							if (value is KalturaLiveStreamAdminEntry) {
+								// remove "edit"
+								a.splice(1, 1);
+							}
 						}
+						
 					}
 					_actions = a;
 				}
