@@ -44,7 +44,7 @@ package com.kaltura.edw.control.commands {
 				mr.addAction(listConversionProfiles);
 			}
 
-			var listFlavorParams:FlavorParamsList = new FlavorParamsList();
+			var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, p);
 			mr.addAction(listFlavorParams);
 			
 			var f:KalturaConversionProfileAssetParamsFilter = new KalturaConversionProfileAssetParamsFilter();
