@@ -49,6 +49,8 @@ Thumbnails tab of EntryDetailsWin
 			 * */
 			private var _fileReference:FileReference;
 			
+			
+			private var _resetActions:Boolean = true;
 			/**
 			 * @copy #selectedEntry
 			 * */
@@ -62,6 +64,7 @@ Thumbnails tab of EntryDetailsWin
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (!value)
 					return;
+				_resetActions = true;
 				_selectedEntry = value;
 			}
 			
@@ -174,9 +177,10 @@ Thumbnails tab of EntryDetailsWin
 				if (_flavorsCW) {
 					_flavorsCW.unwatch();
 				}
-				setActions();
+				if (_resetActions) {
+					setActions();
+				}
 			}
-			
 			
 			
 			private function setActions():void {
@@ -199,6 +203,7 @@ Thumbnails tab of EntryDetailsWin
 				if (actionCB.dropdown) {
 					actionCB.dropdown.dataProvider = temp;
 				}
+				_resetActions = false;
 			}
 			
 			private function setGrabAllowed(flavors:ArrayCollection):void {
@@ -240,8 +245,6 @@ Thumbnails tab of EntryDetailsWin
 			}
 			
 			
-			
-			
 			public function get distributionModel():DistributionDataPack {
 				return _distributionModel;
 			}
@@ -258,8 +261,6 @@ Thumbnails tab of EntryDetailsWin
 				}
 				
 			}
-			
-			
 			
 			
 			public function set editable(value:Boolean):void {
@@ -288,8 +289,6 @@ Thumbnails tab of EntryDetailsWin
 				if (_cropperWindow)
 					_cropperWindow.thumbnailsList = array;
 			}
-			
-			
 			
 			
 			/**
