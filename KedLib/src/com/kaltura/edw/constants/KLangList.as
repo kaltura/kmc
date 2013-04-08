@@ -4,13 +4,13 @@ package com.kaltura.edw.constants
 
 	public class KLangList
 	{
-		public static const LANGUAGES_ARRAY:Array = new Array(
+		public static const LANGUAGES_ARRAY:Array = new Array(KalturaLanguage.EN,
 			KalturaLanguage.AB, KalturaLanguage.AA, KalturaLanguage.AF, KalturaLanguage.SQ, KalturaLanguage.AM,
 			KalturaLanguage.AR, KalturaLanguage.HY, KalturaLanguage.AS_, KalturaLanguage.AY, KalturaLanguage.AZ,
 			KalturaLanguage.BA, KalturaLanguage.EU, KalturaLanguage.BN, KalturaLanguage.DZ, KalturaLanguage.BH,
 			KalturaLanguage.BI, KalturaLanguage.BR, KalturaLanguage.BG, KalturaLanguage.MY, KalturaLanguage.BE,
 			KalturaLanguage.KM, KalturaLanguage.CA, KalturaLanguage.ZH, KalturaLanguage.CO, KalturaLanguage.HR,
-			KalturaLanguage.CS, KalturaLanguage.DA, KalturaLanguage.NL, KalturaLanguage.EN, KalturaLanguage.EO,
+			KalturaLanguage.CS, KalturaLanguage.DA, KalturaLanguage.NL, KalturaLanguage.EO,
 			KalturaLanguage.ET, KalturaLanguage.FO, KalturaLanguage.FA, KalturaLanguage.FJ, KalturaLanguage.FI,
 			KalturaLanguage.FR, KalturaLanguage.FY, KalturaLanguage.GL, KalturaLanguage.GD, KalturaLanguage.GV,
 			KalturaLanguage.KA, KalturaLanguage.DE, KalturaLanguage.EL, KalturaLanguage.KL, KalturaLanguage.GN,
