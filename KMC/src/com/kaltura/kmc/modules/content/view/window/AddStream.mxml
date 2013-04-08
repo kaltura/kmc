@@ -50,7 +50,16 @@
 
 
 			private function onHelp():void {
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section_add_live_stream'));
+				var anchor:String = 'section_add_live_stream'; // legacy rtmp
+				switch ((streamType.selectedItem as LocalizedVo).value) {
+					case StreamVo.STREAM_TYPE_UNIVERSAL:
+						anchor = 'section_add_live_stream_ak';
+						break;
+					case StreamVo.STREAM_TYPE_MANUAL:
+						anchor = 'section_add_live_stream_man';
+						break;
+				}
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
 			}
 
 
