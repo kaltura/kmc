@@ -293,7 +293,7 @@ package com.kaltura.delegates {
 			if (!kError) {
 				kError = new KalturaError();
 				kError.errorMsg = event.text;
-				//kError.errorCode;
+				kError.errorCode = event.type;  // either IOErrorEvent.IO_ERROR or SecurityErrorEvent.SECURITY_ERROR
 			}
 
 			call.handleError(kError);
@@ -395,6 +395,7 @@ package com.kaltura.delegates {
 		protected function createKalturaError(event:ErrorEvent, loaderData:*):KalturaError {
 			var ke:KalturaError = new KalturaError();
 			ke.errorMsg = event.text;
+			ke.errorCode = event.type;
 			return ke;
 		}
 

@@ -13,6 +13,7 @@ package com.kaltura.kmc.modules.content.commands.cattrack
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.IOErrorEvent;
 	
 	import mx.controls.Alert;
 	import mx.resources.IResourceManager;
@@ -87,7 +88,7 @@ package com.kaltura.kmc.modules.content.commands.cattrack
 				// only show error messages if they are "real errors" 
 				// (for some reason, sometimes this call fails, in this  
 				// case we get a flash error which we don't want to show)
-				if (er.errorMsg != 'Error #2032') {
+				if (er.errorCode != IOErrorEvent.IO_ERROR) {
 					var alert:Alert = Alert.show(er.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
 				}
 			}
