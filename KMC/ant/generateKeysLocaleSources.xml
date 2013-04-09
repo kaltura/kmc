@@ -21,7 +21,9 @@
 	<target name="clean" description="delete old file">
 		<echo>Deleting old sources</echo>
         <delete failonerror="false">
-            <fileset dir="${KEYS_SOURCE_DEPLOY_DIR}" includes="**/*"/>
+        	<!-- the excluded files are taken from the framework RBs for other locales. 
+        		they are not generated for keys locale and therefore shouldn't be deleted. -->
+            <fileset dir="${KEYS_SOURCE_DEPLOY_DIR}" includes="**/*" excludes="**/charts.properties **/controls.properties **/core.properties **/formatters.properties **/SharedResources.properties"/>
         </delete>
     </target>
 	
