@@ -153,7 +153,7 @@ package com.kaltura.kmc.modules.content.commands {
 				}
 				else {
 					for each (var entry:KalturaBaseEntry in data.data) {
-						EntryUtil.updateSelectedEntryInList(entry, _entries);
+						EntryUtil.updateSelectedEntryInList(entry, _model.listableVo.arrayCollection); 
 					}
 				}
 			}
