@@ -217,6 +217,7 @@ access control tab of EntryDetailsWin
 					var foundFlavorsRestriction:Boolean = false;
 					var foundCountriesRestriction:Boolean = false;
 					var foundAdvancedRestriction:Boolean = false;
+					acAdvancedLabel.text = '';
 					for each (var rstrct:KalturaBaseRestriction in selectedAC.profile.restrictions) {
 						if (rstrct is KalturaSiteRestriction) {
 							foundSitesRestriction = true;
@@ -235,11 +236,10 @@ access control tab of EntryDetailsWin
 							acAuthoCountriesLabel.text = EntryAccessControlUtil.getCountryRestrictionText(rstrct as KalturaCountryRestriction);
 						}
 						
-						if (rstrct is KalturaSessionRestriction) {
+						if (rstrct is KalturaSessionRestriction) { 
 							foundAdvancedRestriction = true;
 							acAdvancedLabel.text += resourceManager.getString('drilldown', 'KS_SHORT_CUT') + ", ";
 						}
-						
 						if (rstrct is KalturaPreviewRestriction) {
 							foundAdvancedRestriction = true;
 							acAdvancedLabel.text += resourceManager.getString('drilldown', 'PREVIEW');
