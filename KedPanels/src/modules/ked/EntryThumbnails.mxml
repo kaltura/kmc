@@ -50,7 +50,7 @@ Thumbnails tab of EntryDetailsWin
 			private var _fileReference:FileReference;
 			
 			
-			private var _resetActions:Boolean = true;
+//			private var _resetActions:Boolean = true;
 			/**
 			 * @copy #selectedEntry
 			 * */
@@ -64,7 +64,7 @@ Thumbnails tab of EntryDetailsWin
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (!value)
 					return;
-				_resetActions = true;
+//				_resetActions = true;
 				_selectedEntry = value;
 			}
 			
@@ -75,10 +75,10 @@ Thumbnails tab of EntryDetailsWin
 			 * */
 			private var _tumbDimCW:ChangeWatcher;
 			
-			/**
-			 * change watcher for entry flavors
-			 * */
-			private var _flavorsCW:ChangeWatcher;
+//			/**
+//			 * change watcher for entry flavors
+//			 * */
+//			private var _flavorsCW:ChangeWatcher;
 			
 			/**
 			 * distribution info
@@ -174,12 +174,12 @@ Thumbnails tab of EntryDetailsWin
 			
 			public function initData():void {
 				_distributionModel.loadThumbs(controller, _selectedEntry);
-				if (_flavorsCW) {
-					_flavorsCW.unwatch();
-				}
-				if (_resetActions) {
+//				if (_flavorsCW) {
+//					_flavorsCW.unwatch();
+//				}
+//				if (_resetActions) {
 					setActions();
-				}
+//				}
 			}
 			
 			
@@ -195,37 +195,39 @@ Thumbnails tab of EntryDetailsWin
 					else if (_selectedEntry.mediaType == KalturaMediaType.VIDEO) {
 						// if it's a video, you can crop (??)
 						temp.push(resourceManager.getString('drilldown', 'cropNewThumbnail'));
-						// see if we can grab (requires source)
-						_flavorsCW = BindingUtils.bindSetter(setGrabAllowed, _distributionModel, "flavorParamsAndAssetsByEntryId");
+						
+						temp.push(resourceManager.getString('drilldown', 'grabFromVideo'));	
+//						// see if we can grab (requires source)
+//						_flavorsCW = BindingUtils.bindSetter(setGrabAllowed, _distributionModel, "flavorParamsAndAssetsByEntryId");
 					}
 				}
 				_uploadThumbnailActionsDP = temp;
 				if (actionCB.dropdown) {
 					actionCB.dropdown.dataProvider = temp;
 				}
-				_resetActions = false;
+//				_resetActions = false;
 			}
 			
-			private function setGrabAllowed(flavors:ArrayCollection):void {
-				if (!flavors || !flavors.length || !_uploadThumbnailActionsDP) return;
-				var temp:Array = _uploadThumbnailActionsDP.slice();
-				if (EntryDataHelper.entryHasSource(_distributionModel.flavorParamsAndAssetsByEntryId)) {
-					temp.push(resourceManager.getString('drilldown', 'grabFromVideo'));		
-				}
-				_uploadThumbnailActionsDP = temp;
-				if (actionCB.dropdown) {
-					actionCB.dropdown.dataProvider = temp;
-				}
-				if (_flavorsCW) {
-					_flavorsCW.unwatch();
-				}
-			}
+//			private function setGrabAllowed(flavors:ArrayCollection):void {
+//				if (!flavors || !flavors.length || !_uploadThumbnailActionsDP) return;
+//				var temp:Array = _uploadThumbnailActionsDP.slice();
+//				if (EntryDataHelper.entryHasSource(_distributionModel.flavorParamsAndAssetsByEntryId)) {
+//					temp.push(resourceManager.getString('drilldown', 'grabFromVideo'));		
+//				}
+//				_uploadThumbnailActionsDP = temp;
+//				if (actionCB.dropdown) {
+//					actionCB.dropdown.dataProvider = temp;
+//				}
+////				if (_flavorsCW) {
+////					_flavorsCW.unwatch();
+////				}
+//			}
 			
 			public function destroy():void {
 				_tumbDimCW.unwatch();
-				if (_flavorsCW) {
-					_flavorsCW.unwatch();
-				}
+//				if (_flavorsCW) {
+//					_flavorsCW.unwatch();
+//				}
 				dataGrid.addEventListener(ThumbnailsActionType.SET_DEFAULT, thumbActionHandler);
 				dataGrid.addEventListener(ThumbnailsActionType.DOWNLOAD, thumbActionHandler);
 				dataGrid.addEventListener(ThumbnailsActionType.DELETE, thumbActionHandler);
