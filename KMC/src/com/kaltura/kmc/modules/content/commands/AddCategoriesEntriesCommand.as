@@ -63,6 +63,8 @@ package com.kaltura.kmc.modules.content.commands
 					if (_model.filterModel.catTreeDataManager) {
 						_model.filterModel.catTreeDataManager.resetData();
 					}
+					// "forget" the list on the model
+					_model.categoriesModel.onTheFlyCategoryEntries = null;
 				}
 			}
 			
