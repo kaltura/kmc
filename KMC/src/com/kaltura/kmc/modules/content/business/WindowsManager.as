@@ -35,7 +35,7 @@ package com.kaltura.kmc.modules.content.business
 	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 	import com.kaltura.kmc.modules.content.model.types.EntryDetailsWindowState;
 	import com.kaltura.kmc.modules.content.utils.StringUtil;
-	import com.kaltura.kmc.modules.content.view.window.AddStream;
+	import com.kaltura.kmc.modules.content.view.window.AddLiveStream;
 	import com.kaltura.kmc.modules.content.view.window.AddTagsWin;
 	import com.kaltura.kmc.modules.content.view.window.CategoriesAccessWindow;
 	import com.kaltura.kmc.modules.content.view.window.CategoriesContributionWindow;
@@ -211,7 +211,7 @@ package com.kaltura.kmc.modules.content.business
 						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 						break;
 					case WindowsStates.ADD_LIVE_STREAM:
-						currentPopUp = new AddStream();
+						currentPopUp = new AddLiveStream();
 						break;
 					case WindowsStates.REMOVE_ENTRY_TAGS_WINDOW:
 						currentPopUp = new RemoveTagsWin();
