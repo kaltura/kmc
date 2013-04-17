@@ -69,15 +69,15 @@ package com.kaltura.edw.model.util
 			else {
 				result = resourceManager.getString('drilldown', 'RESTRICT_FLAVORS') + ":  ";
 			}
-			result += "\n";
+//			result += "\n";
 			var tmp:Array = rstrct.flavorParamsIds.split(",");
 			for each (var flavorParamsId:int in tmp) {
-				result += getFlavorNameById(flavorParamsId) + ", ";
+				result += "\n" + getFlavorNameById(flavorParamsId);
 			}
-			if (tmp.length) {
-				// at least one flavor
-				result = result.substr(0, result.length - 2);
-			}
+//			if (tmp.length) {
+//				// at least one flavor
+//				result = result.substr(0, result.length - 2);
+//			}
 			return result;
 		}
 		
