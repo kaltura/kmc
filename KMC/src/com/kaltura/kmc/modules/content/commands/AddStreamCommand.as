@@ -2,22 +2,23 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.liveStream.LiveStreamAdd;
+	import com.kaltura.edw.control.KedController;
 	import com.kaltura.edw.control.events.SearchEvent;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.KedController;
 	import com.kaltura.kmc.modules.content.events.AddStreamEvent;
 	import com.kaltura.kmc.modules.content.events.WindowEvent;
 	import com.kaltura.kmc.modules.content.vo.StreamVo;
+	import com.kaltura.types.KalturaDVRStatus;
 	import com.kaltura.types.KalturaMediaType;
+	import com.kaltura.types.KalturaPlaybackProtocol;
 	import com.kaltura.types.KalturaSourceType;
 	import com.kaltura.vo.KalturaLiveStreamAdminEntry;
-
+	import com.kaltura.vo.KalturaLiveStreamConfiguration;
+	
 	import mx.controls.Alert;
+	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
-	import com.kaltura.vo.KalturaLiveStreamConfiguration;
-	import com.kaltura.types.KalturaPlaybackProtocol;
-	import mx.resources.IResourceManager;
 
 	[ResourceBundle("live")]
 	
@@ -44,7 +45,15 @@ package com.kaltura.kmc.modules.content.commands {
 			}
 			else if (streamVo.streamType == StreamVo.STREAM_TYPE_UNIVERSAL) {
 				liveEntry.encodingIP1 = streamVo.primaryIp;
-				liveEntry.encodingIP2 = streamVo.secondaryIp;	
+				liveEntry.encodingIP2 = streamVo.secondaryIp;
+				
+				if (streamVo.dvrEnabled) {
+					liveEntry.dvrStatus = KalturaDVRStatus.ENABLED;
+					liveEntry.dvrWindow = 30;
+				}
+				else {
+					liveEntry.dvrStatus = KalturaDVRStatus.DISABLED;
+				}
 				
 				if (!streamVo.password)
 					liveEntry.streamPassword = "";

@@ -4,7 +4,7 @@
 -->
 <HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:validators="com.kaltura.validators.*"
 				 xmlns="com.kaltura.containers.*" layout="vertical" creationComplete="creationCompleteHandler(event)"
-				 help="{onHelp()}" styleName="TitleWindowType2" width="500" height="320" showCloseButton="true"
+				 help="{onHelp()}" styleName="TitleWindowType2" width="500" height="350" showCloseButton="true"
 				 close="removeMe()">
 	<mx:Metadata>
 		[ResourceBundle("live")]
@@ -13,16 +13,16 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.permissions.PermissionManager;
-			import mx.events.ValidationResultEvent;
-			import mx.events.ListEvent;
-			import com.kaltura.kmc.vo.LocalizedVo;
-			import mx.events.FlexEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.AddStreamEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.vo.StreamVo;
-
+			import com.kaltura.kmc.vo.LocalizedVo;
+			
 			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.events.ValidationResultEvent;
 			import mx.resources.ResourceManager;
 
 			private const labelWidth:Number = 180;
@@ -139,6 +139,10 @@
 					else {
 						isValid = false;
 					}
+					
+					if (streamVo.streamType == StreamVo.STREAM_TYPE_UNIVERSAL) {
+						streamVo.dvrEnabled = useDvr.selected;
+					}
 				}
 
 				if (isValid) {
@@ -188,6 +192,12 @@
 						  width="{labelWidth}"/>
 				<mx:TextInput id="streamBroadcastPassword" width="100%"/>
 			</mx:HBox>
+			<mx:HBox width="100%" visible="{streamType.selectedItem.value == StreamVo.STREAM_TYPE_UNIVERSAL}"
+					 includeInLayout="{streamType.selectedItem.value == StreamVo.STREAM_TYPE_UNIVERSAL}">
+				<mx:CheckBox id="useDvr" selected="false"/>
+				<mx:Text text="{ResourceManager.getInstance().getString('live', 'enableDvr')}" width="100%"/>
+			</mx:HBox>
+			
 		</mx:VBox>
 
 		<!-- form for manual -->

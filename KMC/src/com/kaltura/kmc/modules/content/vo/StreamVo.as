@@ -35,6 +35,11 @@ package com.kaltura.kmc.modules.content.vo
 		 */
 		public var password:String;
 		
+		/**
+		 * is DVR enabled for universal streams (hls/hds)  
+		 */
+		public var dvrEnabled:Boolean;
+		
 		
 		/* manual stream specific fields */
 		public var flashHDSURL:String;
