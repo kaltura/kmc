@@ -18,6 +18,7 @@ access control tab of EntryDetailsWin
 			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.datapacks.FilterDataPack;
+			import com.kaltura.edw.model.util.CompositeKBaseEntry;
 			import com.kaltura.edw.model.util.EntryAccessControlUtil;
 			import com.kaltura.edw.view.window.accessControl.AccessControlProfilePopUpWindow;
 			import com.kaltura.kmvc.model.IDataPackRepository;
@@ -49,6 +50,10 @@ access control tab of EntryDetailsWin
 			
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_selectedEntry = value;
+				// if composite, set all entries to default profile
+				if (value is CompositeKBaseEntry) {
+					value.accessControlId = acProfsCB.dataProvider[0].profile.id;
+				}
 			}
 			
 			
