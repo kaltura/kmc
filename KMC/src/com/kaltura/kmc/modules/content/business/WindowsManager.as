@@ -212,6 +212,7 @@ package com.kaltura.kmc.modules.content.business
 						break;
 					case WindowsStates.ADD_LIVE_STREAM:
 						currentPopUp = new AddLiveStream();
+						(currentPopUp as AddLiveStream).defaultIP = model.context.clientIP;
 						break;
 					case WindowsStates.REMOVE_ENTRY_TAGS_WINDOW:
 						currentPopUp = new RemoveTagsWin();

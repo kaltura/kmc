@@ -129,6 +129,11 @@ package com.kaltura.edw.model.datapacks
 		 * set in uiconf, should match the server flag that triggers chuncked category load feature 
 		 */
 		public var singleLevelMaxCategories:int;
+		
+		/**
+		 * IP of current user (taken from flashvars) 
+		 */
+		public var clientIP:String;
 
 		public function get defaultUrlVars() :Object
 		{
