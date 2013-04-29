@@ -6,7 +6,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 
 	/**
-	 * thsi commands adds some KMC specific actions around the list action 
+	 * this command adds some KMC specific actions around the list action 
 	 * @author Atar
 	 */	
 	public class DoSearchSequenceCommand extends KalturaCommand {
