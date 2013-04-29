@@ -142,6 +142,7 @@
 					manualPlaylist.addEventListener(ManualPlaylistWindowEvent.REFRESH_ENTRIES_LIST, saveNewData);
 					manualPlaylist.addEventListener(ManualPlaylistWindowEvent.LOAD_FILTER_DATA, loadFilterData, false, 0, true);
 					manualPlaylist.addEventListener(ManualPlaylistWindowEvent.SEARCH_ENTRIES, searchEntries, false, 0, true);
+					manualPlaylist.addEventListener(ManualPlaylistWindowEvent.CLOSE, closeManPlWin, false, 0, true);
 					
 					PopUpManager.addPopUp(manualPlaylist, this.root, true);
 					PopUpManager.centerPopUp(manualPlaylist);
@@ -164,6 +165,17 @@
 				private function saveNewData(event:Event):void {
 					metadataObject[this.id] = _entriesArray;
 				}
+				
+				private function closeManPlWin(event:ManualPlaylistWindowEvent):void
+				{
+					var win:ManualPlaylistWindow = event.target as ManualPlaylistWindow;
+					win.removeEventListener(ManualPlaylistWindowEvent.REFRESH_ENTRIES_LIST, saveNewData);
+					win.removeEventListener(ManualPlaylistWindowEvent.LOAD_FILTER_DATA, loadFilterData);
+					win.removeEventListener(ManualPlaylistWindowEvent.SEARCH_ENTRIES, searchEntries);
+					win.removeEventListener(ManualPlaylistWindowEvent.CLOSE, closeManPlWin);
+					PopUpManager.removePopUp(win);
+				}
+				
 			]]>
 		</mx:Script>
 		
