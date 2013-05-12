@@ -97,7 +97,11 @@
 					if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isOriginal) {
 						// source flavor asset
 						var status:int = _flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.status;
-						if ((status == KalturaFlavorAssetStatus.CONVERTING) || (status == KalturaFlavorAssetStatus.QUEUED) || (status == KalturaFlavorAssetStatus.IMPORTING) || (status == KalturaFlavorAssetStatus.VALIDATING)) {
+						if ((status == KalturaFlavorAssetStatus.CONVERTING)
+							|| (status == KalturaFlavorAssetStatus.WAIT_FOR_CONVERT)
+							|| (status == KalturaFlavorAssetStatus.QUEUED)
+							|| (status == KalturaFlavorAssetStatus.IMPORTING)
+							|| (status == KalturaFlavorAssetStatus.VALIDATING)) {
 							this.currentState = "convertingState";
 						}
 						else {
@@ -114,6 +118,7 @@
 					else {
 						switch (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.status) {
 							case KalturaFlavorAssetStatus.CONVERTING:
+							case KalturaFlavorAssetStatus.WAIT_FOR_CONVERT:
 							case KalturaFlavorAssetStatus.QUEUED:
 							case KalturaFlavorAssetStatus.IMPORTING:
 							case KalturaFlavorAssetStatus.VALIDATING:  {
