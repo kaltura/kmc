@@ -50,6 +50,10 @@ package com.kaltura.vo
 
 		/**
 		 **/
+		public var srcFileSyncs : Array = null;
+
+		/**
+		 **/
 		public var engineVersion : int = int.MIN_VALUE;
 
 		/**
@@ -79,6 +83,7 @@ package com.kaltura.vo
 			arr.push('srcFileSyncLocalPath');
 			arr.push('actualSrcFileSyncLocalPath');
 			arr.push('srcFileSyncRemoteUrl');
+			arr.push('srcFileSyncs');
 			arr.push('engineVersion');
 			arr.push('flavorParamsOutputId');
 			arr.push('flavorParamsOutput');

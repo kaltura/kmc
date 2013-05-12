@@ -48,6 +48,10 @@ package com.kaltura.vo
 		 **/
 		public var destFilePath : String = null;
 
+		/**
+		 **/
+		public var fileSize : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -56,6 +60,7 @@ package com.kaltura.vo
 			arr.push('filesyncId');
 			arr.push('tmpFilePath');
 			arr.push('destFilePath');
+			arr.push('fileSize');
 			return arr;
 		}
 

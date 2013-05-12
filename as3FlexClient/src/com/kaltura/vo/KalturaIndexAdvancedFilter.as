@@ -27,10 +27,10 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaSearchOperator;
+	import com.kaltura.vo.KalturaSearchItem;
 
 	[Bindable]
-	public dynamic class KalturaIndexAdvancedFilter extends KalturaSearchOperator
+	public dynamic class KalturaIndexAdvancedFilter extends KalturaSearchItem
 	{
 		/**
 		 **/

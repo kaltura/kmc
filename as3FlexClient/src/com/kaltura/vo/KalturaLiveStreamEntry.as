@@ -116,8 +116,6 @@ package com.kaltura.vo
 			arr.push('streamName');
 			arr.push('streamUrl');
 			arr.push('hlsStreamUrl');
-			arr.push('dvrStatus');
-			arr.push('dvrWindow');
 			arr.push('urlManager');
 			arr.push('liveStreamConfigurations');
 			return arr;
@@ -127,6 +125,8 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
+			arr.push('dvrStatus');
+			arr.push('dvrWindow');
 			return arr;
 		}
 	}

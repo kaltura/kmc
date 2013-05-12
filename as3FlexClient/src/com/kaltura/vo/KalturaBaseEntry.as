@@ -128,19 +128,19 @@ package com.kaltura.vo
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/**
-		 * Calculated rank
+		 * The calculated average rank. rank = totalRank / votes
 		 * 
 		 **/
 		public var rank : Number = Number.NEGATIVE_INFINITY;
 
 		/**
-		 * The total (sum) of all votes
+		 * The sum of all rank values submitted to the baseEntry.anonymousRank action
 		 * 
 		 **/
 		public var totalRank : int = int.MIN_VALUE;
 
 		/**
-		 * Number of votes
+		 * A count of all requests made to the baseEntry.anonymousRank action
 		 * 
 		 **/
 		public var votes : int = int.MIN_VALUE;

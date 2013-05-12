@@ -142,6 +142,10 @@ package com.kaltura.vo
 
 		/**
 		 **/
+		public var categoriesNotContains : String = null;
+
+		/**
+		 **/
 		public var categoriesIdsMatchAnd : String = null;
 
 		/**
@@ -150,6 +154,10 @@ package com.kaltura.vo
 		 * 
 		 **/
 		public var categoriesIdsMatchOr : String = null;
+
+		/**
+		 **/
+		public var categoriesIdsNotContains : String = null;
 
 		/**
 		 * This filter should be in use for retrieving only entries, at a specific {
@@ -381,8 +389,10 @@ package com.kaltura.vo
 			arr.push('adminTagsMultiLikeAnd');
 			arr.push('categoriesMatchAnd');
 			arr.push('categoriesMatchOr');
+			arr.push('categoriesNotContains');
 			arr.push('categoriesIdsMatchAnd');
 			arr.push('categoriesIdsMatchOr');
+			arr.push('categoriesIdsNotContains');
 			arr.push('statusEqual');
 			arr.push('statusNotEqual');
 			arr.push('statusIn');

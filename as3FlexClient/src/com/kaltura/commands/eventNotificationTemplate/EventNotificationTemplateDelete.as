@@ -25,24 +25,39 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.delegates.mixing
+package com.kaltura.commands.eventNotificationTemplate
 {
-	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.delegates.eventNotificationTemplate.EventNotificationTemplateDeleteDelegate;
 	import com.kaltura.net.KalturaCall;
-	import com.kaltura.delegates.WebDelegateBase;
-	import flash.utils.getDefinitionByName;
 
-	public class MixingRequestFlatteningDelegate extends WebDelegateBase
+	/**
+	 * Delete an event notification template object
+	 * 
+	 **/
+	public class EventNotificationTemplateDelete extends KalturaCall
 	{
-		public function MixingRequestFlatteningDelegate(call:KalturaCall, config:KalturaConfig)
+		public var filterFields : String;
+		
+		/**
+		 * @param id int
+		 **/
+		public function EventNotificationTemplateDelete( id : int )
 		{
-			super(call, config);
+			service= 'eventnotification_eventnotificationtemplate';
+			action= 'delete';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('id');
+			valueArr.push(id);
+			applySchema(keyArr, valueArr);
 		}
 
-		override public function parse(result:XML) : *
+		override public function execute() : void
 		{
-			return result.result.toString();
+			setRequestArgument('filterFields', filterFields);
+			delegate = new EventNotificationTemplateDeleteDelegate( this , config );
 		}
-
 	}
 }

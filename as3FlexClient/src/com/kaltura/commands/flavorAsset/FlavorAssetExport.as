@@ -31,6 +31,8 @@ package com.kaltura.commands.flavorAsset
 	import com.kaltura.net.KalturaCall;
 
 	/**
+	 * manually export an asset
+	 * 
 	 **/
 	public class FlavorAssetExport extends KalturaCall
 	{

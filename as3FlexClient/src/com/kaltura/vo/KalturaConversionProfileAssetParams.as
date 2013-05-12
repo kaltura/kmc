@@ -71,6 +71,13 @@ package com.kaltura.vo
 		 **/
 		public var forceNoneComplied : int = int.MIN_VALUE;
 
+		/**
+		 * Specifies how to treat the flavor after conversion is finished
+		 * 
+		 * @see com.kaltura.types.KalturaAssetParamsDeletePolicy
+		 **/
+		public var deletePolicy : int = int.MIN_VALUE;
+
 		/** 
 		 * a list of attributes which may be updated on this object 
 		 **/ 
@@ -82,6 +89,7 @@ package com.kaltura.vo
 			arr.push('origin');
 			arr.push('systemName');
 			arr.push('forceNoneComplied');
+			arr.push('deletePolicy');
 			return arr;
 		}
 

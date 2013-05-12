@@ -52,6 +52,18 @@ package com.kaltura.vo
 		 **/
 		public var currentPlaylists : String = null;
 
+		/**
+		 **/
+		public var submitXml : String = null;
+
+		/**
+		 **/
+		public var updateXml : String = null;
+
+		/**
+		 **/
+		public var deleteXml : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -61,6 +73,9 @@ package com.kaltura.vo
 			arr.push('sftpDirectory');
 			arr.push('sftpMetadataFilename');
 			arr.push('currentPlaylists');
+			arr.push('submitXml');
+			arr.push('updateXml');
+			arr.push('deleteXml');
 			return arr;
 		}
 

@@ -25,45 +25,16 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.mixing
+package com.kaltura.types
 {
-	import com.kaltura.delegates.mixing.MixingRequestFlatteningDelegate;
-	import com.kaltura.net.KalturaCall;
-
-	/**
-	 * Request a new flattening job, flattening is used to convert a video mix to a video file.
-	 * 
-	 **/
-	public class MixingRequestFlattening extends KalturaCall
+	public class KalturaResponseType
 	{
-		public var filterFields : String;
-		
-		/**
-		 * @param entryId String
-		 * @param fileFormat String
-		 * @param version int
-		 **/
-		public function MixingRequestFlattening( entryId : String,fileFormat : String,version : int=-1 )
-		{
-			service= 'mixing';
-			action= 'requestFlattening';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			keyArr.push('entryId');
-			valueArr.push(entryId);
-			keyArr.push('fileFormat');
-			valueArr.push(fileFormat);
-			keyArr.push('version');
-			valueArr.push(version);
-			applySchema(keyArr, valueArr);
-		}
-
-		override public function execute() : void
-		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new MixingRequestFlatteningDelegate( this , config );
-		}
+		public static const RESPONSE_TYPE_JSON : int = 1;
+		public static const RESPONSE_TYPE_XML : int = 2;
+		public static const RESPONSE_TYPE_PHP : int = 3;
+		public static const RESPONSE_TYPE_PHP_ARRAY : int = 4;
+		public static const RESPONSE_TYPE_HTML : int = 7;
+		public static const RESPONSE_TYPE_MRSS : int = 8;
+		public static const RESPONSE_TYPE_JSONP : int = 9;
 	}
 }

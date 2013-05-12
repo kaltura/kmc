@@ -160,6 +160,18 @@ package com.kaltura.vo
 
 		/**
 		 **/
+		public var anamorphicPixels : Number = Number.NEGATIVE_INFINITY;
+
+		/**
+		 **/
+		public var isAvoidForcedKeyFrames : int = int.MIN_VALUE;
+
+		/**
+		 **/
+		public var maxFrameRate : int = int.MIN_VALUE;
+
+		/**
+		 **/
 		public var videoConstantBitrate : int = int.MIN_VALUE;
 
 		/**
@@ -202,6 +214,9 @@ package com.kaltura.vo
 			arr.push('isAvoidVideoShrinkFramesizeToSource');
 			arr.push('isAvoidVideoShrinkBitrateToSource');
 			arr.push('isVideoFrameRateForLowBrAppleHls');
+			arr.push('anamorphicPixels');
+			arr.push('isAvoidForcedKeyFrames');
+			arr.push('maxFrameRate');
 			arr.push('videoConstantBitrate');
 			arr.push('videoBitrateTolerance');
 			arr.push('clipOffset');

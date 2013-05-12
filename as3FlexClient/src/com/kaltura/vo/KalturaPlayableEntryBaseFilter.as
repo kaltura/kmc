@@ -50,22 +50,6 @@ package com.kaltura.vo
 
 		/**
 		 **/
-		public var msDurationLessThan : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var msDurationGreaterThan : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var msDurationLessThanOrEqual : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var msDurationGreaterThanOrEqual : int = int.MIN_VALUE;
-
-		/**
-		 **/
 		public var durationTypeMatchOr : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -76,10 +60,6 @@ package com.kaltura.vo
 			arr.push('durationGreaterThan');
 			arr.push('durationLessThanOrEqual');
 			arr.push('durationGreaterThanOrEqual');
-			arr.push('msDurationLessThan');
-			arr.push('msDurationGreaterThan');
-			arr.push('msDurationLessThanOrEqual');
-			arr.push('msDurationGreaterThanOrEqual');
 			arr.push('durationTypeMatchOr');
 			return arr;
 		}
