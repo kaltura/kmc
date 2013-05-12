@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
-							layout="vertical" width="360" height="180" showCloseButton="true"
-							close="helptitlewindow1_closeHandler(event)" showHelpButton="false" >
+							layout="vertical" width="360" showCloseButton="true"
+							close="helptitlewindow1_closeHandler(event)" showHelpButton="false" 
+							title="{resourceManager.getString('drilldown', 'drm_details')}">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.vo.KalturaWidevineFlavorAsset;
 			import com.kaltura.vo.KalturaFlavorAssetWithParams;
+			import com.kaltura.vo.KalturaFlavorParams;
+			import com.kaltura.vo.KalturaWidevineFlavorAsset;
+			
 			import mx.managers.PopUpManager;
 			
 			
 			[Bindable]
 			private var _flavorAsset:KalturaWidevineFlavorAsset;
 			
+			[Bindable]
+			private var _flavorParams:KalturaFlavorParams;
+			
 			public function set flavorAssetWithParams(awp:KalturaFlavorAssetWithParams):void {
-				title = resourceManager.getString('drilldown', 'drm_details', [awp.flavorParams.name]);
 				_flavorAsset = awp.flavorAsset as KalturaWidevineFlavorAsset;
+				_flavorParams = awp.flavorParams;
 			}
 			
 			protected function helptitlewindow1_closeHandler(event:Event):void {
@@ -23,7 +29,7 @@
 			
 			protected function getFormattedDate(timestamp:int):String {
 				var result:String;
-				if (timestamp == int.MIN_VALUE) {
+				if (timestamp == int.MIN_VALUE || timestamp == 18001 || timestamp == 2000001600) {
 					result = resourceManager.getString('drilldown', 'notAppStatus');
 				}
 				else {
@@ -36,7 +42,11 @@
 		]]>
 	</mx:Script>
 	<mx:DateFormatter id="formatter" formatString="{resourceManager.getString('drilldown', 'drm_dist_time_format')}" />
-	<mx:Form>
+	<mx:Form width="100%">
+		<mx:Text text="{_flavorParams.name}" selectable="true" width="100%" styleName="boldLabel"/>
+		<!--<mx:FormItem label="{resourceManager.getString('drilldown','drm_flavor_name')}">
+			<mx:Text text="{_flavorParams.name}" selectable="true" width="100%"/>
+		</mx:FormItem>-->
 		<mx:FormItem label="{resourceManager.getString('drilldown','drm_asset_id')}">
 			<mx:Label text="{_flavorAsset.widevineAssetId}" selectable="true"/>
 		</mx:FormItem>
