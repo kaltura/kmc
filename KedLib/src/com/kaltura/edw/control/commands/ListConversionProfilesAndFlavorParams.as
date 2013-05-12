@@ -22,14 +22,12 @@ package com.kaltura.edw.control.commands {
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
-	import com.kaltura.vo.KalturaWidevineFlavorParams;
 	import com.kaltura.edw.model.util.FlavorParamsUtil;
 
 	public class ListConversionProfilesAndFlavorParams extends KedCommand {
 
 		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
-			var dummy:KalturaWidevineFlavorParams;// compile in.
 			var p:KalturaFilterPager = new KalturaFilterPager();
 			p.pageSize = 1000;	// this is a very large number that should be enough to get all items
 

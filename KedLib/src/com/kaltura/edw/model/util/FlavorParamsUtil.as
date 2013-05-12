@@ -22,6 +22,7 @@ package com.kaltura.edw.model.util
 			}
 			else {
 				result = new KClassFactory(KalturaFlavorParams).newInstanceFromXML( XMLList(objectToXML(object)));
+				result.originalObjectType = object.objectType; 
 			}
 			return result;
 		}

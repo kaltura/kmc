@@ -7,10 +7,11 @@
 		<![CDATA[
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.vo.FlavorVO;
+			import com.kaltura.types.KalturaAssetParamsDeletePolicy;
 			import com.kaltura.types.KalturaAssetParamsOrigin;
 			import com.kaltura.types.KalturaFlavorReadyBehaviorType;
 			import com.kaltura.types.KalturaNullableBoolean;
+			import com.kaltura.vo.FlavorVO;
 			import com.kaltura.vo.KalturaConversionProfileAssetParams;
 			
 			import mx.events.FlexEvent;
@@ -49,9 +50,27 @@
 			];
 			
 			
+			/**
+			 * data provider for the asset's intermediate-flavor handling options
+			 * */
+			private const _handleOptions:Array = [
+				{value:KalturaAssetParamsDeletePolicy.KEEP, name:ResourceManager.getInstance().getString('account', 'ifh_keep')},
+				{value:KalturaAssetParamsDeletePolicy.DELETE, name:ResourceManager.getInstance().getString('account', 'ifh_delete')},
+			];
+			
+			
 			
 			
 			private var _cpap:KalturaConversionProfileAssetParams;
+			
+			
+			[Bindable]
+			/**
+			 * does the account have DRM feature enabled 
+			 * @internal
+			 * (used by RnP)
+			 * */
+			public var isDrmEnabled:Boolean = true;
 			
 
 			[Bindable]
@@ -74,6 +93,7 @@
 			 * edit cpap and mark it as dirty
 			 * */
 			private function save():void {
+				_cpap.deletePolicy = cbInterHandle.selectedItem.value;
 				_cpap.forceNoneComplied = cbGenPolicy.selectedItem.value;
 				_cpap.readyBehavior = cbAvailability.selectedItem.value;
 				_cpap.origin = cbConvertPolicy.selectedItem.value;
@@ -88,7 +108,7 @@
 			 * show the values from the cpap in the window
 			 * */
 			protected function setValues():void {
-				if (cbAvailability && cbConvertPolicy && tiSystemName && cbGenPolicy) {
+				if (cbAvailability && cbConvertPolicy && tiSystemName && cbGenPolicy && cbInterHandle) {
 					// source flavor - always ingest, inherit
 					if (_flavorVO.kFlavor.tags && _flavorVO.kFlavor.tags.indexOf("source") > -1) {
 						_cpap.origin = KalturaAssetParamsOrigin.INGEST;
@@ -103,8 +123,7 @@
 					}
 					// default values:
 					if (_cpap.readyBehavior == int.MIN_VALUE) {
-						_cpap.readyBehavior = KalturaFlavorReadyBehaviorType.OPTIONAL/* _flavorVO.kFlavor.?? */;
-						//TODO in server there's a readyBehavior value on the KalturaFlavorParams, if they expose it we should use it (Atar).
+						_cpap.readyBehavior = KalturaFlavorReadyBehaviorType.OPTIONAL;
 					}
 					if (_cpap.origin == int.MIN_VALUE) {
 						_cpap.origin = KalturaAssetParamsOrigin.CONVERT;
@@ -115,9 +134,13 @@
 					if (_cpap.forceNoneComplied == int.MIN_VALUE) {	// KalturaNullableBoolean is generated in the client as int
 						_cpap.forceNoneComplied = KalturaNullableBoolean.FALSE_VALUE;
 					}
+					if (_cpap.deletePolicy == int.MIN_VALUE) {	
+						_cpap.deletePolicy = KalturaAssetParamsDeletePolicy.KEEP;
+					}
 					cbAvailability.selectedIndex = getItemIndex(_availabilityOptions, _cpap.readyBehavior);
 					cbConvertPolicy.selectedIndex = getItemIndex(_originOptions, _cpap.origin);
 					cbGenPolicy.selectedIndex = getItemIndex(_genOptions, _cpap.forceNoneComplied);
+					cbInterHandle.selectedIndex = getItemIndex(_handleOptions, _cpap.deletePolicy);
 					tiSystemName.text = _cpap.systemName;
 				}
 			}
@@ -185,6 +208,24 @@
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section_transcoding_flavor_edit'));
 			}
 
+			
+			/**
+			 * intermedia-flavor handling dropdown shoulld only be visible when:
+			 * <li> DRM is enabled for the account
+			 * <li> the flavor being edited is not a DRM flavor (single or multi bitrate)
+			 * */
+			private function getIFHandleVisible(flavorVO:FlavorVO):Boolean {
+				var result:Boolean = isDrmEnabled;
+				if (result) {
+					// originalObjectType is being set in FlavorParamsUtil.makeFlavorParams()
+					if (flavorVO.kFlavor.hasOwnProperty('originalObjectType') 
+						&& flavorVO.kFlavor.originalObjectType == 'KalturaWidevineFlavorParams') {
+						result = false;
+					}
+				}
+				return result;
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:HBox>
@@ -192,10 +233,10 @@
 				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
 		<mx:Label text="{profileName}"  />
 	</mx:HBox>
-	<mx:HBox>
+	<mx:HBox width="100%">
 		<mx:Label text="{resourceManager.getString('account','convFlavorName')}" 
 				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
-		<mx:Label text="{flavorVO.kFlavor.name}"  />
+		<mx:Text text="{flavorVO.kFlavor.name}" width="100%"/>
 	</mx:HBox>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('account','assetAvialability')}" 
@@ -217,6 +258,13 @@
 		<mx:Label text="{resourceManager.getString('account','generationPolicy')}" 
 				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
 		<mx:ComboBox id="cbGenPolicy" dataProvider="{_genOptions}" 
+					 labelField="name" width="{ELEMENT_WIDTH}" />
+	</mx:HBox>
+	<mx:HBox visible="{getIFHandleVisible(flavorVO)}" 
+			 includeInLayout="{getIFHandleVisible(flavorVO)}">
+		<mx:Label text="{resourceManager.getString('account','itermediate_handle')}" 
+				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
+		<mx:ComboBox id="cbInterHandle" dataProvider="{_handleOptions}" 
 					 labelField="name" width="{ELEMENT_WIDTH}" />
 	</mx:HBox>
 	<mx:ControlBar width="100%" horizontalAlign="center">

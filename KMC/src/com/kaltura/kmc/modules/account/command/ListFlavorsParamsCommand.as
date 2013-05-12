@@ -15,7 +15,6 @@ package com.kaltura.kmc.modules.account.command
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
-	import com.kaltura.vo.KalturaWidevineFlavorParams;
 	import com.kaltura.edw.model.util.FlavorParamsUtil;
 	
 	public class ListFlavorsParamsCommand implements ICommand, IResponder
@@ -25,7 +24,6 @@ package com.kaltura.kmc.modules.account.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			var dummy:KalturaWidevineFlavorParams;// compile in.
 			var pager:KalturaFilterPager = new KalturaFilterPager();
 			pager.pageSize = DEFAULT_PAGE_SIZE;
 		 	var getListFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
