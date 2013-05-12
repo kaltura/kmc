@@ -126,9 +126,6 @@ Flavours tab of EntryDetailsWin
 			
 			public function set showTagsColumn(value:Boolean):void{
 				dg.tagsCol.visible = value;
-				//				for each (var col:DataGridColumn in dg.columns) {
-				//					col.width = col.width;
-				//				}
 			}
 			
 			public function get showTagsColumn():Boolean{
@@ -155,7 +152,10 @@ Flavours tab of EntryDetailsWin
 			
 			
 			[Bindable]
-			public var flavorAssets:ArrayCollection;
+			/**
+			 * FlavorAssetWithParamsVO objects
+			 * */
+			private var _flavorAssets:ArrayCollection;
 			
 			/**
 			 * for uploading multiple files as new flavours
@@ -332,7 +332,9 @@ Flavours tab of EntryDetailsWin
 			}
 			
 			
-			
+			private function setFlavorAssets(value:ArrayCollection):void {
+				_flavorAssets = value;
+			}
 			
 			
 			
@@ -415,7 +417,7 @@ Flavours tab of EntryDetailsWin
 			public function init():void {
 				var ddp:DistributionDataPack = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
 				if (!_flavorsWatcher) {
-					_flavorsWatcher = BindingUtils.bindProperty(this, "flavorAssets", ddp, "flavorParamsAndAssetsByEntryId");
+					_flavorsWatcher = BindingUtils.bindSetter(setFlavorAssets, ddp, "flavorParamsAndAssetsByEntryId");
 				}
 				//the following data is required for the actions buttons
 				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
@@ -490,24 +492,26 @@ Flavours tab of EntryDetailsWin
 			
 			
 			private function actionHandler(event:Event):void {
-				var _flavorWithParams:FlavorAssetWithParamsVO = event.target.data as FlavorAssetWithParamsVO;
+				var flavorWithParams:FlavorAssetWithParamsVO = event.target.data as FlavorAssetWithParamsVO;
 				var faEvent:FlavorAssetEvent;
 				switch (event.type) {
 					case FlavorsTable.CONVERT_FLAVOR:
-						faEvent = new FlavorAssetEvent(FlavorAssetEvent.CREATE_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
+						faEvent = new FlavorAssetEvent(FlavorAssetEvent.CREATE_FLAVOR_ASSET, flavorWithParams.kalturaFlavorAssetWithParams);
 						break;
 					case FlavorsTable.DELETE_FLAVOR:
-						faEvent = new FlavorAssetEvent(FlavorAssetEvent.DELETE_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
+						faEvent = new FlavorAssetEvent(FlavorAssetEvent.DELETE_FLAVOR_ASSET, flavorWithParams.kalturaFlavorAssetWithParams);
 						break;
 					case FlavorsTable.DOWNLOAD_FLAVOR:
-						faEvent = new FlavorAssetEvent(FlavorAssetEvent.DOWNLOAD_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
-						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_DOWNLOAD, "EntryDrillDown>FlavorTab>DownloadAsset", _flavorWithParams.kalturaFlavorAssetWithParams.entryId);
+						faEvent = new FlavorAssetEvent(FlavorAssetEvent.DOWNLOAD_FLAVOR_ASSET, flavorWithParams.kalturaFlavorAssetWithParams);
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_DOWNLOAD, "EntryDrillDown>FlavorTab>DownloadAsset", flavorWithParams.kalturaFlavorAssetWithParams.entryId);
 						break;
 					case FlavorsTable.PREVIEW_FLAVOR:
-						faEvent = new FlavorAssetEvent(FlavorAssetEvent.PREVIEW_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
+						faEvent = new FlavorAssetEvent(FlavorAssetEvent.PREVIEW_FLAVOR_ASSET, flavorWithParams.kalturaFlavorAssetWithParams);
 						break;
 					case FlavorsTable.WV_FLAVOR_DETAILS:
-						faEvent = new FlavorAssetEvent(FlavorAssetEvent.VIEW_WV_ASSET_DETAILS, _flavorWithParams.kalturaFlavorAssetWithParams);
+						faEvent = new FlavorAssetEvent(FlavorAssetEvent.VIEW_WV_ASSET_DETAILS, null);
+						// the constructor takes KalturaFlavorAssetWithParams as data, we override here:
+						faEvent.data = flavorWithParams;
 						break;
 				}
 				if (faEvent) {
@@ -937,6 +941,6 @@ Flavours tab of EntryDetailsWin
 		<mx:LinkButton click="refreshData(true)" label="{resourceManager.getString('drilldown','refresh')}"
 					   styleName="recycleIcon"/>
 	</mx:HBox>
-	<view:FlavorsTable id="dg" dataProvider="{flavorAssets}" allowImport="{allowImport}" allowLink="{allowLink}"
+	<view:FlavorsTable id="dg" dataProvider="{_flavorAssets}" allowImport="{allowImport}" allowLink="{allowLink}"
 					   allowMatch="{allowMatchFromDrop}" allowUpload="{allowUpload}"/>
 </mx:Module>

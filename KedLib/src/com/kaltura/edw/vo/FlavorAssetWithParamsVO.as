@@ -8,6 +8,11 @@ package com.kaltura.edw.vo
 		public var hasOriginal:Boolean = false;
 		public var kalturaFlavorAssetWithParams:KalturaFlavorAssetWithParams;
 		
+		/**
+		 * list of flavors (KalturaFlavorParams) that contribute to a multi bitrate flavor
+		 */
+		public var sources:Array;
+		
 		public function FlavorAssetWithParamsVO()
 		{
 		}

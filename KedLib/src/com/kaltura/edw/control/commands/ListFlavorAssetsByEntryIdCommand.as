@@ -12,6 +12,7 @@ package com.kaltura.edw.control.commands {
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
 	
+	import mx.automation.codec.AssetPropertyCodec;
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
@@ -71,8 +72,12 @@ package com.kaltura.edw.control.commands {
 				}
 				var kawp:FlavorAssetWithParamsVO = new FlavorAssetWithParamsVO();
 				kawp.kalturaFlavorAssetWithParams = assetWithParam;
+				if (assetWithParam.flavorParams.sourceAssetParamsIds) {
+					//TODO get the list of sources on the VO
+					kawp.sources = getFlavorsByIds(assetWithParam.flavorParams.sourceAssetParamsIds, arrCol);
+				}
 				if (assetWithParam.flavorAsset != null) {
-
+					// first we add the ones with assets
 					flavorParamsAndAssetsByEntryId.addItem(kawp);
 				}
 				else {
@@ -80,17 +85,36 @@ package com.kaltura.edw.control.commands {
 				}
 			}
 
-
+			// then we add the ones without asset
 			for each (var tmpObj:FlavorAssetWithParamsVO in tempAc) {
 				flavorParamsAndAssetsByEntryId.addItem(tmpObj);
 			}
 
 			if (foundIsOriginal) {
+				// let all flavors know we have original
 				for each (var afwps:FlavorAssetWithParamsVO in flavorParamsAndAssetsByEntryId) {
 					afwps.hasOriginal = true;
 				}
 			}
 			(_model.getDataPack(DistributionDataPack) as DistributionDataPack).flavorParamsAndAssetsByEntryId = flavorParamsAndAssetsByEntryId;
+		}
+		
+		private function getFlavorsByIds(sourceAssetParamsIds:String, allFlavors:Array):Array {
+			allFlavors = allFlavors.slice();
+			var result:Array = [];
+			var required:Array = sourceAssetParamsIds.split(',');
+			var assetWithParam:KalturaFlavorAssetWithParams; 
+			for each (var source:int in required) {
+				for (var i:int = 0; i<allFlavors.length; i++) {
+					assetWithParam = allFlavors[i];
+					if (assetWithParam.flavorParams.id == source) {
+						result.push(assetWithParam.flavorParams);
+						allFlavors.splice(i, 1);
+						break;
+					}
+				}
+			}
+			return result;
 		}
 	}
 }

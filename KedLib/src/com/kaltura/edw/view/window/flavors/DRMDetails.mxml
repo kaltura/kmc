@@ -5,6 +5,7 @@
 							title="{resourceManager.getString('drilldown', 'drm_details')}">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.vo.KalturaFlavorAssetWithParams;
 			import com.kaltura.vo.KalturaFlavorParams;
 			import com.kaltura.vo.KalturaWidevineFlavorAsset;
@@ -18,9 +19,13 @@
 			[Bindable]
 			private var _flavorParams:KalturaFlavorParams;
 			
-			public function set flavorAssetWithParams(awp:KalturaFlavorAssetWithParams):void {
-				_flavorAsset = awp.flavorAsset as KalturaWidevineFlavorAsset;
-				_flavorParams = awp.flavorParams;
+			[Bindable]
+			private var _sources:Array;
+			
+			public function set flavorAssetWithParams(awp:FlavorAssetWithParamsVO):void {
+				_flavorAsset = awp.kalturaFlavorAssetWithParams.flavorAsset as KalturaWidevineFlavorAsset;
+				_flavorParams = awp.kalturaFlavorAssetWithParams.flavorParams;
+				_sources = awp.sources;
 			}
 			
 			protected function helptitlewindow1_closeHandler(event:Event):void {
@@ -43,13 +48,12 @@
 	</mx:Script>
 	<mx:DateFormatter id="formatter" formatString="{resourceManager.getString('drilldown', 'drm_dist_time_format')}" />
 	<mx:Form width="100%">
-		<mx:Text text="{_flavorParams.name}" selectable="true" width="100%" styleName="boldLabel"/>
-		<!--<mx:FormItem label="{resourceManager.getString('drilldown','drm_flavor_name')}">
-			<mx:Text text="{_flavorParams.name}" selectable="true" width="100%"/>
-		</mx:FormItem>-->
+		<mx:Text text="{_flavorParams.name}" selectable="true" width="100%" styleName="boldLabel" />
 		<mx:FormItem label="{resourceManager.getString('drilldown','drm_asset_id')}">
-			<mx:Label text="{_flavorAsset.widevineAssetId}" selectable="true"/>
+			<mx:Label text="{_flavorAsset.widevineAssetId}" selectable="true" />
 		</mx:FormItem>
+		<!--<mx:Label text="{resourceManager.getString('drilldown', 'mbr_sources')}" />
+		<mx:List width="100%" dataProvider="{_sources}" labelField="name" />-->
 		<mx:FormItem label="{resourceManager.getString('drilldown','drm_dist_start')}">
 			<mx:Label text="{getFormattedDate(_flavorAsset.widevineDistributionStartDate)}" />
 		</mx:FormItem>
