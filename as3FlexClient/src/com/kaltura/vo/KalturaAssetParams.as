@@ -104,6 +104,12 @@ package com.kaltura.vo
 		 **/
 		public var mediaParserType : String = null;
 
+		/**
+		 * Comma seperated ids of source flavor params this flavor is created from
+		 * 
+		 **/
+		public var sourceAssetParamsIds : String = null;
+
 		/** 
 		 * a list of attributes which may be updated on this object 
 		 **/ 
@@ -119,6 +125,7 @@ package com.kaltura.vo
 			arr.push('sourceRemoteStorageProfileId');
 			arr.push('remoteStorageProfileIds');
 			arr.push('mediaParserType');
+			arr.push('sourceAssetParamsIds');
 			return arr;
 		}
 
