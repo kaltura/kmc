@@ -109,6 +109,8 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(ChangeModelEvent.SET_ENABLE_THUMB_RESIZE, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_LOTS_OF_CATEGORIES_FLAG, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_CONFIRM_MODERATION, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.SET_ALLOW_CLIPPING, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.SET_ALLOW_TRIMMING, ChangeModelValueCommand);
 
 
 			// drop folder stuff
