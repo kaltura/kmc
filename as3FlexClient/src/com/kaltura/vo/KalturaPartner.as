@@ -242,10 +242,6 @@ package com.kaltura.vo
 		public var rtmpUrl : String = null;
 
 		/**
-		 **/
-		public var language : String = null;
-
-		/**
 		 * @see com.kaltura.types.kalturaBoolean
 		 **/
 		public var isFirstLogin : Boolean;
@@ -253,6 +249,10 @@ package com.kaltura.vo
 		/**
 		 **/
 		public var logoutUrl : String = null;
+
+		/**
+		 **/
+		public var partnerParentId : int = int.MIN_VALUE;
 
 		/** 
 		 * a list of attributes which may be updated on this object 

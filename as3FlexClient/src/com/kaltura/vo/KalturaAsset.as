@@ -102,6 +102,12 @@ package com.kaltura.vo
 		 **/
 		public var partnerDescription : String = null;
 
+		/**
+		 * Comma separated list of source flavor params ids
+		 * 
+		 **/
+		public var actualSourceAssetParamsIds : String = null;
+
 		/** 
 		 * a list of attributes which may be updated on this object 
 		 **/ 
@@ -112,6 +118,7 @@ package com.kaltura.vo
 			arr.push('tags');
 			arr.push('partnerData');
 			arr.push('partnerDescription');
+			arr.push('actualSourceAssetParamsIds');
 			return arr;
 		}
 

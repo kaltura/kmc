@@ -281,6 +281,11 @@ package com.kaltura.vo
 		 **/
 		public var restrictEntryByMetadata : Boolean;
 
+		/**
+		 * @see com.kaltura.types.KalturaLanguageCode
+		 **/
+		public var language : String = null;
+
 		/** 
 		 * a list of attributes which may be updated on this object 
 		 **/ 
@@ -344,6 +349,7 @@ package com.kaltura.vo
 			arr.push('defaultEmbedCodeType');
 			arr.push('disabledDeliveryTypes');
 			arr.push('restrictEntryByMetadata');
+			arr.push('language');
 			return arr;
 		}
 

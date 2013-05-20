@@ -81,8 +81,9 @@ package com.kaltura.vo
 		public var templatePath : String = null;
 
 		/**
+		 * @see com.kaltura.types.KalturaLanguageCode
 		 **/
-		public var culture : int = int.MIN_VALUE;
+		public var language : String = null;
 
 		/**
 		 **/
@@ -112,7 +113,7 @@ package com.kaltura.vo
 			arr.push('bodyParams');
 			arr.push('subjectParams');
 			arr.push('templatePath');
-			arr.push('culture');
+			arr.push('language');
 			arr.push('campaignId');
 			arr.push('minSendDate');
 			arr.push('isHtml');

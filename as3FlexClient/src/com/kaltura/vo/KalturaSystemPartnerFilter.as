@@ -27,25 +27,25 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaGenericSyndicationFeed;
+	import com.kaltura.vo.KalturaPartnerFilter;
 
 	[Bindable]
-	public dynamic class KalturaGenericXsltSyndicationFeed extends KalturaGenericSyndicationFeed
+	public dynamic class KalturaSystemPartnerFilter extends KalturaPartnerFilter
 	{
 		/**
 		 **/
-		public var xslt : String = null;
+		public var partnerParentIdEqual : int = int.MIN_VALUE;
 
 		/**
 		 **/
-		public var itemXpathsToExtend : Array = null;
+		public var partnerParentIdIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('xslt');
-			arr.push('itemXpathsToExtend');
+			arr.push('partnerParentIdEqual');
+			arr.push('partnerParentIdIn');
 			return arr;
 		}
 

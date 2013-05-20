@@ -82,6 +82,11 @@ package com.kaltura.vo
 		public var partnerPackageLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
+		 * @see com.kaltura.types.KalturaPartnerGroupType
+		 **/
+		public var partnerGroupTypeEqual : int = int.MIN_VALUE;
+
+		/**
 		 **/
 		public var partnerNameDescriptionWebsiteAdminNameAdminEmailLike : String = null;
 
@@ -101,6 +106,7 @@ package com.kaltura.vo
 			arr.push('partnerPackageEqual');
 			arr.push('partnerPackageGreaterThanOrEqual');
 			arr.push('partnerPackageLessThanOrEqual');
+			arr.push('partnerGroupTypeEqual');
 			arr.push('partnerNameDescriptionWebsiteAdminNameAdminEmailLike');
 			return arr;
 		}

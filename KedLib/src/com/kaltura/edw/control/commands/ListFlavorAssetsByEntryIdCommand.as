@@ -72,13 +72,13 @@ package com.kaltura.edw.control.commands {
 				}
 				var kawp:FlavorAssetWithParamsVO = new FlavorAssetWithParamsVO();
 				kawp.kalturaFlavorAssetWithParams = assetWithParam;
-				if (assetWithParam.flavorParams.sourceAssetParamsIds) {
-					//TODO get the list of sources on the VO
-					kawp.sources = getFlavorsByIds(assetWithParam.flavorParams.sourceAssetParamsIds, arrCol);
-				}
 				if (assetWithParam.flavorAsset != null) {
 					// first we add the ones with assets
 					flavorParamsAndAssetsByEntryId.addItem(kawp);
+					if (assetWithParam.flavorAsset.actualSourceAssetParamsIds) {
+						// get the list of sources on the VO
+						kawp.sources = getFlavorsByIds(assetWithParam.flavorAsset.sourceAssetParamsIds, arrCol);
+					}
 				}
 				else {
 					tempAc.addItem(kawp);
