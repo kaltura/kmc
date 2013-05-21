@@ -77,7 +77,7 @@ package com.kaltura.edw.control.commands {
 					flavorParamsAndAssetsByEntryId.addItem(kawp);
 					if (assetWithParam.flavorAsset.actualSourceAssetParamsIds) {
 						// get the list of sources on the VO
-						kawp.sources = getFlavorsByIds(assetWithParam.flavorAsset.sourceAssetParamsIds, arrCol);
+						kawp.sources = getFlavorsByIds(assetWithParam.flavorAsset.actualSourceAssetParamsIds, arrCol);
 					}
 				}
 				else {
