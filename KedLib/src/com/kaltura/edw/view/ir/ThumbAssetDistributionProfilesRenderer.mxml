@@ -12,20 +12,9 @@
 			
 			override public function set data(value:Object):void {
 				var thumbWithDimensions:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
-				_distributionProfilesListString = getDistributionsListString(thumbWithDimensions.usedDistributionProfilesArray);
+				_distributionProfilesListString = thumbWithDimensions.getDistributionsListString();
 			}
 			
-			private function getDistributionsListString(distributionsArray:Array):String {
-				if ((!distributionsArray) || (distributionsArray.length==0)) 
-					return resourceManager.getString('cms', 'thumbanilNotRequired');
-				
-				var profileNameArray:Array = new Array();
-				for each (var profile:KalturaDistributionProfile in distributionsArray) {
-					profileNameArray.push(profile.name);
-				}
-				var distributionsList:String = profileNameArray.join(",");
-				return distributionsList;
-			}
 		]]>
 	</mx:Script>
 	<mx:TextArea backgroundAlpha="0" borderStyle="none" text="{_distributionProfilesListString}" width="100%" wordWrap="true" editable="false"/>

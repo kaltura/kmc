@@ -1,9 +1,12 @@
 package com.kaltura.edw.vo
 {
 	import com.kaltura.KalturaClient;
+	import com.kaltura.vo.KalturaDistributionProfile;
 	import com.kaltura.vo.KalturaThumbAsset;
 	
 	import flash.events.EventDispatcher;
+	
+	import mx.resources.ResourceManager;
 
 	/**
 	 * This class represents thumbnail dimensions. contains width, height, and which distribution profiles
@@ -71,6 +74,29 @@ package com.kaltura.edw.vo
 				result += "/version/" + thumbAsset.version;
 			}
 			return result;
+		}
+		
+		/**
+		 * get the list of distribution profiles names that require this dimension 
+		 * @param showEmpty		should a string be returned for empty list
+		 * @param concatElement	the element used to concat profile names
+		 * @return "pretty-printed" list of profile names 
+		 */
+		public function getDistributionsListString(showEmpty:Boolean = true, concatElement:String = ','):String {
+			if (!usedDistributionProfilesArray|| usedDistributionProfilesArray.length==0) {
+				if (showEmpty) {
+					return ResourceManager.getInstance().getString('cms', 'thumbanilNotRequired');
+				}
+				else {
+					return '';
+				}
+			}
+			var profileNameArray:Array = new Array();
+			for each (var profile:KalturaDistributionProfile in usedDistributionProfilesArray) {
+				profileNameArray.push(profile.name);
+			}
+			var distributionsList:String = profileNameArray.join(concatElement);
+			return distributionsList;
 		}
 	}
 }
