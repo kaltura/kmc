@@ -7,7 +7,7 @@ package com.kaltura.kmc.modules.analytics.business {
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.utils.ArrayUtil;
-	import com.kaltura.kmc.vo.LocalizedVo;
+	import com.kaltura.edw.vo.LocalizedVo;
 
 	/**
 	 * dates range manager for the short term: day to year.

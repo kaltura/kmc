@@ -18,7 +18,7 @@ package com.kaltura.kmc.modules.analytics.model {
 	
 	import mx.collections.ArrayCollection;
 	import mx.resources.ResourceManager;
-	import com.kaltura.kmc.vo.LocalizedVo;
+	import com.kaltura.edw.vo.LocalizedVo;
 
 	[Bindable]
 	public class AnalyticsModelLocator implements IModelLocator {

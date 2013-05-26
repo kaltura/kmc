@@ -1,4 +1,4 @@
-package com.kaltura.kmc.vo
+package com.kaltura.edw.vo
 {
 	import mx.resources.ResourceManager;
 	import flash.events.EventDispatcher;
