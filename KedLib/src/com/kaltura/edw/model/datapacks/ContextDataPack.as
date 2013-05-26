@@ -135,10 +135,6 @@ package com.kaltura.edw.model.datapacks
 		 */
 		public var clientIP:String;
 		
-		/**
-		 * link to open when clicking help icon on free text search
-		 */
-		public var freetextSearchHelpLink:String;
 
 		public function get defaultUrlVars() :Object
 		{

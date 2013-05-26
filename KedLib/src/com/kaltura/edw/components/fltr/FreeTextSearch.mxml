@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalAlign="middle" 
 		 implements="com.kaltura.edw.components.fltr.IFilterComponent">
 	<mx:Metadata>
 		[Event(name="valueChange", type="com.kaltura.edw.components.fltr.FilterComponentEvent")] 
+		[Event(name="help", type="flash.events.Event")] 
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
+			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			
 			import mx.controls.Alert;
 			import mx.resources.ResourceManager;
@@ -25,8 +27,12 @@
 			 * */
 			public var defaultText:String;
 			
-			public var helpLink:String;
-
+			[Bindable]
+			/**
+			 * help anchor. help icon is shown if not null.
+			 * @default null
+			 * */
+			public var helpAnchore:String;
 			// -------------------
 			// IFilterComponent
 			// -------------------
@@ -207,6 +213,14 @@
 			}
 			
 			
+			private function freetextHelpHandler(event:MouseEvent):void {
+				if (helpAnchore != null) {
+					var e:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(/* EntryDetailsWin.HELP_REQUEST */ "helpRequest", true);
+					e.data = helpAnchore;
+					dispatchEvent(e);
+				}
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:TextInput id="searchFilter" width="100%" styleName="searchTextInput" 
@@ -218,6 +232,6 @@
 				  focusOut="resetDefaultText(event)"/>
 	<mx:Button id="searchBtn" styleName="searchButton" click="updateFilter()"
 			   buttonMode="{searchBtn.enabled}" enabled="false"/><!--width="{searchBtn.height}" height="100%"-->
-	<mx:Spacer width="5" />
-	<mx:Button styleName="help" buttonMode="true" />
+	<mx:Spacer width="5" includeInLayout="{helpAnchore != null}"/>
+	<mx:Button styleName="help" buttonMode="true" click="freetextHelpHandler(event)" visible="{helpAnchore != null}" includeInLayout="{helpAnchore != null}"/>
 </mx:HBox>

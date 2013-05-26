@@ -9,9 +9,7 @@ package com.kaltura.edw.components.fltr.cat
 	import com.kaltura.edw.components.fltr.cat.renderers.*;
 	import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
 	import com.kaltura.edw.control.CategoriesTreeController;
-	import com.kaltura.edw.events.GeneralNonCairngormEvent;
 	import com.kaltura.edw.vo.CategoryVO;
-	import com.kaltura.types.KalturaNullableBoolean;
 	import com.kaltura.vo.KalturaCategory;
 	
 	import flash.events.Event;
