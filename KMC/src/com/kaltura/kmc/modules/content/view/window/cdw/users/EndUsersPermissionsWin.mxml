@@ -12,10 +12,12 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryUserEvent;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
+			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaInheritanceType;
 			import com.kaltura.vo.KalturaCategory;
 			import com.kaltura.vo.KalturaCategoryUserFilter;
@@ -150,7 +152,8 @@
 	</mx:Script>
 	<mx:HBox width="100%" styleName="noPadding">
 		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="180" attribute="freeText"
-							 defaultText="{resourceManager.getString('cms', 'searchUsers')}"/>
+							 defaultText="{resourceManager.getString('cms', 'searchUsers')}"
+							 helpLink="{(KMvCModel.getInstance().getDataPack(ContextDataPack) as ContextDataPack).freetextSearchHelpLink}" />
 		<mx:HBox styleName="flavorsReplacementVBox" width="100%" visible="{_category.inheritanceType == KalturaInheritanceType.INHERIT}">
 			<mx:Label text="{resourceManager.getString('cms', 'permsInheritFrom', [model.inheritedParentCategory.fullName])}"/>
 		</mx:HBox>

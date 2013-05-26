@@ -15,15 +15,17 @@
 			private const MIN_SEARCH_CHARS:int = 1;
 			
 			/**
-			 * regex to test search text validity.
+			 * regex to test search text validity: ! at start of word is not allowed.
 			 * */
-			private var _invalidCharsRegexp:RegExp = /[`;!#\&*\+?\\{}<>"\[\]]/;
+			private var _invalidCharsRegexp:RegExp = /(\s|^)!(.*)\b/gm;
 			
 			[Bindable]
 			/**
 			 * text to show when no search text is entered
 			 * */
 			public var defaultText:String;
+			
+			public var helpLink:String;
 
 			// -------------------
 			// IFilterComponent
@@ -216,4 +218,6 @@
 				  focusOut="resetDefaultText(event)"/>
 	<mx:Button id="searchBtn" styleName="searchButton" click="updateFilter()"
 			   buttonMode="{searchBtn.enabled}" enabled="false"/><!--width="{searchBtn.height}" height="100%"-->
+	<mx:Spacer width="5" />
+	<mx:Button styleName="help" buttonMode="true" />
 </mx:HBox>
