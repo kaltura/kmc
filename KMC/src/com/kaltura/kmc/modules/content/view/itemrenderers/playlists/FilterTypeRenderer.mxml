@@ -11,14 +11,9 @@
 				var kmefpl:KalturaMediaEntryFilterForPlaylist = data as KalturaMediaEntryFilterForPlaylist;
 				var result:String = '';
 				
-				if (kmefpl.orderBy == PlaylistEntries.ORDER_BY_ARR[0]) {
-					result = resourceManager.getString('cms', 'ruleBasedPlaylistOrderBy_MostViewed');
-				}
-				else if (kmefpl.orderBy == PlaylistEntries.ORDER_BY_ARR[1]) {
-					result = resourceManager.getString('cms', 'ruleBasedPlaylistOrderBy_MostRecent');
-				}
-				else if (kmefpl.orderBy == PlaylistEntries.ORDER_BY_ARR[2]) {
-					result = resourceManager.getString('cms', 'ruleBasedPlaylistOrderBy_HighstRated');
+				for (var i:uint = 0; i < PlaylistEntries.ORDER_BY_ARR.length; i++) {
+					if (PlaylistEntries.ORDER_BY_ARR[i].value == kmefpl.orderBy)
+						result = PlaylistEntries.ORDER_BY_ARR[i].label;
 				}
 				return result;
 			}

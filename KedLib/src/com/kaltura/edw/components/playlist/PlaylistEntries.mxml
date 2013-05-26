@@ -14,6 +14,7 @@
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
 			import com.kaltura.edw.components.playlist.events.ManualPlaylistWindowEvent;
 			import com.kaltura.edw.events.KedDataEvent;
+			import com.kaltura.edw.vo.LocalizedVo;
 			import com.kaltura.types.KalturaPlayableEntryOrderBy;
 			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KalturaBaseEntry;
@@ -72,11 +73,8 @@
 			[Bindable]
 			public var tableTitle:String = '';
 
-
-			[ArrayElementType("String")]
-			public static const ORDER_BY_ARR:Array = [KalturaPlayableEntryOrderBy.PLAYS_DESC,
-				KalturaPlayableEntryOrderBy.RECENT_DESC,
-				KalturaPlayableEntryOrderBy.RANK_DESC];
+			[Bindable]
+			public static var ORDER_BY_ARR:ArrayCollection = new ArrayCollection(); 
 
 
 			[Bindable]
@@ -218,6 +216,11 @@
 			
 
 			private function onCreationComplete():void {
+				if (ORDER_BY_ARR.length == 0) { // only init once
+					ORDER_BY_ARR.addItem(new LocalizedVo(KalturaPlayableEntryOrderBy.PLAYS_DESC, 'ruleBasedPlaylistOrderBy_MostPlayer', 'cms'));
+					ORDER_BY_ARR.addItem(new LocalizedVo(KalturaPlayableEntryOrderBy.RECENT_DESC, 'ruleBasedPlaylistOrderBy_MostRecent', 'cms'));
+					ORDER_BY_ARR.addItem(new LocalizedVo(KalturaPlayableEntryOrderBy.RANK_DESC, 'ruleBasedPlaylistOrderBy_HighstRated', 'cms'));
+				}
 				_dataProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, onDpChange);
 			}
 
@@ -238,7 +241,7 @@
 			public function getSelectedOrderBy():String {
 				var index:int = ruleBasedPlaylistOrderBy.selectedIndex;
 				if (index > -1) {
-					return ORDER_BY_ARR[index].toString();
+					return ruleBasedPlaylistOrderBy.selectedItem['value'];
 				}
 				return null;
 			}
@@ -250,7 +253,7 @@
 					orderBy = KalturaPlayableEntryOrderBy.RECENT_DESC;
 				}
 				for (var i:uint = 0; i < ORDER_BY_ARR.length; i++) {
-					if (ORDER_BY_ARR[i] == orderBy)
+					if (ORDER_BY_ARR[i].value == orderBy)
 						ruleBasedPlaylistOrderBy.selectedIndex = i;
 				}
 			}
@@ -372,18 +375,7 @@
 
 	<mx:HBox id="ruleBaseBar" width="100%" styleName="DataGridActions" includeInLayout="{allowRuleBasedActions}" visible="{allowRuleBasedActions}" >
 		<mx:Label text="{resourceManager.getString('cms', 'orderBy')}"/>
-		<mx:ComboBox id="ruleBasedPlaylistOrderBy" width="150" change="{changedData()}">
-			<mx:dataProvider>
-				{[
-					resourceManager.getString('cms', 'ruleBasedPlaylistOrderBy_MostPlayer'), 
-					resourceManager.getString('cms', 'ruleBasedPlaylistOrderBy_MostRecent'), 
-					resourceManager.getString('cms', 'ruleBasedPlaylistOrderBy_HighstRated') 
-					//resourceManager.getString('cms', 'ruleBasedPlaylistOrderBy_MostViewed24H') , 
-					//resourceManager.getString('cms', 'ruleBasedPlaylistOrderBy_MostViewed7Days'),
-					//resourceManager.getString('cms', 'ruleBasedPlaylistOrderBy_MostViewed30Days')
-				]}
-			</mx:dataProvider>
-		</mx:ComboBox>
+		<mx:ComboBox id="ruleBasedPlaylistOrderBy" width="150" change="{changedData()}" dataProvider="{ORDER_BY_ARR}" />
 		<mx:Label text="{resourceManager.getString('cms', 'maxDynPlst')}" />
 		<mx:NumericStepper id="maxEntriesInPlaylist" minimum="1" maximum="{MAX_ENTRIES_IN_PL}" width="52"
 						   value="{limit}" change="onNumericChange()"/>
