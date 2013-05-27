@@ -861,6 +861,12 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 							plugin.attribute(pair[0])[0] = pair[1];
 						}
 					}
+					// copy other (dynamic) attributes: so we'll only get those who originated in features file
+					for (var s:String in advo.adSource) {
+						if (s != "mx_internal_uid") {
+							plugin.attribute(s)[0] = advo.adSource[s];
+						}
+					}
 				}
 
 

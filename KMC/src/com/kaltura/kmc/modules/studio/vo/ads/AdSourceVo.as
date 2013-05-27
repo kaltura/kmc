@@ -2,10 +2,11 @@ package com.kaltura.kmc.modules.studio.vo.ads {
 
 	/**
 	 * holds info about the chosen ad source, if any.
+	 * any attributes from the ad source definition in the featuers file are added as dynamic props to this vo
 	 * @author Atar
 	 */
 	[Bindable]
-	public class AdSourceVo {
+	dynamic public class AdSourceVo {
 		
 		/**
 		 * ad source id <br>

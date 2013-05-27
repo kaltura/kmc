@@ -22,5 +22,20 @@ package com.kaltura.kmc.utils
 			xml = lst[0];
 			return xml;
 		}
+		
+		/**
+		 * add all the xml attributes of the given xml as object attributes of the given object. 
+		 * @param obj
+		 * @param xml
+		 */		
+		public static function objectAttsFromXML(obj:Object, xml:XML):void {
+			var attributes:XMLList = xml.attributes();
+			if (!attributes.length())
+				return;
+			
+			for (var i:uint = 0; i < attributes.length(); i++) {
+				obj[(attributes[i] as XML).localName()] = (attributes[i] as XML).toString();
+			}
+		}
 	}
 }

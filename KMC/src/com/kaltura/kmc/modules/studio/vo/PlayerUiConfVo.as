@@ -3,6 +3,7 @@ package com.kaltura.kmc.modules.studio.vo {
 	import com.kaltura.kmc.modules.studio.vo.ads.AdvertizingVo;
 	import com.kaltura.kmc.modules.studio.vo.ads.CompanionAdVo;
 	import com.kaltura.kmc.modules.studio.vo.ads.InPlayerAdVo;
+	import com.kaltura.kmc.utils.XMLUtils;
 	
 	import mx.collections.ArrayCollection;
 
@@ -102,9 +103,10 @@ package com.kaltura.kmc.modules.studio.vo {
 			var src:AdSourceVo;
 			for each (xml in xmllst) {
 				src = new AdSourceVo();
-				src.id = xml.@id;
-				src.label = xml.@label;
-				src.url = xml.@url;
+				XMLUtils.objectAttsFromXML(src, xml);
+//				src.id = xml.@id;
+//				src.label = xml.@label;
+//				src.url = xml.@url;
 				src.extra = xml.text();
 				if (xml.attribute("selected") == "true") {
 					_advertizing.adSource = src;
