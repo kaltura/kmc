@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalGap="-2" minHeight="48" horizontalScrollPolicy="off" width="100%"
+		 implements="mx.core.IDataRenderer,mx.controls.listClasses.IDropInListItemRenderer,mx.controls.listClasses.IListItemRenderer">
+	
+	<!---
+	*  Dispatched when the <code>data</code> property changes.
+	*
+	*  <p>When you use a component as an item renderer,
+	*  the <code>data</code> property contains the data to display.
+	*  You can listen for this event and update the component
+	*  when the <code>data</code> property changes.</p>
+	* 
+	*  @eventType mx.events.FlexEvent.DATA_CHANGE
+	-->
+	<mx:Metadata>
+		[Event(name="dataChange", type="mx.events.FlexEvent")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.vo.ThumbnailWithDimensions;
+			
+			import mx.controls.listClasses.BaseListData;
+			import mx.controls.listClasses.ListData;
+			import mx.events.FlexEvent;
+			
+			//----------------------------------
+			//  data
+			//----------------------------------
+			
+			/**
+			 *  @private
+			 *  Storage for the data property.
+			 */
+			private var _data:Object;
+			
+			[Bindable("dataChange")]
+			
+			/**
+			 *  The implementation of the <code>data</code> property
+			 *  as defined by the IDataRenderer interface.
+			 *  When set, it stores the value and invalidates the component 
+			 *  to trigger a relayout of the component.
+			 *
+			 *  @see mx.core.IDataRenderer
+			 */
+			override public function get data():Object
+			{
+				return _data;
+			}
+			
+			/**
+			 *  @private
+			 */
+			override public function set data(value:Object):void
+			{
+				_data = value;
+				if (_data != null) {
+					if (txtSize) {
+						txtSize.text = getSizeLabel(_data);
+					}
+					if (txtDists) {
+						txtDists.text = (_data as ThumbnailWithDimensions).getDistributionsListString(false, ', ');
+						txtDists.toolTip = (_data as ThumbnailWithDimensions).getDistributionsListString(false, '\n');
+					}
+				}
+				invalidateProperties();
+				invalidateSize();
+				invalidateDisplayList();
+				dispatchEvent(new FlexEvent(FlexEvent.DATA_CHANGE));
+			}
+			
+			//----------------------------------
+			//  listData
+			//----------------------------------
+			
+			/**
+			 *  @private
+			 *  Storage for the listData property.
+			 */
+			private var _listData:ListData;
+			
+			[Bindable("dataChange")]
+			/**
+			 *  The implementation of the <code>listData</code> property
+			 *  as defined by the IDropInListItemRenderer interface.
+			 *
+			 *  @see mx.controls.listClasses.IDropInListItemRenderer
+			 */
+			public function get listData():BaseListData
+			{
+				return _listData;
+			}
+			
+			/**
+			 *  @private
+			 */
+			public function set listData(value:BaseListData):void
+			{
+				_listData = ListData(value);
+				
+			}
+			
+			
+			private function getSizeLabel(data:Object):String {
+				var thumb:ThumbnailWithDimensions = data as ThumbnailWithDimensions;
+				return thumb.width + ' X ' + thumb.height;
+			}
+			
+			private function getDistText(data:Object):String {
+				var thumb:ThumbnailWithDimensions = data as ThumbnailWithDimensions;
+				return thumb.getDistributionsListString(false, ', ');
+			}
+			
+
+		]]>
+	</mx:Script>
+	<mx:Label id="txtSize" styleName="presetSizeDropdownLabel" />
+	<mx:Label id="txtDists" selectable="false" styleName="presetSizeDropdownText" truncateToFit="true" width="{this.parent.width - 4}"/>
+</mx:VBox>

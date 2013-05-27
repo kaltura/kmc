@@ -98,5 +98,10 @@ package com.kaltura.edw.vo
 			var distributionsList:String = profileNameArray.join(concatElement);
 			return distributionsList;
 		}
+		
+		public function get label():String {
+			var str:String = width + "X" + height;
+			return str;
+		}
 	}
 }
