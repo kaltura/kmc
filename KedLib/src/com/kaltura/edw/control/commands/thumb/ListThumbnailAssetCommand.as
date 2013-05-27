@@ -53,10 +53,9 @@ package com.kaltura.edw.control.commands.thumb
 		 * this function will aggregate profiles that use the same dimensions with an entry of the same dimensions
 		 * */
 		private function buildThumbsWithDimensionsArray(thumbsWithDimensionsArray:Array, profilesArray:Array, thumbsArray:Array):void {
-			
-			//will indicate if the requiredthumbs of these profiles exist
+			// will indicate if the requiredthumbs of these profiles exist
 			var isRequiredThumbsExistArray:Array = new Array();
-			//initilize with all false values
+			// initilize with all false values
 			for each (var currentProfile:KalturaDistributionProfile in profilesArray) {
 				var currentArray:Array = new Array();
 				for each (var currentDimension:KalturaDistributionThumbDimensions in currentProfile.requiredThumbDimensions) {
