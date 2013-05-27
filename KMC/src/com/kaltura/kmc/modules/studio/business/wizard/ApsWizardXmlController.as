@@ -974,7 +974,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				src = adVo.adSources[i] as AdSourceVo;
 				attsLst = ObjectUtil.getObjectAllKeys(src);
 				for (att in attsLst) {
-					if (attsLst[att] != "extra") {
+					if (attsLst[att] != "extra" && attsLst[att] != "mx_internal_uid" && attsLst[att] != "selected") {
 						xml.attribute(attsLst[att])[0] = src[attsLst[att]];
 					}
 				}

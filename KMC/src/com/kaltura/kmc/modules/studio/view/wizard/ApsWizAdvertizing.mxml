@@ -95,15 +95,25 @@
 			 * show the new values on screen.
 			 * */
 			private function showValues():void {
+				var advo:AdvertizingVo = _playerUiconfVO.advertizing;
 				/* it is a one-time value change, no point to bind. */
-				ynAds.selected = _playerUiconfVO.advertizing.adsEnabled;
-				adsourceCB.dataProvider = _playerUiconfVO.advertizing.adSources;
-				adsourceCB.selectedItem = _playerUiconfVO.advertizing.adSource;
-				flashCompanions.adLocations = _playerUiconfVO.advertizing.flashCompanionLocations;
+				ynAds.selected = advo.adsEnabled;
+				adsourceCB.dataProvider = advo.adSources;
+				adsourceCB.selectedItem = advo.adSource;
+				flashCompanions.adLocations = advo.flashCompanionLocations;
 				showCompanions();
 
 //(real binding)tiSrcUrl.text = adsourceCB.selectedItem.url;
 //(real binding)tiTagUrl.text = adsourceCB.selectedItem.url;
+				if (advo.adSource.adTagUrl) {
+					adTagWrap.visible = adTagWrap.includeInLayout = true;
+					customSwfAdTag.text = advo.adSource.adTagUrl; 
+				}
+				else {
+					adTagWrap.visible = adTagWrap.includeInLayout = false;
+					customSwfAdTag.text = '';
+				}
+				
 				if (adsourceCB.selectedItem.extra != "") {
 					tiPlayerKv.text = adsourceCB.selectedItem.extra;
 				}
@@ -112,67 +122,67 @@
 					tiPlayerKv.text = ResourceManager.getInstance().getString("advertising", "keyval");
 				}
 
-				ynCuePoints.selected = _playerUiconfVO.advertizing.trackCuePoints;
-				ynNotice.selected = _playerUiconfVO.advertizing.noticeEnabled;
-				tiNotice.text = _playerUiconfVO.advertizing.noticeText;
-				ynSkip.selected = _playerUiconfVO.advertizing.skipEnabled;
-				tiSkip.text = _playerUiconfVO.advertizing.skipText;
-				tiTimeout.text = _playerUiconfVO.advertizing.timeout.toString();
+				ynCuePoints.selected = advo.trackCuePoints;
+				ynNotice.selected = advo.noticeEnabled;
+				tiNotice.text = advo.noticeText;
+				ynSkip.selected = advo.skipEnabled;
+				tiSkip.text = advo.skipText;
+				tiTimeout.text = advo.timeout.toString();
 
 				// show timeline tab according to selected ad source
 				adsourceCB_changeHandler();
 
 				// preroll
-				ynPreroll.selected = _playerUiconfVO.advertizing.preroll.enabled;
-				cbPreNads.dataProvider = createArrayCollection(_playerUiconfVO.advertizing.linearAdsValues.nads.item);
-				cbPreNads.selectedIndex = getItemIndex(_playerUiconfVO.advertizing.preroll.nAds.toString(), cbPreNads.dataProvider as ArrayCollection);
-				cbPreFrequency.dataProvider = createArrayCollection(_playerUiconfVO.advertizing.linearAdsValues.frequency.item);
-				cbPreFrequency.selectedIndex = getItemIndex(_playerUiconfVO.advertizing.preroll.frequency.toString(), cbPreFrequency.dataProvider as ArrayCollection);
-				cbPreStart.dataProvider = createArrayCollection(_playerUiconfVO.advertizing.linearAdsValues.start.item);
-				cbPreStart.selectedIndex = getItemIndex(_playerUiconfVO.advertizing.preroll.start.toString(), cbPreStart.dataProvider as ArrayCollection);
-				if (_playerUiconfVO.advertizing.preroll.url != "") {
-					tiPrerollUrl.text = _playerUiconfVO.advertizing.preroll.url;
+				ynPreroll.selected = advo.preroll.enabled;
+				cbPreNads.dataProvider = createArrayCollection(advo.linearAdsValues.nads.item);
+				cbPreNads.selectedIndex = getItemIndex(advo.preroll.nAds.toString(), cbPreNads.dataProvider as ArrayCollection);
+				cbPreFrequency.dataProvider = createArrayCollection(advo.linearAdsValues.frequency.item);
+				cbPreFrequency.selectedIndex = getItemIndex(advo.preroll.frequency.toString(), cbPreFrequency.dataProvider as ArrayCollection);
+				cbPreStart.dataProvider = createArrayCollection(advo.linearAdsValues.start.item);
+				cbPreStart.selectedIndex = getItemIndex(advo.preroll.start.toString(), cbPreStart.dataProvider as ArrayCollection);
+				if (advo.preroll.url != "") {
+					tiPrerollUrl.text = advo.preroll.url;
 				}
 				else {
 					tiPrerollUrl.text = ResourceManager.getInstance().getString("advertising", "defaulturl");
 				}
 
 				// bumper
-				ynBumper.selected = _playerUiconfVO.advertizing.bumperEnabled;
-				tiBumperEntry.text = _playerUiconfVO.advertizing.bumperEntry;
-				tiBumperUrl.text = _playerUiconfVO.advertizing.bumperUrl;
+				ynBumper.selected = advo.bumperEnabled;
+				tiBumperEntry.text = advo.bumperEntry;
+				tiBumperUrl.text = advo.bumperUrl;
 
 				// overlay
-				ynOverlay.selected = _playerUiconfVO.advertizing.overlay.enabled;
-				var time:Object = getTimeAsObject(_playerUiconfVO.advertizing.overlay.start);
+				ynOverlay.selected = advo.overlay.enabled;
+				var time:Object = getTimeAsObject(advo.overlay.start);
 				fsFirstOverlay.hour = time.hour;
 				fsFirstOverlay.minute = time.minute;
 				fsFirstOverlay.second = time.second;
-				time = getTimeAsObject(_playerUiconfVO.advertizing.overlay.frequency);
+				time = getTimeAsObject(advo.overlay.frequency);
 				fsFrequencyOverlay.hour = time.hour;
 				fsFrequencyOverlay.minute = time.minute;
 				fsFrequencyOverlay.second = time.second;
-				time = getTimeAsObject(_playerUiconfVO.advertizing.overlay.nAds); //NOTE: misusing nAds param!!
+				time = getTimeAsObject(advo.overlay.nAds); //NOTE: misusing nAds param!!
 				fsDurationOverlay.hour = time.hour;
 				fsDurationOverlay.minute = time.minute;
 				fsDurationOverlay.second = time.second;
-				if (_playerUiconfVO.advertizing.overlay.url != "") {
-					tiOverlayUrl.text = _playerUiconfVO.advertizing.overlay.url;
+				if (advo.overlay.url != "") {
+					tiOverlayUrl.text = advo.overlay.url;
 				}
 				else {
 					tiOverlayUrl.text = ResourceManager.getInstance().getString("advertising", "defaulturl");
 				}
 
 				// postroll
-				ynPostroll.selected = _playerUiconfVO.advertizing.postroll.enabled;
-				cbPostNads.dataProvider = createArrayCollection(_playerUiconfVO.advertizing.linearAdsValues.nads.item);
-				cbPostNads.selectedIndex = getItemIndex(_playerUiconfVO.advertizing.postroll.nAds.toString(), cbPostNads.dataProvider as ArrayCollection);
-				cbPostFrequency.dataProvider = createArrayCollection(_playerUiconfVO.advertizing.linearAdsValues.frequency.item);
-				cbPostFrequency.selectedIndex = getItemIndex(_playerUiconfVO.advertizing.postroll.frequency.toString(), cbPostFrequency.dataProvider as ArrayCollection);
-				cbPostStart.dataProvider = createArrayCollection(_playerUiconfVO.advertizing.linearAdsValues.start.item);
-				cbPostStart.selectedIndex = getItemIndex(_playerUiconfVO.advertizing.postroll.start.toString(), cbPostStart.dataProvider as ArrayCollection);
-				if (_playerUiconfVO.advertizing.postroll.url != "") {
-					tiPostrollUrl.text = _playerUiconfVO.advertizing.postroll.url;
+				ynPostroll.selected = advo.postroll.enabled;
+				cbPostNads.dataProvider = createArrayCollection(advo.linearAdsValues.nads.item);
+				cbPostNads.selectedIndex = getItemIndex(advo.postroll.nAds.toString(), cbPostNads.dataProvider as ArrayCollection);
+				cbPostFrequency.dataProvider = createArrayCollection(advo.linearAdsValues.frequency.item);
+				cbPostFrequency.selectedIndex = getItemIndex(advo.postroll.frequency.toString(), cbPostFrequency.dataProvider as ArrayCollection);
+				cbPostStart.dataProvider = createArrayCollection(advo.linearAdsValues.start.item);
+				cbPostStart.selectedIndex = getItemIndex(advo.postroll.start.toString(), cbPostStart.dataProvider as ArrayCollection);
+				if (advo.postroll.url != "") {
+					tiPostrollUrl.text = advo.postroll.url;
 				}
 				else {
 					tiPostrollUrl.text = ResourceManager.getInstance().getString("advertising", "defaulturl");
@@ -286,6 +296,10 @@
 				}
 				else {
 					advo.adSource.extra = ""
+				}
+				
+				if (adTagWrap.visible) {
+					advo.adSource.adTagUrl = customSwfAdTag.text; 
 				}
 				// id and label can't change.
 
@@ -486,6 +500,15 @@
 					tiPrerollUrl.errorString = '';
 					tiPostrollUrl.errorString = '';
 					selectTimelinePanel(btnBumper);
+					//
+					if (adsourceCB.selectedItem.adTagUrl) {
+						adTagWrap.visible = adTagWrap.includeInLayout = true;
+						customSwfAdTag.text = adsourceCB.selectedItem.adTagUrl; 
+					}
+					else {
+						adTagWrap.visible = adTagWrap.includeInLayout = false;
+						customSwfAdTag.text = '';
+					}
 				}
 				notifyChange();
 			}
@@ -625,6 +648,11 @@
 					<mx:Label text="{resourceManager.getString('advertising', 'swfurl')}:" width="{LABEL_WIDTH}"/>
 					<mx:TextInput id="tiSrcUrl" text="{adsourceCB.selectedItem.url}" change="notifyChange()"
 								  enabled="{adsourceCB.selectedItem.id == CUSTOM}" width="{VALUE_WIDTH}"/>
+				</mx:HBox>
+				<mx:HBox id="adTagWrap" width="100%" >
+					<mx:Text width="{LABEL_WIDTH}"
+							 htmlText="{resourceManager.getString('advertising', 'adtag')}:"/>
+					<mx:TextArea id="customSwfAdTag" width="{VALUE_WIDTH}" height="100%" change="notifyChange()"/>
 				</mx:HBox>
 				<mx:HBox width="100%">
 					<mx:Text width="{LABEL_WIDTH}"
