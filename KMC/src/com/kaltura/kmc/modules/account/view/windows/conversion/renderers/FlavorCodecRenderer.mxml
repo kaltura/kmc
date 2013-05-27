@@ -4,7 +4,20 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.vo.FlavorVO;
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				if (value != null) {
+					var str:String = (value as FlavorVO).kFlavor.videoCodec;
+					if (str.toLowerCase() == "copy") {
+						str = resourceManager.getString('account', 'n_a');
+					}
+					txt.text = str;
+					txt.toolTip = str;
+				}
+				
+			}
 		]]>
 	</mx:Script>
-	<mx:Label  text="{(data as FlavorVO).kFlavor.videoCodec}" toolTip="{(data as FlavorVO).kFlavor.videoCodec}"/>
+	<mx:Label id="txt" />
 </mx:HBox>
