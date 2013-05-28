@@ -48,6 +48,9 @@
 			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			
+			import flash.utils.clearTimeout;
+			import flash.utils.setTimeout;
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
@@ -58,6 +61,10 @@
 			 * */
 			public var showEmbed:Boolean = true;
 
+			/**
+			 * interval for delaying loadEntries() calls
+			 * */
+			private var _loadEntriesInterval:int;
 
 			[Bindable]
 			private var _listableVo:ListableVo;
@@ -125,7 +132,19 @@
 				if (!searchBox.validateSearchText(true)) {
 					return;
 				}
+				if (!_loadEntriesInterval) {
+					_loadEntriesInterval = setTimeout(loadEntriesNow, 100);
+				}
+			}
 
+
+			/**
+			 * delay calls to loadEntries() to avoid redundant calls 
+			 * (i.e., when uploading multiple files)
+			 * */
+			private function loadEntriesNow():void {
+				clearTimeout(_loadEntriesInterval);
+				_loadEntriesInterval = 0; // reset, so next call will trigger again
 				_listableVo = new ListableVo(filter.kalturaFilter, paging, null);
 				// set the order-by to the filter
 				if (_orderBy) {
@@ -134,10 +153,8 @@
 				var cgEvent:CairngormEvent = new SetListableEvent(SetListableEvent.SET_NEW_LIST_TO_MODEL, _listableVo);
 				cgEvent.dispatch();
 				cgEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES, _listableVo);
-				cgEvent.dispatch();
+				cgEvent.dispatch();				
 			}
-
-
 
 
 			private function removeColums(event:Event):void {
@@ -271,6 +288,7 @@
 					KedController.getInstance().dispatch(getSelectedEntry);
 				}
 				else
+					//TODO this is why we get a million baseEntry.list calls when uploading multiple files!!!
 					loadEntries();
 			}
 
