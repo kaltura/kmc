@@ -21,7 +21,6 @@ package com.kaltura.edw.components.fltr.panels {
 
 		
 		public function AdditionalFilter() {
-			
 			this.horizontalScrollPolicy = ScrollPolicy.OFF;
 			setStyle("styleName", "additionalFilter");
 		}
@@ -106,17 +105,17 @@ package com.kaltura.edw.components.fltr.panels {
 			}
 			_buttons = new Array();
 			var btn:CheckBox = new CheckBox();
-//			btn.percentWidth = 100;
 			btn.label = _mainButtonTitle;
 			btn.selected = true;
 			btn.styleName = "mainFilterGroupButton";
+			btn.percentWidth = 100; 
+			btn.minWidth = 20; // this causes the label to truncate correctly. Don't ask.
 			btn.addEventListener(MouseEvent.CLICK, onDynamicTitleClicked, false, 0, true);
 			addChild(btn);
 			_buttons.push(btn);
 			// rest of buttons
 			for (var i:int = 0; i < _dataProvider.length; i++) {
 				btn = new CheckBox();
-//				btn.percentWidth = 100;
 				btn.data = _dataProvider.getItemAt(i);
 				if (labelFunction != null) {
 					btn.label = labelFunction.apply(null,[_dataProvider.getItemAt(i)]);
@@ -129,6 +128,8 @@ package com.kaltura.edw.components.fltr.panels {
 				}
 				btn.selected = false;
 				btn.styleName = "innerFilterGroupButton";
+				btn.percentWidth = 100;
+				btn.minWidth = 20; // this causes the label to truncate correctly. Don't ask.
 				btn.addEventListener(MouseEvent.CLICK, onDynamicMemberClicked, false, 0, true);
 				addChild(btn);
 				_buttons.push(btn);
