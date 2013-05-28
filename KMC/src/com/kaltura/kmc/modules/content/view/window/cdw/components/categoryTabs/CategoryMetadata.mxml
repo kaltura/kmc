@@ -127,9 +127,12 @@
 
 
 			public function save():void {
-				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY_METADATA_DATA);
-				cgEvent.data = category.id;
-				cgEvent.dispatch();
+				// only update if have custom data (category values are handled in CategoryDetailsWin)
+				if (filterModel.enableCustomData) {
+					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY_METADATA_DATA);
+					cgEvent.data = category.id;
+					cgEvent.dispatch();
+				}
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.PANEL_DATA_SAVED));
 			}
 
@@ -173,7 +176,7 @@
 
 
 			public function isChanged():Boolean {
-				// see if custom data has changed. values of the actual categoryare checked in CategoryDetailsWin
+				// see if custom data has changed. values of the actual category are checked in CategoryDetailsWin
 				
 				if (!filterModel.enableCustomData) {
 					return false;
