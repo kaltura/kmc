@@ -394,7 +394,7 @@ package com.kaltura.managers {
 				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.id);
 				er.error = 'Error #203: ' + e.error.errorMsg;
 				if (debugMode) {
-					trace("FlavorAssetSetContent failedy:");
+					trace("FlavorAssetSetContent failed:");
 					KStringUtil.traceObject(e.target);
 					KStringUtil.traceObject(e.error.requestArgs);
 				}
