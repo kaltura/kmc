@@ -653,8 +653,6 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					else {
 						delete bumper.attribute("clickurl")[0];
 					}
-//					bumper.@lockUI = "true";
-//					bumper.@playOnce = "false";	// don't touch, leave current values
 					if (advo.adSource.id == "vastAdServer") {
 						bumper.@preSequence = advo.preroll.enabled ? 2 : 1;
 					}
@@ -814,9 +812,6 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					// notice message 
 					if (advo.noticeEnabled) {
 						var notice:XML = player..Label.(@id == "noticeMessage")[0];
-//						var s:String = advo.noticeText;
-//						s = s.split("$(remainingSeconds)").join("{SequenceProxy.timeRemaining}");
-//						notice.@text = s;
 						notice.@text = advo.noticeText;
 						if (style) {
 							notice.@color1 = style.color1.toString();
@@ -837,21 +832,8 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					// create a custom swf plugin:
 					var plugin:XML = player..Plugin.(@id == "customAd")[0];
 					plugin.@path = advo.adSource.url;
-					/* custom swfs are supposed to handle the cases in which they are not required for one of
-					 * the sequences by themselves.these funny conditionals are here for the day we realize this
-					 * is not working well and we need to allow appstudio configure this, like in VAST.	*/
-					if (true /*advo.preroll.enabled*/) {
-						plugin.@preSequence = 1;
-					}
-					else {
-						delete plugin.attribute("preSequence")[0];
-					}
-					if (true /*advo.postroll.enabled*/) {
-						plugin.@postSequence = 1;
-					}
-					else {
-						delete plugin.attribute("postSequence")[0];
-					}
+					plugin.@preSequence = 1;
+					plugin.@postSequence = 1;
 					// key-value pairs to attributes:
 					if (advo.adSource.extra != null && advo.adSource.extra != "") {
 						var pairs:Array = advo.adSource.extra.split(";");
@@ -867,9 +849,12 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 							plugin.attribute(s)[0] = advo.adSource[s];
 						}
 					}
+					
+					// override id with classId
+					if (advo.adSource.hasOwnProperty("classId")) {
+						plugin.@id = advo.adSource["classId"];
+					}
 				}
-
-
 			}
 			else {
 				// no ads, remove all relevant pieces.
