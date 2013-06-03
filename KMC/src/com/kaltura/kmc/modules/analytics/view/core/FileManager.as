@@ -80,7 +80,7 @@ package  com.kaltura.kmc.modules.analytics.view.core
 		{
 			_progWin = new ProgressWin();
     		_progWin.fr = fr;
-			_progWin.title = "Uplaod CSV";
+			_progWin.title = "Upload CSV";
 			_progWin.downloadContext = false;
 			
 			

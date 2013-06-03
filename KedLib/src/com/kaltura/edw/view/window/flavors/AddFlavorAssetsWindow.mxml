@@ -15,7 +15,6 @@
 
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.edw.constants.FileTypes;
 			import com.kaltura.edw.control.events.MediaEvent;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.view.EntryDetailsWin;
@@ -446,11 +445,12 @@
 			protected function addMoreFiles():void {
 				_fileReferenceList = new FileReferenceList();
 				_fileReferenceList.addEventListener(Event.SELECT, onFlavorsSelected);
-				var mediaType:int = parseInt(_entry.type);
-				if (mediaType == KalturaMediaType.VIDEO) 
-					_fileReferenceList.browse(new Array(getTypeFilter('video',FileTypes.VIDEO_TYPES)));
-				else if (mediaType == KalturaMediaType.AUDIO)
-					_fileReferenceList.browse(new Array(getTypeFilter('audio',FileTypes.AUDIO_TYPES)));
+				_fileReferenceList.browse();
+//				var mediaType:int = parseInt(_entry.type);
+//				if (mediaType == KalturaMediaType.VIDEO) 
+//					_fileReferenceList.browse(new Array(getTypeFilter('video',FileTypes.VIDEO_TYPES)));
+//				else if (mediaType == KalturaMediaType.AUDIO)
+//					_fileReferenceList.browse(new Array(getTypeFilter('audio',FileTypes.AUDIO_TYPES)));
 			}
 			
 			/**
@@ -469,12 +469,12 @@
 				filesTable.dataProvider = filesList;
 			}
 			
-			/**
-			 * will return fileFilter according to given name and file types
-			 * */
-			private function getTypeFilter(localeKey:String, types:String):FileFilter {
-				return new FileFilter(resourceManager.getString('drilldown', localeKey) +  "(" + types+ ")" , types );
-			}
+//			/**
+//			 * will return fileFilter according to given name and file types
+//			 * */
+//			private function getTypeFilter(localeKey:String, types:String):FileFilter {
+//				return new FileFilter(resourceManager.getString('drilldown', localeKey) +  "(" + types+ ")" , types );
+//			}
 
 
 			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void {
