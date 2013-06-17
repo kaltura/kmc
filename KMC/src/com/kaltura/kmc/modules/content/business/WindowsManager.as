@@ -64,6 +64,7 @@ package com.kaltura.kmc.modules.content.business
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.external.ExternalInterface;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	
@@ -212,7 +213,14 @@ package com.kaltura.kmc.modules.content.business
 						break;
 					case WindowsStates.ADD_LIVE_STREAM:
 						currentPopUp = new AddLiveStream();
-						(currentPopUp as AddLiveStream).defaultIP = model.context.clientIP;
+						var ip:String;
+						try {
+							ip = ExternalInterface.call("kmc.utils.getClientIP");
+							(currentPopUp as AddLiveStream).defaultIP = ip;
+						}
+						catch (e:Error) {
+							trace('could not get clientIP from page');
+						}
 						break;
 					case WindowsStates.REMOVE_ENTRY_TAGS_WINDOW:
 						currentPopUp = new RemoveTagsWin();

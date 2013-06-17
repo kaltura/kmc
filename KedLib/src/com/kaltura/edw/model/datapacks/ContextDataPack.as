@@ -130,11 +130,6 @@ package com.kaltura.edw.model.datapacks
 		 */
 		public var singleLevelMaxCategories:int;
 		
-		/**
-		 * IP of current user (taken from flashvars) 
-		 */
-		public var clientIP:String;
-		
 
 		public function get defaultUrlVars() :Object
 		{
