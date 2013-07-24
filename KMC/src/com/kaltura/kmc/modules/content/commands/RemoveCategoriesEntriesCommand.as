@@ -6,6 +6,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.events.EntriesEvent;
+	import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaCategory;
 	
@@ -57,7 +58,7 @@ package com.kaltura.kmc.modules.content.commands
 				
 			}
 			else {
-				// look iside MR, ignore irrelevant
+				// look inside MR, ignore irrelevant
 				for each (var o:Object in data.data) {
 					er = o as KalturaError;
 					if (er) {
@@ -81,7 +82,8 @@ package com.kaltura.kmc.modules.content.commands
 					}
 				}	
 			}
-			
+			var searchEvent:KMCSearchEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES , _model.listableVo  );
+			searchEvent.dispatch();
 		}
 	}
 }
