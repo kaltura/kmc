@@ -4,6 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.storageProfile.StorageProfileList;
+	import com.kaltura.edw.business.ClientUtil;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
@@ -14,8 +15,8 @@ package com.kaltura.kmc.modules.account.command
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
-	import mx.rpc.IResponder;
 	import mx.resources.ResourceManager;
+	import mx.rpc.IResponder;
 
 	public class ListStorageProfilesCommand implements ICommand, IResponder {
 		
@@ -41,9 +42,10 @@ package com.kaltura.kmc.modules.account.command
 			temp.push(rs);
 			// add the rest of the storages
 			for each (var o:Object in event.data.objects) {
-				if (o is KalturaStorageProfile) {
-					temp.push(o);
+				if (!(o is KalturaStorageProfile)) {
+					o = ClientUtil.createClassInstanceFromObject(KalturaStorageProfile, o);
 				}
+				temp.push(o);
 			} 
 			
 			_model.storageProfiles = new ArrayCollection(temp);

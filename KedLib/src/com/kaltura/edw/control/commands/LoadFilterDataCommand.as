@@ -8,6 +8,7 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.commands.flavorParams.FlavorParamsList;
 	import com.kaltura.core.KClassFactory;
 	import com.kaltura.dataStructures.HashMap;
+	import com.kaltura.edw.business.ClientUtil;
 	import com.kaltura.edw.business.IDataOwner;
 	import com.kaltura.edw.control.DataTabController;
 	import com.kaltura.edw.control.events.LoadEvent;
@@ -15,6 +16,7 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.edw.model.FilterModel;
 	import com.kaltura.edw.model.datapacks.DistributionDataPack;
 	import com.kaltura.edw.model.datapacks.EntryDataPack;
+	import com.kaltura.edw.model.util.FlavorParamsUtil;
 	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
@@ -46,7 +48,6 @@ package com.kaltura.edw.control.commands
 	import mx.collections.SortField;
 	import mx.resources.ResourceManager;
 	import mx.rpc.xml.SimpleXMLEncoder;
-	import com.kaltura.edw.model.util.FlavorParamsUtil;
 
 	/**
 	 * load all data that is relevant for filter:
@@ -156,7 +157,7 @@ package com.kaltura.edw.control.commands
 			var profilesArray:Array = new Array();
 			//as3flexClient can't generate these objects since we don't include them in the swf 
 			for each (var profile:Object in profilesResult.objects) {
-				var newProfile:KalturaDistributionProfile = new KClassFactory( KalturaDistributionProfile ).newInstanceFromXML( XMLList(objectToXML(profile)));		
+				var newProfile:KalturaDistributionProfile = ClientUtil.createClassInstanceFromObject(KalturaDistributionProfile, profile); 
 				//fix bug: simpleXmlEncoder not working properly for nested objects
 				if (profile.requiredThumbDimensions is Array)
 					newProfile.requiredThumbDimensions = profile.requiredThumbDimensions;
@@ -214,19 +215,6 @@ package com.kaltura.edw.control.commands
 		}
 		
 		
-		/**
-		 * This function will convert a given object to an XML 
-		 * @param obj
-		 * @return 
-		 */		
-		private function objectToXML(obj:Object):XML {
-			var qName:QName = new QName("root");
-			var xmlDocument:XMLDocument = new XMLDocument();
-			var simpleXMLEncoder:SimpleXMLEncoder = new SimpleXMLEncoder(xmlDocument);
-			var xmlNode:XMLNode = simpleXMLEncoder.encodeValue(obj, qName, xmlDocument);
-			var xml:XML = new XML(xmlDocument.toString());
-			return xml;
-		}
 		
 		private function clearOldFlavorData():void {
 			_filterModel.flavorParams.removeAll();
