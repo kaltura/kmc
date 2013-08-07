@@ -27,6 +27,7 @@ package com.kaltura.kmc.modules.dashboard {
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.formatters.DateFormatter;
 	import mx.managers.PopUpManager;
 	import mx.resources.ResourceManager;
 
@@ -180,22 +181,28 @@ package com.kaltura.kmc.modules.dashboard {
 			Alert.show(ResourceManager.getInstance().getString('kdashboard', 'usageErrorMsg') + ":\n" + fault.error.errorMsg, ResourceManager.getInstance().getString('kdashboard', 'error'));
 		}
 
-
+		
+		private static var dateFormatter:DateFormatter; 
+		private static function initDateFormatter():void {
+			dateFormatter = new DateFormatter();
+			dateFormatter.formatString = "YYYYMMDD"; 
+		}
+		
+		
 		/**
 		 * Calling for the graph's data from the server
 		 */
 		private function getGraphData():void {
-			var ONE_DAY:int = 1000 * 60 * 60 * 24;
-			// server needs date in seconds, UTC
-			var today:Date = new Date();
-			var todaysHourInMiliSeconds:Number = (((today.hoursUTC) * 60 + today.minutesUTC) * 60 + today.secondsUTC) * 1000 + today.millisecondsUTC;
-			var toDate:Date = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
-			var fromDate:Date = new Date(today.time - todaysHourInMiliSeconds - 31 * ONE_DAY);
-
 			var krif:KalturaReportInputFilter = new KalturaReportInputFilter();
-			krif.toDate = Math.ceil(toDate.time / 1000);
-			krif.fromDate = Math.ceil(fromDate.time / 1000);
-			krif.timeZoneOffset = new Date().timezoneOffset;
+			if (!dateFormatter) initDateFormatter();
+			
+			var today:Date = new Date();
+			
+			// use new filters (YYYYMMDD). send local date.
+			krif.toDay = dateFormatter.format(today);
+			var ONE_DAY:int = 1000 * 60 * 60 * 24;
+			krif.fromDay = dateFormatter.format(new Date(today.time - 30*ONE_DAY));
+			krif.timeZoneOffset = today.timezoneOffset;
 
 			var reportGetGraphs:ReportGetGraphs = new ReportGetGraphs(1, krif, 'sum_time_viewed'); //  sum_time_viewed count_plays
 
