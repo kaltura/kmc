@@ -220,6 +220,22 @@
 				}
 				return result;
 			}
+			
+			
+			/**
+			 * if file type is unknown (translated to media type), return false
+			 * */
+			protected function validateFileType():Boolean {
+				var result:Boolean = true;
+				var maxSize:Number = getUploadLimit();
+				for each (var file:UploadFile in _files) {
+					if (file.mediaType == -1) {
+						result = false;
+						break;
+					}
+				}
+				return result;
+			}
 
 			/**
 			 * create new media entries, then pass FRs to the upload  
@@ -229,6 +245,12 @@
 				
 				if (!validateFileSize()) {
 					Alert.show(ResourceManager.getInstance().getString('common', 'filesTooBig', [getUploadLimit()]), 
+						ResourceManager.getInstance().getString('common', 'error'));
+					return;
+				}
+				
+				if (!validateFileType()) {
+					Alert.show(ResourceManager.getInstance().getString('create', 'unknown_media_type'), 
 						ResourceManager.getInstance().getString('common', 'error'));
 					return;
 				}
