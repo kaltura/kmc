@@ -284,6 +284,7 @@
 			protected function addMediaToEntries(e:KalturaEvent):void {
 				e.target.removeEventListener(KalturaEvent.COMPLETE, addMediaToEntries);
 				e.target.removeEventListener(KalturaEvent.FAILED, addMediaToEntries);
+				CursorManager.removeBusyCursor();
 				if (e.type == KalturaEvent.FAILED) {
 					showError(e.error.errorMsg);
 					return;
@@ -319,7 +320,6 @@
 					// remove popup
 					closeHandler(null);
 				}
-				CursorManager.removeBusyCursor();
 			}
 
 
