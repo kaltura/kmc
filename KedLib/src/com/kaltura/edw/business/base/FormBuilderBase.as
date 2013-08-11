@@ -17,9 +17,9 @@ package com.kaltura.edw.business.base
 	
 	import flash.display.DisplayObject;
 	import flash.utils.getDefinitionByName;
-	import flash.utils.getQualifiedClassName;
 	
 	import mx.binding.utils.BindingUtils;
+	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayCollection;
 	import mx.containers.HBox;
 	import mx.containers.VBox;
@@ -30,6 +30,7 @@ package com.kaltura.edw.business.base
 	import mx.core.UIComponent;
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
+	import mx.utils.StringUtil;
 	import mx.utils.UIDUtil;
 
 	public class FormBuilderBase
@@ -44,6 +45,11 @@ package com.kaltura.edw.business.base
 		 * padding left for each hierarich level
 		 */
 		private static const FIELD_INDENT:int = 12;
+		
+		/**
+		 * Regular expressions that matches binding of "or" expressions syntax
+		 * */
+		private static const OR_BINDING_REGEXP:RegExp = /\{((.+?)\|\|)+(.+?)\}/;
 		
 		/**
 		 * Regular expressions that matches binding syntax
@@ -96,7 +102,7 @@ package com.kaltura.edw.business.base
 		}
 		
 		/**
-		 * this function recieves xml represents a field, and sets it's values, if exist, according to a
+		 * this function recieves xml represents a field, and sets its values, if exist, according to a
 		 * given values hash map
 		 * @param field the given field to set
 		 * @param valuesHashMap hash map containing data the fields should contain
@@ -164,6 +170,8 @@ package com.kaltura.edw.business.base
 				}
 			}
 		}
+		
+		
 		protected function handleNonVBoxFieldDataHook(field:XML, valuesHashMap:HashMap):Boolean{
 			return false;
 		}
@@ -283,15 +291,39 @@ package com.kaltura.edw.business.base
 				//if this is the attribute we added, we will assign the proper object to it
 				if (attrName == component.@metadataData) {
 					compInstance[attrName] = getSuitableValue(attrValue, component.@dataType);
+					/*if (component.localName() == "CheckBox") {
+						compInstance.dispatchEvent(new Event(Event.CHANGE));
+					}*/
 				}
 				else if (attrName == "dataProvider") {
 					compInstance[attrName] = attrValue.split(",");
 				}
 				else {
+					var chainArray:Array;
 					// if the attribute should be bound to another component
-					if (BINDING_REGEXP.test(attrValue)) {
+					// test the "or" regexp first
+					if (OR_BINDING_REGEXP.test(attrValue)) {
+						var cw:ChangeWatcher;
+						// create orHandler
+						var handler:MetadataDataOrHandler = new MetadataDataOrHandler();
+						handler.id = component.@name + "_" + attrName; 
+						// binding refuses to work, so just pass references and handle value setting in handler.
+						handler.component = compInstance;
+						handler.att = attrName;
+						// add cws
+						var parts:Array = attrValue.substring(1, attrValue.length -1).split("||");
+						for each (var part:String in parts) {
+							chainArray = StringUtil.trim(part).split(".");
+							cw = BindingUtils.bindSetter(handler.changeFunction, _objectsHM.getValue(chainArray[0]), chainArray[1]);
+							handler.addWatcher(cw);
+						}
+						// add the orHandler to HM
+						_objectsHM.put(handler.id + "_handler", handler);
+						
+					}
+					else if (BINDING_REGEXP.test(attrValue)) {
 						// remove brackets and split to object and property
-						var chainArray:Array = attrValue.substring(1, attrValue.length -1).split(".");
+						chainArray = attrValue.substring(1, attrValue.length -1).split(".");
 						BindingUtils.bindProperty(compInstance, attrName, _objectsHM.getValue(chainArray[0]), chainArray[1]);
 					}
 					else if (attrName != "compPackage" && attrName != "metadataData" && attrName != "dataType") {
@@ -403,7 +435,7 @@ package com.kaltura.edw.business.base
 			if (!fieldsArray)
 				return null;
 			
-			var item:Container;
+			var item:Container; // holds the label with the actual component 
 			
 			//VBox for nested fields, HBox for flat field
 			if (field.@id == CustomMetadataConstantTypes.CONTAINER) {
