@@ -53,7 +53,7 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 					return _numberFormatter.format(Number(value).toFixed(2));
 					break; 
 				case "avg_time_viewed":
-					return KTimeUtil.formatTime(Number(value) * 60, true);
+					return KTimeUtil.formatTime2(Number(value) * 60);
 					break;
 				case "event_date_id":
 					return new Date(Number(value) * 1000).toDateString();

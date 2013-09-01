@@ -43,7 +43,7 @@ package com.kaltura.kmc.modules.content.commands
 							totalDuration += data.data[nEntries]["duration"];	
 					}
 				}
-				_model.playlistModel.ruleBasedDuration = KTimeUtil.formatTime(totalDuration);
+				_model.playlistModel.ruleBasedDuration = KTimeUtil.formatTime2(totalDuration);
 				_model.playlistModel.ruleBasedEntriesAmount = nEntries;
 			}
 			
