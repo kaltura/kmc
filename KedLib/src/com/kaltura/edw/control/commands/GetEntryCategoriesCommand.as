@@ -11,28 +11,29 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.vo.KalturaCategoryEntryListResponse;
 	import com.kaltura.vo.KalturaCategoryFilter;
 	import com.kaltura.vo.KalturaCategoryListResponse;
+	import com.kaltura.vo.KalturaFilterPager;
 	
 	import mx.collections.ArrayCollection;
 
 	public class GetEntryCategoriesCommand extends KedCommand {
 		
 		override public function execute(event:KMvCEvent):void {
+			var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
 			switch (event.type) {
 				case KedEntryEvent.RESET_ENTRY_CATEGORIES:
-					var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
 					edp.entryCategories = new ArrayCollection();
 					break;
 				case KedEntryEvent.GET_ENTRY_CATEGORIES:
 					_model.increaseLoadCounter();
-//					var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
-//					edp.entryCategories = new ArrayCollection();
 					
 					// get a list of KalturaCategoryEntries
 					var e:KedEntryEvent = event as KedEntryEvent;
 					
 					var f:KalturaCategoryEntryFilter = new KalturaCategoryEntryFilter();
 					f.entryIdEqual = e.entryVo.id;
-					var getcats:CategoryEntryList = new CategoryEntryList(f);
+					var p:KalturaFilterPager = new KalturaFilterPager();
+					p.pageSize = edp.maxNumCategories;
+					var getcats:CategoryEntryList = new CategoryEntryList(f, p);
 					
 					getcats.addEventListener(KalturaEvent.COMPLETE, result);
 					getcats.addEventListener(KalturaEvent.FAILED, fault);
@@ -45,6 +46,7 @@ package com.kaltura.edw.control.commands
 		
 		override public function result(data:Object):void {
 			super.result(data);
+			var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
 			if (data.data is KalturaCategoryEntryListResponse) {
 				// get a list of KalturaCategories
 				var kce:KalturaCategoryEntry;
@@ -60,7 +62,9 @@ package com.kaltura.edw.control.commands
 				}
 				var f:KalturaCategoryFilter = new KalturaCategoryFilter();
 				f.idIn = str;
-				var getcats:CategoryList = new CategoryList(f);
+				var p:KalturaFilterPager = new KalturaFilterPager();
+				p.pageSize = edp.maxNumCategories;
+				var getcats:CategoryList = new CategoryList(f, p);
 				
 				getcats.addEventListener(KalturaEvent.COMPLETE, result);
 				getcats.addEventListener(KalturaEvent.FAILED, fault);
@@ -69,7 +73,6 @@ package com.kaltura.edw.control.commands
 			}
 			else if (data.data is KalturaCategoryListResponse) {
 				// put the KalturaCategories on the model
-				var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
 				edp.entryCategories = new ArrayCollection((data.data as KalturaCategoryListResponse).objects);
 				_model.decreaseLoadCounter();
 			}
