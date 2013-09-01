@@ -29,6 +29,13 @@ package com.kaltura.types
 {
 	public class KalturaEventNotificationEventObjectType
 	{
+		public static const AD_CUE_POINT : String = 'adCuePointEventNotifications.AdCuePoint';
+		public static const ANNOTATION : String = 'annotationEventNotifications.Annotation';
+		public static const CODE_CUE_POINT : String = 'codeCuePointEventNotifications.CodeCuePoint';
+		public static const DISTRIBUTION_PROFILE : String = 'contentDistributionEventNotifications.DistributionProfile';
+		public static const ENTRY_DISTRIBUTION : String = 'contentDistributionEventNotifications.EntryDistribution';
+		public static const CUE_POINT : String = 'cuePointEventNotifications.CuePoint';
+		public static const METADATA : String = 'metadataEventNotifications.Metadata';
 		public static const ENTRY : String = '1';
 		public static const CATEGORY : String = '2';
 		public static const ASSET : String = '3';

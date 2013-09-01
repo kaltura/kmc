@@ -33,61 +33,61 @@ package com.kaltura.vo
 	public dynamic class KalturaPartnerBaseFilter extends KalturaFilter
 	{
 		/**
-		 **/
+		**/
 		public var idEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var idIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var idNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var nameLike : String = null;
 
 		/**
-		 **/
+		**/
 		public var nameMultiLikeOr : String = null;
 
 		/**
-		 **/
+		**/
 		public var nameMultiLikeAnd : String = null;
 
 		/**
-		 **/
+		**/
 		public var nameEqual : String = null;
 
 		/**
-		 * @see com.kaltura.types.KalturaPartnerStatus
-		 **/
+		* @see com.kaltura.types.KalturaPartnerStatus
+		**/
 		public var statusEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var statusIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var partnerPackageEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var partnerPackageGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var partnerPackageLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 * @see com.kaltura.types.KalturaPartnerGroupType
-		 **/
+		* @see com.kaltura.types.KalturaPartnerGroupType
+		**/
 		public var partnerGroupTypeEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var partnerNameDescriptionWebsiteAdminNameAdminEmailLike : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -116,6 +116,17 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
 			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }

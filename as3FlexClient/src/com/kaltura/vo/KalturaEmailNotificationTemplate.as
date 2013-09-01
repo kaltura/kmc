@@ -41,98 +41,92 @@ package com.kaltura.vo
 	public dynamic class KalturaEmailNotificationTemplate extends KalturaEventNotificationTemplate
 	{
 		/**
-		 * Define the email body format
-		 * 
-		 * @see com.kaltura.types.KalturaEmailNotificationFormat
-		 **/
+		* Define the email body format
+		* 
+		* @see com.kaltura.types.KalturaEmailNotificationFormat
+		**/
 		public var format : String = null;
 
 		/**
-		 * Define the email subject
-		 * 
-		 **/
+		* Define the email subject
+		* 
+		**/
 		public var subject : String = null;
 
 		/**
-		 * Define the email body content
-		 * 
-		 **/
+		* Define the email body content
+		* 
+		**/
 		public var body : String = null;
 
 		/**
-		 * Define the email sender email
-		 * 
-		 **/
+		* Define the email sender email
+		* 
+		**/
 		public var fromEmail : String = null;
 
 		/**
-		 * Define the email sender name
-		 * 
-		 **/
+		* Define the email sender name
+		* 
+		**/
 		public var fromName : String = null;
 
 		/**
-		 * Email recipient emails and names
-		 * 
-		 **/
+		* Email recipient emails and names
+		* 
+		**/
 		public var to : KalturaEmailNotificationRecipientProvider;
 
 		/**
-		 * Email recipient emails and names
-		 * 
-		 **/
+		* Email recipient emails and names
+		* 
+		**/
 		public var cc : KalturaEmailNotificationRecipientProvider;
 
 		/**
-		 * Email recipient emails and names
-		 * 
-		 **/
+		* Email recipient emails and names
+		* 
+		**/
 		public var bcc : KalturaEmailNotificationRecipientProvider;
 
 		/**
-		 * Default email addresses to whom the reply should be sent.
-		 * 
-		 **/
+		* Default email addresses to whom the reply should be sent.
+		* 
+		**/
 		public var replyTo : KalturaEmailNotificationRecipientProvider;
 
 		/**
-		 * Define the email priority
-		 * 
-		 * @see com.kaltura.types.KalturaEmailNotificationTemplatePriority
-		 **/
+		* Define the email priority
+		* 
+		* @see com.kaltura.types.KalturaEmailNotificationTemplatePriority
+		**/
 		public var priority : int = int.MIN_VALUE;
 
 		/**
-		 * Email address that a reading confirmation will be sent
-		 * 
-		 **/
+		* Email address that a reading confirmation will be sent
+		* 
+		**/
 		public var confirmReadingTo : String = null;
 
 		/**
-		 * Hostname to use in Message-Id and Received headers and as default HELLO string.
-		 * If empty, the value returned by SERVER_NAME is used or 'localhost.localdomain'.
-		 * 
-		 **/
+		* Hostname to use in Message-Id and Received headers and as default HELLO string.
+		* If empty, the value returned by SERVER_NAME is used or 'localhost.localdomain'.
+		* 
+		**/
 		public var hostname : String = null;
 
 		/**
-		 * Sets the message ID to be used in the Message-Id header.
-		 * If empty, a unique id will be generated.
-		 * 
-		 **/
+		* Sets the message ID to be used in the Message-Id header.
+		* If empty, a unique id will be generated.
+		* 
+		**/
 		public var messageID : String = null;
 
 		/**
-		 * Adds a e-mail custom header
-		 * 
-		 **/
+		* Adds a e-mail custom header
+		* 
+		**/
 		public var customHeaders : Array = null;
-
-		/**
-		 * Define the content dynamic parameters
-		 * 
-		 **/
-		public var contentParameters : Array = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -152,7 +146,6 @@ package com.kaltura.vo
 			arr.push('hostname');
 			arr.push('messageID');
 			arr.push('customHeaders');
-			arr.push('contentParameters');
 			return arr;
 		}
 
@@ -161,6 +154,32 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
 			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				case 'to':
+					result = '';
+					break;
+				case 'cc':
+					result = '';
+					break;
+				case 'bcc':
+					result = '';
+					break;
+				case 'replyTo':
+					result = '';
+					break;
+				case 'customHeaders':
+					result = 'KalturaKeyValue';
+					break;
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }

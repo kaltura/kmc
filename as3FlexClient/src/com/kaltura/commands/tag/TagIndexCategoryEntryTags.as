@@ -31,16 +31,16 @@ package com.kaltura.commands.tag
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 **/
+	**/
 	public class TagIndexCategoryEntryTags extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param categoryId int
-		 * @param pcToDecrement String
-		 * @param pcToIncrement String
-		 **/
+		* @param categoryId int
+		* @param pcToDecrement String
+		* @param pcToIncrement String
+		**/
 		public function TagIndexCategoryEntryTags( categoryId : int,pcToDecrement : String,pcToIncrement : String )
 		{
 			service= 'tagsearch_tag';

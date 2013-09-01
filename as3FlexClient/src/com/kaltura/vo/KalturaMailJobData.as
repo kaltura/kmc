@@ -33,69 +33,69 @@ package com.kaltura.vo
 	public dynamic class KalturaMailJobData extends KalturaJobData
 	{
 		/**
-		 * @see com.kaltura.types.KalturaMailType
-		 **/
+		* @see com.kaltura.types.KalturaMailType
+		**/
 		public var mailType : String = null;
 
 		/**
-		 **/
+		**/
 		public var mailPriority : int = int.MIN_VALUE;
 
 		/**
-		 * @see com.kaltura.types.KalturaMailJobStatus
-		 **/
+		* @see com.kaltura.types.KalturaMailJobStatus
+		**/
 		public var status : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var recipientName : String = null;
 
 		/**
-		 **/
+		**/
 		public var recipientEmail : String = null;
 
 		/**
-		 * kuserId
-		 * 
-		 **/
+		* kuserId
+		* 
+		**/
 		public var recipientId : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var fromName : String = null;
 
 		/**
-		 **/
+		**/
 		public var fromEmail : String = null;
 
 		/**
-		 **/
+		**/
 		public var bodyParams : String = null;
 
 		/**
-		 **/
+		**/
 		public var subjectParams : String = null;
 
 		/**
-		 **/
+		**/
 		public var templatePath : String = null;
 
 		/**
-		 * @see com.kaltura.types.KalturaLanguageCode
-		 **/
+		* @see com.kaltura.types.KalturaLanguageCode
+		**/
 		public var language : String = null;
 
 		/**
-		 **/
+		**/
 		public var campaignId : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var minSendDate : int = int.MIN_VALUE;
 
 		/**
-		 * @see com.kaltura.types.kalturaBoolean
-		 **/
+		* @see com.kaltura.types.kalturaBoolean
+		**/
 		public var isHtml : Boolean;
 
 		override public function getUpdateableParamKeys():Array
@@ -125,6 +125,17 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
 			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }

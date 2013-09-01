@@ -33,23 +33,23 @@ package com.kaltura.vo
 	public dynamic class KalturaFileSyncImportJobData extends KalturaJobData
 	{
 		/**
-		 **/
+		**/
 		public var sourceUrl : String = null;
 
 		/**
-		 **/
+		**/
 		public var filesyncId : String = null;
 
 		/**
-		 **/
+		**/
 		public var tmpFilePath : String = null;
 
 		/**
-		 **/
+		**/
 		public var destFilePath : String = null;
 
 		/**
-		 **/
+		**/
 		public var fileSize : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -69,6 +69,17 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
 			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }

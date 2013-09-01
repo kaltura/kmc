@@ -37,13 +37,13 @@ package com.kaltura.vo
 	public dynamic class KalturaEmailNotificationCategoryRecipientProvider extends KalturaEmailNotificationRecipientProvider
 	{
 		/**
-		 * The ID of the category whose subscribers should receive the email notification.
-		 * 
-		 **/
+		* The ID of the category whose subscribers should receive the email notification.
+		* 
+		**/
 		public var categoryId : KalturaStringValue;
 
 		/**
-		 **/
+		**/
 		public var categoryUserFilter : KalturaCategoryUserProviderFilter;
 
 		override public function getUpdateableParamKeys():Array
@@ -60,6 +60,23 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
 			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				case 'categoryId':
+					result = '';
+					break;
+				case 'categoryUserFilter':
+					result = '';
+					break;
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }

@@ -33,20 +33,20 @@ package com.kaltura.vo
 	public dynamic class KalturaWidevineRepositorySyncJobData extends KalturaJobData
 	{
 		/**
-		 * @see com.kaltura.types.KalturaWidevineRepositorySyncMode
-		 **/
+		* @see com.kaltura.types.KalturaWidevineRepositorySyncMode
+		**/
 		public var syncMode : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var wvAssetIds : String = null;
 
 		/**
-		 **/
+		**/
 		public var modifiedAttributes : String = null;
 
 		/**
-		 **/
+		**/
 		public var monitorSyncCompletion : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -65,6 +65,17 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
 			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }

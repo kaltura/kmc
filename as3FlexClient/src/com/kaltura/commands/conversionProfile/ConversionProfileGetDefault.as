@@ -31,15 +31,15 @@ package com.kaltura.commands.conversionProfile
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Get the partner's default conversion profile
-	 * 
-	 **/
+	* Get the partner's default conversion profile
+	* 
+	**/
 	public class ConversionProfileGetDefault extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 **/
+		**/
 		public function ConversionProfileGetDefault(  )
 		{
 			service= 'conversionprofile';

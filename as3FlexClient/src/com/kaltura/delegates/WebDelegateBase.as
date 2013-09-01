@@ -27,6 +27,7 @@
 // ===================================================================================================
 package com.kaltura.delegates {
 
+	import com.kaltura.KalturaClient;
 	import com.kaltura.config.IKalturaConfig;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.core.KClassFactory;
@@ -178,6 +179,7 @@ package com.kaltura.delegates {
 				_call.setRequestArgument("clientTag", _config.clientTag);
 
 			_call.setRequestArgument("ignoreNull", _config.ignoreNull);
+			_call.setRequestArgument("apiVersion", KalturaClient.API_VERSION);
 
 			//Create signature hash.
 			//call.setRequestArgument("kalsig", getMD5Checksum(call));
@@ -186,23 +188,16 @@ package com.kaltura.delegates {
 
 		protected function getMD5Checksum(call:KalturaCall):String {
 			var props:Array = new Array();
-			for each (var prop:String in call.args)
-				props.push(prop);
+			for (var arg:String in call.args)
+				props.push(arg);
 
-			props.push("service");
-			props.push("action");
 			props.sort();
 
-			var s:String;
-			for each (prop in props) {
-				s += prop;
+			var s:String = "";
+			for each (var prop:String in props) {
 
-				if (prop == "service")
-					s += call.service;
-				else if (prop == "action")
-					s += call.action;
-				else
-					s += call.args[prop];
+				if ( call.args[prop] )
+					s += prop +  call.args[prop];
 			}
 
 			return MD5.encrypt(s);

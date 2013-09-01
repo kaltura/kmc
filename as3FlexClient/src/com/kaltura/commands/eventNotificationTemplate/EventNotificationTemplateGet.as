@@ -31,16 +31,16 @@ package com.kaltura.commands.eventNotificationTemplate
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Retrieve an event notification template object by id
-	 * 
-	 **/
+	* Retrieve an event notification template object by id
+	* 
+	**/
 	public class EventNotificationTemplateGet extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param id int
-		 **/
+		* @param id int
+		**/
 		public function EventNotificationTemplateGet( id : int )
 		{
 			service= 'eventnotification_eventnotificationtemplate';

@@ -31,17 +31,17 @@ package com.kaltura.commands.eventNotificationTemplate
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Update event notification template status by id
-	 * 
-	 **/
+	* Update event notification template status by id
+	* 
+	**/
 	public class EventNotificationTemplateUpdateStatus extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param id int
-		 * @param status int
-		 **/
+		* @param id int
+		* @param status int
+		**/
 		public function EventNotificationTemplateUpdateStatus( id : int,status : int )
 		{
 			service= 'eventnotification_eventnotificationtemplate';

@@ -33,65 +33,65 @@ package com.kaltura.vo
 	public dynamic class KalturaUiConfBaseFilter extends KalturaFilter
 	{
 		/**
-		 **/
+		**/
 		public var idEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var idIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var nameLike : String = null;
 
 		/**
-		 **/
+		**/
 		public var partnerIdEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var partnerIdIn : String = null;
 
 		/**
-		 * @see com.kaltura.types.KalturaUiConfObjType
-		 **/
+		* @see com.kaltura.types.KalturaUiConfObjType
+		**/
 		public var objTypeEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var objTypeIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var tagsMultiLikeOr : String = null;
 
 		/**
-		 **/
+		**/
 		public var tagsMultiLikeAnd : String = null;
 
 		/**
-		 **/
+		**/
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 * @see com.kaltura.types.KalturaUiConfCreationMode
-		 **/
+		* @see com.kaltura.types.KalturaUiConfCreationMode
+		**/
 		public var creationModeEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var creationModeIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -121,6 +121,17 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
 			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }

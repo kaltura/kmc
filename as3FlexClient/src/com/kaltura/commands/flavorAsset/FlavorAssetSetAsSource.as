@@ -31,16 +31,16 @@ package com.kaltura.commands.flavorAsset
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Set a given flavor as the original flavor
-	 * 
-	 **/
+	* Set a given flavor as the original flavor
+	* 
+	**/
 	public class FlavorAssetSetAsSource extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param assetId String
-		 **/
+		* @param assetId String
+		**/
 		public function FlavorAssetSetAsSource( assetId : String )
 		{
 			service= 'flavorasset';

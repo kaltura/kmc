@@ -27,22 +27,22 @@
 // ===================================================================================================
 package com.kaltura.commands.eventNotificationTemplate
 {
-	import com.kaltura.vo.KalturaEventNotificationTemplate;
+		import com.kaltura.vo.KalturaEventNotificationTemplate;
 	import com.kaltura.delegates.eventNotificationTemplate.EventNotificationTemplateUpdateDelegate;
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Update an existing event notification template object
-	 * 
-	 **/
+	* Update an existing event notification template object
+	* 
+	**/
 	public class EventNotificationTemplateUpdate extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param id int
-		 * @param eventNotificationTemplate KalturaEventNotificationTemplate
-		 **/
+		* @param id int
+		* @param eventNotificationTemplate KalturaEventNotificationTemplate
+		**/
 		public function EventNotificationTemplateUpdate( id : int,eventNotificationTemplate : KalturaEventNotificationTemplate )
 		{
 			service= 'eventnotification_eventnotificationtemplate';
@@ -53,9 +53,9 @@ package com.kaltura.commands.eventNotificationTemplate
 			var keyValArr : Array = new Array();
 			keyArr.push('id');
 			valueArr.push(id);
- 			keyValArr = kalturaObject2Arrays(eventNotificationTemplate, 'eventNotificationTemplate');
-			keyArr = keyArr.concat(keyValArr[0]);
-			valueArr = valueArr.concat(keyValArr[1]);
+				keyValArr = kalturaObject2Arrays(eventNotificationTemplate, 'eventNotificationTemplate');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
 			applySchema(keyArr, valueArr);
 		}
 

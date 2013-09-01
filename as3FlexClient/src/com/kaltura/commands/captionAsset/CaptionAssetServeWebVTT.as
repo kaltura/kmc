@@ -25,48 +25,48 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.captionAsset
 {
-	import com.kaltura.vo.KalturaEvalStringField;
+	import com.kaltura.delegates.captionAsset.CaptionAssetServeWebVTTDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaHttpNotificationObjectField extends KalturaEvalStringField
+	/**
+	* Serves caption by its id converting it to segmented WebVTT
+	* 
+	**/
+	public class CaptionAssetServeWebVTT extends KalturaCall
 	{
+		public var filterFields : String;
+		
 		/**
-		 * Kaltura API object type
-		 * 
-		 **/
-		public var apiObjectType : String = null;
-
-		/**
-		 * Data format
-		 * 
-		 * @see com.kaltura.types.KalturaResponseType
-		 **/
-		public var format : int = int.MIN_VALUE;
-
-		/**
-		 * Ignore null attributes during serialization
-		 * 
-		 * @see com.kaltura.types.kalturaBoolean
-		 **/
-		public var ignoreNull : Boolean;
-
-		override public function getUpdateableParamKeys():Array
+		* @param captionAssetId String
+		* @param segmentDuration int
+		* @param segmentIndex int
+		* @param localTimestamp int
+		**/
+		public function CaptionAssetServeWebVTT( captionAssetId : String,segmentDuration : int=30,segmentIndex : int=int.MIN_VALUE,localTimestamp : int=10000 )
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('apiObjectType');
-			arr.push('format');
-			arr.push('ignoreNull');
-			return arr;
+			service= 'caption_captionasset';
+			action= 'serveWebVTT';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('captionAssetId');
+			valueArr.push(captionAssetId);
+			keyArr.push('segmentDuration');
+			valueArr.push(segmentDuration);
+			keyArr.push('segmentIndex');
+			valueArr.push(segmentIndex);
+			keyArr.push('localTimestamp');
+			valueArr.push(localTimestamp);
+			applySchema(keyArr, valueArr);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new CaptionAssetServeWebVTTDelegate( this , config );
 		}
 	}
 }

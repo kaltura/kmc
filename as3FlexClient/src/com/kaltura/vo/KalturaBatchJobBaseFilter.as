@@ -33,294 +33,314 @@ package com.kaltura.vo
 	public dynamic class KalturaBatchJobBaseFilter extends KalturaFilter
 	{
 		/**
-		 **/
+		**/
 		public var idEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var idGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var partnerIdEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var partnerIdIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var partnerIdNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var lockExpirationGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var lockExpirationLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var executionAttemptsGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var executionAttemptsLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var lockVersionGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var lockVersionLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var entryIdEqual : String = null;
 
 		/**
-		 * @see com.kaltura.types.KalturaBatchJobType
-		 **/
+		* @see com.kaltura.types.KalturaBatchJobType
+		**/
 		public var jobTypeEqual : String = null;
 
 		/**
-		 **/
+		**/
 		public var jobTypeIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var jobTypeNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var jobSubTypeEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var jobSubTypeIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var jobSubTypeNotIn : String = null;
 
 		/**
-		 * @see com.kaltura.types.KalturaBatchJobStatus
-		 **/
+		* @see com.kaltura.types.KalturaBatchJobStatus
+		**/
 		public var statusEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var statusIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var statusNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var abortEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var checkAgainTimeoutGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var checkAgainTimeoutLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var priorityGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var priorityLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var priorityEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var priorityIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var priorityNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var bulkJobIdEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var bulkJobIdIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var bulkJobIdNotIn : String = null;
 
 		/**
-		 **/
+		**/
+		public var batchVersionGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var batchVersionLessThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var batchVersionEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
 		public var parentJobIdEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var parentJobIdIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var parentJobIdNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var rootJobIdEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var rootJobIdIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var rootJobIdNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var queueTimeGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var queueTimeLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var finishTimeGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var finishTimeLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 * @see com.kaltura.types.KalturaBatchJobErrorTypes
-		 **/
+		* @see com.kaltura.types.KalturaBatchJobErrorTypes
+		**/
 		public var errTypeEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var errTypeIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var errTypeNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var errNumberEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var errNumberIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var errNumberNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var estimatedEffortLessThan : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var estimatedEffortGreaterThan : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
+		public var urgencyLessThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var urgencyGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
 		public var schedulerIdEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var schedulerIdIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var schedulerIdNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var workerIdEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var workerIdIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var workerIdNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var batchIndexEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var batchIndexIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var batchIndexNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var lastSchedulerIdEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var lastSchedulerIdIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var lastSchedulerIdNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var lastWorkerIdEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var lastWorkerIdIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var lastWorkerIdNotIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var dcEqual : int = int.MIN_VALUE;
 
 		/**
-		 **/
+		**/
 		public var dcIn : String = null;
 
 		/**
-		 **/
+		**/
 		public var dcNotIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -363,6 +383,9 @@ package com.kaltura.vo
 			arr.push('bulkJobIdEqual');
 			arr.push('bulkJobIdIn');
 			arr.push('bulkJobIdNotIn');
+			arr.push('batchVersionGreaterThanOrEqual');
+			arr.push('batchVersionLessThanOrEqual');
+			arr.push('batchVersionEqual');
 			arr.push('parentJobIdEqual');
 			arr.push('parentJobIdIn');
 			arr.push('parentJobIdNotIn');
@@ -381,6 +404,8 @@ package com.kaltura.vo
 			arr.push('errNumberNotIn');
 			arr.push('estimatedEffortLessThan');
 			arr.push('estimatedEffortGreaterThan');
+			arr.push('urgencyLessThanOrEqual');
+			arr.push('urgencyGreaterThanOrEqual');
 			arr.push('schedulerIdEqual');
 			arr.push('schedulerIdIn');
 			arr.push('schedulerIdNotIn');
@@ -407,6 +432,17 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
 			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }

@@ -27,22 +27,22 @@
 // ===================================================================================================
 package com.kaltura.commands.eventNotificationTemplate
 {
-	import com.kaltura.vo.KalturaEventNotificationDispatchJobData;
+		import com.kaltura.vo.KalturaEventNotificationDispatchJobData;
 	import com.kaltura.delegates.eventNotificationTemplate.EventNotificationTemplateDispatchDelegate;
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Dispatch event notification object by id
-	 * 
-	 **/
+	* Dispatch event notification object by id
+	* 
+	**/
 	public class EventNotificationTemplateDispatch extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param id int
-		 * @param data KalturaEventNotificationDispatchJobData
-		 **/
+		* @param id int
+		* @param data KalturaEventNotificationDispatchJobData
+		**/
 		public function EventNotificationTemplateDispatch( id : int,data : KalturaEventNotificationDispatchJobData )
 		{
 			service= 'eventnotification_eventnotificationtemplate';
@@ -53,9 +53,9 @@ package com.kaltura.commands.eventNotificationTemplate
 			var keyValArr : Array = new Array();
 			keyArr.push('id');
 			valueArr.push(id);
- 			keyValArr = kalturaObject2Arrays(data, 'data');
-			keyArr = keyArr.concat(keyValArr[0]);
-			valueArr = valueArr.concat(keyValArr[1]);
+				keyValArr = kalturaObject2Arrays(data, 'data');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
 			applySchema(keyArr, valueArr);
 		}
 

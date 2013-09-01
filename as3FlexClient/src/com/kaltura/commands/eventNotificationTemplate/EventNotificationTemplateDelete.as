@@ -31,16 +31,16 @@ package com.kaltura.commands.eventNotificationTemplate
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Delete an event notification template object
-	 * 
-	 **/
+	* Delete an event notification template object
+	* 
+	**/
 	public class EventNotificationTemplateDelete extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param id int
-		 **/
+		* @param id int
+		**/
 		public function EventNotificationTemplateDelete( id : int )
 		{
 			service= 'eventnotification_eventnotificationtemplate';

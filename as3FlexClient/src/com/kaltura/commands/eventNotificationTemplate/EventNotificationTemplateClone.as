@@ -27,22 +27,22 @@
 // ===================================================================================================
 package com.kaltura.commands.eventNotificationTemplate
 {
-	import com.kaltura.vo.KalturaEventNotificationTemplate;
+		import com.kaltura.vo.KalturaEventNotificationTemplate;
 	import com.kaltura.delegates.eventNotificationTemplate.EventNotificationTemplateCloneDelegate;
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Allows you to clone exiting event notification template object and create a new one with similar configuration
-	 * 
-	 **/
+	* Allows you to clone exiting event notification template object and create a new one with similar configuration
+	* 
+	**/
 	public class EventNotificationTemplateClone extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param id int
-		 * @param eventNotificationTemplate KalturaEventNotificationTemplate
-		 **/
+		* @param id int
+		* @param eventNotificationTemplate KalturaEventNotificationTemplate
+		**/
 		public function EventNotificationTemplateClone( id : int,eventNotificationTemplate : KalturaEventNotificationTemplate=null )
 		{
 			service= 'eventnotification_eventnotificationtemplate';
@@ -53,11 +53,11 @@ package com.kaltura.commands.eventNotificationTemplate
 			var keyValArr : Array = new Array();
 			keyArr.push('id');
 			valueArr.push(id);
- 			if (eventNotificationTemplate) { 
- 			keyValArr = kalturaObject2Arrays(eventNotificationTemplate, 'eventNotificationTemplate');
-			keyArr = keyArr.concat(keyValArr[0]);
-			valueArr = valueArr.concat(keyValArr[1]);
- 			} 
+			if (eventNotificationTemplate) { 
+				keyValArr = kalturaObject2Arrays(eventNotificationTemplate, 'eventNotificationTemplate');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			} 
 			applySchema(keyArr, valueArr);
 		}
 

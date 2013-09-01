@@ -29,15 +29,15 @@ package com.kaltura.vo
 {
 	import com.kaltura.vo.KalturaBooleanField;
 
-	import com.kaltura.vo.KalturaEventCondition;
+	import com.kaltura.vo.KalturaCondition;
 
 	[Bindable]
-	public dynamic class KalturaEventFieldCondition extends KalturaEventCondition
+	public dynamic class KalturaEventFieldCondition extends KalturaCondition
 	{
 		/**
-		 * The field to be evaluated at runtime
-		 * 
-		 **/
+		* The field to be evaluated at runtime
+		* 
+		**/
 		public var field : KalturaBooleanField;
 
 		override public function getUpdateableParamKeys():Array
@@ -53,6 +53,20 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
 			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				case 'field':
+					result = '';
+					break;
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }

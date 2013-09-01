@@ -31,16 +31,16 @@ package com.kaltura.commands.document
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Approves document replacement
-	 * 
-	 **/
+	* Approves document replacement
+	* 
+	**/
 	public class DocumentApproveReplace extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param entryId String
-		 **/
+		* @param entryId String
+		**/
 		public function DocumentApproveReplace( entryId : String )
 		{
 			service= 'document';
