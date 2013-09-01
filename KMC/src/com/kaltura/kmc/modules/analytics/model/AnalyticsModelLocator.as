@@ -271,14 +271,25 @@ package com.kaltura.kmc.modules.analytics.model {
 
 		//---------------------------------------------------------
 		//Flags 
+		/**
+		 * general loading flag.  
+		 * commands should set to true when calling API together with partial load  flag, then  
+		 * reset the partial load flag and call checkLoading() to update the general flag.
+		 */
 		public var loadingFlag:Boolean = false;
 		public var loadingChartFlag:Boolean = false;
 		public var loadingTableFlag:Boolean = false;
 		public var loadingTotalFlag:Boolean = false;
 		public var loadingEntryFlag:Boolean = false;
-		public var partnerInfoLoaded:Boolean = false;
 		public var loadingApplicationsFlag:Boolean = false;
 		public var loadingBaseTotals:Boolean = false;
+		public var loadingCategories:Boolean = false;
+		public var loadingPartnerInfo:Boolean = false;
+		
+		/**
+		 * since we only load partner info once, this flag indicates we already did so. 
+		 */
+		public var partnerInfoLoaded:Boolean = false;
 		
 		/**
 		 * a flag indicating a call to export 2 csv is waiting for server response 
@@ -315,7 +326,9 @@ package com.kaltura.kmc.modules.analytics.model {
 		 * set value of loadingFlag according to the partial loading flags
 		 */
 		public function checkLoading():void {
-			if (!loadingChartFlag && !loadingTableFlag && !loadingTotalFlag && !loadingEntryFlag && !loadingBaseTotals) {
+			if (!loadingChartFlag && !loadingTableFlag && !loadingTotalFlag && 
+				!loadingEntryFlag && !loadingBaseTotals && !partnerInfoLoaded && 
+				!loadingApplicationsFlag && !processingCSVFlag) {
 				this.loadingFlag = false;
 			}
 		}

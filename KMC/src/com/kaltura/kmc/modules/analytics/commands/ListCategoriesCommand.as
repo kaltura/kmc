@@ -24,6 +24,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
+			_model.loadingCategories = true;
 
 			var f:KalturaCategoryFilter = new KalturaCategoryFilter();
 			f.orderBy = KalturaCategoryOrderBy.NAME_ASC;
@@ -36,13 +37,15 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 
 		public function fault(info:Object):void {
-			_model.loadingFlag = false;
+			_model.loadingCategories = true;
+			_model.checkLoading();
 			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('analytics', 'error'));
 		}
 
 
 		public function result(event:Object):void {
-			_model.loadingFlag = false;
+			_model.loadingCategories = true;
+			_model.checkLoading();
 
 			var kclr:KalturaCategoryListResponse;
 			var kc:KalturaCategory;

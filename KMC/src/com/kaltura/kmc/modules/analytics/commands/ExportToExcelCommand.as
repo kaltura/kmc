@@ -116,8 +116,8 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 
 		public function result(data:Object):void {
-			_model.loadingFlag = false;
 			_model.processingCSVFlag = false;
+			_model.checkLoading();
 			var kEvent:KalturaEvent = data as KalturaEvent;
 			kEvent.target.removeEventListener(KalturaEvent.COMPLETE, result);
 			kEvent.target.removeEventListener(KalturaEvent.FAILED, fault);
@@ -135,8 +135,8 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 
 		public function fault(info:Object):void {
-			_model.loadingFlag = false;
 			_model.processingCSVFlag = false;
+			_model.checkLoading();
 			var kEvent:KalturaEvent = info as KalturaEvent;
 			kEvent.target.removeEventListener(KalturaEvent.COMPLETE, result);
 			kEvent.target.removeEventListener(KalturaEvent.FAILED, fault);
