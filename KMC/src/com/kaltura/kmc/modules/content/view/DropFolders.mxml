@@ -91,8 +91,15 @@
 				}
 				
 				var delStr:String = '';
+				var fileName:String;
 				for each (var item:Object in dg.selectedItems) {
-					delStr += '\n' + (item as KalturaDropFolderFile).fileName;
+					if ((item as KalturaDropFolderFile).name) {
+						fileName = (item as KalturaDropFolderFile).name;
+					}
+					else {
+						fileName = (item as KalturaDropFolderFile).fileName;
+					}
+					delStr += '\n' + fileName;
 				}
 				
 				Alert.show(resourceManager.getString('dropfolders', 'deleteDropFoldersFilesQ') + delStr, resourceManager.getString('dropfolders', 'deleteDropFolderFileTitle'), Alert.YES | Alert.NO, null, deleteResponseFunc);
