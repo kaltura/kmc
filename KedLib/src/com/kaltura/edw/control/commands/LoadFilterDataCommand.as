@@ -157,10 +157,16 @@ package com.kaltura.edw.control.commands
 			var profilesArray:Array = new Array();
 			//as3flexClient can't generate these objects since we don't include them in the swf 
 			for each (var profile:Object in profilesResult.objects) {
-				var newProfile:KalturaDistributionProfile = ClientUtil.createClassInstanceFromObject(KalturaDistributionProfile, profile); 
-				//fix bug: simpleXmlEncoder not working properly for nested objects
-				if (profile.requiredThumbDimensions is Array)
-					newProfile.requiredThumbDimensions = profile.requiredThumbDimensions;
+				var newProfile:KalturaDistributionProfile;
+				if (profile is KalturaDistributionProfile) {
+					newProfile = profile as KalturaDistributionProfile;
+				}
+				else {
+					newProfile = ClientUtil.createClassInstanceFromObject(KalturaDistributionProfile, profile);
+					//fix bug: simpleXmlEncoder not working properly for nested objects
+					if (profile.requiredThumbDimensions is Array)
+						newProfile.requiredThumbDimensions = profile.requiredThumbDimensions;
+				}
 				if (newProfile.status == KalturaDistributionProfileStatus.ENABLED)
 					profilesArray.push(newProfile);
 			}
