@@ -326,7 +326,7 @@ package com.kaltura.kmc.modules.analytics.model {
 		 * set value of loadingFlag according to the partial loading flags
 		 */
 		public function checkLoading():void {
-			trace(loadingChartFlag, loadingTableFlag, loadingTotalFlag, loadingEntryFlag, loadingBaseTotals, loadingPartnerInfo, loadingApplicationsFlag, processingCSVFlag);
+			//trace(loadingChartFlag, loadingTableFlag, loadingTotalFlag, loadingEntryFlag, loadingBaseTotals, loadingPartnerInfo, loadingApplicationsFlag, processingCSVFlag);
 			if (!loadingChartFlag && !loadingTableFlag && !loadingTotalFlag && 
 				!loadingEntryFlag && !loadingBaseTotals && !loadingPartnerInfo && 
 				!loadingApplicationsFlag && !processingCSVFlag) {

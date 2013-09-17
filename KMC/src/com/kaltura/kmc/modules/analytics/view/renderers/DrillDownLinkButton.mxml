@@ -13,10 +13,12 @@
 			import mx.controls.listClasses.IDropInListItemRenderer;
 			import mx.utils.URLUtil;
 			
-			[Bindable] private var _model : AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
+			[Bindable] 
+			private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 			
    		    // Internal variable for the property value.
-   			[Bindable] private var _listData:BaseListData;
+   			[Bindable] 
+			private var _listData:BaseListData;
     
 		    // Define the getter method and make the listData property bindable.
 		    [Bindable("dataChange")]
@@ -31,7 +33,7 @@
 		      _listData = value;
 		    }
  
-			private function onItemClick( event : MouseEvent ) : void
+			private function onItemClick(event:MouseEvent):void
 			{
 				// "data" is of type Object. it's attributes match table headers as received from server for the current report.
 				// get required object name
@@ -89,11 +91,10 @@
 	
 		]]>
 	</mx:Script>
-	<mx:HBox paddingTop="2" paddingLeft="2">
-		<mx:Button id="refererIcon" styleName="refererStyle" buttonMode="true" 
-				   visible="{_model.showRefererIcon}" includeInLayout="{_model.showRefererIcon}"
-				   click="onRefererClick(event)" />
+	<mx:HBox paddingTop="2" paddingLeft="2" visible="{_model.showRefererIcon}" includeInLayout="{_model.showRefererIcon}" >
+		<mx:Button id="refererIcon" styleName="refererStyle" buttonMode="true" click="onRefererClick(event)" />
 	</mx:HBox>
+	<mx:Spacer width="1" visible="{!_model.showRefererIcon}" includeInLayout="{!_model.showRefererIcon}" />
 	<mx:Label id="regularText" textAlign="left" text="{_listData.label}" 
 			  visible="{!_model.tableSupportDrillDown}" includeInLayout="{!_model.tableSupportDrillDown}"/>
 	<mx:LinkButton id="linkBtn" click="onItemClick(event)" 
