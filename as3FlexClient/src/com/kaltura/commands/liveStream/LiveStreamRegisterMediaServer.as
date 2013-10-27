@@ -25,20 +25,45 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.commands.liveStream
 {
-	public class KalturaPlaybackProtocol
+	import com.kaltura.delegates.liveStream.LiveStreamRegisterMediaServerDelegate;
+	import com.kaltura.net.KalturaCall;
+
+	/**
+	* Register media server to live-stream entry
+	* 
+	**/
+	public class LiveStreamRegisterMediaServer extends KalturaCall
 	{
-		public static const APPLE_HTTP : String = 'applehttp';
-		public static const AUTO : String = 'auto';
-		public static const AKAMAI_HD : String = 'hdnetwork';
-		public static const AKAMAI_HDS : String = 'hdnetworkmanifest';
-		public static const HDS : String = 'hds';
-		public static const HLS : String = 'hls';
-		public static const HTTP : String = 'http';
-		public static const MPEG_DASH : String = 'mpegdash';
-		public static const RTMP : String = 'rtmp';
-		public static const RTSP : String = 'rtsp';
-		public static const SILVER_LIGHT : String = 'sl';
+		public var filterFields : String;
+		
+		/**
+		* @param entryId String
+		* @param hostname String
+		* @param mediaServerIndex int
+		**/
+		public function LiveStreamRegisterMediaServer( entryId : String,hostname : String,mediaServerIndex : int )
+		{
+			service= 'livestream';
+			action= 'registerMediaServer';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('entryId');
+			valueArr.push(entryId);
+			keyArr.push('hostname');
+			valueArr.push(hostname);
+			keyArr.push('mediaServerIndex');
+			valueArr.push(mediaServerIndex);
+			applySchema(keyArr, valueArr);
+		}
+
+		override public function execute() : void
+		{
+			setRequestArgument('filterFields', filterFields);
+			delegate = new LiveStreamRegisterMediaServerDelegate( this , config );
+		}
 	}
 }

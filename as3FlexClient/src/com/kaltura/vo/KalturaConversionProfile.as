@@ -50,6 +50,11 @@ package com.kaltura.vo
 		public var status : String = null;
 
 		/**
+		* @see com.kaltura.types.KalturaConversionProfileType
+		**/
+		public var type : String = null;
+
+		/**
 		* The name of the Conversion Profile
 		* 
 		**/
@@ -173,6 +178,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
+			arr.push('type');
 			return arr;
 		}
 
