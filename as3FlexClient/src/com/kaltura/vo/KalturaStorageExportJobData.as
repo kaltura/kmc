@@ -37,11 +37,17 @@ package com.kaltura.vo
 		**/
 		public var force : Boolean;
 
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var createLink : Boolean;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('force');
+			arr.push('createLink');
 			return arr;
 		}
 

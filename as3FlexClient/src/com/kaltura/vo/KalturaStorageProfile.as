@@ -167,6 +167,19 @@ package com.kaltura.vo
 		**/
 		public var allowAutoDelete : int = int.MIN_VALUE;
 
+		/**
+		* Indicates to the local file transfer manager to create a link to the file instead of copying it
+		* 
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var createFileLink : Boolean;
+
+		/**
+		* Holds storage profile export rules
+		* 
+		**/
+		public var rules : Array = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -201,6 +214,8 @@ package com.kaltura.vo
 			arr.push('rtmpPrefix');
 			arr.push('readyBehavior');
 			arr.push('allowAutoDelete');
+			arr.push('createFileLink');
+			arr.push('rules');
 			return arr;
 		}
 
@@ -228,6 +243,9 @@ package com.kaltura.vo
 					break;
 				case 'urlManagerParams':
 					result = 'KalturaKeyValue';
+					break;
+				case 'rules':
+					result = 'KalturaRule';
 					break;
 			}
 			return result;

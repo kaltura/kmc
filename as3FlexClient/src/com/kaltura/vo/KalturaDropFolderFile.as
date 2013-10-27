@@ -62,6 +62,11 @@ package com.kaltura.vo
 		public var status : int = int.MIN_VALUE;
 
 		/**
+		* @see com.kaltura.types.KalturaDropFolderFileStatus
+		**/
+		public var type : int = int.MIN_VALUE;
+
+		/**
 		**/
 		public var parsedSlug : String = null;
 

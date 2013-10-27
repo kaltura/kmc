@@ -31,7 +31,7 @@ package com.kaltura.commands.liveStream
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	* New action delivering the status of a live stream (on-air/offline) if it is possible
+	* Delivering the status of a live stream (on-air/offline) if it is possible
 	* 
 	**/
 	public class LiveStreamIsLive extends KalturaCall

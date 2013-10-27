@@ -27,10 +27,10 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaAccessControlAction;
+	import com.kaltura.vo.KalturaRuleAction;
 
 	[Bindable]
-	public dynamic class KalturaAccessControlPreviewAction extends KalturaAccessControlAction
+	public dynamic class KalturaAccessControlPreviewAction extends KalturaRuleAction
 	{
 		/**
 		**/

@@ -27,7 +27,7 @@
 // ===================================================================================================
 package com.kaltura.commands.liveStream
 {
-		import com.kaltura.vo.KalturaLiveStreamAdminEntry;
+		import com.kaltura.vo.KalturaLiveStreamEntry;
 	import com.kaltura.delegates.liveStream.LiveStreamUpdateDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -41,9 +41,9 @@ package com.kaltura.commands.liveStream
 		
 		/**
 		* @param entryId String
-		* @param liveStreamEntry KalturaLiveStreamAdminEntry
+		* @param liveStreamEntry KalturaLiveStreamEntry
 		**/
-		public function LiveStreamUpdate( entryId : String,liveStreamEntry : KalturaLiveStreamAdminEntry )
+		public function LiveStreamUpdate( entryId : String,liveStreamEntry : KalturaLiveStreamEntry )
 		{
 			service= 'livestream';
 			action= 'update';

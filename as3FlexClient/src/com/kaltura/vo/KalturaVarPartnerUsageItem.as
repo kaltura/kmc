@@ -154,6 +154,12 @@ package com.kaltura.vo
 		public var combinedStorageBandwidth : Number = Number.NEGATIVE_INFINITY;
 
 		/**
+		* Amount of transcoding usage in MB
+		* 
+		**/
+		public var transcodingUsage : Number = Number.NEGATIVE_INFINITY;
+
+		/**
 		* TGhe date at which the report was taken - Unix Timestamp
 		* 
 		**/
@@ -186,6 +192,7 @@ package com.kaltura.vo
 			arr.push('peakStorage');
 			arr.push('avgStorage');
 			arr.push('combinedStorageBandwidth');
+			arr.push('transcodingUsage');
 			arr.push('dateId');
 			return arr;
 		}

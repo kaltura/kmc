@@ -27,17 +27,11 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaMediaEntry;
+	import com.kaltura.vo.KalturaLiveEntry;
 
 	[Bindable]
-	public dynamic class KalturaLiveStreamEntry extends KalturaMediaEntry
+	public dynamic class KalturaLiveStreamEntry extends KalturaLiveEntry
 	{
-		/**
-		* The message to be presented when the stream is offline
-		* 
-		**/
-		public var offlineMessage : String = null;
-
 		/**
 		* The stream id as provided by the provider
 		* 
@@ -81,29 +75,10 @@ package com.kaltura.vo
 		public var hlsStreamUrl : String = null;
 
 		/**
-		* DVR Status Enabled/Disabled
-		* 
-		* @see com.kaltura.types.KalturaDVRStatus
-		**/
-		public var dvrStatus : int = int.MIN_VALUE;
-
-		/**
-		* Window of time which the DVR allows for backwards scrubbing (in minutes)
-		* 
-		**/
-		public var dvrWindow : int = int.MIN_VALUE;
-
-		/**
 		* URL Manager to handle the live stream URL (for instance, add token)
 		* 
 		**/
 		public var urlManager : String = null;
-
-		/**
-		* Array of key value protocol->live stream url objects
-		* 
-		**/
-		public var liveStreamConfigurations : Array = null;
 
 		/**
 		* The broadcast primary ip
@@ -133,7 +108,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('offlineMessage');
 			arr.push('bitrates');
 			arr.push('primaryBroadcastingUrl');
 			arr.push('secondaryBroadcastingUrl');
@@ -141,7 +115,6 @@ package com.kaltura.vo
 			arr.push('streamUrl');
 			arr.push('hlsStreamUrl');
 			arr.push('urlManager');
-			arr.push('liveStreamConfigurations');
 			arr.push('encodingIP1');
 			arr.push('encodingIP2');
 			arr.push('streamPassword');
@@ -152,8 +125,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
-			arr.push('dvrStatus');
-			arr.push('dvrWindow');
 			return arr;
 		}
 
@@ -163,9 +134,6 @@ package com.kaltura.vo
 			switch (arrayName) {
 				case 'bitrates':
 					result = 'KalturaLiveStreamBitrate';
-					break;
-				case 'liveStreamConfigurations':
-					result = 'KalturaLiveStreamConfiguration';
 					break;
 				default:
 					result = super.getElementType(arrayName);

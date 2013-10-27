@@ -98,13 +98,13 @@ package com.kaltura.vo
 			var result:String = '';
 			switch (arrayName) {
 				case 'actions':
-					result = 'KalturaAccessControlAction';
+					result = 'KalturaRuleAction';
 					break;
 				case 'conditions':
 					result = 'KalturaCondition';
 					break;
 				case 'contexts':
-					result = 'KalturaAccessControlContextTypeHolder';
+					result = 'KalturaContextTypeHolder';
 					break;
 			}
 			return result;

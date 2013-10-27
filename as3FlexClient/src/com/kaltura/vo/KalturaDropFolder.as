@@ -129,6 +129,19 @@ package com.kaltura.vo
 		**/
 		public var lastAccessedAt : int = int.MIN_VALUE;
 
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var incremental : Boolean;
+
+		/**
+		**/
+		public var lastFileTimestamp : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var metadataProfileId : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -154,6 +167,9 @@ package com.kaltura.vo
 			arr.push('errorDescription');
 			arr.push('ignoreFileNamePatterns');
 			arr.push('lastAccessedAt');
+			arr.push('incremental');
+			arr.push('lastFileTimestamp');
+			arr.push('metadataProfileId');
 			return arr;
 		}
 

@@ -27,10 +27,10 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaAccessControlAction;
+	import com.kaltura.vo.KalturaRuleAction;
 
 	[Bindable]
-	public dynamic class KalturaAccessControlBlockAction extends KalturaAccessControlAction
+	public dynamic class KalturaAccessControlBlockAction extends KalturaRuleAction
 	{
 		override public function getUpdateableParamKeys():Array
 		{

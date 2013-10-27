@@ -27,10 +27,10 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaMediaEntryFilter;
+	import com.kaltura.vo.KalturaLiveEntryFilter;
 
 	[Bindable]
-	public dynamic class KalturaLiveStreamEntryBaseFilter extends KalturaMediaEntryFilter
+	public dynamic class KalturaLiveStreamEntryBaseFilter extends KalturaLiveEntryFilter
 	{
 		override public function getUpdateableParamKeys():Array
 		{
