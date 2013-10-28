@@ -44,12 +44,14 @@
 			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaType;
+			import com.kaltura.types.KalturaSourceType;
 			import com.kaltura.types.KalturaTaggedObjectType;
 			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaCategory;
-			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
+			import com.kaltura.vo.KalturaLiveEntry;
+			import com.kaltura.vo.KalturaLiveStreamEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
 			
 			import mx.binding.utils.BindingUtils;
@@ -183,7 +185,11 @@
 
 
 			public function set selectedEntry(value:KalturaBaseEntry):void {
-				if (value is KalturaLiveStreamAdminEntry) {
+				_enableConvertToVod = false;
+				if (value is KalturaLiveStreamEntry) {
+					if ((value as KalturaLiveStreamEntry).sourceType == KalturaSourceType.LIVE_STREAM) {
+						_enableConvertToVod = true;
+					}
 					offlineHolder.visible = true;
 					offlineHolder.includeInLayout = true;
 				}
@@ -194,8 +200,10 @@
 
 				if (value) {
 					// clipping / trimming
-					var val:Boolean = (value is KalturaMediaEntry) && (value as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE;
-					val &&= value.status == KalturaEntryStatus.READY;
+					var val:Boolean = (value is KalturaMediaEntry); // media entry
+					val &&= !(value is KalturaLiveEntry);	// not live entry
+					val &&= (value as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE;	// not image
+					val &&= value.status == KalturaEntryStatus.READY;	// status ready
 
 					var pdp:PermissionsDataPack = _dpModel.getDataPack(PermissionsDataPack) as PermissionsDataPack;
 
@@ -255,6 +263,12 @@
 
 			private var _entryData:EntryDataPack;
 
+			[Bindable]
+			/**
+			 * should "convert to VOD" button be enabled
+			 * (RnP + current entry is live entry) 
+			 * */
+			private var _enableConvertToVod:Boolean;
 
 			[Bindable]
 			/**
@@ -336,8 +350,8 @@
 
 
 			public function save():void {
-				if (_selectedEntry is KalturaLiveStreamAdminEntry) {
-					(_selectedEntry as KalturaLiveStreamAdminEntry).offlineMessage = offlineMessage.text;
+				if (_selectedEntry is KalturaLiveStreamEntry) {
+					(_selectedEntry as KalturaLiveStreamEntry).offlineMessage = offlineMessage.text;
 				}
 
 				//update categories
@@ -669,6 +683,15 @@
 				KedJSGate.openClipApp(_selectedEntry.id, "trim");
 			}
 
+			
+			/**
+			 * request JS to open the clipApp in trimming mode
+			 * */
+			protected function openLiveClipping(event:MouseEvent):void {
+				pausePreview();
+				KedJSGate.openClipApp(_selectedEntry.id, "live");
+			}
+
 
 			private function getRefid(refid:String):String {
 				if (refid == KalturaClient.NULL_STRING) {
@@ -994,6 +1017,9 @@
 			<mx:LinkButton id="btnTrimming" click="openTrimming(event)" styleName="bold"
 						   enabled="{EntryDataHelper.entryHasSource(_distributionData.flavorParamsAndAssetsByEntryId)}"
 						   label="{resourceManager.getString('drilldown','openTrimming')}"/>
+			<mx:LinkButton id="btnVOD" click="openLiveClipping(event)" styleName="bold"
+						   visible="{_enableConvertToVod}" includeInLayout="{_enableConvertToVod}"
+						   label="{resourceManager.getString('drilldown', 'openVOD')}"/>
 		</mx:HBox>
 		<!-- no content message -->
 		<mx:Label visible="{!_entryHasContent}" includeInLayout="{!_entryHasContent}"

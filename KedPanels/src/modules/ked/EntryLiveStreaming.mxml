@@ -11,29 +11,26 @@ live streaming control tab of EntryDetailsWin
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.utils.KTimeUtil;
-			import com.kaltura.vo.KalturaLiveStreamConfiguration;
-			import com.kaltura.types.KalturaSourceType;
-			import mx.formatters.DateFormatter;
-			import com.kaltura.types.KalturaDVRStatus;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
-			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.edw.view.EntryDetailsWin;
 			import com.kaltura.edw.view.window.SettingsExample;
 			import com.kaltura.kmvc.model.IDataPackRepository;
+			import com.kaltura.types.KalturaDVRStatus;
+			import com.kaltura.types.KalturaSourceType;
+			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaLiveStreamBitrate;
-
-			import mx.binding.utils.BindingUtils;
+			import com.kaltura.vo.KalturaLiveStreamConfiguration;
+			import com.kaltura.vo.KalturaLiveStreamEntry;
+			
 			import mx.collections.ArrayCollection;
 			import mx.core.UIComponent;
 			import mx.managers.PopUpManager;
-			import mx.resources.ResourceManager;
 
 			private const _broadcastingWidth:Number = 270;
 			private const _prefixesWidth:Number = 130;
@@ -50,7 +47,7 @@ live streaming control tab of EntryDetailsWin
 			private var _pop:SettingsExample;
 
 			[Bindable]
-			private var _selectedEntry:KalturaLiveStreamAdminEntry;
+			private var _selectedEntry:KalturaLiveStreamEntry;
 
 			[Bindable]
 			private var _bitrates:ArrayCollection;
@@ -60,8 +57,8 @@ live streaming control tab of EntryDetailsWin
 
 
 			public function set selectedEntry(value:KalturaBaseEntry):void {
-				if (value is KalturaLiveStreamAdminEntry) {
-					_selectedEntry = value as KalturaLiveStreamAdminEntry;
+				if (value is KalturaLiveStreamEntry) {
+					_selectedEntry = value as KalturaLiveStreamEntry;
 					
 					// clear any previous values (don't remove hlsStreamUrl):
 					while (manualWrap.numChildren > 1) {
@@ -182,7 +179,7 @@ live streaming control tab of EntryDetailsWin
 			public function save():void {
 				var bitrates:Array = getBitrates();
 				if (bitrates != null) {
-					(_selectedEntry as KalturaLiveStreamAdminEntry).bitrates = bitrates;
+					(_selectedEntry as KalturaLiveStreamEntry).bitrates = bitrates;
 				}
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.PANEL_DATA_SAVED));
 			}
@@ -383,7 +380,7 @@ live streaming control tab of EntryDetailsWin
 
 			}
 			
-			private function getDVRStatus (entry:KalturaLiveStreamAdminEntry):String {
+			private function getDVRStatus (entry:KalturaLiveStreamEntry):String {
 				var result:String = '';
 				if (!entry.dvrStatus || entry.dvrStatus == KalturaDVRStatus.DISABLED) {
 					result = resourceManager.getString('drilldown', 'off');
@@ -394,7 +391,7 @@ live streaming control tab of EntryDetailsWin
 				return result;
 			}
 			
-			private function getDVRWindow (entry:KalturaLiveStreamAdminEntry):String {
+			private function getDVRWindow (entry:KalturaLiveStreamEntry):String {
 //				var frmt:DateFormatter = new DateFormatter();
 //				frmt.formatString = resourceManager.getString('drilldown', 'dvrWinFormat');
 //				// value should be Date
