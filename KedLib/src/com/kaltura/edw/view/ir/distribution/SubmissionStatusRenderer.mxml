@@ -316,22 +316,22 @@
 			 * builds the suitable error string according to error type and uses error validation param
 			 * */
 			private function returnValidationErroString(error:KalturaDistributionValidationErrorInvalidData):String {
-				var errorString:String = '- ' + error.fieldName;
+				var errorString:String = '- ';
 				switch (error.validationErrorType) {
 					case KalturaDistributionValidationErrorType.STRING_EMPTY:
-						errorString += ' ' + resourceManager.getString('drilldown', 'metadataValidationRequired');
+						errorString += resourceManager.getString('drilldown', 'metadataValidationRequired', [error.fieldName]);
 						break;
 					case KalturaDistributionValidationErrorType.STRING_TOO_LONG:
-						errorString += ' ' + resourceManager.getString('drilldown', 'metadataValidationTooLong', new Array(error.validationErrorParam));
+						errorString += resourceManager.getString('drilldown', 'metadataValidationTooLong', [error.fieldName, error.validationErrorParam]);
 						break;
 					case KalturaDistributionValidationErrorType.STRING_TOO_SHORT:
-						errorString += ' ' + resourceManager.getString('drilldown', 'metadataValidationTooShort', new Array(error.validationErrorParam));
+						errorString += resourceManager.getString('drilldown', 'metadataValidationTooShort', [error.fieldName, error.validationErrorParam]);
 						break;
 					case KalturaDistributionValidationErrorType.INVALID_FORMAT:
-						errorString += ' ' + resourceManager.getString('drilldown', 'metadataValidationFormat', new Array(error.validationErrorParam));
+						errorString += resourceManager.getString('drilldown', 'metadataValidationFormat', [error.fieldName, error.validationErrorParam]);
 						break;
 					case KalturaDistributionValidationErrorType.CUSTOM_ERROR:
-						errorString = '- ' + error.validationErrorParam;
+						errorString = error.fieldName + ' - ' + error.validationErrorParam;
 				}
 				return errorString;
 			}
