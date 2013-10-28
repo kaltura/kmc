@@ -177,6 +177,12 @@ package com.kaltura.kmc.modules.content.model {
 		 * current open window (popup) 
 		 */		
 		public var windowState:String = WindowsStates.NONE;
+		
+		/**
+		 * conversion profiles that are marked as live, for use when adding live streams
+		 * (KalturaConversionProfile.type = KalturaConversionProfileType.LIVE_STREAM)
+		 */
+		public var liveConversionProfiles:ArrayCollection;
 
 
 		//Loading Mechanism Data

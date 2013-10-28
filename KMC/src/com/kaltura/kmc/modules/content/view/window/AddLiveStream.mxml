@@ -13,12 +13,17 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.vo.LocalizedVo;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.AddStreamEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.vo.StreamVo;
-			import com.kaltura.edw.vo.LocalizedVo;
+			import com.kaltura.vo.KalturaConversionProfile;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
@@ -26,12 +31,28 @@
 			import mx.resources.ResourceManager;
 
 			private const labelWidth:Number = 180;
+			
 
 			[Bindable]
 			/**
 			 * value to show by default in ip fields
 			 * */
 			public var defaultIP:String;
+			
+			public function set model(value:CmsModelLocator):void {
+				_model = value;
+				_cw = BindingUtils.bindProperty(this, 'liveProfiles', value, 'liveConversionProfiles');
+			}
+			
+			[Bindable]
+			/**
+			 * list of KAlturaConversionProfiles where type = KalturaConversionProfileType.LIVE_STREAM
+			 * */
+			public var liveProfiles:ArrayCollection;
+			
+			private var _model:CmsModelLocator;
+			
+			private var _cw:ChangeWatcher;
 
 			[Bindable]
 			/**
@@ -48,10 +69,16 @@
 
 			private function creationCompleteHandler(event:FlexEvent):void {
 				title = ResourceManager.getInstance().getString('live', 'liveStreamTitle');
-				_streamTypes = [new LocalizedVo(StreamVo.STREAM_TYPE_UNIVERSAL, 'universalStream', 'live'),
+				_streamTypes = [new LocalizedVo(StreamVo.STREAM_TYPE_KALTURA, 'kalturaStream', 'live'),
+					new LocalizedVo(StreamVo.STREAM_TYPE_UNIVERSAL, 'universalStream', 'live'),
 					new LocalizedVo(StreamVo.STREAM_TYPE_LEGACY, 'legacyStream', 'live'),
 					new LocalizedVo(StreamVo.STREAM_TYPE_MANUAL, 'manualStream', 'live')];
 				PermissionManager.getInstance().applyAllAttributes(this, "createLiveStream");
+				
+				if (!liveProfiles) {
+					var lp:AddStreamEvent = new AddStreamEvent(AddStreamEvent.LIST_LIVE_PROFILES, null);
+					lp.dispatch();
+				}
 			}
 
 
@@ -63,6 +90,9 @@
 						break;
 					case StreamVo.STREAM_TYPE_MANUAL:
 						anchor = 'section_add_live_stream_man';
+						break;
+					case StreamVo.STREAM_TYPE_KALTURA:
+						anchor = 'section_add_live_stream_kal';
 						break;
 				}
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
@@ -83,11 +113,15 @@
 					case StreamVo.STREAM_TYPE_UNIVERSAL:
 					case StreamVo.STREAM_TYPE_LEGACY:
 						_isManualStream = false;
-						forms.selectedIndex = 0;
+						forms.selectedIndex = 1;
 						break;
 					case StreamVo.STREAM_TYPE_MANUAL:
 						_isManualStream = true;
-						forms.selectedIndex = 1;
+						forms.selectedIndex = 2;
+						break;
+					case StreamVo.STREAM_TYPE_KALTURA:
+						_isManualStream = false;
+						forms.selectedIndex = 0;
 						break;
 
 				}
@@ -106,8 +140,8 @@
 				streamVo.description = streamDescription.text;
 				
 				if (streamTypeWrap.visible) {
-					// new options available, the first in dropdown is "universal"
-					streamVo.streamType = streamType.selectedItem ? (streamType.selectedItem as LocalizedVo).value : StreamVo.STREAM_TYPE_UNIVERSAL;
+					// new options available, the first in dropdown is "kaltura"
+					streamVo.streamType = streamType.selectedItem ? (streamType.selectedItem as LocalizedVo).value : StreamVo.STREAM_TYPE_KALTURA;
 				} 
 				else {
 					// only "legacy" stream available
@@ -115,6 +149,7 @@
 				}
 				
 				if (_isManualStream) {
+					// manual
 					hdsurlValidator.required = true;
 					hdsurlValidator.listener = hdsurl;
 					var isUrlValid:Boolean = hdsurlValidator.validate(hdsurl.text).type == ValidationResultEvent.VALID;
@@ -130,7 +165,21 @@
 						isValid = false;
 					}
 				}
+				else if (streamVo.streamType == StreamVo.STREAM_TYPE_KALTURA) {
+					// kaltura
+					var conversionProfileId:int = getLiveProfileId();
+					
+					if (conversionProfileId != 0) {
+						streamVo.dvrEnabled = useDvrKaltura.selected;
+						streamVo.recordingEnabled = useRecKaltura.selected;
+						streamVo.conversionProfileId = conversionProfileId;
+					} 
+					else {
+						isValid = false;
+					}
+				}
 				else {
+					// legacy / akamai
 					// validate ips
 					ipValidator.listener = streamPrimaryIp;
 					var isIpValid:Boolean = ipValidator.validate(streamPrimaryIp.text).type == ValidationResultEvent.VALID;
@@ -160,6 +209,23 @@
 					Alert.show(ResourceManager.getInstance().getString('live', 'fillAllMandatoryCorrect'));
 				}
 			}
+			
+			/**
+			 * get the id of the selected live conversion profile
+			 * */
+			private function getLiveProfileId():int
+			{
+				var ret:int = 0;
+				if (liveProfileKaltura.selectedItem) {
+					ret = (liveProfileKaltura.selectedItem as KalturaConversionProfile).id;
+				}
+				else if (liveProfiles && liveProfiles.length > 0) {
+					ret = (liveProfiles[0] as KalturaConversionProfile).id;
+				}
+				
+				return ret;
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:StringValidator id="streamNameValidator" property="text" source="{streamName}" 
@@ -184,6 +250,22 @@
 	</mx:HBox>
 	<mx:Spacer height="10" />
 	<mx:ViewStack id="forms" width="100%" height="100%">
+		<!-- form for kaltura -->
+		<mx:VBox styleName="noPadding" width="100%" height="100%">
+			<mx:HBox width="100%" >
+				<mx:Label text="{ResourceManager.getInstance().getString('live', 'liveProfile')}" width="{labelWidth}" styleName="boldLabel"/>
+				<mx:ComboBox id="liveProfileKaltura" dataProvider="{liveProfiles}" width="290" labelField="name"/>
+			</mx:HBox>
+			<mx:HBox width="100%" >
+				<mx:CheckBox id="useDvrKaltura" selected="false"/>
+				<mx:Text text="{ResourceManager.getInstance().getString('live', 'enableDvr')}" width="100%"/>
+			</mx:HBox>
+			<mx:HBox width="100%" >
+				<mx:CheckBox id="useRecKaltura" selected="false"/>
+				<mx:Text text="{ResourceManager.getInstance().getString('live', 'enableRecording')}" width="100%"/>
+			</mx:HBox>
+		</mx:VBox>
+		
 		<!-- form for universal and legacy -->
 		<mx:VBox styleName="noPadding" width="100%" height="100%">
 			<mx:HBox width="100%">
@@ -222,6 +304,8 @@
 				<mx:TextInput id="hlsurl" width="100%" />
 			</mx:HBox>
 		</mx:VBox>
+		
+		
 	</mx:ViewStack>
 
 	<mx:Label text="{ResourceManager.getInstance().getString('live', 'mandatory')}" width="100%"/>

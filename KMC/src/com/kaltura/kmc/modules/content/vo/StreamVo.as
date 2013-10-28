@@ -2,6 +2,7 @@ package com.kaltura.kmc.modules.content.vo
 {
 	public class StreamVo
 	{
+		public static const STREAM_TYPE_KALTURA:String = 'kaltura';
 		public static const STREAM_TYPE_UNIVERSAL:String = 'universal';
 		public static const STREAM_TYPE_LEGACY:String = 'legacy';
 		public static const STREAM_TYPE_MANUAL:String = 'manual';
@@ -36,9 +37,20 @@ package com.kaltura.kmc.modules.content.vo
 		public var password:String;
 		
 		/**
-		 * is DVR enabled for universal streams (hls/hds)  
+		 * is DVR enabled for akamai universal streams (hls/hds) and Kaltura streams  
 		 */
 		public var dvrEnabled:Boolean;
+		
+		/* kaltura stream specific */
+		/**
+		 * is recording enabled for Kaltura streams  
+		 */
+		public var recordingEnabled:Boolean;
+		
+		/**
+		 * conversion profile to be used (Kaltura streams)  
+		 */
+		public var conversionProfileId:int;
 		
 		
 		/* manual stream specific fields */

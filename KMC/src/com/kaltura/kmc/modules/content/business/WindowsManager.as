@@ -213,6 +213,7 @@ package com.kaltura.kmc.modules.content.business
 						break;
 					case WindowsStates.ADD_LIVE_STREAM:
 						currentPopUp = new AddLiveStream();
+						(currentPopUp as AddLiveStream).model = model;
 						var ip:String;
 						try {
 							ip = ExternalInterface.call("kmc.utils.getClientIP");

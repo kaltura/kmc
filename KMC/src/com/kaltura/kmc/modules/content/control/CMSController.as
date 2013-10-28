@@ -4,6 +4,7 @@ package com.kaltura.kmc.modules.content.control {
 	import com.kaltura.edw.control.commands.customData.*;
 	import com.kaltura.edw.control.events.*;
 	import com.kaltura.kmc.modules.content.commands.*;
+	import com.kaltura.kmc.modules.content.commands.live.*;
 	import com.kaltura.kmc.modules.content.commands.bulk.*;
 	import com.kaltura.kmc.modules.content.commands.cat.*;
 	import com.kaltura.kmc.modules.content.commands.cattrack.*;
@@ -64,8 +65,10 @@ package com.kaltura.kmc.modules.content.control {
 			//Window Event
 			addCommand(WindowEvent.CLOSE, CloseWindowCommand);
 			addCommand(WindowEvent.OPEN, OpenWindowCommand);
+			
 			//stream
 			addCommand(AddStreamEvent.ADD_STREAM, AddStreamCommand);
+			addCommand(AddStreamEvent.LIST_LIVE_PROFILES, ListLiveConversionProfilesCommand);
 
 			//Moderation Event
 			addCommand(ModerationsEvent.UPDATE_ENTRY_MODERATION, UpdateEntryModerationCommand);
