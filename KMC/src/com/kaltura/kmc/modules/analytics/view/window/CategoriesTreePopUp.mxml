@@ -19,11 +19,14 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.edw.components.fltr.FilterComponentEvent;
 			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
+			import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
 			import com.kaltura.edw.vo.CategoryVO;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.modules.analytics.business.AnalyticsCategoriesDataManager;
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
+			import com.kaltura.vo.KalturaCategory;
 			
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
@@ -35,7 +38,7 @@
 			[Bindable]
 			private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 			
-
+			
 			/**
 			 * elements are CategoryVOs.
 			 * an actual reference to the same ArrayCollection the Filter uses 
@@ -91,11 +94,29 @@
 				}
 				catTree.filter = categories;
 			}
+			
+			private function catTree_valueChangeHandler(event:FilterComponentEvent):void
+			{
+				var ivo:IndicatorVo = event.data;
+				// if category doesn't exist in catMap, create a fake category with data available on ivo and put it there. 
+				// this way onSubmitClick will find it there, and hopefully use it wisely.
+				var catvo:CategoryVO = _model.categoriesMap.getValue(ivo.value.toString());
+				if (!catvo){
+					var kCat:KalturaCategory = new KalturaCategory();
+					kCat.id = ivo.value;
+					kCat.name = ivo.label;
+					kCat.fullName = ivo.tooltip;
+					
+					_model.categoriesMap.put(kCat.id + "", new CategoryVO(kCat.id, kCat.name, kCat));
+				}
+				
+			}
+			
 		]]>
 	</mx:Script>
 	
 	<cat:CatTreeWrapper id="catTree" height="100%" width="100%" 
-						selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}" 
+						selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}" valueChange="catTree_valueChangeHandler(event)"
 						dataProvider="{_model.categories}" categories="{_model.categoriesMap}" kClient="{_model.kc}" 
 						externalDataManager="{new AnalyticsCategoriesDataManager()}" chunkedData="{false}"
 						creationComplete="onTreeCreationComplete()"/> <!--chunkedData="{filterModel.chunkedCategoriesLoad}"-->
