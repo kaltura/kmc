@@ -16,6 +16,10 @@ package com.kaltura.kmc.modules.admin.control.commands
 	public class AddUserCommand extends BaseCommand {
 		
 		private var _user:KalturaUser;
+		/**
+		 * the email with which we will create the logindata for the user 
+		 */
+		private var _requiredLoginEmail:String; 
 		
 		override public function execute(event:CairngormEvent):void {
 			// save user for future use
@@ -43,7 +47,9 @@ package com.kaltura.kmc.modules.admin.control.commands
 		 * user is already listed in the current account as end user, should update.
 		 * */ 
 		private function getUserResult(data:KalturaEvent):void {
-			var role:String = _user.roleIds
+			var role:String = _user.roleIds;
+			_requiredLoginEmail = _user.email; // the email entered on screen
+			
 			_user = data.data as KalturaUser;
 			_user.roleIds = role;
 			var str:String = ResourceManager.getInstance().getString('admin', 'user_exists_current_partner', [_user.id]);
@@ -69,12 +75,11 @@ package com.kaltura.kmc.modules.admin.control.commands
 		 * */
 		private function updateUser():void {
 			_user.isAdmin = true;
-			//_user.loginEnabled = true;
 			var ue:UserEvent = new UserEvent(UserEvent.UPDATE_USER, _user);
 			ue.dispatch();
 			
 			// enable user login
-			var ua:UserEnableLogin = new UserEnableLogin(_user.id, _user.email, _user.password);
+			var ua:UserEnableLogin = new UserEnableLogin(_user.id, _requiredLoginEmail, _user.password);
 			ua.addEventListener(KalturaEvent.COMPLETE, enableLoginResult);
 			ua.addEventListener(KalturaEvent.FAILED, fault);
 			_model.kc.post(ua);
