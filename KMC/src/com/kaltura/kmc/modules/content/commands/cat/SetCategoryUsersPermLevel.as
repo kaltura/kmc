@@ -6,6 +6,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	import com.kaltura.kmc.modules.content.utils.CategoryUserUtil;
 	import com.kaltura.vo.KalturaCategoryUser;
 	
 	import mx.controls.Alert;
@@ -45,6 +46,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 			for (var i:int = 0; i<_usrs.length; i++) {
 				cu = _usrs[i] as KalturaCategoryUser;
 				cu.permissionLevel = _perm;
+				cu.permissionNames = CategoryUserUtil.getPermissionNames(_perm);
 				cu.setUpdatedFieldsOnly(true);
 				mr.addAction(new CategoryUserUpdate(cu.categoryId, cu.userId, cu, true));
 			} 			
@@ -59,5 +61,6 @@ package com.kaltura.kmc.modules.content.commands.cat
 			cg.dispatch();
 			_model.decreaseLoadCounter();
 		}
+		
 	}
 }

@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	import com.kaltura.kmc.modules.content.utils.CategoryUserUtil;
 	import com.kaltura.vo.KalturaCategory;
 	import com.kaltura.vo.KalturaCategoryUser;
 	import com.kaltura.vo.KalturaUser;
@@ -32,6 +33,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 				cu = new KalturaCategoryUser();
 				cu.categoryId = catid;
 				cu.permissionLevel = permLvl;
+				cu.permissionNames = CategoryUserUtil.getPermissionNames(permLvl);
 				cu.updateMethod = mthd;
 				cu.userId = (usrs[i] as KalturaUser).id;
 				mr.addAction(new CategoryUserAdd(cu));
