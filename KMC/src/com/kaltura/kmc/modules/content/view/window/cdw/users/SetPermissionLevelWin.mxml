@@ -11,6 +11,7 @@
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryUserEvent;
 			import com.kaltura.types.KalturaCategoryUserPermissionLevel;
+			import com.kaltura.vo.KalturaCategoryUser;
 			
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
@@ -31,6 +32,14 @@
 					{label:resourceManager.getString('cms', 'manager'), data:KalturaCategoryUserPermissionLevel.MANAGER}
 				];
 				box.dataProvider = lvls;
+				if (users && users.length == 1) {
+					for each(var o:Object in lvls){
+						if (o.data == (users[0] as KalturaCategoryUser).permissionLevel) {
+							box.selectedItem = o;
+							break;
+						}
+					}
+				}
 			}
 
 
