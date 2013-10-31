@@ -15,11 +15,14 @@ package com.kaltura.kmc.modules.account.control.command {
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 
-	public class AddNewConversionProfileCommand implements ICommand, IResponder {
+	public class AddConversionProfileCommand implements ICommand, IResponder {
 		private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 
+		private var _nextEvent:CairngormEvent;
 
 		public function execute(event:CairngormEvent):void {
+			_nextEvent = (event as ConversionSettingsEvent).nextEvent;
+			
 			var cProfile:ConversionProfileVO = event.data as ConversionProfileVO;
 			
 			var mr:MultiRequest = new MultiRequest();
@@ -49,8 +52,9 @@ package com.kaltura.kmc.modules.account.control.command {
 
 		public function result(data:Object):void {
 			_model.loadingFlag = false;
-			var getAllProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
-			getAllProfilesEvent.dispatch();
+			if (_nextEvent) {
+				_nextEvent.dispatch();
+			}
 		}
 
 

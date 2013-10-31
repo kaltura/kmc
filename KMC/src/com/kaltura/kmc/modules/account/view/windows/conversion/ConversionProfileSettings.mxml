@@ -181,14 +181,19 @@
 					_conversionProfile.profile.storageProfileId = KalturaClient.NULL_INT;
 				}
 				
+				var updateProfileEvent:ConversionSettingsEvent;
 				if (currentState == EDIT_STATE) {
-					var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, conversionProfile);
+					updateProfileEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, conversionProfile);
 					updateProfileEvent.dispatch();
 				}
 				else {
-					var addProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.ADD_CONVERSION_PROFILE, false, conversionProfile);
-					addProfileEvent.dispatch();
+					updateProfileEvent = new ConversionSettingsEvent(ConversionSettingsEvent.ADD_CONVERSION_PROFILE, false, conversionProfile);
+					updateProfileEvent.dispatch();
 				}
+				
+				// list profiles afterwards
+				updateProfileEvent.nextEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
+				
 				closeWindow();
 			}
 			
@@ -247,7 +252,6 @@
 		<controls:DefaultLabelTextArea id="txtDefaultEntryId" width="100%" height="{conversionNameTextInput.height}" 
 				defaultLabel="{resourceManager.getString('account','ingestion_entryid')}"
 				defaultLabelStyleName="textAreaDefaultLabel" />
-		<!--<mx:TextInput id="txtDefaultEntryId" width="100%" />-->
 		
 		<mx:HBox id="remoteStorageBox" styleName="noPadding" width="100%" verticalAlign="middle">
 			<mx:Text text="{resourceManager.getString('account','storageProfileId')}"  

@@ -19,9 +19,13 @@ package com.kaltura.kmc.modules.account.control.command {
 
 	public class UpdateConversionProfileCommand implements ICommand, IResponder {
 		private var _model:AccountModelLocator = AccountModelLocator.getInstance();
+		
+		private var _nextEvent:CairngormEvent;
 
 
 		public function execute(event:CairngormEvent):void {
+			_nextEvent = (event as ConversionSettingsEvent).nextEvent;
+			
 			var cProfile:ConversionProfileVO = event.data as ConversionProfileVO;
 
 			var mr:MultiRequest = new MultiRequest();
@@ -64,8 +68,9 @@ package com.kaltura.kmc.modules.account.control.command {
 				Alert.show(ResourceManager.getInstance().getString('account', 'changesSaved'));
 			}
 
-			var getAllProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
-			getAllProfilesEvent.dispatch();
+			if (_nextEvent) {
+				_nextEvent.dispatch();
+			}
 		}
 
 

@@ -17,20 +17,14 @@
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
+			public static const MODE_MEDIA:String = "media";
+			public static const MODE_LIVE:String = "live";
 			
+			
+
 			[Bindable]
-			/**
-			 * show the "to advanced mode" button
-			 * */
-			public var showAdvancedButton:Boolean
-			
-			[Bindable]
-			/**
-			 * show the "to live mode" button
-			 * */
-			public var showLiveButton:Boolean
-			
-			
+			public var mode:String;
+		
 			[Bindable]
 			[ArrayElementType("com.kaltura.kmc.modules.account.vo.ConversionProfileVO")]
 			public var conversionData:ArrayCollection
@@ -44,6 +38,8 @@
 			private function deleteProfiles(event:Event):void {
 				var deletetProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.DELETE_CONVERSION_PROFILE);
 				deletetProfilesEvent.data = conversionProfilesTable.selectedItems;
+				// list profiles afterwards
+				deletetProfilesEvent.nextEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
 				deletetProfilesEvent.dispatch();
 			}
 			
@@ -112,10 +108,10 @@
 			<mx:LinkButton id="simpleModeBtn"
 						   label="{resourceManager.getString('account','switchToSimpleMode')}"
 						   click="changeState_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
-			<mx:LinkButton id="advancedModeBtn" visible="{showAdvancedButton}" includeInLayout="{showAdvancedButton}" 
+			<mx:LinkButton id="advancedModeBtn" visible="{mode != AdvancedMode.MODE_MEDIA}" includeInLayout="{mode != AdvancedMode.MODE_MEDIA}" 
 						   label="{resourceManager.getString('account','switchToAdvanceMode')}"
 						   click="changeState_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
-			<mx:LinkButton id="liveModeBtn" visible="{showLiveButton}" includeInLayout="{showLiveButton}"
+			<mx:LinkButton id="liveModeBtn" visible="{mode != AdvancedMode.MODE_LIVE}" includeInLayout="{mode != AdvancedMode.MODE_LIVE}"
 						   label="{resourceManager.getString('account','switchToLiveMode')}"
 						   click="changeState_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
 		</mx:HBox>

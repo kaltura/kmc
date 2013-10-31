@@ -39,7 +39,7 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(AccessControlEvent.ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE, UpdateAccessControlProfileCommand);
 			
 			// Conversion Profile Events
-			addCommand(ConversionSettingsEvent.ADD_CONVERSION_PROFILE, AddNewConversionProfileCommand);
+			addCommand(ConversionSettingsEvent.ADD_CONVERSION_PROFILE, AddConversionProfileCommand);
 			addCommand(ConversionSettingsEvent.DELETE_CONVERSION_PROFILE, DeleteConversionProfileCommand);
 			addCommand(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS, ListConversionProfilesAndFlavorParamsCommand);
 			addCommand(ConversionSettingsEvent.LIST_CONVERSION_PROFILES, ListConversionProfilesCommand);

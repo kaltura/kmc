@@ -18,9 +18,13 @@ package com.kaltura.kmc.modules.account.control.command {
 	public class DeleteConversionProfileCommand implements ICommand, IResponder {
 		private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 
+		private var _nextEvent:CairngormEvent;
+		
 		private var _profs:Array;
 
 		public function execute(event:CairngormEvent):void {
+			_nextEvent = (event as ConversionSettingsEvent).nextEvent;
+			
 			_profs = event.data;
 			var rm:IResourceManager = ResourceManager.getInstance();
 			
@@ -63,8 +67,9 @@ package com.kaltura.kmc.modules.account.control.command {
 			_model.loadingFlag = false;
 			if (data.success) {
 				Alert.show(ResourceManager.getInstance().getString('account', 'deleteConvProfilesDoneMsg'));
-				var getAllProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
-				getAllProfilesEvent.dispatch();
+				if (_nextEvent) {
+					_nextEvent.dispatch();
+				}
 			}
 			else {
 				Alert.show(data.error, ResourceManager.getInstance().getString('account', 'error'));

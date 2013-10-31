@@ -48,15 +48,19 @@ package com.kaltura.kmc.modules.account.control.events
 		
 		public var selected : Boolean;
 		
+		public var nextEvent:CairngormEvent;
+		
 		public function ConversionSettingsEvent(type:String, 
-												selected:Boolean=false, 
-												data:Object=null,
-										  		bubbles:Boolean=false, 
-										  		cancelable:Boolean=false)
+												selected:Boolean = false, 
+												data:Object = null,
+												nextEvent:CairngormEvent = null,
+										  		bubbles:Boolean = false, 
+										  		cancelable:Boolean = false)
 		{
 			super(type, bubbles, cancelable);
 			this.selected = selected;
 			this.data = data;
+			this.nextEvent = nextEvent;
 		}
 	}
 }
