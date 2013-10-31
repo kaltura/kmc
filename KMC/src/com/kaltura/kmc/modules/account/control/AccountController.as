@@ -1,8 +1,8 @@
 package com.kaltura.kmc.modules.account.control
 {
 	import com.adobe.cairngorm.control.FrontController;
-	import com.kaltura.kmc.modules.account.command.*;
-	import com.kaltura.kmc.modules.account.events.*;
+	import com.kaltura.kmc.modules.account.control.command.*;
+	import com.kaltura.kmc.modules.account.control.events.*;
 	
 	
 	public class AccountController extends FrontController
