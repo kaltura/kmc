@@ -44,6 +44,10 @@ package com.kaltura.vo
 		**/
 		public var height : int = int.MIN_VALUE;
 
+		/**
+		**/
+		public var tags : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -54,6 +58,7 @@ package com.kaltura.vo
 			arr.push('bitrate');
 			arr.push('width');
 			arr.push('height');
+			arr.push('tags');
 			return arr;
 		}
 

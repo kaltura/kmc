@@ -39,8 +39,9 @@ package com.kaltura.commands.conversionProfile
 		public var filterFields : String;
 		
 		/**
+		* @param type String
 		**/
-		public function ConversionProfileGetDefault(  )
+		public function ConversionProfileGetDefault( type : String = null )
 		{
 			service= 'conversionprofile';
 			action= 'getDefault';
@@ -48,6 +49,8 @@ package com.kaltura.commands.conversionProfile
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
+			keyArr.push('type');
+			valueArr.push(type);
 			applySchema(keyArr, valueArr);
 		}
 

@@ -30,10 +30,8 @@ package com.kaltura.types
 	public class KalturaMediaServerOrderBy
 	{
 		public static const CREATED_AT_ASC : String = '+createdAt';
-		public static const REPORTED_AT_ASC : String = '+reportedAt';
 		public static const UPDATED_AT_ASC : String = '+updatedAt';
 		public static const CREATED_AT_DESC : String = '-createdAt';
-		public static const REPORTED_AT_DESC : String = '-reportedAt';
 		public static const UPDATED_AT_DESC : String = '-updatedAt';
 	}
 }

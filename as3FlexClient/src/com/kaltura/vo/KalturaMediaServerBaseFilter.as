@@ -48,14 +48,6 @@ package com.kaltura.vo
 		**/
 		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
 
-		/**
-		**/
-		public var reportedAtGreaterThanOrEqual : int = int.MIN_VALUE;
-
-		/**
-		**/
-		public var reportedAtLessThanOrEqual : int = int.MIN_VALUE;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -64,8 +56,6 @@ package com.kaltura.vo
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('updatedAtGreaterThanOrEqual');
 			arr.push('updatedAtLessThanOrEqual');
-			arr.push('reportedAtGreaterThanOrEqual');
-			arr.push('reportedAtLessThanOrEqual');
 			return arr;
 		}
 

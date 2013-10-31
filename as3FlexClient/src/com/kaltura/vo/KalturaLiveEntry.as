@@ -64,12 +64,19 @@ package com.kaltura.vo
 		**/
 		public var liveStreamConfigurations : Array = null;
 
+		/**
+		* Recorded entry id
+		* 
+		**/
+		public var recordedEntryId : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('offlineMessage');
 			arr.push('liveStreamConfigurations');
+			arr.push('recordedEntryId');
 			return arr;
 		}
 

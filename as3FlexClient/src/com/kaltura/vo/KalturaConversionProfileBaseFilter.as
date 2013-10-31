@@ -50,6 +50,15 @@ package com.kaltura.vo
 		public var statusIn : String = null;
 
 		/**
+		* @see com.kaltura.types.KalturaConversionProfileType
+		**/
+		public var typeEqual : String = null;
+
+		/**
+		**/
+		public var typeIn : String = null;
+
+		/**
 		**/
 		public var nameEqual : String = null;
 
@@ -85,6 +94,8 @@ package com.kaltura.vo
 			arr.push('idIn');
 			arr.push('statusEqual');
 			arr.push('statusIn');
+			arr.push('typeEqual');
+			arr.push('typeIn');
 			arr.push('nameEqual');
 			arr.push('systemNameEqual');
 			arr.push('systemNameIn');
