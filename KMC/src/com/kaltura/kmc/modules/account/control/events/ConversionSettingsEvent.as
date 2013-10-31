@@ -12,11 +12,25 @@ package com.kaltura.kmc.modules.account.control.events
 		 */
 		public static const DELETE_CONVERSION_PROFILE : String = "account_deleteConversionProfile";
 		
+		/**
+		 * get all conversion profiles and cpaps
+		 * @internal
+		 * triggered after add/update/delete 
+		 */
 		public static const LIST_CONVERSION_PROFILES : String = "account_listConversionProfiles";
+		
+		/**
+		 * get all flavor params
+		 * @internal
+		 * triggered from AccessControl
+		 */
 		public static const LIST_FLAVOR_PARAMS : String = "account_listFlavorParams";
 		
 		/**
+		 * get all conversion profiles (+cpaps) and flavor params
 		 * event.data (can be) [pageIndex, pageSize] 
+		 * @internal
+		 * triggered from AdvancedMode.mxml
 		 */
 		public static const LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS : String = "account_listConversionProfilesAndFlavorParams";
 		

@@ -51,7 +51,7 @@ package com.kaltura.kmc.modules.account.control.command {
 				_model.cpPager.pageIndex = event.data[0];
 				_model.cpPager.pageSize = event.data[1];
 			}
-			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(_model.cpFilter, _model.cpPager);
+			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(_model.mediaCPFilter, _model.cpPager);
 			mr.addAction(listConversionProfiles);
 			
 			var p:KalturaFilterPager = new KalturaFilterPager();
@@ -87,14 +87,10 @@ package com.kaltura.kmc.modules.account.control.command {
 			// flavors
 			var flvorsTmpArrCol:ArrayCollection = new ArrayCollection();
 			var flavorsRespones:KalturaFlavorParamsListResponse = (kEvent.data as Array)[0] as KalturaFlavorParamsListResponse;
-			for each (var kFlavor:Object in flavorsRespones.objects) {
-				if (!(kFlavor is KalturaFlavorParams)) {
-					kFlavor = FlavorParamsUtil.makeFlavorParams(kFlavor);
-				}
+			for each (var kFlavor:KalturaFlavorParams in flavorsRespones.objects) {
 				var flavor:FlavorVO = new FlavorVO();
 				flavor.kFlavor = kFlavor as KalturaFlavorParams;
 				flvorsTmpArrCol.addItem(flavor);
-				
 			}
 			
 			// conversion profs
@@ -114,8 +110,8 @@ package com.kaltura.kmc.modules.account.control.command {
 			}
 			
 			// converionProfileAssetParams
-			var cpaps:Array = (kEvent.data[2] as KalturaConversionProfileAssetParamsListResponse).objects;
-			ListConversionProfilesUtil.addAssetParams(convProfilesTmpArrCol, cpaps);
+			_model.mediaCPAPs = (kEvent.data[2] as KalturaConversionProfileAssetParamsListResponse).objects;
+			ListConversionProfilesUtil.addAssetParams(convProfilesTmpArrCol, _model.mediaCPAPs);
 			
 			// mark flavors of first profile
 			var selectedItems:Array;

@@ -2,11 +2,12 @@ package com.kaltura.kmc.modules.account.model {
 	import com.adobe.cairngorm.model.IModelLocator;
 	import com.kaltura.kmc.modules.account.model.states.WindowsStates;
 	import com.kaltura.kmc.modules.account.vo.AdminVO;
-	import com.kaltura.vo.FlavorVO;
 	import com.kaltura.kmc.modules.account.vo.PackagesVO;
 	import com.kaltura.kmc.modules.account.vo.PartnerVO;
 	import com.kaltura.types.KalturaAccessControlOrderBy;
 	import com.kaltura.types.KalturaConversionProfileOrderBy;
+	import com.kaltura.types.KalturaConversionProfileType;
+	import com.kaltura.vo.FlavorVO;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaAccessControlFilter;
 	import com.kaltura.vo.KalturaBaseEntry;
@@ -103,14 +104,19 @@ package com.kaltura.kmc.modules.account.model {
 		public var mediaFlavorsData:ArrayCollection = new ArrayCollection();
 		
 		/**
+		 * media conversion-profile-asset-params 
+		 */
+		public var mediaCPAPs:Array;
+		
+		/**
 		 * list of thumbnail flavors 
 		 * */
 		public var thumbsData:ArrayCollection = new ArrayCollection();
 		
 		/**
-		 * default filter for conversion profiles in KMC
+		 * default filter for media conversion profiles in KMC 
 		 * */
-		public var cpFilter:KalturaConversionProfileFilter;
+		public var mediaCPFilter:KalturaConversionProfileFilter;
 		
 		/**
 		 * default pager for conversion profiles in KMC
@@ -173,8 +179,9 @@ package com.kaltura.kmc.modules.account.model {
 			acpFilter = new KalturaAccessControlFilter();
 			acpFilter.orderBy = KalturaAccessControlOrderBy.CREATED_AT_DESC;
 
-			cpFilter = new KalturaConversionProfileFilter();
-			cpFilter.orderBy = KalturaConversionProfileOrderBy.CREATED_AT_DESC;
+			mediaCPFilter = new KalturaConversionProfileFilter();
+			mediaCPFilter.orderBy = KalturaConversionProfileOrderBy.CREATED_AT_DESC;
+			mediaCPFilter.typeEqual = KalturaConversionProfileType.MEDIA;
 				
 		}
 

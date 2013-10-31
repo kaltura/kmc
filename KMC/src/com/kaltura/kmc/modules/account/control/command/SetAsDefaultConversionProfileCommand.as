@@ -29,12 +29,9 @@ package com.kaltura.kmc.modules.account.control.command
 			var mr:MultiRequest = new MultiRequest();
 			var setDefault:ConversionProfileSetAsDefault = new ConversionProfileSetAsDefault(event.data );
 			mr.addAction(setDefault);
-			var listProfiles:ConversionProfileList = new ConversionProfileList(_model.cpFilter);
+			// list conversion profiles - to get the correct default
+			var listProfiles:ConversionProfileList = new ConversionProfileList(_model.mediaCPFilter);
 			mr.addAction(listProfiles);
-			var p:KalturaFilterPager = new KalturaFilterPager();
-			p.pageSize = 1000;	// this is a very large number that should be enough to get all items
-			var cpaplist:ConversionProfileAssetParamsList = new ConversionProfileAssetParamsList(null, p);
-			mr.addAction(cpaplist);
 			
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
@@ -57,17 +54,11 @@ package com.kaltura.kmc.modules.account.control.command
 					Alert.show(er.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
 				}
 			}
-			else if (event.data[2].error) {
-				er = event.data[2].error as KalturaError;
-				if (er) {
-					Alert.show(er.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
-				}
-			}
 			else {
 				var listResult:Array = ((event.data as Array)[1] as KalturaConversionProfileListResponse).objects;
 				_model.mediaConversionProfiles = ListConversionProfilesUtil.handleConversionProfilesList(listResult);
-				var cpaps:Array = (event.data[2] as KalturaConversionProfileAssetParamsListResponse).objects;
-				ListConversionProfilesUtil.addAssetParams(_model.mediaConversionProfiles, cpaps);
+				// use the existing cpaps - they should be valid
+				ListConversionProfilesUtil.addAssetParams(_model.mediaConversionProfiles, _model.mediaCPAPs);
 			}
 			
 		}

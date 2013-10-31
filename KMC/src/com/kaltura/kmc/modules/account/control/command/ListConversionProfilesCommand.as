@@ -31,7 +31,7 @@ package com.kaltura.kmc.modules.account.control.command {
 				// here we always want the first page
 				_model.cpPager.pageIndex = 1;
 			}
-			var lcp:ConversionProfileList = new ConversionProfileList(_model.cpFilter, _model.cpPager);
+			var lcp:ConversionProfileList = new ConversionProfileList(_model.mediaCPFilter, _model.cpPager);
 			mr.addAction(lcp);
 			
 			var p:KalturaFilterPager = new KalturaFilterPager();
@@ -62,8 +62,8 @@ package com.kaltura.kmc.modules.account.control.command {
 			else {
 				var response:KalturaConversionProfileListResponse = event.data[0] as KalturaConversionProfileListResponse;
 				var ac:ArrayCollection = ListConversionProfilesUtil.handleConversionProfilesList(response.objects);
-				var cpaps:Array = (event.data[1] as KalturaConversionProfileAssetParamsListResponse).objects;
-				ListConversionProfilesUtil.addAssetParams(ac, cpaps);
+				_model.mediaCPAPs = (event.data[1] as KalturaConversionProfileAssetParamsListResponse).objects;
+				ListConversionProfilesUtil.addAssetParams(ac, _model.mediaCPAPs);
 				_model.mediaConversionProfiles = ac;
 				_model.totalMediaConversionProfiles = ac.length; 
 			}
