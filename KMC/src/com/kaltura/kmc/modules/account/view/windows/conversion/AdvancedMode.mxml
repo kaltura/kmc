@@ -19,6 +19,19 @@
 			
 			
 			[Bindable]
+			/**
+			 * show the "to advanced mode" button
+			 * */
+			public var showAdvancedButton:Boolean
+			
+			[Bindable]
+			/**
+			 * show the "to live mode" button
+			 * */
+			public var showLiveButton:Boolean
+			
+			
+			[Bindable]
 			[ArrayElementType("com.kaltura.kmc.modules.account.vo.ConversionProfileVO")]
 			public var conversionData:ArrayCollection
 			
@@ -43,12 +56,24 @@
 				}
 			}
 
-			private function simpleModeBtn_clickHandler(event:MouseEvent):void {
-				dispatchEvent(new TranscodingEvent(TranscodingEvent.CHANGE_STATE, Transcoding.MODE_DEFAULT_PROFILE));
-			}
 			
-			private function liveModeBtn_clickHandler(event:MouseEvent):void {
-				dispatchEvent(new TranscodingEvent(TranscodingEvent.CHANGE_STATE, Transcoding.MODE_LIVE_PROFILE));
+			/**
+			 * navigation handler
+			 * */
+			private function changeState_clickHandler(event:MouseEvent):void {
+				var state:String;
+				switch (event.target) {
+					case simpleModeBtn:
+						state = Transcoding.MODE_DEFAULT_PROFILE;
+						break;
+					case advancedModeBtn:
+						state = Transcoding.MODE_ADVANCED_PROFILE;
+						break;
+					case liveModeBtn:
+						state = Transcoding.MODE_LIVE_PROFILE;
+						break;
+				}
+				dispatchEvent(new TranscodingEvent(TranscodingEvent.CHANGE_STATE, state));
 			}
 			
 			private function openNewConversionProfilePopUp(event:Event):void {
@@ -85,10 +110,13 @@
 		<mx:HBox width="100%" styleName="DataGridActions" horizontalAlign="left">
 			<mx:LinkButton id="simpleModeBtn"
 						   label="{resourceManager.getString('account','switchToSimpleMode')}"
-						   click="simpleModeBtn_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
-			<mx:LinkButton id="liveModeBtn"
+						   click="changeState_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
+			<mx:LinkButton id="advancedModeBtn" visible="{showAdvancedButton}" includeInLayout="{showAdvancedButton}" 
+						   label="{resourceManager.getString('account','switchToAdvanceMode')}"
+						   click="changeState_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
+			<mx:LinkButton id="liveModeBtn" visible="{showLiveButton}" includeInLayout="{showLiveButton}"
 						   label="{resourceManager.getString('account','switchToLiveMode')}"
-						   click="liveModeBtn_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
+						   click="changeState_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
 		</mx:HBox>
 	</mx:VBox>
 	<mx:VBox id="actionBox" styleName="listActionsBox" height="100%">
