@@ -45,7 +45,6 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(ConversionSettingsEvent.LIST_CONVERSION_PROFILES, ListConversionProfilesCommand);
 			addCommand(ConversionSettingsEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);
 			addCommand(ConversionSettingsEvent.LIST_STORAGE_PROFILES, ListStorageProfilesCommand);
-			addCommand(ConversionSettingsEvent.MARK_FLAVORS, MarkFlavorsCommand);
 			addCommand(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, UpdateConversionProfileCommand);
 			addCommand(ConversionSettingsEvent.SET_AS_DEFAULT_CONVERSION_PROFILE, SetAsDefaultConversionProfileCommand);
 			

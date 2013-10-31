@@ -34,7 +34,6 @@ package com.kaltura.kmc.modules.account.control.events
 		 */
 		public static const LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS : String = "account_listConversionProfilesAndFlavorParams";
 		
-		public static const MARK_FLAVORS : String = "account_markFlavors";
 		public static const UPDATE_CONVERSION_PROFILE : String = "account_updateConversionProfile";
 		
 		/**
