@@ -48,12 +48,12 @@ package com.kaltura.kmc.modules.account.control.command
 				}
 			}
 			
-			_model.flavorsData = tempArrCol
+			_model.mediaFlavorsData = tempArrCol
 		}
 		
 		private function clearOldData():void
 		{
-			_model.flavorsData.removeAll();
+			_model.mediaFlavorsData.removeAll();
 		}
 		
 		public function fault(info:Object):void

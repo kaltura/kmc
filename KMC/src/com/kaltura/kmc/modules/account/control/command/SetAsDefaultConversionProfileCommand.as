@@ -65,9 +65,9 @@ package com.kaltura.kmc.modules.account.control.command
 			}
 			else {
 				var listResult:Array = ((event.data as Array)[1] as KalturaConversionProfileListResponse).objects;
-				_model.conversionData = ListConversionProfilesUtil.handleConversionProfilesList(listResult);
+				_model.mediaConversionProfiles = ListConversionProfilesUtil.handleConversionProfilesList(listResult);
 				var cpaps:Array = (event.data[2] as KalturaConversionProfileAssetParamsListResponse).objects;
-				ListConversionProfilesUtil.addAssetParams(_model.conversionData, cpaps);
+				ListConversionProfilesUtil.addAssetParams(_model.mediaConversionProfiles, cpaps);
 			}
 			
 		}

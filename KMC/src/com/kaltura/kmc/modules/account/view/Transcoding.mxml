@@ -4,7 +4,13 @@
 		 xmlns:conversion="com.kaltura.kmc.modules.account.view.windows.conversion.*"
 		 creationComplete="creationCompleteHandler(event)" xmlns:controls="com.kaltura.controls.*">
 	<mx:states>
-		<mx:State name="advanceModeState">
+		<mx:State name="{Transcoding.MODE_ADVANCED_PROFILE}">
+			<mx:SetProperty target="{titleText}" name="htmlText"
+							value="{resourceManager.getString('account', 'transcodingProfiles')}"/>
+			<mx:SetProperty target="{introText}" name="text"
+							value="{resourceManager.getString('account', 'transcodingSettingsAdvancedModeIntroText')}"/>
+		</mx:State>
+		<mx:State name="{Transcoding.MODE_LIVE_PROFILE}">
 			<mx:SetProperty target="{titleText}" name="htmlText"
 							value="{resourceManager.getString('account', 'transcodingProfiles')}"/>
 			<mx:SetProperty target="{introText}" name="text"
@@ -20,13 +26,32 @@
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.modules.account.control.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.account.events.TranscodingEvent;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
-			import com.kaltura.vo.FlavorVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.vo.FlavorVO;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
+			
+			
+			/**
+			 * name of the default (simple) window state
+			 * */
+			public static const MODE_DEFAULT_PROFILE:String = "defaultModeState";
+			
+			/**
+			 * name of the advanced window state
+			 * */
+			public static const MODE_ADVANCED_PROFILE:String = "advanceModeState";
+			
+			/**
+			 * name of the live profiles window state
+			 * */
+			public static const MODE_LIVE_PROFILE:String = "liveModeState";
+			
+			
 
 			private var _initRequested:Boolean;
 			
@@ -113,12 +138,36 @@
 
 
 			private function onChangeState(event:Event):void {
-				currentState = (currentState == null) ? 'advanceModeState' : null;
-				viewStack.selectedIndex = (currentState == null) ? 0 : 1;
+				if (event is TranscodingEvent) {
+					// came from advanced/live
+					switch ((event as TranscodingEvent).data) {
+						case Transcoding.MODE_DEFAULT_PROFILE:
+							currentState = null;
+							viewStack.selectedIndex = 0;
+							break;
+						case Transcoding.MODE_ADVANCED_PROFILE:
+							currentState = Transcoding.MODE_ADVANCED_PROFILE;
+							viewStack.selectedIndex = 1;
+							break;
+						case Transcoding.MODE_LIVE_PROFILE:
+							currentState = Transcoding.MODE_LIVE_PROFILE;
+							viewStack.selectedIndex = 2;
+							break;
+					}
+				}
+				else {
+					// came from simple mode
+					currentState = Transcoding.MODE_ADVANCED_PROFILE;
+					viewStack.selectedIndex = 1;
+				}
+				
 			}
 			
 
 
+			/**
+			 * save the default conversion profile
+			 * */
 			private function onSaveProfileClick(event:Event):void {
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_SAVE_TRANSCODING_SETTINGS, "Account>Save transcoding Settings");
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_DEF_TRANSCODING_PROF, GoogleAnalyticsConsts.ACCOUNT);
@@ -176,20 +225,24 @@
 			<conversion:ConversionSettingsTable id="simpleTable" height="100%" allSelected="{allFlavorsSelected}"
 												dataProvider="{flavorParamData}" creationComplete="setData()"/>
 			<mx:HBox width="100%" styleName="DataGridActions">
-				<mx:VBox width="40%" height="100%" verticalAlign="middle">
-					<mx:LinkButton id="advancedModeBtn"
-								   label="{resourceManager.getString('account','switchToAdvanceMode')}"
-								   click="onChangeState(event)" styleName="switchModesLinkButtonStyle"/>
-				</mx:VBox>
-				<mx:VBox width="60%" height="100%" verticalAlign="middle">
-					<mx:Button id="saveButton" label="{resourceManager.getString('account','saveChangesButton')}"
+				<mx:LinkButton id="advancedModeBtn"
+							   label="{resourceManager.getString('account','switchToAdvanceMode')}"
+							   click="onChangeState(event)" styleName="switchModesLinkButtonStyle"/>
+				
+				<mx:Spacer width="40%" />
+				<mx:Button id="saveButton" label="{resourceManager.getString('account','saveChangesButton')}"
 							   useHandCursor="true" buttonMode="true" click="onSaveProfileClick(event)"/>
-				</mx:VBox>
+				<mx:Spacer width="60%" />
 			</mx:HBox>
 		</mx:VBox>
 
 		<!-- advanced mode -->
 		<conversion:AdvancedMode id="advancedMode" width="100%" height="100%" 
+								 conversionData="{conversionProfs}" totalProfiles="{totalProfiles}"
+								 changeState="onChangeState(event)"/>
+
+		<!-- advanced mode -->
+		<conversion:AdvancedMode id="liveMode" width="100%" height="100%" 
 								 conversionData="{conversionProfs}" totalProfiles="{totalProfiles}"
 								 changeState="onChangeState(event)"/>
 	</mx:ViewStack>

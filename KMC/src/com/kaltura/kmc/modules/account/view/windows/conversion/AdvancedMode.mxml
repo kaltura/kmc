@@ -8,6 +8,8 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.account.control.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.account.events.TranscodingEvent;
+			import com.kaltura.kmc.modules.account.view.Transcoding;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			
 			import mx.collections.ArrayCollection;
@@ -42,7 +44,11 @@
 			}
 
 			private function simpleModeBtn_clickHandler(event:MouseEvent):void {
-				dispatchEvent(new Event("changeState"));
+				dispatchEvent(new TranscodingEvent(TranscodingEvent.CHANGE_STATE, Transcoding.MODE_DEFAULT_PROFILE));
+			}
+			
+			private function liveModeBtn_clickHandler(event:MouseEvent):void {
+				dispatchEvent(new TranscodingEvent(TranscodingEvent.CHANGE_STATE, Transcoding.MODE_LIVE_PROFILE));
 			}
 			
 			private function openNewConversionProfilePopUp(event:Event):void {
@@ -80,6 +86,9 @@
 			<mx:LinkButton id="simpleModeBtn"
 						   label="{resourceManager.getString('account','switchToSimpleMode')}"
 						   click="simpleModeBtn_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
+			<mx:LinkButton id="liveModeBtn"
+						   label="{resourceManager.getString('account','switchToLiveMode')}"
+						   click="liveModeBtn_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
 		</mx:HBox>
 	</mx:VBox>
 	<mx:VBox id="actionBox" styleName="listActionsBox" height="100%">

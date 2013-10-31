@@ -86,21 +86,21 @@ package com.kaltura.kmc.modules.account.model {
 		
 		[ArrayElementType("ConversionProfileVO")]
 		/**
-		 * list of conversion profiles <br>
+		 * list of media conversion profiles <br>
 		 * <code>ConversionProfileVO</code> objects
 		 */
-		public var conversionData:ArrayCollection = new ArrayCollection();
+		public var mediaConversionProfiles:ArrayCollection = new ArrayCollection();
 		
 		/**
-		 * total number of conversion profiles 
+		 * total number of media conversion profiles 
 		 */		
-		public var totalConversionProfiles:int;
+		public var totalMediaConversionProfiles:int;
 		
 		/**
-		 * list of optional flavors <br>
+		 * list of optional media flavors <br>
 		 * <code>FlavorVO</code> objects
 		 * */
-		public var flavorsData:ArrayCollection = new ArrayCollection();
+		public var mediaFlavorsData:ArrayCollection = new ArrayCollection();
 		
 		/**
 		 * list of thumbnail flavors 
@@ -184,7 +184,7 @@ package com.kaltura.kmc.modules.account.model {
 		 */
 		public function getClonedFlavorsData():ArrayCollection {
 			var arr:ArrayCollection = new ArrayCollection();
-			for each (var flavor:FlavorVO in flavorsData) {
+			for each (var flavor:FlavorVO in mediaFlavorsData) {
 				arr.addItem(flavor.clone());
 			}
 
@@ -197,7 +197,7 @@ package com.kaltura.kmc.modules.account.model {
 		 */
 		public function getUnselectedClonedFlavorsData():ArrayCollection {
 			var arr:ArrayCollection = new ArrayCollection();
-			for each (var flavor:FlavorVO in flavorsData) {
+			for each (var flavor:FlavorVO in mediaFlavorsData) {
 				var cloned:FlavorVO = flavor.clone();
 				cloned.selected = false;
 				arr.addItem(cloned);

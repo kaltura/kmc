@@ -12,7 +12,7 @@ package com.kaltura.kmc.modules.account.control.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			for each(var flavor:FlavorVO in _model.flavorsData)
+			for each(var flavor:FlavorVO in _model.mediaFlavorsData)
 			{
 				flavor.selected = (event as ConversionSettingsEvent).selected;
 			} 

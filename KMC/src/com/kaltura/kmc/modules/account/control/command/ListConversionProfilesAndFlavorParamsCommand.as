@@ -133,9 +133,9 @@ package com.kaltura.kmc.modules.account.control.command {
 				}
 			}
 
-			_model.flavorsData = flvorsTmpArrCol;
-			_model.totalConversionProfiles = convsProfilesRespones.totalCount; 
-			_model.conversionData = convProfilesTmpArrCol;
+			_model.mediaFlavorsData = flvorsTmpArrCol;
+			_model.totalMediaConversionProfiles = convsProfilesRespones.totalCount; 
+			_model.mediaConversionProfiles = convProfilesTmpArrCol;
 			_model.loadingFlag = false;
 		}
 
