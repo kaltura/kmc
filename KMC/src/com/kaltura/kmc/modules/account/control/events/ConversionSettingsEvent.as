@@ -18,14 +18,7 @@ package com.kaltura.kmc.modules.account.control.events
 		 * triggered after add/update/delete 
 		 */
 		public static const LIST_CONVERSION_PROFILES : String = "account_listConversionProfiles";
-		
-		/**
-		 * get all flavor params
-		 * @internal
-		 * triggered from AccessControl
-		 */
-		public static const LIST_FLAVOR_PARAMS : String = "account_listFlavorParams";
-		
+				
 		/**
 		 * get all conversion profiles (+cpaps) and flavor params
 		 * event.data (can be) [pageIndex, pageSize] 
@@ -33,6 +26,13 @@ package com.kaltura.kmc.modules.account.control.events
 		 * triggered from AdvancedMode.mxml
 		 */
 		public static const LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS : String = "account_listConversionProfilesAndFlavorParams";
+		
+		/**
+		 * get all flavor params
+		 * @internal
+		 * triggered from AccessControl
+		 */
+		public static const LIST_FLAVOR_PARAMS : String = "account_listFlavorParams";
 		
 		public static const UPDATE_CONVERSION_PROFILE : String = "account_updateConversionProfile";
 		
@@ -46,8 +46,13 @@ package com.kaltura.kmc.modules.account.control.events
 		 */
 		public static const LIST_STORAGE_PROFILES : String = "account_listStorageProfiles";
 		
+		
 		public var selected : Boolean;
 		
+		/**
+		 * an event to disaptch after the current one completes executing 
+		 * (requires dispatching in relevant command)
+		 */
 		public var nextEvent:CairngormEvent;
 		
 		public function ConversionSettingsEvent(type:String, 

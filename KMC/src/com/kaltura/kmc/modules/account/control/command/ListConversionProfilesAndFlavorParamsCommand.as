@@ -39,11 +39,6 @@ package com.kaltura.kmc.modules.account.control.command {
 
 			_model.loadingFlag = true;
 
-			var pager:KalturaFilterPager = new KalturaFilterPager();
-			pager.pageSize = ListFlavorsParamsCommand.DEFAULT_PAGE_SIZE;
-			var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
-			mr.addAction(listFlavorParams);
-
 			if (!_model.cpPager) {
 				_model.cpPager = new KalturaFilterPager();
 			}
@@ -59,6 +54,14 @@ package com.kaltura.kmc.modules.account.control.command {
 			var cpaplist:ConversionProfileAssetParamsList = new ConversionProfileAssetParamsList(null, p);
 			mr.addAction(cpaplist);
 
+			if (_model.mediaFlavorsData.length == 0) {
+				// assume this means flavors were not yet loaded, let's load:
+				var pager:KalturaFilterPager = new KalturaFilterPager();
+				pager.pageSize = ListFlavorsParamsCommand.DEFAULT_PAGE_SIZE;
+				var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
+				mr.addAction(listFlavorParams);
+			}
+			
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(mr);
@@ -84,18 +87,9 @@ package com.kaltura.kmc.modules.account.control.command {
 				}
 			}
 
-			// flavors
-			var flvorsTmpArrCol:ArrayCollection = new ArrayCollection();
-			var flavorsRespones:KalturaFlavorParamsListResponse = (kEvent.data as Array)[0] as KalturaFlavorParamsListResponse;
-			for each (var kFlavor:KalturaFlavorParams in flavorsRespones.objects) {
-				var flavor:FlavorVO = new FlavorVO();
-				flavor.kFlavor = kFlavor as KalturaFlavorParams;
-				flvorsTmpArrCol.addItem(flavor);
-			}
-			
 			// conversion profs
 			var convProfilesTmpArrCol:ArrayCollection = new ArrayCollection();
-			var convsProfilesRespones:KalturaConversionProfileListResponse = (kEvent.data as Array)[1] as KalturaConversionProfileListResponse;
+			var convsProfilesRespones:KalturaConversionProfileListResponse = (kEvent.data as Array)[0] as KalturaConversionProfileListResponse;
 			for each (var cProfile:KalturaConversionProfile in convsProfilesRespones.objects) {
 				var cp:ConversionProfileVO = new ConversionProfileVO();
 				cp.profile = cProfile;
@@ -110,8 +104,25 @@ package com.kaltura.kmc.modules.account.control.command {
 			}
 			
 			// converionProfileAssetParams
-			_model.mediaCPAPs = (kEvent.data[2] as KalturaConversionProfileAssetParamsListResponse).objects;
+			_model.mediaCPAPs = (kEvent.data[1] as KalturaConversionProfileAssetParamsListResponse).objects;
 			ListConversionProfilesUtil.addAssetParams(convProfilesTmpArrCol, _model.mediaCPAPs);
+			
+			// flavors
+			var flvorsTmpArrCol:ArrayCollection;
+			if (_model.mediaFlavorsData.length == 0) {
+				flvorsTmpArrCol = new ArrayCollection();
+				var flavorsResponse:KalturaFlavorParamsListResponse = (kEvent.data as Array)[2] as KalturaFlavorParamsListResponse;
+				for each (var kFlavor:KalturaFlavorParams in flavorsResponse.objects) {
+					var flavor:FlavorVO = new FlavorVO();
+					flavor.kFlavor = kFlavor as KalturaFlavorParams;
+					flvorsTmpArrCol.addItem(flavor);
+				}
+			}
+			else {
+				// take from model
+				flvorsTmpArrCol = _model.mediaFlavorsData;
+				_model.mediaFlavorsData = null; // refresh
+			}
 			
 			// mark flavors of first profile
 			var selectedItems:Array;
@@ -124,8 +135,12 @@ package com.kaltura.kmc.modules.account.control.command {
 			}
 			for each (var flavora:String in selectedItems) {
 				for each (var flavorVO:FlavorVO in flvorsTmpArrCol) {
-					if (flavora == flavorVO.kFlavor.id.toString())
+					if (flavora == flavorVO.kFlavor.id.toString()) {
 						flavorVO.selected = true;
+					}
+					else {
+						flavorVO.selected = false;
+					}
 				}
 			}
 
