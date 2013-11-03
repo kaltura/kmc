@@ -16,6 +16,7 @@ edit ConversionProfileAssetParams attributes
 			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.vo.FlavorVO;
 			import com.kaltura.vo.KalturaConversionProfileAssetParams;
+			import com.kaltura.vo.KalturaLiveParams;
 			
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
@@ -171,9 +172,18 @@ edit ConversionProfileAssetParams attributes
 				}
 				PermissionManager.getInstance().applyAllAttributes(this, "conversionFlavorDrilldown");
 				if (flavorVO) {
-					IFHWrap.visible = IFHWrap.includeInLayout = getIFHandleVisible(flavorVO);
+					// if this is a live param, only system name is relevant
+					if (flavorVO.kFlavor is KalturaLiveParams) {
+						cbAvailability.includeInLayout = cbAvailability.visible = false;
+						cbConvertPolicy.includeInLayout = cbConvertPolicy.visible = false;
+						cbGenPolicy.includeInLayout = cbGenPolicy.visible = false;
+						IFHWrap.includeInLayout = IFHWrap.visible = false;
+					}
+					else {
+						IFHWrap.visible = IFHWrap.includeInLayout = getIFHandleVisible(flavorVO);
+					}
 				}
-					
+				
 			}
 
 			/**
@@ -229,7 +239,7 @@ edit ConversionProfileAssetParams attributes
 						&& flavorVO.kFlavor.originalObjectType == 'KalturaWidevineFlavorParams') {
 						result = false;
 					}
-					
+					// this is another check for the same thing.
 					else if (flavorVO.kFlavor.tags.indexOf("widevine") > -1) {
 						// widevine flavors are marked either with "widevine" or with "widevine_mbr" tag
 						result = false;
@@ -250,23 +260,23 @@ edit ConversionProfileAssetParams attributes
 				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
 		<mx:Text text="{flavorVO.kFlavor.name}" width="100%"/>
 	</mx:HBox>
-	<mx:HBox>
+	<mx:HBox visible="{cbAvailability.visible}" includeInLayout="{cbAvailability.includeInLayout}">
 		<mx:Label text="{resourceManager.getString('account','assetAvialability')}" 
-				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
+				  styleName="boldLabel" width="{LABEL_WIDTH}" />
 		<mx:ComboBox id="cbAvailability" dataProvider="{_availabilityOptions}" 
 					 labelField="name" width="{ELEMENT_WIDTH}" />
 	</mx:HBox>
-	<mx:HBox>
+	<mx:HBox visible="{cbConvertPolicy.visible}" includeInLayout="{cbConvertPolicy.includeInLayout}">
 		<mx:Label text="{resourceManager.getString('account','convertToFlavor')}" 
-				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
+				  styleName="boldLabel" width="{LABEL_WIDTH}" />
 		<mx:ComboBox id="cbConvertPolicy" dataProvider="{_originOptions}" 
 					 labelField="name" width="{ELEMENT_WIDTH}" />
 	</mx:HBox>
-	<mx:HBox>
+	<mx:HBox visible="{tiSystemName.visible}" includeInLayout="{tiSystemName.includeInLayout}">
 		<mx:Text htmlText="{resourceManager.getString('account','systemName')}" width="{LABEL_WIDTH}"/>
 		<mx:TextInput id="tiSystemName" width="{ELEMENT_WIDTH}" />
 	</mx:HBox>
-	<mx:HBox>
+	<mx:HBox visible="{cbGenPolicy.visible}" includeInLayout="{cbGenPolicy.includeInLayout}">
 		<mx:Label text="{resourceManager.getString('account','generationPolicy')}" 
 				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
 		<mx:ComboBox id="cbGenPolicy" dataProvider="{_genOptions}" 
