@@ -12,9 +12,11 @@ package com.kaltura.kmc.modules.content.commands.live {
 	import com.kaltura.types.KalturaConversionProfileType;
 	import com.kaltura.types.KalturaDVRStatus;
 	import com.kaltura.types.KalturaMediaType;
+	import com.kaltura.types.KalturaNullableBoolean;
 	import com.kaltura.types.KalturaPlaybackProtocol;
 	import com.kaltura.types.KalturaSourceType;
 	import com.kaltura.vo.KalturaConversionProfile;
+	import com.kaltura.vo.KalturaConversionProfileFilter;
 	import com.kaltura.vo.KalturaConversionProfileListResponse;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaLiveStreamAdminEntry;
@@ -35,7 +37,9 @@ package com.kaltura.kmc.modules.content.commands.live {
 			var p:KalturaFilterPager = new KalturaFilterPager();
 			p.pageIndex = 1;
 			p.pageSize = 500; // trying to get all conversion profiles here, standard partner has no more than 10
-			var listProfiles:ConversionProfileList = new ConversionProfileList(null, p);
+			var f:KalturaConversionProfileFilter = new KalturaConversionProfileFilter();
+			f.typeEqual = KalturaConversionProfileType.LIVE_STREAM;
+			var listProfiles:ConversionProfileList = new ConversionProfileList(f, p);
 			listProfiles.addEventListener(KalturaEvent.COMPLETE, result);
 			listProfiles.addEventListener(KalturaEvent.FAILED, fault);
 			_model.increaseLoadCounter();
@@ -48,7 +52,10 @@ package com.kaltura.kmc.modules.content.commands.live {
 			
 			var result:Array = new Array();
 			for each (var kcp:KalturaConversionProfile in (data.data as KalturaConversionProfileListResponse).objects) {
-				if (kcp.type == KalturaConversionProfileType.LIVE_STREAM) {
+				if (kcp.isDefault == KalturaNullableBoolean.TRUE_VALUE) {
+					result.unshift(kcp);
+				}
+				else {
 					result.push(kcp);
 				}
 			}
