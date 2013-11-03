@@ -42,8 +42,10 @@
 			import com.kaltura.kmvc.control.KMvCEvent;
 			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.kmvc.model.KMvCModel;
+			import com.kaltura.types.KalturaDVRStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaType;
+			import com.kaltura.types.KalturaRecordStatus;
 			import com.kaltura.types.KalturaSourceType;
 			import com.kaltura.types.KalturaTaggedObjectType;
 			import com.kaltura.utils.KTimeUtil;
@@ -187,7 +189,9 @@
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_enableConvertToVod = false;
 				if (value is KalturaLiveStreamEntry) {
-					if ((value as KalturaLiveStreamEntry).sourceType == KalturaSourceType.LIVE_STREAM) {
+					if ((value as KalturaLiveStreamEntry).sourceType == KalturaSourceType.LIVE_STREAM
+						&& (value as KalturaLiveStreamEntry).dvrStatus == KalturaDVRStatus.ENABLED
+						&& (value as KalturaLiveStreamEntry).recordStatus == KalturaRecordStatus.ENABLED) {
 						_enableConvertToVod = true;
 					}
 					offlineHolder.visible = true;
