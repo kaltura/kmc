@@ -36,11 +36,11 @@
 			public var totalProfiles:int;
 			
 			private function deleteProfiles(event:Event):void {
-				var deletetProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.DELETE_CONVERSION_PROFILE);
-				deletetProfilesEvent.data = conversionProfilesTable.selectedItems;
+				var deleteProfiles:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.DELETE_CONVERSION_PROFILE);
+				deleteProfiles.data = conversionProfilesTable.selectedItems;
 				// list profiles afterwards
-				deletetProfilesEvent.nextEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
-				deletetProfilesEvent.dispatch();
+				deleteProfiles.nextEvent = new ConversionSettingsEvent(ConversionSettingsEvent.getListEventByMode(mode));
+				deleteProfiles.dispatch();
 			}
 			
 			

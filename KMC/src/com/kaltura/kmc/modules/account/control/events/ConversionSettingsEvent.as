@@ -1,6 +1,7 @@
 package com.kaltura.kmc.modules.account.control.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmc.modules.account.model.types.ConversionProfileWindowMode;
 	
 	public class ConversionSettingsEvent extends CairngormEvent
 	{
@@ -81,6 +82,15 @@ package com.kaltura.kmc.modules.account.control.events
 			this.selected = selected;
 			this.data = data;
 			this.nextEvent = nextEvent;
+		}
+		
+		
+		public static function getListEventByMode(mode:String):String {
+			var result:String = ConversionSettingsEvent.LIST_CONVERSION_PROFILES;
+			if (mode == ConversionProfileWindowMode.MODE_LIVE) {
+				result = ConversionSettingsEvent.LIST_LIVE_CONVERSION_PROFILES; 				
+			}
+			return result;
 		}
 	}
 }

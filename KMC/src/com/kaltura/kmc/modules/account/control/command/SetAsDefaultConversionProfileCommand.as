@@ -9,10 +9,14 @@ package com.kaltura.kmc.modules.account.control.command
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
+	import com.kaltura.kmc.modules.account.control.events.ConversionSettingsEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.utils.ListConversionProfilesUtil;
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
+	import com.kaltura.types.KalturaConversionProfileType;
+	import com.kaltura.vo.KalturaConversionProfile;
 	import com.kaltura.vo.KalturaConversionProfileAssetParamsListResponse;
+	import com.kaltura.vo.KalturaConversionProfileFilter;
 	import com.kaltura.vo.KalturaConversionProfileListResponse;
 	import com.kaltura.vo.KalturaFilterPager;
 	
@@ -24,54 +28,46 @@ package com.kaltura.kmc.modules.account.control.command
 	{
 		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
 		
+		private var _nextEvent:CairngormEvent;
+		
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
-			var mr:MultiRequest = new MultiRequest();
-			var setDefault:ConversionProfileSetAsDefault = new ConversionProfileSetAsDefault(event.data);
-			mr.addAction(setDefault);
-			// list conversion profiles - to get the correct default
-			var listProfiles:ConversionProfileList = new ConversionProfileList(_model.mediaCPFilter);
-			mr.addAction(listProfiles);
 			
-			mr.addEventListener(KalturaEvent.COMPLETE, result);
-			mr.addEventListener(KalturaEvent.FAILED, fault);
+			_nextEvent = (event as ConversionSettingsEvent).nextEvent;
 			
-			_model.context.kc.post(mr);
+			var cp:KalturaConversionProfile = event.data as KalturaConversionProfile;
+			var setDefault:ConversionProfileSetAsDefault = new ConversionProfileSetAsDefault(cp.id);
+			
+			setDefault.addEventListener(KalturaEvent.COMPLETE, result);
+			setDefault.addEventListener(KalturaEvent.FAILED, fault);
+			
+			_model.context.kc.post(setDefault);
 		}
+		
 		
 		public function result(event:Object):void {
 			_model.loadingFlag = false;
 			var er:KalturaError;
-			if (event.data[0].error) {
-				er = event.data[0].error as KalturaError;
+			if (event.error) {
+				er = event.error as KalturaError;
 				if (er) {
 					Alert.show(er.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
 				}
 			}
-			else if (event.data[1].error) {
-				er = event.data[1].error as KalturaError;
-				if (er) {
-					Alert.show(er.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
-				}
+			if (_nextEvent) {
+				_nextEvent.dispatch();
 			}
-			else {
-				var listResult:Array = ((event.data as Array)[1] as KalturaConversionProfileListResponse).objects;
-				_model.mediaConversionProfiles = ListConversionProfilesUtil.handleConversionProfilesList(listResult);
-				// use the existing cpaps - they should be valid
-				ListConversionProfilesUtil.addAssetParams(_model.mediaConversionProfiles, _model.mediaCPAPs);
-			}
-			
 		}
+		
 		
 		public function fault(info:Object):void
 		{
 			_model.loadingFlag = false;
-			if(info && info.error && info.error.errorMsg) {
-				
-				if(info.error.errorMsg.toString().indexOf("Invalid KS") > -1 ) {
-					
+			if (info && info.error && info.error.errorMsg) {
+				if (info.error.errorMsg.toString().indexOf("Invalid KS") > -1 ) {
 					JSGate.expired();
-				} else {
+				} 
+				else {
 					Alert.show(info && info.error && info.error.errorMsg);
 					
 				}

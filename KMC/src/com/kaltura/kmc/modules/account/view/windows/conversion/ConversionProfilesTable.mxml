@@ -60,14 +60,8 @@
 			private function openProfileDrilldown(e:Event):void {
 				var editCPWin:ConversionProfileSettings = new ConversionProfileSettings();
 				editCPWin.currentState = ConversionProfileSettings.EDIT_STATE;
-				
 				var cpvo:ConversionProfileVO = e.target.data as ConversionProfileVO;
-				if (cpvo.profile.type == KalturaConversionProfileType.LIVE_STREAM) {
-					editCPWin.mode = ConversionProfileWindowMode.MODE_LIVE; 
-				}
-				else {
-					editCPWin.mode = ConversionProfileWindowMode.MODE_MEDIA;
-				}
+				editCPWin.mode = getModeFromProfile(cpvo); 
 				editCPWin.conversionProfile = cpvo.clone();
 				PopUpManager.addPopUp(editCPWin, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(editCPWin);
@@ -89,8 +83,22 @@
 			 * */
 			protected function setDefaultProfile(e:Event):void {
 				var setDefault:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.SET_AS_DEFAULT_CONVERSION_PROFILE);
-				setDefault.data = (e.target.data as ConversionProfileVO).profile.id;
+				var cpvo:ConversionProfileVO = e.target.data as ConversionProfileVO;
+				setDefault.data = cpvo.profile;
+				setDefault.nextEvent = new ConversionSettingsEvent(ConversionSettingsEvent.getListEventByMode(getModeFromProfile(cpvo)));
 				setDefault.dispatch();
+			}
+			
+			
+			private function getModeFromProfile(cpvo:ConversionProfileVO):String {
+				var result:String;
+				if (cpvo.profile.type == KalturaConversionProfileType.LIVE_STREAM) {
+					result = ConversionProfileWindowMode.MODE_LIVE; 
+				}
+				else {
+					result = ConversionProfileWindowMode.MODE_MEDIA;
+				}
+				return result;
 			}
 		]]>
 	</mx:Script>
