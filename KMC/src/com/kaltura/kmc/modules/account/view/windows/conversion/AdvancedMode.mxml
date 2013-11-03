@@ -23,6 +23,9 @@
 			
 
 			[Bindable]
+			/**
+			 * AdvancedMode.MODE_LIVE / AdvancedMode.MODE_MEDIA
+			 * */
 			public var mode:String;
 		
 			[ArrayElementType("com.kaltura.kmc.modules.account.vo.ConversionProfileVO")]
@@ -46,7 +49,11 @@
 			
 			public function listProfiles():void {
 				if (paging) {
-					var getAllData:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
+					var eventType:String = ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS;
+					if (mode == AdvancedMode.MODE_LIVE) {
+						eventType == ConversionSettingsEvent.LIST_LIVE_CONVERSION_PROFILES_AND_FLAVOR_PARAMS;
+					}
+					var getAllData:ConversionSettingsEvent = new ConversionSettingsEvent(eventType);
 					getAllData.data = [paging.selectedPage, paging.pageSize];
 					getAllData.dispatch();
 				}
