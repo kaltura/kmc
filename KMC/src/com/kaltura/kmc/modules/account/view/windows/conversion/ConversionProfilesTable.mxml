@@ -5,7 +5,9 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.account.control.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.account.model.types.ConversionProfileWindowMode;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
+			import com.kaltura.types.KalturaConversionProfileType;
 			import com.kaltura.types.KalturaNullableBoolean;
 			
 			import mx.core.Application;
@@ -58,7 +60,15 @@
 			private function openProfileDrilldown(e:Event):void {
 				var editCPWin:ConversionProfileSettings = new ConversionProfileSettings();
 				editCPWin.currentState = ConversionProfileSettings.EDIT_STATE;
-				editCPWin.conversionProfile = (e.target.data as ConversionProfileVO).clone();
+				
+				var cpvo:ConversionProfileVO = e.target.data as ConversionProfileVO;
+				if (cpvo.profile.type == KalturaConversionProfileType.LIVE_STREAM) {
+					editCPWin.mode = ConversionProfileWindowMode.MODE_LIVE; 
+				}
+				else {
+					editCPWin.mode = ConversionProfileWindowMode.MODE_MEDIA;
+				}
+				editCPWin.conversionProfile = cpvo.clone();
 				PopUpManager.addPopUp(editCPWin, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(editCPWin);
 			}
