@@ -217,7 +217,7 @@ edit ConversionProfileAssetParams attributes
 
 			
 			/**
-			 * intermedia-flavor handling dropdown shoulld only be visible when:
+			 * intermediate-flavor handling dropdown should only be visible when:
 			 * <li> DRM is enabled for the account
 			 * <li> the flavor being edited is not a DRM flavor (single or multi bitrate)
 			 * */
@@ -227,6 +227,11 @@ edit ConversionProfileAssetParams attributes
 					// originalObjectType is being set in FlavorParamsUtil.makeFlavorParams()
 					if (flavorVO.kFlavor.hasOwnProperty('originalObjectType') 
 						&& flavorVO.kFlavor.originalObjectType == 'KalturaWidevineFlavorParams') {
+						result = false;
+					}
+					
+					else if (flavorVO.kFlavor.tags.indexOf("widevine") > -1) {
+						// widevine flavors are marked either with "widevine" or with "widevine_mbr" tag
 						result = false;
 					}
 				}
