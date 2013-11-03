@@ -44,26 +44,7 @@ package com.kaltura.vo {
 
 			newFlavor.selected = this.selected;
 			newFlavor.editable = this.editable;
-//			newFlavor.kFlavor.name = this.kFlavor.name;
-//			newFlavor.kFlavor.audioBitrate = this.kFlavor.audioBitrate;
-//			newFlavor.kFlavor.audioCodec = this.kFlavor.audioCodec;
-//			newFlavor.kFlavor.conversionEngines = this.kFlavor.conversionEngines;
-//			newFlavor.kFlavor.conversionEnginesExtraParams = this.kFlavor.conversionEnginesExtraParams;
-//			newFlavor.kFlavor.createdAt = this.kFlavor.createdAt;
-//			newFlavor.kFlavor.description = this.kFlavor.description;
-//			newFlavor.kFlavor.format = this.kFlavor.format;
-//			newFlavor.kFlavor.frameRate = this.kFlavor.frameRate;
-//			newFlavor.kFlavor.gopSize = this.kFlavor.gopSize;
-//			newFlavor.kFlavor.height = this.kFlavor.height;
-//			newFlavor.kFlavor.id = this.kFlavor.id;
-//			newFlavor.kFlavor.partnerId = this.kFlavor.partnerId;
-//			newFlavor.kFlavor.tags = this.kFlavor.tags;
-//			newFlavor.kFlavor.videoBitrate = this.kFlavor.videoBitrate;
-//			newFlavor.kFlavor.videoCodec = this.kFlavor.videoCodec;
-//			newFlavor.kFlavor.width = this.kFlavor.width;
-//			
 			var ar:Array = ObjectUtil.getObjectAllKeys(this.kFlavor);
-			
 			for (var i:int = 0; i < ar.length; i++) {
 				newFlavor.kFlavor[ar[i]] = kFlavor[ar[i]];
 			}
