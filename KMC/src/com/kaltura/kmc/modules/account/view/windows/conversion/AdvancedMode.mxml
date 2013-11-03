@@ -9,6 +9,7 @@
 		<![CDATA[
 			import com.kaltura.kmc.modules.account.control.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.account.events.TranscodingEvent;
+			import com.kaltura.kmc.modules.account.model.types.ConversionProfileWindowMode;
 			import com.kaltura.kmc.modules.account.view.Transcoding;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			
@@ -17,14 +18,10 @@
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
-			public static const MODE_MEDIA:String = "media";
-			public static const MODE_LIVE:String = "live";
-			
-			
 
 			[Bindable]
 			/**
-			 * AdvancedMode.MODE_LIVE / AdvancedMode.MODE_MEDIA
+			 * ConversionProfileWindowMode.MODE_LIVE / ConversionProfileWindowMode.MODE_MEDIA
 			 * */
 			public var mode:String;
 		
@@ -50,7 +47,7 @@
 			public function listProfiles():void {
 				if (paging) {
 					var eventType:String = ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS;
-					if (mode == AdvancedMode.MODE_LIVE) {
+					if (mode == ConversionProfileWindowMode.MODE_LIVE) {
 						eventType == ConversionSettingsEvent.LIST_LIVE_CONVERSION_PROFILES_AND_FLAVOR_PARAMS;
 					}
 					var getAllData:ConversionSettingsEvent = new ConversionSettingsEvent(eventType);
@@ -115,10 +112,10 @@
 			<mx:LinkButton id="simpleModeBtn"
 						   label="{resourceManager.getString('account','switchToSimpleMode')}"
 						   click="changeState_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
-			<mx:LinkButton id="advancedModeBtn" visible="{mode != AdvancedMode.MODE_MEDIA}" includeInLayout="{mode != AdvancedMode.MODE_MEDIA}" 
+			<mx:LinkButton id="advancedModeBtn" visible="{mode != ConversionProfileWindowMode.MODE_MEDIA}" includeInLayout="{mode != ConversionProfileWindowMode.MODE_MEDIA}" 
 						   label="{resourceManager.getString('account','switchToAdvanceMode')}"
 						   click="changeState_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
-			<mx:LinkButton id="liveModeBtn" visible="{mode != AdvancedMode.MODE_LIVE}" includeInLayout="{mode != AdvancedMode.MODE_LIVE}"
+			<mx:LinkButton id="liveModeBtn" visible="{mode != ConversionProfileWindowMode.MODE_LIVE}" includeInLayout="{mode != ConversionProfileWindowMode.MODE_LIVE}"
 						   label="{resourceManager.getString('account','switchToLiveMode')}"
 						   click="changeState_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
 		</mx:HBox>
