@@ -27,7 +27,7 @@ package com.kaltura.kmc.modules.account.control.command
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
 			var mr:MultiRequest = new MultiRequest();
-			var setDefault:ConversionProfileSetAsDefault = new ConversionProfileSetAsDefault(event.data );
+			var setDefault:ConversionProfileSetAsDefault = new ConversionProfileSetAsDefault(event.data);
 			mr.addAction(setDefault);
 			// list conversion profiles - to get the correct default
 			var listProfiles:ConversionProfileList = new ConversionProfileList(_model.mediaCPFilter);

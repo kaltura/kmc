@@ -20,7 +20,7 @@ package com.kaltura.kmc.modules.account.control.command {
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 
-	public class ListConversionProfilesCommand implements ICommand, IResponder {
+	public class ListLiveConversionProfilesCommand implements ICommand, IResponder {
 		
 		private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 
@@ -28,17 +28,17 @@ package com.kaltura.kmc.modules.account.control.command {
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
 			var mr:MultiRequest = new MultiRequest();
-			if (_model.mediaCPPager) {
+			if (_model.liveCPPager) {
 				// here we always want the first page
-				_model.mediaCPPager.pageIndex = 1;
+				_model.liveCPPager.pageIndex = 1;
 			}
-			var lcp:ConversionProfileList = new ConversionProfileList(_model.mediaCPFilter, _model.mediaCPPager);
+			var lcp:ConversionProfileList = new ConversionProfileList(_model.liveCPFilter, _model.liveCPPager);
 			mr.addAction(lcp);
 			
 			var p:KalturaFilterPager = new KalturaFilterPager();
 			p.pageSize = 1000;	// this is a very large number that should be enough to get all items
 			var cpapFilter:KalturaConversionProfileAssetParamsFilter = new KalturaConversionProfileAssetParamsFilter();
-			cpapFilter.conversionProfileIdFilter = _model.mediaCPFilter;
+			cpapFilter.conversionProfileIdFilter = _model.liveCPFilter;
 			var cpaplist:ConversionProfileAssetParamsList = new ConversionProfileAssetParamsList(cpapFilter, p);
 			mr.addAction(cpaplist);
 			
@@ -65,10 +65,10 @@ package com.kaltura.kmc.modules.account.control.command {
 			else {
 				var response:KalturaConversionProfileListResponse = event.data[0] as KalturaConversionProfileListResponse;
 				var ac:ArrayCollection = ListConversionProfilesUtil.handleConversionProfilesList(response.objects);
-				_model.mediaCPAPs = (event.data[1] as KalturaConversionProfileAssetParamsListResponse).objects;
-				ListConversionProfilesUtil.addAssetParams(ac, _model.mediaCPAPs);
-				_model.mediaConversionProfiles = ac;
-				_model.totalMediaConversionProfiles = ac.length; 
+				_model.liveCPAPs = (event.data[1] as KalturaConversionProfileAssetParamsListResponse).objects;
+				ListConversionProfilesUtil.addAssetParams(ac, _model.liveCPAPs);
+				_model.liveConversionProfiles = ac;
+				_model.totalLiveConversionProfiles = ac.length; 
 			}
 			_model.loadingFlag = false;
 		}

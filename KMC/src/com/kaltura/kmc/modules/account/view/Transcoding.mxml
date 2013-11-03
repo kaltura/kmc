@@ -27,10 +27,13 @@
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.modules.account.control.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.account.events.TranscodingEvent;
+			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.FlavorVO;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
@@ -51,50 +54,16 @@
 			 * */
 			public static const MODE_LIVE_PROFILE:String = "liveModeState";
 			
+			[Bindable]
+			public var model:AccountModelLocator;
 			
-
+			private var _profilesWatcher:ChangeWatcher
+			
+			/**
+			 * flag for loading conversion profiles only once, when ready
+			 * */
 			private var _initRequested:Boolean;
 			
-			private var _flavorParamData:ArrayCollection;
-
-
-			[Bindable]
-			public function set flavorParamData(value:ArrayCollection):void {
-				_flavorParamData = value;
-			}
-
-
-			public function get flavorParamData():ArrayCollection {
-				return _flavorParamData;
-			}
-
-			[Bindable]
-			/**
-			 * total number of conversion profiles (for pager)
-			 * */
-			public var totalProfiles:int;
-
-			[Bindable]
-			public var allFlavorsSelected:Boolean = false;
-
-			
-			
-			[ArrayElementType("com.kaltura.kmc.modules.account.vo.ConversionProfileVO")]
-			private var _conversionData:ArrayCollection;
-
-			
-			[Bindable]
-			public function get conversionProfs():ArrayCollection {
-				return _conversionData;
-			}
-
-
-			public function set conversionProfs(conversionData:ArrayCollection):void {
-				_conversionData = conversionData;
-				setData();
-			}
-
-
 
 			/**
 			 * get data
@@ -110,31 +79,15 @@
 
 
 
-			private function setData():void {
-				for each (var profile:ConversionProfileVO in _conversionData) {
+			private function setData(value:ArrayCollection):void {
+				for each (var profile:ConversionProfileVO in value) {
 					if (profile.profile.isDefault) {
 						simpleTable.cProfile = profile.clone();
 					}
-
-					for each (var flavor:FlavorVO in _flavorParamData) {
-						flavor.addEventListener(FlavorVO.SELECTED_CHANGED_EVENT, updateFlavorsStatus);
-					}
 				}
 
-				_flavorParamData.refresh();
+				model.mediaFlavorsData.refresh();
 			}
-
-
-
-			private function updateFlavorsStatus(event:Event):void {
-				var numSelected:int = 0;
-				for each (var flavor:FlavorVO in _flavorParamData) {
-					numSelected += flavor.selected ? 1 : 0;
-				}
-
-				allFlavorsSelected = (_flavorParamData.length == numSelected);
-			}
-
 
 
 			private function onChangeState(event:Event):void {
@@ -209,6 +162,10 @@
 					init();
 				}
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
+				if (_profilesWatcher) {
+					_profilesWatcher.unwatch();
+				}
+				_profilesWatcher = BindingUtils.bindSetter(setData, this, ["model", "mediaConversionProfiles"]);
 			}
 
 		]]>
@@ -225,8 +182,8 @@
 	<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all">
 		<!-- simple mode -->
 		<mx:VBox width="100%" verticalGap="0">
-			<conversion:ConversionSettingsTable id="simpleTable" height="100%" allSelected="{allFlavorsSelected}"
-												dataProvider="{flavorParamData}" creationComplete="setData()"/>
+			<conversion:ConversionSettingsTable id="simpleTable" height="100%" 
+												dataProvider="{model.mediaFlavorsData}" />
 			<mx:HBox width="100%" styleName="DataGridActions">
 				<mx:LinkButton id="advancedModeBtn"
 							   label="{resourceManager.getString('account','switchToAdvanceMode')}"
@@ -241,12 +198,12 @@
 
 		<!-- advanced mode -->
 		<conversion:AdvancedMode id="advancedMode" width="100%" height="100%" 
-								 conversionData="{conversionProfs}" totalProfiles="{totalProfiles}"
+								 conversionData="{model.mediaConversionProfiles}" totalProfiles="{model.totalMediaConversionProfiles}"
 								 mode="{AdvancedMode.MODE_MEDIA}" changeState="onChangeState(event)"/>
 
 		<!-- advanced mode -->
 		<conversion:AdvancedMode id="liveMode" width="100%" height="100%" 
-								 conversionData="{conversionProfs}" totalProfiles="{totalProfiles}"
+								 conversionData="{model.liveConversionProfiles}" totalProfiles="{model.totalLiveConversionProfiles}"
 								 mode="{AdvancedMode.MODE_LIVE}" changeState="onChangeState(event)"/>
 	</mx:ViewStack>
 </mx:VBox>

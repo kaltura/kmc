@@ -32,7 +32,7 @@ package com.kaltura.kmc.modules.account.control.command {
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 
-	public class ListConversionProfilesAndFlavorParamsCommand implements ICommand, IResponder {
+	public class ListLiveConversionProfilesAndFlavorParamsCommand implements ICommand, IResponder {
 		private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 
 
@@ -41,24 +41,24 @@ package com.kaltura.kmc.modules.account.control.command {
 
 			_model.loadingFlag = true;
 
-			if (!_model.mediaCPPager) {
-				_model.mediaCPPager = new KalturaFilterPager();
+			if (!_model.liveCPPager) {
+				_model.liveCPPager = new KalturaFilterPager();
 			}
 			if (event.data) {
-				_model.mediaCPPager.pageIndex = event.data[0];
-				_model.mediaCPPager.pageSize = event.data[1];
+				_model.liveCPPager.pageIndex = event.data[0];
+				_model.liveCPPager.pageSize = event.data[1];
 			}
-			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(_model.mediaCPFilter, _model.mediaCPPager);
+			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(_model.liveCPFilter, _model.liveCPPager);
 			mr.addAction(listConversionProfiles);
 			
 			var p:KalturaFilterPager = new KalturaFilterPager();
 			p.pageSize = 1000;	// this is a very large number that should be enough to get all items
 			var cpapFilter:KalturaConversionProfileAssetParamsFilter = new KalturaConversionProfileAssetParamsFilter();
-			cpapFilter.conversionProfileIdFilter = _model.mediaCPFilter;
+			cpapFilter.conversionProfileIdFilter = _model.liveCPFilter;
 			var cpaplist:ConversionProfileAssetParamsList = new ConversionProfileAssetParamsList(cpapFilter, p);
 			mr.addAction(cpaplist);
 
-			if (_model.mediaFlavorsData.length == 0) {
+			if (_model.liveFlavorsData.length == 0) {
 				// assume this means flavors were not yet loaded, let's load:
 				var pager:KalturaFilterPager = new KalturaFilterPager();
 				pager.pageSize = ListFlavorsParamsCommand.DEFAULT_PAGE_SIZE;
@@ -108,13 +108,13 @@ package com.kaltura.kmc.modules.account.control.command {
 			}
 			
 			// conversionProfileAssetParams
-			_model.mediaCPAPs = (kEvent.data[1] as KalturaConversionProfileAssetParamsListResponse).objects;
-			ListConversionProfilesUtil.addAssetParams(convProfilesTmpArrCol, _model.mediaCPAPs);
+			_model.liveCPAPs = (kEvent.data[1] as KalturaConversionProfileAssetParamsListResponse).objects;
+			ListConversionProfilesUtil.addAssetParams(convProfilesTmpArrCol, _model.liveCPAPs);
 			
 			// flavors
 			var flvorsTmpArrCol:ArrayCollection;
 			var liveFlvorsTmpArrCol:ArrayCollection;
-			if (_model.mediaFlavorsData.length == 0) {
+			if (_model.liveFlavorsData.length == 0) {
 				flvorsTmpArrCol = new ArrayCollection();
 				liveFlvorsTmpArrCol = new ArrayCollection();
 				var flavorsResponse:KalturaFlavorParamsListResponse = (kEvent.data as Array)[2] as KalturaFlavorParamsListResponse;
@@ -130,13 +130,13 @@ package com.kaltura.kmc.modules.account.control.command {
 						flvorsTmpArrCol.addItem(flavor);
 					}
 				}
-				// save live (regular is saved later)
-				_model.liveFlavorsData = liveFlvorsTmpArrCol;
+				// save media (live is saved later)
+				_model.mediaFlavorsData = flvorsTmpArrCol;
 			}
 			else {
 				// take from model
-				flvorsTmpArrCol = _model.mediaFlavorsData;
-				_model.mediaFlavorsData = null; // refresh
+				liveFlvorsTmpArrCol = _model.liveFlavorsData;
+				_model.liveFlavorsData = null; // refresh
 			}
 			
 			// mark flavors of first profile
@@ -149,7 +149,7 @@ package com.kaltura.kmc.modules.account.control.command {
 				selectedItems = new Array();
 			}
 			for each (var flavora:String in selectedItems) {
-				for each (var flavorVO:FlavorVO in flvorsTmpArrCol) {
+				for each (var flavorVO:FlavorVO in liveFlvorsTmpArrCol) {
 					if (flavora == flavorVO.kFlavor.id.toString()) {
 						flavorVO.selected = true;
 					}
@@ -159,9 +159,9 @@ package com.kaltura.kmc.modules.account.control.command {
 				}
 			}
 
-			_model.mediaFlavorsData = flvorsTmpArrCol;
-			_model.totalMediaConversionProfiles = convsProfilesRespones.totalCount; 
-			_model.mediaConversionProfiles = convProfilesTmpArrCol;
+			_model.liveFlavorsData = liveFlvorsTmpArrCol;
+			_model.totalLiveConversionProfiles = convsProfilesRespones.totalCount; 
+			_model.liveConversionProfiles = convProfilesTmpArrCol;
 			_model.loadingFlag = false;
 		}
 

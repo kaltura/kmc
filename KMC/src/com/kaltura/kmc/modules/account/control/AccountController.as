@@ -43,6 +43,8 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(ConversionSettingsEvent.DELETE_CONVERSION_PROFILE, DeleteConversionProfileCommand);
 			addCommand(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS, ListConversionProfilesAndFlavorParamsCommand);
 			addCommand(ConversionSettingsEvent.LIST_CONVERSION_PROFILES, ListConversionProfilesCommand);
+			addCommand(ConversionSettingsEvent.LIST_LIVE_CONVERSION_PROFILES_AND_FLAVOR_PARAMS, ListLiveConversionProfilesAndFlavorParamsCommand);
+			addCommand(ConversionSettingsEvent.LIST_LIVE_CONVERSION_PROFILES, ListLiveConversionProfilesCommand);
 			addCommand(ConversionSettingsEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);
 			addCommand(ConversionSettingsEvent.LIST_STORAGE_PROFILES, ListStorageProfilesCommand);
 			addCommand(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, UpdateConversionProfileCommand);

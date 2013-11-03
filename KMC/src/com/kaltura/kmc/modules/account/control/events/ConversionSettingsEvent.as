@@ -20,12 +20,27 @@ package com.kaltura.kmc.modules.account.control.events
 		public static const LIST_CONVERSION_PROFILES : String = "account_listConversionProfiles";
 				
 		/**
+		 * get all live conversion profiles and cpaps
+		 * @internal
+		 * triggered after add/update/delete 
+		 */
+		public static const LIST_LIVE_CONVERSION_PROFILES : String = "account_listLiveConversionProfiles";
+				
+		/**
 		 * get all conversion profiles (+cpaps) and flavor params
 		 * event.data (can be) [pageIndex, pageSize] 
 		 * @internal
 		 * triggered from AdvancedMode.mxml
 		 */
 		public static const LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS : String = "account_listConversionProfilesAndFlavorParams";
+				
+		/**
+		 * get all live conversion profiles (+cpaps) and flavor params
+		 * event.data (can be) [pageIndex, pageSize] 
+		 * @internal
+		 * triggered from AdvancedMode.mxml
+		 */
+		public static const LIST_LIVE_CONVERSION_PROFILES_AND_FLAVOR_PARAMS : String = "account_listLiveConversionProfilesAndFlavorParams";
 		
 		/**
 		 * get all flavor params

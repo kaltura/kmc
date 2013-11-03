@@ -85,6 +85,20 @@ package com.kaltura.kmc.modules.account.model {
 		 */
 		public var storageProfiles:ArrayCollection;
 		
+		/**
+		 * the default entry for the current conversion profile
+		 * (only loaded during save for validation) 
+		 */
+		public var defaultEntry:KalturaBaseEntry;
+		
+		/**
+		 * list of thumbnail flavors 
+		 * */
+		public var thumbsData:ArrayCollection = new ArrayCollection();
+		
+		// media conversion profiles
+		// -------------------------
+		
 		[ArrayElementType("ConversionProfileVO")]
 		/**
 		 * list of media conversion profiles <br>
@@ -109,11 +123,6 @@ package com.kaltura.kmc.modules.account.model {
 		public var mediaCPAPs:Array;
 		
 		/**
-		 * list of thumbnail flavors 
-		 * */
-		public var thumbsData:ArrayCollection = new ArrayCollection();
-		
-		/**
 		 * default filter for media conversion profiles in KMC 
 		 * */
 		public var mediaCPFilter:KalturaConversionProfileFilter;
@@ -121,13 +130,44 @@ package com.kaltura.kmc.modules.account.model {
 		/**
 		 * default pager for conversion profiles in KMC
 		 * */
-		public var cpPager:KalturaFilterPager;
+		public var mediaCPPager:KalturaFilterPager;
+		
+		
+		// live conversion profiles
+		// -------------------------
+		
+		[ArrayElementType("ConversionProfileVO")]
+		/**
+		 * list of live conversion profiles <br>
+		 * <code>ConversionProfileVO</code> objects
+		 */
+		public var liveConversionProfiles:ArrayCollection = new ArrayCollection();
 		
 		/**
-		 * the default entry for the current conversion profile
-		 * (only loaded during save for validation) 
+		 * total number of live conversion profiles 
+		 */		
+		public var totalLiveConversionProfiles:int;
+		
+		/**
+		 * live conversion-profile-asset-params 
 		 */
-		public var defaultEntry:KalturaBaseEntry;
+		public var liveCPAPs:Array;
+		
+		/**
+		 * list of optional live flavors <br>
+		 * <code>FlavorVO</code> objects
+		 * */
+		public var liveFlavorsData:ArrayCollection = new ArrayCollection();
+		
+		/**
+		 * default filter for live conversion profiles in KMC 
+		 * */
+		public var liveCPFilter:KalturaConversionProfileFilter;
+		
+		/**
+		 * default pager for live conversion profiles in KMC
+		 * */
+		public var liveCPPager:KalturaFilterPager;
 		
 		
 		/* ****************************************************
@@ -182,6 +222,10 @@ package com.kaltura.kmc.modules.account.model {
 			mediaCPFilter = new KalturaConversionProfileFilter();
 			mediaCPFilter.orderBy = KalturaConversionProfileOrderBy.CREATED_AT_DESC;
 			mediaCPFilter.typeEqual = KalturaConversionProfileType.MEDIA;
+
+			liveCPFilter = new KalturaConversionProfileFilter();
+			liveCPFilter.orderBy = KalturaConversionProfileOrderBy.CREATED_AT_DESC;
+			liveCPFilter.typeEqual = KalturaConversionProfileType.LIVE_STREAM;
 				
 		}
 
