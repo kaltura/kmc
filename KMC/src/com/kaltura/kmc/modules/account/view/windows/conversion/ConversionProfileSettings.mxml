@@ -21,27 +21,36 @@
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.model.types.ConversionProfileWindowMode;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
+			import com.kaltura.types.KalturaConversionProfileType;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaStorageProfile;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Alert;
+			import mx.controls.videoClasses.CuePointManager;
 			import mx.managers.PopUpManager;
 
 			public static const EDIT_STATE:String = "edit_state";
 			
 			private const LABEL_WIDTH:int = 100;
 			
+			
+			[Bindable]
+			/**
+			 * window mode 
+			 * @see com.kaltura.kmc.modules.account.model.types.ConversionProfileWindowMode
+			 * */
 			public var mode:String = ConversionProfileWindowMode.MODE_MEDIA;
 
 			[Bindable]
-			private var _model:AccountModelLocator = AccountModelLocator.getInstance();
-			
 			/**
 			 * true if partner has remote storage feature
 			 * */
 			public var allowStorageProfiles:Boolean = true;
+			
+			[Bindable]
+			private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 			
 			/**
 			 *  the conversion profile to add or edit
@@ -49,10 +58,11 @@
 			private var _conversionProfile:ConversionProfileVO;
 
 			/**
-			 * chagne watcher for default entry
+			 * change watcher for default entry
 			 * */
 			private var _cw:ChangeWatcher;
 
+			
 			/**
 			 * get the conversion profile
 			 */
@@ -73,6 +83,7 @@
 			private function help():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section_transcoding_profile_edit'));
 			}
+			
 
 			/**
 			 * clear listeners, bindings, etc.
@@ -85,6 +96,7 @@
 				cg.dispatch();
 			}
 
+			
 			/**
 			 * creation complete of the main window.
 			 * for edit we clone the acp, for add new one we create a new acp.
@@ -97,8 +109,20 @@
 				else {
 					// when we use this pop-up to create a new Conversion profile
 					conversionProfile = new ConversionProfileVO();
+					// set profile type
+					if (mode == ConversionProfileWindowMode.MODE_LIVE) {
+						conversionProfile.profile.type = KalturaConversionProfileType.LIVE_STREAM;
+					}
+					else {
+						conversionProfile.profile.type = KalturaConversionProfileType.MEDIA;
+					}
 					conversionProfile.flavors = new Array();
 					PermissionManager.getInstance().applyAllAttributes(this, "conversionProfileDrilldown_add");
+				}
+				
+				if (mode == ConversionProfileWindowMode.MODE_LIVE) {
+					// live doesn't have storage profiles. need to do this after RnP.
+					allowStorageProfiles = false;
 				}
 				
 				// list storage profiles once
@@ -142,8 +166,6 @@
 					}
 				}
 			}
-
-
 
 			
 			private function validateInput(event:Event = null):Boolean {
@@ -229,6 +251,7 @@
 	<mx:StringValidator source="{conversionNameTextInput}" property="text" trigger="{conversionNameTextInput}"
 						triggerEvent="change" required="true"
 						requiredFieldError="{resourceManager.getString('account','requiredNameError')}"/>
+	
 	<mx:HBox width="100%" >
 		<mx:Label text="{resourceManager.getString('account','requiredName')}"
 				  toolTip="{resourceManager.getString('account','requiredNameToolTip')}"
@@ -245,7 +268,7 @@
 				  toolTip="{resourceManager.getString('account','requiredFlavorsToolTip')}"
 				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
 		<conversion:ConversionSettingsTable id="flavorsTable" height="100%" 
-			dataProvider="{currentState == EDIT_STATE ? _model.getClonedFlavorsData() : _model.getUnselectedClonedFlavorsData()}"
+			dataProvider="{currentState == EDIT_STATE ? _model.cloneFlavorsData(mode) : _model.cloneFlavorsDataUnselected(mode)}"
 			cProfile="{conversionProfile}"  />
 	</mx:HBox>
 	<mx:HBox width="100%" verticalAlign="middle">
@@ -255,7 +278,8 @@
 				defaultLabel="{resourceManager.getString('account','ingestion_entryid')}"
 				defaultLabelStyleName="textAreaDefaultLabel" />
 		
-		<mx:HBox id="remoteStorageBox" styleName="noPadding" width="100%" verticalAlign="middle">
+		<mx:HBox id="remoteStorageBox" styleName="noPadding" width="100%" verticalAlign="middle"
+				 visible="{allowStorageProfiles}" includeInLayout="{allowStorageProfiles}">
 			<mx:Text text="{resourceManager.getString('account','storageProfileId')}"  
 					 width="{LABEL_WIDTH}" styleName="tightBoldLines"/>
 			<mx:ComboBox id="cbRemoteProfile" enabled="{_model.storageProfiles.length > 1}"

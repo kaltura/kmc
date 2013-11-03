@@ -1,5 +1,6 @@
 package com.kaltura.kmc.modules.account.model {
 	import com.adobe.cairngorm.model.IModelLocator;
+	import com.kaltura.kmc.modules.account.model.types.ConversionProfileWindowMode;
 	import com.kaltura.kmc.modules.account.vo.AdminVO;
 	import com.kaltura.kmc.modules.account.vo.PackagesVO;
 	import com.kaltura.kmc.modules.account.vo.PartnerVO;
@@ -228,9 +229,13 @@ package com.kaltura.kmc.modules.account.model {
 		/**
 		 * clone all flavours and return them 
 		 */
-		public function getClonedFlavorsData():ArrayCollection {
+		public function cloneFlavorsData(type:String):ArrayCollection {
+			var source:ArrayCollection = mediaFlavorsData;
+			if (type == ConversionProfileWindowMode.MODE_LIVE) {
+				source = liveFlavorsData;
+			}
 			var arr:ArrayCollection = new ArrayCollection();
-			for each (var flavor:FlavorVO in mediaFlavorsData) {
+			for each (var flavor:FlavorVO in source) {
 				arr.addItem(flavor.clone());
 			}
 
@@ -238,12 +243,19 @@ package com.kaltura.kmc.modules.account.model {
 		}
 
 
+		
 		/**
 		 * clone all flavours, mark them all as unselected and return them 
+		 * @param type get live/media flavor params
 		 */
-		public function getUnselectedClonedFlavorsData():ArrayCollection {
+		public function cloneFlavorsDataUnselected(type:String):ArrayCollection {
+			var source:ArrayCollection = mediaFlavorsData;
+			if (type == ConversionProfileWindowMode.MODE_LIVE) {
+				source = liveFlavorsData;
+			}
+			
 			var arr:ArrayCollection = new ArrayCollection();
-			for each (var flavor:FlavorVO in mediaFlavorsData) {
+			for each (var flavor:FlavorVO in source) {
 				var cloned:FlavorVO = flavor.clone();
 				cloned.selected = false;
 				arr.addItem(cloned);
