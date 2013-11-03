@@ -1,6 +1,5 @@
 package com.kaltura.kmc.modules.account.model {
 	import com.adobe.cairngorm.model.IModelLocator;
-	import com.kaltura.kmc.modules.account.model.states.WindowsStates;
 	import com.kaltura.kmc.modules.account.vo.AdminVO;
 	import com.kaltura.kmc.modules.account.vo.PackagesVO;
 	import com.kaltura.kmc.modules.account.vo.PartnerVO;
@@ -179,10 +178,6 @@ package com.kaltura.kmc.modules.account.model {
 		public var listPackages:ArrayCollection;
 		
 		
-		//---------------------------------------------------------
-		// states
-		public var windowState:String = WindowsStates.NONE;
-
 		//---------------------------------------------------------
 		// Flags 
 		public var devFlag:Boolean = false;
