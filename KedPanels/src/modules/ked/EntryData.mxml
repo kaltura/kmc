@@ -189,10 +189,14 @@
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_enableConvertToVod = false;
 				if (value is KalturaLiveStreamEntry) {
-					if ((value as KalturaLiveStreamEntry).sourceType == KalturaSourceType.LIVE_STREAM
-						&& (value as KalturaLiveStreamEntry).dvrStatus == KalturaDVRStatus.ENABLED
-						&& (value as KalturaLiveStreamEntry).recordStatus == KalturaRecordStatus.ENABLED) {
-						_enableConvertToVod = true;
+					if ((value as KalturaLiveStreamEntry).sourceType == KalturaSourceType.LIVE_STREAM) {
+						if ((value as KalturaLiveStreamEntry).dvrStatus == KalturaDVRStatus.ENABLED
+							&& (value as KalturaLiveStreamEntry).recordStatus == KalturaRecordStatus.ENABLED) {
+							_enableConvertToVod = true;
+						}
+						if ((value as KalturaLiveStreamEntry).recordedEntryId != null) {
+							_recordedEntryId = (value as KalturaLiveStreamEntry).recordedEntryId;
+						}
 					}
 					offlineHolder.visible = true;
 					offlineHolder.includeInLayout = true;
@@ -284,6 +288,12 @@
 			 * entry's reference id before the user had a chance to change it
 			 * */
 			private var _originalRefid:String;
+			
+			[Bindable]
+			/**
+			 * id of a VOD entry created from a KAltura live entry
+			 * */
+			private var _recordedEntryId:String;
 
 
 			// =================================================================
@@ -655,10 +665,20 @@
 
 
 
+			/**
+			 * open drilldown window with the recorded entry (Kaltura live only)
+			 * */
+			protected function showRecordedEntry(event:MouseEvent):void {
+				// create the new model 
+				var cg:KMvCEvent = new ModelEvent(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL);
+				controller.dispatch(cg);
+				cg = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, _recordedEntryId);
+				controller.dispatch(cg);
+			}
 
 
 			/**
-			 * open drilldown window wit the parent entry
+			 * open drilldown window with the parent entry
 			 * (the entry this clip was made from)
 			 * */
 			protected function showParentEntry(event:MouseEvent):void {
@@ -812,7 +832,7 @@
 
 			[Bindable]
 			/**
-			 * @copy #previewOnly
+			 * @copy #showEmbed
 			 * */
 			private var _showEmbed:Boolean = false;
 
@@ -1044,10 +1064,15 @@
 				<mx:Label text="{EntryDataHelper.formatDate(selectedEntry.createdAt)}" width="100%"
 						  styleName="drillDownSubLabel"/>
 			</mx:HBox>
-			<mx:HBox width="100%" paddingBottom="15">
+			<mx:HBox width="100%" paddingBottom="15" visible="{landingPageLabel.text != ''}" includeInLayout="{landingPageLabel.text != ''}">
 				<mx:Label text="{resourceManager.getString('drilldown','landingPage')}:" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
 				<mx:Label id="landingPageLabel" selectable="true" width="220" truncateToFit="false" styleName="drillDownSubLabel"/>
+			</mx:HBox>
+			<mx:HBox width="100%" paddingBottom="15" visible="{_recordedEntryId != null}" includeInLayout="{_recordedEntryId != null}">
+				<mx:Label text="{resourceManager.getString('drilldown','vodEntry')}:" width="{LABEL_WIDTH}"
+						  styleName="drillDownLabel"/>
+				<mx:LinkButton label="{_recordedEntryId}" click="showRecordedEntry(event)" width="100%" />
 			</mx:HBox>
 	
 			<mx:HRule width="100%"/>
