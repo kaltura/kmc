@@ -208,15 +208,13 @@
 				var updateProfileEvent:ConversionSettingsEvent;
 				if (currentState == EDIT_STATE) {
 					updateProfileEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, conversionProfile);
-					updateProfileEvent.dispatch();
 				}
 				else {
 					updateProfileEvent = new ConversionSettingsEvent(ConversionSettingsEvent.ADD_CONVERSION_PROFILE, false, conversionProfile);
-					updateProfileEvent.dispatch();
 				}
-				
 				// list profiles afterwards
 				updateProfileEvent.nextEvent = new ConversionSettingsEvent(ConversionSettingsEvent.getListEventByMode(mode));
+				updateProfileEvent.dispatch();
 				
 				closeWindow();
 			}
