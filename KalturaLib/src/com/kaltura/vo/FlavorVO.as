@@ -3,6 +3,8 @@ package com.kaltura.vo {
 	import com.kaltura.utils.ObjectUtil;
 	
 	import flash.events.Event;
+	import flash.utils.getDefinitionByName;
+	import flash.utils.getQualifiedClassName;
 	
 	import mx.utils.ObjectProxy;
 
@@ -41,9 +43,12 @@ package com.kaltura.vo {
 
 		public function clone():FlavorVO {
 			var newFlavor:FlavorVO = new FlavorVO();
-
 			newFlavor.selected = this.selected;
 			newFlavor.editable = this.editable;
+			// need to make kFlavor the same type as current!!
+			var kFlavorClassName:String = getQualifiedClassName(this.kFlavor);
+			var kFlavorClass:Class = getDefinitionByName(kFlavorClassName) as Class; 
+			newFlavor.kFlavor = (new kFlavorClass()) as KalturaFlavorParams;
 			var ar:Array = ObjectUtil.getObjectAllKeys(this.kFlavor);
 			for (var i:int = 0; i < ar.length; i++) {
 				newFlavor.kFlavor[ar[i]] = kFlavor[ar[i]];
