@@ -941,6 +941,13 @@
 				}
 				_selectedEntry.tags = str;
 			}
+			
+			protected function landingPageLabel_clickHandler(event:MouseEvent):void
+			{
+				landingPageLabel.mx_internal::getTextField().setSelection(0, landingPageLabel.text.length);
+				System.setClipboard(landingPageLabel.text);
+			}
+			
 		]]>
 	</mx:Script>
 
@@ -1067,7 +1074,8 @@
 			<mx:HBox width="100%" paddingBottom="15" visible="{landingPageLabel.text != ''}" includeInLayout="{landingPageLabel.text != ''}">
 				<mx:Label text="{resourceManager.getString('drilldown','landingPage')}:" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
-				<mx:Label id="landingPageLabel" selectable="true" width="220" truncateToFit="false" styleName="drillDownSubLabel"/>
+				<mx:Label id="landingPageLabel" selectable="true" width="220" truncateToFit="false" styleName="drillDownSubLabel" 
+						  click="landingPageLabel_clickHandler(event)"/>
 			</mx:HBox>
 			<mx:HBox width="100%" paddingBottom="15" visible="{_recordedEntryId != null}" includeInLayout="{_recordedEntryId != null}">
 				<mx:Label text="{resourceManager.getString('drilldown','vodEntry')}:" width="{LABEL_WIDTH}"
