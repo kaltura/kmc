@@ -1,23 +1,27 @@
 package com.kaltura.kmc.modules.content.commands.live {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.liveStream.LiveStreamAdd;
+	import com.kaltura.edw.control.DataTabController;
 	import com.kaltura.edw.control.KedController;
+	import com.kaltura.edw.control.events.KedEntryEvent;
+	import com.kaltura.edw.control.events.ModelEvent;
 	import com.kaltura.edw.control.events.SearchEvent;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.AddStreamEvent;
 	import com.kaltura.kmc.modules.content.events.WindowEvent;
 	import com.kaltura.kmc.modules.content.vo.StreamVo;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaDVRStatus;
 	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.types.KalturaPlaybackProtocol;
 	import com.kaltura.types.KalturaRecordStatus;
 	import com.kaltura.types.KalturaSourceType;
-	import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 	import com.kaltura.vo.KalturaLiveStreamConfiguration;
 	import com.kaltura.vo.KalturaLiveStreamEntry;
 	
 	import mx.controls.Alert;
+	import mx.events.CloseEvent;
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 
@@ -26,6 +30,8 @@ package com.kaltura.kmc.modules.content.commands.live {
 	public class AddStreamCommand extends KalturaCommand {
 
 		private var _sourceType:String = null;
+		
+		private var _createdEntryId:String;
 		
 		
 		
@@ -144,9 +150,13 @@ package com.kaltura.kmc.modules.content.commands.live {
 
 		override public function result(data:Object):void {
 			super.result(data);
+			_createdEntryId = (data.data as KalturaLiveStreamEntry).id;
 			var rm:IResourceManager = ResourceManager.getInstance();
 			if (_sourceType == KalturaSourceType.MANUAL_LIVE_STREAM) {
-				Alert.show(rm.getString('live', 'manualLiveEntryCreatedMessage', [(data.data as KalturaLiveStreamAdminEntry).id]), rm.getString('live', 'manualLiveEntryCreatedMessageTitle'));
+				Alert.show(rm.getString('live', 'manualLiveEntryCreatedMessage', [_createdEntryId]), rm.getString('live', 'manualLiveEntryCreatedMessageTitle'));
+			}
+			else if (_sourceType == KalturaSourceType.LIVE_STREAM) {
+				showKalturaLiveCreaetedMessage();
 			}
 			else {
 				Alert.show(rm.getString('live', 'liveEntryTimeMessage'), rm.getString('live', 'liveEntryTimeMessageTitle'));
@@ -159,6 +169,23 @@ package com.kaltura.kmc.modules.content.commands.live {
 
 			var searchEvent2:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _model.listableVo);
 			KedController.getInstance().dispatch(searchEvent2);
+		}
+		
+		
+		private function showKalturaLiveCreaetedMessage():void {
+			var rm:IResourceManager = ResourceManager.getInstance();
+			Alert.cancelLabel = rm.getString('live', 'goto_entry');
+			Alert.show(rm.getString('live', 'kalturaLiveEntryCreatedMessage'), rm.getString('live', 'liveEntryTimeMessageTitle'), Alert.OK|Alert.CANCEL, null, gotoEntry);
+			Alert.cancelLabel = rm.getString('live', 'cancel');
+		}
+		
+		private function gotoEntry(event:CloseEvent):void {
+			if (event.detail == Alert.CANCEL) {
+				var cg:KMvCEvent = new ModelEvent(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL);
+				DataTabController.getInstance().dispatch(cg);
+				cg = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, _createdEntryId);
+				DataTabController.getInstance().dispatch(cg);
+			}
 		}
 	}
 }
