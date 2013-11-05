@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.business.EntryLiveStreamingHelper;
+			import com.kaltura.vo.KalturaLiveStreamEntry;
+			
+			[Bindable]
+			public var selectedEntry:KalturaLiveStreamEntry;
+		]]>
+	</mx:Script>
+	<mx:Label text="{resourceManager.getString('drilldown', 'streamCfg')}" styleName="drillDownLabel"/>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('drilldown', 'hlsStreamUrl')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="hlsStreamUrl" text="{selectedEntry.hlsStreamUrl}" selectable="true" 
+				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" truncateToFit="false" styleName="drillDownSubLabel"/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('drilldown', 'externalStreamId')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="externalStreamId" text="{selectedEntry.streamRemoteId}" selectable="true"
+				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('drilldown', 'dvrStatus')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="dvrStatus" text="{EntryLiveStreamingHelper.getDVRStatus(selectedEntry)}" selectable="true" 
+				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('drilldown', 'dvrWin')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="dvrWin" text="{EntryLiveStreamingHelper.getDVRWindow(selectedEntry)}" selectable="true" 
+				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+	</mx:HBox>
+	
+	<mx:Spacer height="20"/>
+</mx:VBox>
