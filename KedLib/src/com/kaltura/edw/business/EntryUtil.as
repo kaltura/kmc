@@ -4,23 +4,18 @@ package com.kaltura.edw.business {
 	import com.kaltura.analytics.KAnalyticsTracker;
 	import com.kaltura.analytics.KAnalyticsTrackerConsts;
 	import com.kaltura.edw.model.datapacks.ContextDataPack;
-	import com.kaltura.edw.model.datapacks.DistributionDataPack;
-	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 	import com.kaltura.kmvc.model.IDataPackRepository;
-	import com.kaltura.kmvc.model.KMvCModel;
-	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.types.KalturaStatsKmcEventType;
 	import com.kaltura.utils.ObjectUtil;
 	import com.kaltura.utils.SoManager;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaFlavorAsset;
-	import com.kaltura.vo.KalturaMediaEntry;
-	import com.kaltura.vo.KalturaPlayableEntry;
-
-	import mx.collections.ArrayCollection;
-	import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 	import com.kaltura.vo.KalturaLiveStreamBitrate;
+	import com.kaltura.vo.KalturaLiveStreamEntry;
+	import com.kaltura.vo.KalturaPlayableEntry;
+	
+	import mx.collections.ArrayCollection;
 
 	/**
 	 * This class will hold functions related to kaltura entries
@@ -74,7 +69,7 @@ package com.kaltura.edw.business {
 			var context:ContextDataPack = model.getDataPack(ContextDataPack) as ContextDataPack;
 			if (context.openPlayerFunc) {
 				var bitrates:Array;
-				if (selectedEntry is KalturaLiveStreamAdminEntry) {
+				if (selectedEntry is KalturaLiveStreamEntry) {
 					bitrates = [];
 					var o:Object;
 					for each (var br:KalturaLiveStreamBitrate in selectedEntry.bitrates) {

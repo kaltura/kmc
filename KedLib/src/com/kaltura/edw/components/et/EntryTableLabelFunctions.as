@@ -6,7 +6,7 @@ package com.kaltura.edw.components.et
 	import com.kaltura.utils.KTimeUtil;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaClipAttributes;
-	import com.kaltura.vo.KalturaLiveStreamAdminEntry;
+	import com.kaltura.vo.KalturaLiveStreamEntry;
 	import com.kaltura.vo.KalturaOperationAttributes;
 	
 	import mx.controls.dataGridClasses.DataGridColumn;
@@ -123,7 +123,7 @@ package com.kaltura.edw.components.et
 				
 				case KalturaEntryStatus.IMPORT: 
 					//fixed to all states
-					if (entry is KalturaLiveStreamAdminEntry) {
+					if (entry is KalturaLiveStreamEntry) {
 						return rm.getString('cms', 'provisioning');
 					}
 					else {

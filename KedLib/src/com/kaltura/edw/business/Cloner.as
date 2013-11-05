@@ -3,6 +3,7 @@ package com.kaltura.edw.business
 	import com.kaltura.utils.ObjectUtil;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaLiveStreamAdminEntry;
+	import com.kaltura.vo.KalturaLiveStreamEntry;
 	import com.kaltura.vo.KalturaMediaEntry;
 	import com.kaltura.vo.KalturaMixEntry;
 	import com.kaltura.vo.KalturaPlayableEntry;
@@ -26,8 +27,8 @@ package com.kaltura.edw.business
 			else if (entry is KalturaMixEntry) {
 				copy = cloneKalturaMixEntry(entry as KalturaMixEntry);
 			}
-			else if (entry is KalturaLiveStreamAdminEntry) {
-				copy = cloneKalturaStreamAdminEntry(entry as KalturaLiveStreamAdminEntry);
+			else if (entry is KalturaLiveStreamEntry) {
+				copy = cloneKalturaStreamAdminEntry(entry as KalturaLiveStreamEntry);
 			}
 			else if (entry is KalturaMediaEntry) {
 				copy = cloneKalturaMediaEntry(entry as KalturaMediaEntry);
@@ -104,9 +105,9 @@ package com.kaltura.edw.business
 			return mix;
 		}
 		
-		public static function cloneKalturaStreamAdminEntry(source:KalturaLiveStreamAdminEntry):KalturaLiveStreamAdminEntry
+		public static function cloneKalturaStreamAdminEntry(source:KalturaLiveStreamEntry):KalturaLiveStreamEntry
 		{
-			var klsae:KalturaLiveStreamAdminEntry = new KalturaLiveStreamAdminEntry();
+			var klsae:KalturaLiveStreamEntry = new KalturaLiveStreamEntry();
 			var atts:Array = ObjectUtil.getObjectAllKeys(source);
 			for (var i:int = 0; i< atts.length; i++) {
 				klsae[atts[i]] = source[atts[i]];

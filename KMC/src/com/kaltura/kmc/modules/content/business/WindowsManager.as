@@ -56,7 +56,7 @@ package com.kaltura.kmc.modules.content.business
 	import com.kaltura.types.KalturaStatsKmcEventType;
 	import com.kaltura.utils.SoManager;
 	import com.kaltura.vo.KalturaBaseEntry;
-	import com.kaltura.vo.KalturaLiveStreamAdminEntry;
+	import com.kaltura.vo.KalturaLiveStreamEntry;
 	import com.kaltura.vo.KalturaLiveStreamBitrate;
 	import com.kaltura.vo.KalturaMediaEntry;
 	import com.kaltura.vo.KalturaPlaylist;
@@ -620,7 +620,7 @@ package com.kaltura.kmc.modules.content.business
 		 * open a preview player with live streaming entry
 		 * */
 		private function openLivestreamPreview(entry:KalturaBaseEntry):void {
-			var lp:KalturaLiveStreamAdminEntry = entry as KalturaLiveStreamAdminEntry;
+			var lp:KalturaLiveStreamEntry = entry as KalturaLiveStreamEntry;
 			var bitrates:Array = new Array();
 			var o:Object;
 			for each (var br:KalturaLiveStreamBitrate in lp.bitrates) {
@@ -687,7 +687,7 @@ package com.kaltura.kmc.modules.content.business
 		private function openPreviewEmbed():void {
 			var entry:KalturaBaseEntry = _entryData.selectedEntry;
 			
-			if (entry is KalturaLiveStreamAdminEntry) {
+			if (entry is KalturaLiveStreamEntry) {
 				openLivestreamPreview(entry);
 				
 			}
