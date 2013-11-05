@@ -1077,10 +1077,19 @@
 				<mx:Label id="landingPageLabel" selectable="true" width="220" truncateToFit="false" styleName="drillDownSubLabel" 
 						  click="landingPageLabel_clickHandler(event)"/>
 			</mx:HBox>
-			<mx:HBox width="100%" paddingBottom="15" visible="{_recordedEntryId != null}" includeInLayout="{_recordedEntryId != null}">
+			<!-- recorded entry id - when this is a live entry, the corresponding VOD entry -->
+			<mx:HBox width="100%" paddingBottom="15" visible="{_recordedEntryId != null}" includeInLayout="{_recordedEntryId != null}" >
 				<mx:Label text="{resourceManager.getString('drilldown','vodEntry')}:" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
 				<mx:LinkButton label="{_recordedEntryId}" click="showRecordedEntry(event)" />
+			</mx:HBox>
+			<!-- when this is a recorded entry - the original live entry -->
+			<mx:HBox width="100%" paddingBottom="15" 
+					 visible="{selectedEntry.sourceType == KalturaSourceType.RECORDED_LIVE}"
+					 includeInLayout="{selectedEntry.sourceType != KalturaSourceType.RECORDED_LIVE}" >
+				<mx:Label text="{resourceManager.getString('drilldown','archive')}:" width="{LABEL_WIDTH}"
+						  styleName="drillDownLabel"/>
+				<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)" />
 			</mx:HBox>
 	
 			<mx:HRule width="100%"/>
@@ -1133,8 +1142,8 @@
 						<mx:Label text="{selectedEntry.votes}" width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
 					</mx:HBox>
 	
-					<mx:HBox width="100%" visible="{selectedEntry.rootEntryId != selectedEntry.id}"
-							 includeInLayout="{selectedEntry.rootEntryId != selectedEntry.id}">
+					<mx:HBox width="100%" visible="{selectedEntry.rootEntryId != selectedEntry.id &amp;&amp; selectedEntry.sourceType != KalturaSourceType.RECORDED_LIVE}"
+							 includeInLayout="{selectedEntry.rootEntryId != selectedEntry.id &amp;&amp; selectedEntry.sourceType != KalturaSourceType.RECORDED_LIVE}">
 						<mx:Label text="{resourceManager.getString('drilldown','clippedFrom')}:" width="{RIGHT_LABEL_WIDTH}"
 								  styleName="drillDownLabel"/>
 						<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)"
