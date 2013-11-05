@@ -174,13 +174,11 @@ package com.kaltura.kmc.modules.content.commands.live {
 		
 		private function showKalturaLiveCreaetedMessage():void {
 			var rm:IResourceManager = ResourceManager.getInstance();
-			Alert.cancelLabel = rm.getString('live', 'goto_entry');
-			Alert.show(rm.getString('live', 'kalturaLiveEntryCreatedMessage'), rm.getString('live', 'liveEntryTimeMessageTitle'), Alert.OK|Alert.CANCEL, null, gotoEntry);
-			Alert.cancelLabel = rm.getString('live', 'cancel');
+			Alert.show(rm.getString('live', 'kalturaLiveEntryCreatedMessage'), rm.getString('live', 'liveEntryTimeMessageTitle'), Alert.YES|Alert.NO, null, gotoEntry);
 		}
 		
 		private function gotoEntry(event:CloseEvent):void {
-			if (event.detail == Alert.CANCEL) {
+			if (event.detail == Alert.YES) {
 				var cg:KMvCEvent = new ModelEvent(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL);
 				DataTabController.getInstance().dispatch(cg);
 				cg = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, _createdEntryId);
