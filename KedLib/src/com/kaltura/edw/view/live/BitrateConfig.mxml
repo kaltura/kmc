@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Metadata>
+		[Event(name="extrainfo", type="flash.events.Event")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.KalturaLiveStreamBitrate;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.UIComponent;
+			
+			[Bindable]
+			/**
+			 * available bitrates
+			 * */
+			private var _bitratese:ArrayCollection = new ArrayCollection(['50', '100', '200', '300', '350',
+				'500', '650', '800', '950', '1000',
+				'1200', '1500', '1800', '2000',
+				'2500', '14000']);
+			
+			
+			[Bindable]
+			private var _bitrates:ArrayCollection;
+			
+			public function initData(entryBitrates:Array):void {
+				_bitrates = new ArrayCollection(entryBitrates);
+				// set the selections of combos 
+				setSelectedValueToCombo(bitrateCombo1, bitrate1.selected);
+				setSelectedValueToCombo(bitrateCombo2, bitrate2.selected);
+				setSelectedValueToCombo(bitrateCombo3, bitrate3.selected);
+			}
+			
+			public function isChanged():Boolean {
+				return _bitrates.source.toString() != getBitrates().toString();
+			}
+			
+			
+			/**
+			 * build the bitrates array.
+			 * @return array of <code>KalturaLiveStreamBitrate</code>
+			 * 		(possibly empty), or null if failed validation
+			 * */
+			public function getBitrates():Array {
+				var arr:Array = new Array();
+				var cb:CheckBox;
+				var combo:ComboBox;
+				var ns:NumericStepper;
+				for (var i:uint = 1; i <= 3; i++) {
+					var uic:UIComponent = this["bitrate" + i];
+					cb = this["bitrate" + i] as CheckBox;
+					if (cb && cb.selected) {
+						// found a selected bitrate checkbox
+						var klsbr:KalturaLiveStreamBitrate = new KalturaLiveStreamBitrate();
+						//get bitrate
+						combo = (this["bitrateCombo" + i] as ComboBox);
+						klsbr.bitrate = int(combo.value);
+						//get width & height
+						ns = (this["bitrate" + i + "Width"] as NumericStepper);
+						klsbr.width = ns.value;
+						ns = (this["bitrate" + i + "Height"] as NumericStepper);
+						klsbr.height = ns.value;
+						//validate 
+						if (!klsbr.width || !klsbr.height) {
+							return null;
+						}
+						else
+							arr.push(klsbr);
+					}
+				}
+				return arr;
+			}
+			
+			/**
+			 * Recieves a combobox refference and sets its selected to be its value if it findes
+			 * it in the _bitratese values array.
+			 */
+			private function setSelectedValueToCombo(cb:ComboBox, isActive:Boolean):void {
+				// set selected combo value 
+				var i:uint;
+				if (isActive) {
+					for (i = 0; i < _bitratese.length; i++) {
+						if (cb.value == Number(_bitratese[i]))
+							cb.selectedIndex = i;
+					}
+				}
+			}
+
+			
+			private function extrainfo_clickHandler(event:MouseEvent):void {
+				dispatchEvent(new Event("extrainfo"));
+				// {onRollOver(3)}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('drilldown', 'bitrateConfiguration')}" styleName="drillDownLabel"/>
+		<mx:Button styleName="help" click="extrainfo_clickHandler(event)" buttonMode="true"/>
+	</mx:HBox>
+	<mx:Text width="100%" text="{resourceManager.getString('drilldown', 'bitrateText')}"/>
+	
+	<mx:Canvas width="100%" height="25">
+		<mx:Label text="{resourceManager.getString('drilldown', 'bitRate')}" styleName="drillDownLabel" y="5"
+				  x="{bitrateCombo1.x}"/>
+		<mx:Label text="{resourceManager.getString('drilldown', 'widthTitle')}" styleName="drillDownLabel" y="5"
+				  x="{bitrate1Width.x}"/>
+		<mx:Label text="{resourceManager.getString('drilldown', 'heightTitle')}" styleName="drillDownLabel" y="5"
+				  x="{bitrate1Height.x}"/>
+	</mx:Canvas>
+	<mx:HBox width="100%" id="bitrate1Info" disabledOverlayAlpha="0">
+		<mx:CheckBox id="bitrate1" label="1." labelPlacement="left" selected="{_bitrates.getItemAt(0).width}"/>
+		<mx:ComboBox id="bitrateCombo1" editable="true" text="{_bitrates.getItemAt(0).bitrate}"
+					 dataProvider="{_bitratese}" enabled="{bitrate1.selected}"/>
+		<mx:Label text="Kbps"/>
+		<mx:Spacer width="10"/>
+		<mx:NumericStepper id="bitrate1Width" width="55" maximum="9999" enabled="{bitrate1.selected}"
+						   value="{_bitrates.getItemAt(0).width}"/>
+		<mx:Label text="x"/>
+		<mx:NumericStepper id="bitrate1Height" width="55" maximum="9999" enabled="{bitrate1.selected}"
+						   value="{_bitrates.getItemAt(0).height}"/>
+		<mx:Spacer width="30"/>
+	</mx:HBox>
+	<mx:HBox width="100%" id="bitrate2Info" disabledOverlayAlpha="0">
+		<mx:CheckBox id="bitrate2" label="2." labelPlacement="left" selected="{_bitrates.getItemAt(1).width}"/>
+		<mx:ComboBox id="bitrateCombo2" editable="true" text="{_bitrates.getItemAt(1).bitrate}"
+					 dataProvider="{_bitratese}" enabled="{bitrate2.selected}"/>
+		<mx:Label text="Kbps"/>
+		<mx:Spacer width="10"/>
+		<mx:NumericStepper id="bitrate2Width" width="55" maximum="9999" enabled="{bitrate2.selected}"
+						   value="{_bitrates.getItemAt(1).width}"/>
+		<mx:Label text="x"/>
+		<mx:NumericStepper id="bitrate2Height" width="55" maximum="9999" enabled="{bitrate2.selected}"
+						   value="{_bitrates.getItemAt(1).height}"/>
+		<mx:Spacer width="30"/>
+	</mx:HBox>
+	<mx:HBox width="100%" id="bitrate3Info" disabledOverlayAlpha="0">
+		<mx:CheckBox id="bitrate3" label="3." labelPlacement="left" selected="{_bitrates.getItemAt(2).width}"/>
+		<mx:ComboBox id="bitrateCombo3" editable="true" text="{_bitrates.getItemAt(2).bitrate}"
+					 dataProvider="{_bitratese}" enabled="{bitrate3.selected}"/>
+		<mx:Label text="Kbps"/>
+		<mx:Spacer width="10"/>
+		<mx:NumericStepper id="bitrate3Width" width="55" maximum="9999" enabled="{bitrate3.selected}"
+						   value="{_bitrates.getItemAt(2).width}"/>
+		<mx:Label text="x"/>
+		<mx:NumericStepper id="bitrate3Height" width="55" maximum="9999" enabled="{bitrate3.selected}"
+						   value="{_bitrates.getItemAt(2).height}"/>
+		<mx:Spacer width="30"/>
+	</mx:HBox>
+	
+	<mx:Spacer height="20"/>
+	
+</mx:VBox>
