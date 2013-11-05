@@ -114,6 +114,8 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(ChangeModelEvent.SET_CONFIRM_MODERATION, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_ALLOW_CLIPPING, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_ALLOW_TRIMMING, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.ENABLE_AKAMAI_LIVE, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.ENABLE_KALTURA_LIVE, ChangeModelValueCommand);
 
 
 			// drop folder stuff

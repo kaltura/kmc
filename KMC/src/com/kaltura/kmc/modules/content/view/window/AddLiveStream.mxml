@@ -13,6 +13,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.model.datapacks.PermissionsDataPack;
 			import com.kaltura.edw.vo.LocalizedVo;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.AddStreamEvent;
@@ -50,9 +51,12 @@
 			 * */
 			public var liveProfiles:ArrayCollection;
 			
-			private var _model:CmsModelLocator;
-			
+			/**
+			 * live profiles load watcher
+			 * */
 			private var _cw:ChangeWatcher;
+			
+			private var _model:CmsModelLocator;
 
 			[Bindable]
 			/**
@@ -69,16 +73,31 @@
 
 			private function creationCompleteHandler(event:FlexEvent):void {
 				title = ResourceManager.getInstance().getString('live', 'liveStreamTitle');
-				_streamTypes = [new LocalizedVo(StreamVo.STREAM_TYPE_KALTURA, 'kalturaStream', 'live'),
-					new LocalizedVo(StreamVo.STREAM_TYPE_UNIVERSAL, 'universalStream', 'live'),
-					new LocalizedVo(StreamVo.STREAM_TYPE_LEGACY, 'legacyStream', 'live'),
-					new LocalizedVo(StreamVo.STREAM_TYPE_MANUAL, 'manualStream', 'live')];
 				PermissionManager.getInstance().applyAllAttributes(this, "createLiveStream");
 				
-				if (!liveProfiles) {
-					var lp:AddStreamEvent = new AddStreamEvent(AddStreamEvent.LIST_LIVE_PROFILES, null);
-					lp.dispatch();
+				// now we can say if akamai/kaltura streams are available
+				var pdp:PermissionsDataPack = _model.entryDetailsModel.getDataPack(PermissionsDataPack) as PermissionsDataPack;
+				_streamTypes = [];
+				
+				if (pdp.enableKalturaLive) {
+					_streamTypes.push(new LocalizedVo(StreamVo.STREAM_TYPE_KALTURA, 'kalturaStream', 'live'));
+					if (!liveProfiles) {
+						var lp:AddStreamEvent = new AddStreamEvent(AddStreamEvent.LIST_LIVE_PROFILES, null);
+						lp.dispatch();
+					}
 				}
+				
+				if (pdp.enableAkamaiLive) {
+					_streamTypes.push(new LocalizedVo(StreamVo.STREAM_TYPE_UNIVERSAL, 'universalStream', 'live'));
+					_streamTypes.push(new LocalizedVo(StreamVo.STREAM_TYPE_MANUAL, 'manualStream', 'live'));
+				}
+				
+				_streamTypes.push(new LocalizedVo(StreamVo.STREAM_TYPE_LEGACY, 'legacyStream', 'live'));
+				
+				streamType.selectedIndex = 0; // select the first item in the list
+				streamType.dispatchEvent(new ListEvent(Event.CHANGE));
+				
+				streamTypeWrap.includeInLayout = streamTypeWrap.visible = pdp.enableAkamaiLive || pdp.enableKalturaLive;
 			}
 
 
@@ -140,8 +159,8 @@
 				streamVo.description = streamDescription.text;
 				
 				if (streamTypeWrap.visible) {
-					// new options available, the first in dropdown is "kaltura"
-					streamVo.streamType = streamType.selectedItem ? (streamType.selectedItem as LocalizedVo).value : StreamVo.STREAM_TYPE_KALTURA;
+					// options available
+					streamVo.streamType = (streamType.selectedItem as LocalizedVo).value;
 				} 
 				else {
 					// only "legacy" stream available

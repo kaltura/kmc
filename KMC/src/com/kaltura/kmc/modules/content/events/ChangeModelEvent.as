@@ -27,6 +27,10 @@ package com.kaltura.kmc.modules.content.events
 		
 		public static const SET_ALLOW_CLIPPING: String = "content_SET_ALLOW_CLIPPING";
 		
+		public static const ENABLE_AKAMAI_LIVE: String = "content_ENABLE_AKAMAI_LIVE";
+		
+		public static const ENABLE_KALTURA_LIVE: String = "content_ENABLE_KALTURA_LIVE";
+		
 		private var _newValue:*;
 		
 		public function ChangeModelEvent(type:String, value:*, bubbles:Boolean=false, cancelable:Boolean=false)

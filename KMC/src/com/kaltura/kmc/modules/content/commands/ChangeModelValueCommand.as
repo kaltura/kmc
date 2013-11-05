@@ -42,6 +42,12 @@ package com.kaltura.kmc.modules.content.commands {
 				case ChangeModelEvent.SET_ALLOW_TRIMMING:
 					pdp.allowTrimming = (event as ChangeModelEvent).newValue;
 					break;
+				case ChangeModelEvent.ENABLE_AKAMAI_LIVE:
+					pdp.enableAkamaiLive = (event as ChangeModelEvent).newValue;
+					break;
+				case ChangeModelEvent.ENABLE_KALTURA_LIVE:
+					pdp.enableKalturaLive = (event as ChangeModelEvent).newValue;
+					break;
 			}
 		}
 	}

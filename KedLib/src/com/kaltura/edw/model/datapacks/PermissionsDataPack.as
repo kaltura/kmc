@@ -37,5 +37,15 @@ package com.kaltura.edw.model.datapacks
 		 * */
 		public var allowTrimming:Boolean = true;
 		
+		/**
+		 * RnP: provision Akamai live streams
+		 * */
+		public var enableAkamaiLive:Boolean = true;
+		
+		/**
+		 * RnP: provision Kaltura live streams
+		 * */
+		public var enableKalturaLive:Boolean = true;
+		
 	}
 }

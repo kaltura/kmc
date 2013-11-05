@@ -124,7 +124,10 @@ package com.kaltura.kmc.modules.content.business {
 
 
 
-
+		/**
+		 * allow roles and permissions to decide if user should
+		 * see embed code.
+		 */
 		public function set showSinglePlayerEmbedCode(value:Boolean):void {
 			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_SINGLE_ENTRY_EMBED_STATUS, value);
 			cge.dispatch();
@@ -136,6 +139,9 @@ package com.kaltura.kmc.modules.content.business {
 		}
 
 
+		/**
+		 * does the partner have remote storage feature?
+		 */
 		public function set enableRemoteStorage(value:Boolean):void {
 			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_REMOTE_STORAGE, value);
 			cge.dispatch();
@@ -147,6 +153,9 @@ package com.kaltura.kmc.modules.content.business {
 		}
 
 
+		/**
+		 * should KMC try to resize thumbnail images (entry table)? 
+		 */
 		public function set enableThumbResize(value:Boolean):void {
 			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_ENABLE_THUMB_RESIZE, value);
 			cge.dispatch();
@@ -158,6 +167,10 @@ package com.kaltura.kmc.modules.content.business {
 		}
 
 
+		/**
+		 * if this flag is on, categories are laoded in chunks. 
+		 * it is turned on automatically (serverside) if the partner has more than X categories.
+		 */
 		public function set lotsOfCategoriesFlag(value:Boolean):void {
 			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_LOTS_OF_CATEGORIES_FLAG, value);
 			cge.dispatch();
@@ -169,6 +182,10 @@ package com.kaltura.kmc.modules.content.business {
 		}
 		
 		
+		/**
+		 * if true, whenever a user is trying to approve/reject entries in moderation 
+		 * screen, they get an alert asking to confirm they realy want to do this. 
+		 */
 		public function set confirmModeration(value:Boolean):void {
 			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_CONFIRM_MODERATION	, value);
 			cge.dispatch();
@@ -179,6 +196,9 @@ package com.kaltura.kmc.modules.content.business {
 		}
 		
 		
+		/**
+		 * allow trimming entries
+		 */
 		public function set allowTrimming(value:Boolean):void {
 			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_ALLOW_TRIMMING	, value);
 			cge.dispatch();
@@ -188,12 +208,42 @@ package com.kaltura.kmc.modules.content.business {
 			return true;
 		}
 		
+		
+		/**
+		 * allow creating clips from an entry
+		 */
 		public function set allowClipping(value:Boolean):void {
 			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_ALLOW_CLIPPING	, value);
 			cge.dispatch();
 		}
 		
 		public function get allowClipping():Boolean {
+			return true;
+		}
+		
+		
+		/**
+		 * enanble provisioning of akamai live streams  
+		 */
+		public function set enableAkamaiLive(value:Boolean):void {
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.ENABLE_AKAMAI_LIVE	, value);
+			cge.dispatch();
+		}
+		
+		public function get enableAkamaiLive():Boolean {
+			return true;
+		}
+		
+		
+		/**
+		 * enable provisioning of Kaltura live streams 
+		 */
+		public function set enableKalturaLive(value:Boolean):void {
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.ENABLE_KALTURA_LIVE, value);
+			cge.dispatch();
+		}
+		
+		public function get enableKalturaLive():Boolean {
 			return true;
 		}
 	}
