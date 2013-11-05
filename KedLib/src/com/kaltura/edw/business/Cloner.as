@@ -27,7 +27,7 @@ package com.kaltura.edw.business
 			else if (entry is KalturaMixEntry) {
 				copy = cloneKalturaMixEntry(entry as KalturaMixEntry);
 			}
-			else if (entry is KalturaLiveStreamEntry) {
+			else if (entry is KalturaLiveStreamEntry || entry is KalturaLiveStreamAdminEntry) {
 				copy = cloneKalturaStreamAdminEntry(entry as KalturaLiveStreamEntry);
 			}
 			else if (entry is KalturaMediaEntry) {
