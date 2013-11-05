@@ -12,7 +12,6 @@
 
 	<mx:Script>
 		<![CDATA[
-			import flash.net.navigateToURL;
 			import com.kaltura.KalturaClient;
 			import com.kaltura.commands.conversionProfile.ConversionProfileList;
 			import com.kaltura.edw.business.permissions.PermissionManager;
@@ -25,9 +24,13 @@
 			import com.kaltura.kmc.modules.create.MultipleMediaFilesSelector;
 			import com.kaltura.kmc.modules.create.types.BulkTypes;
 			import com.kaltura.kmc.modules.create.view.FileUploadSettings;
+			import com.kaltura.types.KalturaConversionProfileType;
 			import com.kaltura.vo.KalturaConversionProfile;
+			import com.kaltura.vo.KalturaConversionProfileFilter;
 			import com.kaltura.vo.KalturaFilterPager;
-
+			
+			import flash.net.navigateToURL;
+			
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.FlexEvent;
@@ -207,9 +210,11 @@
 				// get conversion profiles list
 				if (!cbConvProfiles.dataProvider.length) {
 					enabled = false;
+					var f:KalturaConversionProfileFilter = new KalturaConversionProfileFilter();
+					f.typeEqual = KalturaConversionProfileType.MEDIA;
 					var p:KalturaFilterPager = new KalturaFilterPager();
 					p.pageSize = 500;	// realy big number that even QA won't reach
-					var cpl:ConversionProfileList = new ConversionProfileList(null, p);
+					var cpl:ConversionProfileList = new ConversionProfileList(f, p);
 					cpl.addEventListener(KalturaEvent.COMPLETE, onConvProfListed);
 					cpl.addEventListener(KalturaEvent.FAILED, onConvProfListed);
 					_kc.post(cpl);

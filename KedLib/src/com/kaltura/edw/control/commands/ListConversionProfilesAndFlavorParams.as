@@ -4,12 +4,14 @@ package com.kaltura.edw.control.commands {
 	import com.kaltura.commands.conversionProfileAssetParams.ConversionProfileAssetParamsList;
 	import com.kaltura.commands.flavorParams.FlavorParamsList;
 	import com.kaltura.edw.model.datapacks.FlavorsDataPack;
+	import com.kaltura.edw.model.util.FlavorParamsUtil;
 	import com.kaltura.edw.vo.ConversionProfileWithFlavorParamsVo;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaAssetParamsOrigin;
 	import com.kaltura.types.KalturaConversionProfileOrderBy;
+	import com.kaltura.types.KalturaConversionProfileType;
 	import com.kaltura.vo.KalturaConversionProfile;
 	import com.kaltura.vo.KalturaConversionProfileAssetParams;
 	import com.kaltura.vo.KalturaConversionProfileAssetParamsFilter;
@@ -22,7 +24,6 @@ package com.kaltura.edw.control.commands {
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
-	import com.kaltura.edw.model.util.FlavorParamsUtil;
 
 	public class ListConversionProfilesAndFlavorParams extends KedCommand {
 
@@ -37,6 +38,7 @@ package com.kaltura.edw.control.commands {
 			if (!fdp.conversionProfileLoaded) {
 				var cpFilter:KalturaConversionProfileFilter = new KalturaConversionProfileFilter();
 				cpFilter.orderBy = KalturaConversionProfileOrderBy.CREATED_AT_DESC;
+				cpFilter.typeEqual = KalturaConversionProfileType.MEDIA;
 				var listConversionProfiles:ConversionProfileList = new ConversionProfileList(cpFilter, p);
 	
 				mr.addAction(listConversionProfiles);
