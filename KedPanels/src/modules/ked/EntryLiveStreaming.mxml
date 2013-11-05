@@ -81,6 +81,7 @@ live streaming control tab of EntryDetailsWin
 			public function initData():void {
 				if (_selectedEntry) {
 					bitrateConfig.initData(_selectedEntry.bitrates);
+					//TODO implement - for kaltura live stream
 				}
 			}
 
@@ -89,13 +90,14 @@ live streaming control tab of EntryDetailsWin
 				var success:Boolean = true; // validation result
 				var errorMessage:String;
 				var errorTitle:String;
-				var bitrates:Array = bitrateConfig.getBitrates();
-
-				if (!bitrates) {
-					//failed validation
-					success = false;
-					errorMessage = resourceManager.getString('drilldown', 'bitrateValidation');
-					errorTitle = resourceManager.getString('drilldown', 'liveStreamError');
+				if (_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM) { // nothing to validate for kaltura live
+					var bitrates:Array = bitrateConfig.getBitrates();
+					if (!bitrates) {
+						//failed validation
+						success = false;
+						errorMessage = resourceManager.getString('drilldown', 'bitrateValidation');
+						errorTitle = resourceManager.getString('drilldown', 'liveStreamError');
+					}
 				}
 				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, success, errorMessage, errorTitle);
 				dispatchEvent(e);
@@ -116,16 +118,25 @@ live streaming control tab of EntryDetailsWin
 
 
 			public function isChanged():Boolean {
-				return bitrateConfig.isChanged();
+				if (_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM) {
+					return bitrateConfig.isChanged();
+				}
+				else {
+					//TODO implement - get from conversion profile panel
+				}
+				return false;
 			}
 
 			
 
 
 			public function save():void {
-				var bitrates:Array = bitrateConfig.getBitrates();
-				if (bitrates != null) {
-					(_selectedEntry as KalturaLiveStreamEntry).bitrates = bitrates;
+				//TODO implement - get from conversion profile panel
+				if (_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM) {
+					var bitrates:Array = bitrateConfig.getBitrates();
+					if (bitrates != null) {
+						(_selectedEntry as KalturaLiveStreamEntry).bitrates = bitrates;
+					}
 				}
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.PANEL_DATA_SAVED));
 			}
@@ -289,7 +300,13 @@ live streaming control tab of EntryDetailsWin
 				//assign bitrates
 				var bitratesString:String = "";
 				var dimenssionsStrings:String = "";
-				var bitrates:Array = bitrateConfig.getBitrates();
+				var bitrates:Array;
+				if (_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM) {
+					bitrates = convprofConfig.getBitrates();
+				}
+				else {
+					bitrates = bitrateConfig.getBitrates();
+				}
 				var br:KalturaLiveStreamBitrate;
 				
 				for (var i:int = 0; i<bitrates.length; i++) {
@@ -362,8 +379,15 @@ live streaming control tab of EntryDetailsWin
 				 includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}" />
 		
 		<!-- bitrate config -->
-		<live:BitrateConfig id="bitrateConfig" width="100%" extrainfo="onRollOver(3)"/>
+		<live:BitrateConfig id="bitrateConfig" width="100%" extrainfo="onRollOver(3)"
+							visible="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}"
+							includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}" />
 			
+		<!-- conv prof -->
+		<live:ConversionProfileConfig id="convprofConfig" width="100%" selectedEntry="{_selectedEntry}" 
+									  visible="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
+									  includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}" />
+		
 		<!-- broadcast credentials -->
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('drilldown', 'broadcastinCredential')}" styleName="drillDownLabel"/>
@@ -388,21 +412,10 @@ live streaming control tab of EntryDetailsWin
 		<mx:Spacer height="20"/>
 	
 		<!-- IPs -->
-		<mx:Label text="{resourceManager.getString('drilldown', 'encodingIp')}" styleName="drillDownLabel"/>
-	
-		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('drilldown', 'primaryIp')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:Label id="primaryIp" text="{_selectedEntry.encodingIP2}" selectable="true" 
-					  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
-		</mx:HBox>
-	
-		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('drilldown', 'secondaryIp')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:Label id="secondaryIp" text="{_selectedEntry.encodingIP2}" selectable="true" 
-					  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
-		</mx:HBox>
+		<live:IPsConfig width="100%" selectedEntry="{_selectedEntry}" 
+						visible="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}"
+						includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}" />
+		
 		<mx:Button id="exportBtn" label="{resourceManager.getString('drilldown', 'exportToFme')}" click="{fmeExport()}"/>
 	</mx:VBox>
 	
