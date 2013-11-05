@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:live="com.kaltura.edw.view.live.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaSourceType;
+			import com.kaltura.vo.KalturaLiveStreamConfiguration;
+			import com.kaltura.vo.KalturaLiveStreamEntry;
+			
+			private const _prefixesWidth:Number = 130;
+			
+			[Bindable]
+			private var _selectedEntry:KalturaLiveStreamEntry;
+
+			public function get selectedEntry():KalturaLiveStreamEntry
+			{
+				return _selectedEntry;
+			}
+
+			public function set selectedEntry(value:KalturaLiveStreamEntry):void
+			{
+				_selectedEntry = value;
+				
+				
+				// clear any previous values (don't remove hlsStreamUrl):
+				while (numChildren > 1) {
+					removeChildAt(numChildren-1);
+				}
+				if (_selectedEntry.sourceType == KalturaSourceType.MANUAL_LIVE_STREAM) {
+					populateManualBox(_selectedEntry.liveStreamConfigurations);
+				}
+			}
+			
+			
+			/**
+			 * add lines for each stream url
+			 * @param cfgs	list of KalturaLiveStreamConfiguration to present 
+			 * */
+			private function populateManualBox(cfgs:Array):void
+			{
+				var line:FormLine;
+				var i:int;
+				
+				// create all lines
+				for each (var cfg:KalturaLiveStreamConfiguration in cfgs) {
+					line = new FormLine();
+					//line.prefixesWidth = 160; 
+					// allow protocol name override by locale:
+					line.label = resourceManager.getString('drilldown', cfg.protocol) ? resourceManager.getString('drilldown', cfg.protocol) : cfg.protocol
+					line.label += resourceManager.getString('drilldown', 'streamUrl');
+					line.value = cfg.url;
+					addChild(line);
+				}
+				validateNow();
+				
+				// get max line width
+				var maxLength:int = 0;
+				for (i = 0; i<numChildren; i++) {
+					line = getChildAt(i) as FormLine;
+					if (!line) continue;
+					maxLength = Math.max(maxLength, line.prefixWidth); 
+				}
+				
+				// set to all lines
+				for (i = 0; i<numChildren; i++) {
+					line = getChildAt(i) as FormLine;
+					if (!line) continue;
+					line.prefixWidth = maxLength; 
+				}
+			}
+
+		]]>
+	</mx:Script>
+	<live:FormLine prefixWidth="{_prefixesWidth}" 
+				   label="{resourceManager.getString('drilldown', 'hlsStreamUrl')}" value="{ _selectedEntry.hlsStreamUrl}" />
+</mx:VBox>
