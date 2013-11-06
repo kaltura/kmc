@@ -2,6 +2,7 @@ package com.kaltura.edw.control
 {
 	import com.kaltura.edw.control.commands.DuplicateEntryDetailsModelCommand;
 	import com.kaltura.edw.control.commands.GetEntryCategoriesCommand;
+	import com.kaltura.edw.control.commands.GetLivestreamStatusCommand;
 	import com.kaltura.edw.control.commands.GetSingleEntryCommand;
 	import com.kaltura.edw.control.commands.ListEntriesCommand;
 	import com.kaltura.edw.control.commands.LoadFilterDataCommand;
@@ -46,6 +47,8 @@ package com.kaltura.edw.control
 			addCommand(KedEntryEvent.GET_ENTRY_CATEGORIES, GetEntryCategoriesCommand);	
 			addCommand(KedEntryEvent.RESET_ENTRY_CATEGORIES, GetEntryCategoriesCommand);	
 			addCommand(KedEntryEvent.UPDATE_ENTRY_CATEGORIES, UpdateEntryCategoriesCommand);	
+			addCommand(KedEntryEvent.GET_LIVESTREAM_STATUS, GetLivestreamStatusCommand);	
+			addCommand(KedEntryEvent.RESET_LIVESTREAM_STATUS, GetLivestreamStatusCommand);	
 		}
 	}
 }

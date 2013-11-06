@@ -73,6 +73,16 @@ package com.kaltura.edw.control.events
 		 */
 		public static const UPDATE_ENTRY_CATEGORIES : String = "content_updateEntryCategories";
 
+		/**
+		 * checks if the given livestream entry is currently broadcasting
+		 */
+		public static const GET_LIVESTREAM_STATUS : String = "content_getLivestreamStatus";
+
+		/**
+		 * resets model value (livestream entry is currently broadcasting)
+		 */
+		public static const RESET_LIVESTREAM_STATUS : String = "content_resetLivestreamStatus";
+
 
 		
 		// ======================================================

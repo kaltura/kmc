@@ -1,6 +1,7 @@
 package com.kaltura.edw.model.datapacks
 {
 	import com.kaltura.kmvc.model.IDataPack;
+	import com.kaltura.types.KalturaNullableBoolean;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaUser;
 	
@@ -50,6 +51,12 @@ package com.kaltura.edw.model.datapacks
 		 * if selected entry was refreshed
 		 * */
 		public var selectedEntryReloaded:Boolean;
+		
+		/**
+		 * if selected entry is a kaltura livestream entry, is it currently boradcasting HDS?
+		 * (use Nullable so we can set "no value" and binding will fire)
+		 */
+		public var selectedLiveEntryIsLive:int = KalturaNullableBoolean.NULL_VALUE;
 		
 		/**
 		 * when saving an entry we list all entries that have the same 

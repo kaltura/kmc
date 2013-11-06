@@ -45,6 +45,7 @@
 			import com.kaltura.types.KalturaDVRStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaType;
+			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.types.KalturaRecordStatus;
 			import com.kaltura.types.KalturaSourceType;
 			import com.kaltura.types.KalturaTaggedObjectType;
@@ -187,13 +188,8 @@
 
 
 			public function set selectedEntry(value:KalturaBaseEntry):void {
-				_enableConvertToVod = false;
 				if (value is KalturaLiveStreamEntry) {
 					if ((value as KalturaLiveStreamEntry).sourceType == KalturaSourceType.LIVE_STREAM) {
-						if ((value as KalturaLiveStreamEntry).dvrStatus == KalturaDVRStatus.ENABLED
-							&& (value as KalturaLiveStreamEntry).recordStatus == KalturaRecordStatus.ENABLED) {
-							_enableConvertToVod = true;
-						}
 						if ((value as KalturaLiveStreamEntry).recordedEntryId != null) {
 							_recordedEntryId = (value as KalturaLiveStreamEntry).recordedEntryId;
 						}
@@ -268,15 +264,8 @@
 			[Bindable]
 			private var _distributionData:DistributionDataPack;
 
-
-			private var _entryData:EntryDataPack;
-
 			[Bindable]
-			/**
-			 * should "convert to VOD" button be enabled
-			 * (RnP + current entry is live entry) 
-			 * */
-			private var _enableConvertToVod:Boolean;
+			private var _entryData:EntryDataPack;
 
 			[Bindable]
 			/**
@@ -445,6 +434,15 @@
 					var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST);
 					controller.dispatch(listCustomData);
 				}
+				
+				if (_selectedEntry is KalturaLiveStreamEntry
+					&& (_selectedEntry as KalturaLiveStreamEntry).sourceType == KalturaSourceType.LIVE_STREAM
+					&& (_selectedEntry as KalturaLiveStreamEntry).dvrStatus == KalturaDVRStatus.ENABLED
+					&& (_selectedEntry as KalturaLiveStreamEntry).recordStatus == KalturaRecordStatus.ENABLED) {
+					// check status
+					var liveStatus:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_LIVESTREAM_STATUS, _selectedEntry);
+					controller.dispatch(liveStatus);
+				}
 
 				var listCats:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_CATEGORIES, _selectedEntry);
 				controller.dispatch(listCats);
@@ -478,8 +476,8 @@
 			
 			public function clear():void {
 
-				var listCats:KedEntryEvent = new KedEntryEvent(KedEntryEvent.RESET_ENTRY_CATEGORIES, null);
-				controller.dispatch(listCats);
+				var kee:KedEntryEvent = new KedEntryEvent(KedEntryEvent.RESET_ENTRY_CATEGORIES, null);
+				controller.dispatch(kee);
 
 				_originalRefid = null;
 				_entryCategories = null;
@@ -497,6 +495,11 @@
 //					d1 = new Date();
 //					trace("clear custom data:", d1.time - d2.time);
 //				}
+				
+				if (_selectedEntry is KalturaLiveStreamEntry && (_selectedEntry as KalturaLiveStreamEntry).sourceType == KalturaSourceType.LIVE_STREAM) {
+					kee = new KedEntryEvent(KedEntryEvent.RESET_LIVESTREAM_STATUS, null);
+					controller.dispatch(kee);
+				}
 			}
 
 
@@ -1049,7 +1052,8 @@
 						   enabled="{EntryDataHelper.entryHasSource(_distributionData.flavorParamsAndAssetsByEntryId)}"
 						   label="{resourceManager.getString('drilldown','openTrimming')}"/>
 			<mx:LinkButton id="btnVOD" click="openLiveClipping(event)" styleName="bold"
-						   visible="{_enableConvertToVod}" includeInLayout="{_enableConvertToVod}"
+						   visible="{_entryData.selectedLiveEntryIsLive == KalturaNullableBoolean.TRUE_VALUE}" 
+						   includeInLayout="{_entryData.selectedLiveEntryIsLive == KalturaNullableBoolean.TRUE_VALUE}"
 						   label="{resourceManager.getString('drilldown', 'openVOD')}"/>
 		</mx:HBox>
 		<!-- no content message -->
