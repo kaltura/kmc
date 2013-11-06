@@ -7,7 +7,7 @@ package com.kaltura.edw.model.datapacks
 	[Bindable]
 	/**
 	 * information about general flavors, conversion profiles 
-	 * and the flavors available foir the current entry
+	 * and the flavors available for the current entry
 	 * */
 	public class FlavorsDataPack implements IDataPack {
 		
