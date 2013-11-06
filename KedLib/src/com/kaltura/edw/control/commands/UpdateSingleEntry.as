@@ -18,6 +18,7 @@ package com.kaltura.edw.control.commands {
 	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaBaseEntry;
+	import com.kaltura.vo.KalturaLiveStreamEntry;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -34,7 +35,7 @@ package com.kaltura.edw.control.commands {
 			var entry:KalturaBaseEntry = _event.entryVo;
 
 			entry.setUpdatedFieldsOnly(true);
-			if (entry.status != KalturaEntryStatus.NO_CONTENT) {
+			if (entry.status != KalturaEntryStatus.NO_CONTENT && !(entry is KalturaLiveStreamEntry)) {
 				entry.conversionProfileId = int.MIN_VALUE;
 			}
 			// don't send categories - we use categoryEntry service to update them in EntryData panel

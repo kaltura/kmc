@@ -1,13 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 creationComplete="vbox1_creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.EntryLiveStreamingHelper;
+			import com.kaltura.vo.KalturaConversionProfile;
 			import com.kaltura.vo.KalturaLiveStreamBitrate;
 			import com.kaltura.vo.KalturaLiveStreamEntry;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
 			[Bindable]
+			public var profiles:ArrayCollection;
+			
+				
 			public var selectedEntry:KalturaLiveStreamEntry;
+			
+			public function getSelectedProfile():int {
+				return convProf.selectedItem.id;
+			}
+			
+			public function isChanged():Boolean {
+				return convProf.selectedItem.id != selectedEntry.conversionProfileId;
+			}
+			
 			
 			/**
 			 * build the bitrates array.
@@ -46,6 +64,24 @@
 				
 				return result;
 			}
+			
+			private function vbox1_creationCompleteHandler(event:FlexEvent):void
+			{
+				BindingUtils.bindSetter(selectInitialProfile, this, "profiles");
+				BindingUtils.bindSetter(selectInitialProfile, this, "selectedEntry");
+			}
+			
+			private function selectInitialProfile(value:*):void {
+				if (profiles && selectedEntry) {
+					for each (var kcp:KalturaConversionProfile in profiles) {
+						if (kcp.id == selectedEntry.conversionProfileId) {
+							convProf.selectedItem = kcp;
+							break;
+						}
+					}
+				}
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -54,8 +90,7 @@
 	<mx:HBox width="100%">
 		<mx:Label text="{resourceManager.getString('drilldown', 'convProf')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
 				  styleName="drillDownLabel"/>
-		<mx:Label id="convProf" text="{selectedEntry.conversionProfileId}" selectable="true" 
-				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+		<mx:ComboBox id="convProf" dataProvider="{profiles}" labelField="name" width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}"/>
 	</mx:HBox>
 	
 	<mx:Spacer height="20"/>

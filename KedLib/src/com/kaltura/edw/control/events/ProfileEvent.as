@@ -21,6 +21,12 @@ package com.kaltura.edw.control.events
 		public static const LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS : String = "content_listConversionProfilesAndFlavorParams";
 		
 		/**
+		 * list live conversion profiles 
+		 */
+		public static const LIST_LIVE_CONVERSION_PROFILES : String = "content_listLiveConversionProfiles";
+		
+		
+		/**
 		 * list partner's storage profiles 
 		 */
 		public static const LIST_STORAGE_PROFILES : String = "content_listStorageProfiles";

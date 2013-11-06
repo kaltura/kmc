@@ -1,8 +1,8 @@
 package com.kaltura.kmc.modules.content.control {
 	import com.adobe.cairngorm.control.FrontController;
-	import com.kaltura.edw.control.commands.*;
-	import com.kaltura.edw.control.commands.customData.*;
-	import com.kaltura.edw.control.events.*;
+	//import com.kaltura.edw.control.commands.*;
+	//import com.kaltura.edw.control.commands.customData.*;
+	//import com.kaltura.edw.control.events.*;
 	import com.kaltura.kmc.modules.content.commands.*;
 	import com.kaltura.kmc.modules.content.commands.live.*;
 	import com.kaltura.kmc.modules.content.commands.bulk.*;

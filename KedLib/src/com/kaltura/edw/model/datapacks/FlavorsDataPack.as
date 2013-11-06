@@ -33,6 +33,11 @@ package com.kaltura.edw.model.datapacks
 		public var conversionProfiles:Array;
 		
 		/**
+		 * a list of KalturaConversionProfile where type = live 
+		 */
+		public var liveConversionProfiles:ArrayCollection;
+		
+		/**
 		 * a list of media types and file extension associated with them,
 		 * i.e. <filter name="image_files" ext="*.jpg;*.jpeg;*.gif;*.png"/> 
 		 */

@@ -4,6 +4,7 @@ live streaming control tab of EntryDetailsWin
 -->
 <mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
 		   implements="com.kaltura.edw.business.IDrilldownPanel"
+		   xmlns:control="com.kaltura.edw.control.*"
 		   label="{resourceManager.getString('drilldown', 'liveStream')}" xmlns:live="com.kaltura.edw.view.live.*">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
@@ -14,25 +15,22 @@ live streaming control tab of EntryDetailsWin
 			import com.kaltura.edw.business.EntryLiveStreamingHelper;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.constants.PanelConsts;
+			import com.kaltura.edw.control.events.ProfileEvent;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
+			import com.kaltura.edw.model.datapacks.FlavorsDataPack;
 			import com.kaltura.edw.view.EntryDetailsWin;
-			import com.kaltura.edw.view.live.FormLine;
 			import com.kaltura.edw.view.window.SettingsExample;
 			import com.kaltura.kmvc.model.IDataPackRepository;
-			import com.kaltura.types.KalturaBitRateMode;
-			import com.kaltura.types.KalturaDVRStatus;
 			import com.kaltura.types.KalturaSourceType;
-			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaLiveStreamBitrate;
-			import com.kaltura.vo.KalturaLiveStreamConfiguration;
 			import com.kaltura.vo.KalturaLiveStreamEntry;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
-			import mx.controls.ComboBox;
-			import mx.core.UIComponent;
 			import mx.managers.PopUpManager;
 
 			
@@ -45,7 +43,15 @@ live streaming control tab of EntryDetailsWin
 
 			private var _dpModel:IDataPackRepository;
 			
-
+			private var _cw:ChangeWatcher;
+			
+			[Bindable]
+			public var liveProfiles:ArrayCollection;
+			
+			/**
+			 * RnP
+			 * */
+			public var enableKalturaLive:Boolean = true;
 
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (value is KalturaLiveStreamEntry) {
@@ -71,7 +77,8 @@ live streaming control tab of EntryDetailsWin
 				_dpModel = value;
 			}
 
-
+			
+			
 			public function get helpAnchor():String {
 				return "section_live_stream";
 			}
@@ -80,7 +87,6 @@ live streaming control tab of EntryDetailsWin
 			public function initData():void {
 				if (_selectedEntry) {
 					bitrateConfig.initData(_selectedEntry.bitrates);
-					//TODO implement - for kaltura live stream
 				}
 			}
 
@@ -113,28 +119,44 @@ live streaming control tab of EntryDetailsWin
 
 			public function init():void {
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.LIVE_STREAM_PANEL);
+				// for kaltura live stream - get live profiles
+				if (enableKalturaLive) {// set by RnP
+					if (_cw) {
+						_cw.unwatch();
+					}
+					var fdp:FlavorsDataPack = _dpModel.getDataPack(FlavorsDataPack) as FlavorsDataPack;
+					_cw = BindingUtils.bindProperty(this, "liveProfiles", fdp, "liveConversionProfiles");
+					controller.dispatch(new ProfileEvent(ProfileEvent.LIST_LIVE_CONVERSION_PROFILES));
+				}
 			}
 
 
 			public function isChanged():Boolean {
-				if (_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM) {
-					return bitrateConfig.isChanged();
+				var result:Boolean;
+				if (_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM) {
+					// get from conversion profile panel
+					result = convprofConfig.isChanged(); 
 				}
 				else {
-					//TODO implement - get from conversion profile panel
+					// get from bitrates panel
+					result = bitrateConfig.isChanged();
 				}
-				return false;
+				return result;
 			}
 
 			
 
 
 			public function save():void {
-				//TODO implement - get from conversion profile panel
-				if (_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM) {
+				if (_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM) {
+				// get from conversion profile panel
+					_selectedEntry.conversionProfileId = convprofConfig.getSelectedProfile();
+				}
+				else {
+				// get from bitrates panel
 					var bitrates:Array = bitrateConfig.getBitrates();
 					if (bitrates != null) {
-						(_selectedEntry as KalturaLiveStreamEntry).bitrates = bitrates;
+						_selectedEntry.bitrates = bitrates;
 					}
 				}
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.PANEL_DATA_SAVED));
@@ -298,7 +320,7 @@ live streaming control tab of EntryDetailsWin
 
 				//assign bitrates
 				var bitratesString:String = "";
-				var dimenssionsStrings:String = "";
+				var dimensionsStrings:String = "";
 				var bitrates:Array;
 				if (_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM) {
 					bitrates = convprofConfig.getBitrates();
@@ -307,16 +329,15 @@ live streaming control tab of EntryDetailsWin
 					bitrates = bitrateConfig.getBitrates();
 				}
 				var br:KalturaLiveStreamBitrate;
-				
 				for (var i:int = 0; i<bitrates.length; i++) {
 					br = bitrates[i] as KalturaLiveStreamBitrate;
 					bitratesString += br.bitrate.toString() + ";";
-					dimenssionsStrings += br.width.toString() + "x" + br.height.toString() + ";";
+					dimensionsStrings += br.width.toString() + "x" + br.height.toString() + ";";
 				}
 				
 				var encode:XML = xml.encode[0] as XML;
 				(encode.video.datarate[0] as XML).appendChild(bitratesString);
-				(encode.video.outputsize[0] as XML).appendChild(dimenssionsStrings);
+				(encode.video.outputsize[0] as XML).appendChild(dimensionsStrings);
 
 				var myFile:FileReference = new FileReference();
 				myFile.save(xml.toXMLString(), resourceManager.getString('drilldown', 'ExportToFme.xml'));
@@ -330,7 +351,8 @@ live streaming control tab of EntryDetailsWin
 			
 		]]>
 	</mx:Script>
-
+	<control:LivestreamTabController id="controller"/>
+	
 	<mx:VBox width="100%" styleName="noPadding" visible="{_selectedEntry.sourceType != KalturaSourceType.MANUAL_LIVE_STREAM}"
 			 includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.MANUAL_LIVE_STREAM}">
 		<mx:Label text="{resourceManager.getString('drilldown', 'brodcastingSettings')}" styleName="drillDownLabel"/>
@@ -384,6 +406,7 @@ live streaming control tab of EntryDetailsWin
 			
 		<!-- conv prof -->
 		<live:ConversionProfileConfig id="convprofConfig" width="100%" selectedEntry="{_selectedEntry}" 
+									  profiles="{liveProfiles}"
 									  visible="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
 									  includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}" />
 		
