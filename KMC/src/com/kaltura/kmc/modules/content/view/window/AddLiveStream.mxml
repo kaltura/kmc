@@ -56,6 +56,12 @@
 			 * */
 			private var _cw:ChangeWatcher;
 			
+			[Bindable]
+			/**
+			 * for kaltura live stream - select recording by default
+			 * */
+			private var _recordByDefault:Boolean = true;
+			
 			private var _model:CmsModelLocator;
 
 			[Bindable]
@@ -98,6 +104,8 @@
 				streamType.dispatchEvent(new ListEvent(Event.CHANGE));
 				
 				streamTypeWrap.includeInLayout = streamTypeWrap.visible = pdp.enableAkamaiLive || pdp.enableKalturaLive;
+				
+				_recordByDefault = pdp.enableKalturaRecording;
 			}
 
 
@@ -271,17 +279,17 @@
 	<mx:ViewStack id="forms" width="100%" height="100%">
 		<!-- form for kaltura -->
 		<mx:VBox styleName="noPadding" width="100%" height="100%">
-			<mx:HBox width="100%" >
-				<mx:Label text="{ResourceManager.getInstance().getString('live', 'liveProfile')}" width="{labelWidth}" styleName="boldLabel"/>
-				<mx:ComboBox id="liveProfileKaltura" dataProvider="{liveProfiles}" width="290" labelField="name"/>
+			<mx:HBox width="100%">
+				<mx:Label text="{ResourceManager.getInstance().getString('live', 'liveProfile')}" width="{labelWidth}" styleName="boldLabel" />
+				<mx:ComboBox id="liveProfileKaltura" dataProvider="{liveProfiles}" width="290" labelField="name" />
 			</mx:HBox>
 			<mx:HBox width="100%" >
 				<mx:CheckBox id="useDvrKaltura" selected="false"/>
-				<mx:Text text="{ResourceManager.getInstance().getString('live', 'enableDvr')}" width="100%"/>
+				<mx:Text text="{ResourceManager.getInstance().getString('live', 'enableDvr')}" width="100%" />
 			</mx:HBox>
 			<mx:HBox width="100%" >
-				<mx:CheckBox id="useRecKaltura" selected="false"/>
-				<mx:Text text="{ResourceManager.getInstance().getString('live', 'enableRecording')}" width="100%"/>
+				<mx:CheckBox id="useRecKaltura" selected="{_recordByDefault}" />
+				<mx:Text text="{ResourceManager.getInstance().getString('live', 'enableRecording')}" width="100%" />
 			</mx:HBox>
 		</mx:VBox>
 		

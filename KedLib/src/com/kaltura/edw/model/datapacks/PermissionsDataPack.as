@@ -47,5 +47,10 @@ package com.kaltura.edw.model.datapacks
 		 * */
 		public var enableKalturaLive:Boolean = true;
 		
+		/**
+		 * RnP: by default record Kaltura live streams
+		 * */
+		public var enableKalturaRecording:Boolean = true;
+		
 	}
 }

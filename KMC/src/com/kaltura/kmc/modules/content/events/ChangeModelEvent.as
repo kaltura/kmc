@@ -31,6 +31,8 @@ package com.kaltura.kmc.modules.content.events
 		
 		public static const ENABLE_KALTURA_LIVE: String = "content_ENABLE_KALTURA_LIVE";
 		
+		public static const ENABLE_KALTURA_RECORDING: String = "content_ENABLE_KALTURA_RECORDING";
+		
 		private var _newValue:*;
 		
 		public function ChangeModelEvent(type:String, value:*, bubbles:Boolean=false, cancelable:Boolean=false)

@@ -48,6 +48,9 @@ package com.kaltura.kmc.modules.content.commands {
 				case ChangeModelEvent.ENABLE_KALTURA_LIVE:
 					pdp.enableKalturaLive = (event as ChangeModelEvent).newValue;
 					break;
+				case ChangeModelEvent.ENABLE_KALTURA_RECORDING:
+					pdp.enableKalturaRecording = (event as ChangeModelEvent).newValue;
+					break;
 			}
 		}
 	}

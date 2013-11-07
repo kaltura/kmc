@@ -246,5 +246,18 @@ package com.kaltura.kmc.modules.content.business {
 		public function get enableKalturaLive():Boolean {
 			return true;
 		}
+		
+		
+		/**
+		 * by default, record kaltura live streams 
+		 */
+		public function set enableKalturaRecording(value:Boolean):void {
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.ENABLE_KALTURA_RECORDING, value);
+			cge.dispatch();
+		}
+		
+		public function get enableKalturaRecording():Boolean {
+			return true;
+		}
 	}
 }
