@@ -358,20 +358,15 @@
 				BindingUtils.bindProperty(ud, "isLoading", this, "isLoading");
 				var allowSetRole:Boolean = model.selectedUser.id != model.adminUserId;
 				allowSetRole &&= model.selectedUser.id != model.currentUserInfo.user.id;
-				ud.init(rolesModel.roles, model.selectedUser, model.drilldownMode, allowSetRole);
+				ud.init(rolesModel.roles, model.selectedUser, model.drilldownMode, allowSetRole, model.supportedLanguages);
 				ud.addEventListener(UserDrilldown.SAVE, saveUserData);
 				ud.addEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
 				ud.addEventListener(UserDrilldown.ADD_ROLE, openAddRoleDialog);
-				//				ud.addEventListener(KmcHelpEvent.HELP, onHelpClickedInDrilldown);
 				PopUpManager.addPopUp(ud, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(ud);
 				return ud;
 			}
 			
-			//			protected function onHelpClickedInDrilldown (e : KmcHelpEvent) : void
-			//			{
-			//				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
-			//			}
 			
 			/**
 			 * show the "add user" dialog

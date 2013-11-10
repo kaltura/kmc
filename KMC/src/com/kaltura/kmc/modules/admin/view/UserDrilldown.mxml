@@ -10,8 +10,10 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.vo.LocalizedVo;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
+			import com.kaltura.kmc.modules.admin.vo.LocaleVo;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUser;
 			import com.kaltura.vo.KalturaUserRole;
@@ -70,6 +72,13 @@
 
 			[Bindable]
 			/**
+			 * available languages
+			 * */
+			private var _languages:ArrayCollection;
+			
+			
+			[Bindable]
+			/**
 			 * list of partner roles
 			 * */
 			protected var _roles:ArrayCollection;
@@ -107,10 +116,12 @@
 			 * @param user	the user to edit
 			 * @param mode	add / edit
 			 * @param allowSetRole	if the user's role can be chagned
+			 * @param languages	list of available languages
 			 * */
-			public function init(roles:ArrayCollection, user:KalturaUser, mode:String, allowSetRole:Boolean):void {
+			public function init(roles:ArrayCollection, user:KalturaUser, mode:String, allowSetRole:Boolean, languages:Array):void {
 				_roles = roles;
 				_allowSetRole = allowSetRole;
+				_languages = createLocalizedVos(languages);
 				// the following intentionaly use setters. 
 				setUser(user);
 				setMode(mode);
@@ -169,14 +180,8 @@
 						_undoUser.id = emailTi.text;
 					}
 				}
-//				if (idTi.text && !_isUserDefinedPuserId) {
-//					_isUserDefinedPuserId = true;
-//					_undoUser.id = idTi.text;
-//				}
-//				else {
-//					_undoUser.id = emailTi.text;
-//				}
 				_undoUser.roleIds = (roleCb.selectedItem as KalturaUserRole).id.toString();
+				_undoUser.language = (languageCb.selectedItem as LocalizedVo).value;
 				
 				if (validateInput()) {
 					requestSave();
@@ -275,6 +280,22 @@
 
 
 			/**
+			 * get the item matching the user's language
+			 * */
+			protected function findSelectedLanguage():LocalizedVo {
+				var lst:Array = _languages.source;
+				var res:LocalizedVo = lst[0] as LocalizedVo; // return the first by default
+				for (var i:int = 0; i < lst.length; i++) {
+					if ((lst[i] as LocalizedVo).value == _undoUser.language) {
+						res = (lst[i] as LocalizedVo);
+						break;
+					}
+				}
+				return res;
+			}
+
+
+			/**
 			 * get the item matching the user's roleId
 			 * */
 			protected function findSelectedRole():KalturaUserRole {
@@ -307,6 +328,14 @@
 				}
 			}
 
+			
+			private function createLocalizedVos(languages:Array):ArrayCollection {
+				var result:ArrayCollection = new ArrayCollection();
+				for each (var loc:LocaleVo in languages) {
+					result.addItem(new LocalizedVo(loc.code, loc.code.toUpperCase(), 'languages'));
+				}
+				return result;
+			}
 
 			/**
 			 * set window mode.
@@ -327,6 +356,7 @@
 							firstNameTi.enabled = false;
 							lastNameTi.enabled = false;
 							roleCb.selectedItem = findSelectedRole();
+							languageCb.selectedItem = findSelectedLanguage();
 							if (!_allowSetRole) {
 								roleCb.enabled = false;
 								addRoleBtn.visible = false;
@@ -377,6 +407,9 @@
 			public function get user():KalturaUser {
 				return _undoUser;
 			}
+			
+			
+			
 		]]>
 	</mx:Script>
 	<mx:StringValidator id='validator' property="text" required="true"
@@ -416,7 +449,12 @@
 		</mx:HBox>
 		<mx:HBox width="100%">
 			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'udd_description')}" width="{_lblWidth}"/>
-			<mx:Text id='descriptionTxt' width="100%" text="{roleCb.selectedItem.description}"/>
+			<mx:Text id="descriptionTxt" width="100%" text="{roleCb.selectedItem.description}"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'udd_language')}" width="{_lblWidth}"/>
+			<mx:ComboBox id="languageCb" width="100%" dataProvider="{_languages}" />
+			<!--TODO change event -->
 		</mx:HBox>
 		<mx:Spacer height="100%" />
 		<mx:HBox>

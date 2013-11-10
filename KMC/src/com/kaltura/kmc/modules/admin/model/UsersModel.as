@@ -90,6 +90,14 @@ package com.kaltura.kmc.modules.admin.model
 		 * the partner's admin user id. 
 		 */
 		public var adminUserId:String;
+		
+		
+		[ArrayElementType("LocaleVo")]
+		/**
+		 * list of languages currently supported in KMC 
+		 * (LocaleVo objects)
+		 */
+		public var supportedLanguages:Array;
 	
 		
 	}
