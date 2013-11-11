@@ -188,6 +188,8 @@
 			 */
 			protected function overrideDataByFlashvars(conf:String, flashvars:Object):String {
 				var confFile:XML = new XML(conf);
+				// convert KalturaLanguageCode to locale name
+				selectUserLanguage(flashvars, confFile.supportedLanguages[0]);
 				// override with general language definition
 				if (flashvars.language && !flashvars["kmc.locale.language"]) {
 					flashvars["kmc.locale.language"] = flashvars.language;
@@ -253,6 +255,31 @@
 			protected function removeModule(uiconf:XML, moduleId:String):void {
 				if (uiconf.modules.module.(@id == moduleId).length() > 0) {
 					delete uiconf.modules.module.(@id == moduleId)[0];
+				}
+			}
+			
+			
+			/**
+			 * to support both language code and locale name as partner level language flashvar, 
+			 * if we got KalturaLanguageCode we translate it to locale name
+			 * */
+			protected function selectUserLanguage(appParams:Object, supportedLanguages:XML):void {
+				if (appParams.language != null) {
+					if (appParams.language.length == 2) {
+						// assume we got KalturaLanguageCode, replace with locale name
+						var foundLanguage:Boolean;
+						for each (var lang:XML in supportedLanguages.children()) {
+							if (lang.code.text() == appParams.language) {
+								appParams.language = lang.value.text().toString();
+								foundLanguage = true;
+								break;
+							}
+						}
+						if (!foundLanguage) {
+							// received a 2char language that is not recognized, ignore it
+							delete appParams.language;
+						}
+					}
 				}
 			}
 
