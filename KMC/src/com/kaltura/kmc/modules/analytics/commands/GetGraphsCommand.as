@@ -194,7 +194,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 						}
 						else {
 							if (String(xYArr[0]).length == 8 && !isNaN(parseInt(xYArr[0]))) {
-								// 8 digit string - probably a date like 01151979
+								// 8 digit string - probably a date like 19790115
 								obj = generateFullDateVo(String(xYArr[0]), yVal, krp.id);
 							}
 							else {
@@ -233,6 +233,10 @@ package com.kaltura.kmc.modules.analytics.commands {
 		}
 
 
+		/**
+		 * @param sdate	a string that represents a date (i.e, 20130112)
+		 * @return timestamp for the given date
+		 */
 		private function getTimeStampFromString(sdate:String):Number {
 			var year:String = sdate.substring(0, 4);
 			var month:String = sdate.substring(4, 6);
