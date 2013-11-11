@@ -187,6 +187,16 @@
 			// item-renderer functions
 			// ==================================================================
 
+			public function getLanguageNameFromCode(item:Object, column:DataGridColumn):String {
+				var result:String = '';
+				if (item.language) {
+					result = resourceManager.getString('languages', item.language.toUpperCase());
+				}
+				return result;
+			}
+			
+			
+			
 			/**
 			 * Remove single item from the combobox dataprovider by its id
 			 * @param id	the name of the id to remove 
@@ -343,7 +353,7 @@
 		<mx:DataGridColumn itemRenderer="com.kaltura.kmc.modules.admin.view.renderers.UserNameItemRenderer" dataField="fullName"
 						   headerText="{resourceManager.getString('admin', 'user_name')}"
 						   headerStyleName="adminTableColumn"/>
-		<mx:DataGridColumn itemRenderer="com.kaltura.kmc.modules.admin.view.renderers.UserIdItemRenderer" dataField="id"
+		<mx:DataGridColumn itemRenderer="com.kaltura.kmc.modules.admin.view.renderers.UserSimpleItemRenderer" dataField="id"
 						   headerText="{resourceManager.getString('admin', 'id')}"
 						   headerStyleName="adminTableColumn"/>
 		<mx:DataGridColumn itemRenderer="com.kaltura.kmc.modules.admin.view.renderers.UserEmailItemRenderer" dataField="email"
@@ -362,6 +372,9 @@
 		</mx:DataGridColumn>
 		<mx:DataGridColumn itemRenderer="com.kaltura.kmc.modules.admin.view.renderers.UserLastLoginItemRenderer" dataField="lastLoginTime"
 						   headerText="{resourceManager.getString('admin', 'user_last_login')}"
+						   headerStyleName="adminTableColumn"/>
+		<mx:DataGridColumn itemRenderer="com.kaltura.kmc.modules.admin.view.renderers.UserSimpleItemRenderer" labelFunction="getLanguageNameFromCode"
+						   headerText="{resourceManager.getString('admin', 'user_language')}" 
 						   headerStyleName="adminTableColumn"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('admin', 'user_actions')}"
 						   headerStyleName="adminTableCenteredColumn" width="140"
