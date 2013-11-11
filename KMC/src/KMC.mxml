@@ -462,21 +462,23 @@
 
 
 			/**
+			 * checks if user language should override given language flashvar
+			 * */
+			private function forceLanguageFlashvar():Boolean {
+				if (_flashvars.forcelanguage == "true" || _flashvars.forcelanguage == "1") {
+					return true;
+				}
+				return false;
+			}
+			
+			/**
 			 * Kmc uiConf and RolesAndPermissions loaded. Parse it and load skin and relevant modules.
 			 */
 			protected function dataLoadHandler(event:KalturaEvent):void {
 				// [0] KMC uiconf:
 				if (isError(event.data[0].error))
 					return;
-
-				_uiconf = new XML(overrideDataByFlashvars((event.data[0] as KalturaUiConf).confFile, _flashvars));
-				if (_uiconf.descendants().length() == 0) {
-					Alert.show("KMC UIConf is empty", "Error");
-					return;
-				}
-				// help url
-				var helpBaseUrl:String = _uiconf.help.helpPage.text().toString();
-				Helpist.init(_uiconf.help.item, helpBaseUrl, _flashvars.host, _flashvars.protocol);
+				// further processing is done at the end
 
 				// [1] permissions:
 				if (isError(event.data[1].error))
@@ -494,13 +496,16 @@
 					return;
 				var uvo:UserVO = new UserVO();
 				uvo.user = event.data[3] as KalturaUser;
+				if (uvo.user.language && !forceLanguageFlashvar()) { 
+					_flashvars.language = uvo.user.language;
+				}
 				uvo.role = event.data[4] as KalturaUserRole; 
 				_modelLocator.userInfo = uvo;
 
 				var roleOfCurrentUser:String;
 				roleOfCurrentUser = uvo.role.permissionNames;
 
-				// [4] partner permissions list
+				// [5] partner permissions list
 				if (isError(event.data[5].error))
 					return;
 
@@ -508,6 +513,16 @@
 				permissionManager.addEventListener(KedErrorEvent.ERROR, onError);
 				permissionManager.init(uidefinition, roleOfCurrentUser, event.data[5] as KalturaPermissionListResponse);
 
+				// [0] uiconf processing
+				_uiconf = new XML(overrideDataByFlashvars((event.data[0] as KalturaUiConf).confFile, _flashvars));
+				if (_uiconf.descendants().length() == 0) {
+					Alert.show("KMC UIConf is empty", "Error");
+					return;
+				}
+				// help url
+				var helpBaseUrl:String = _uiconf.help.helpPage.text().toString();
+				Helpist.init(_uiconf.help.item, helpBaseUrl, _flashvars.host, _flashvars.protocol);
+				
 				// GAtracking
 				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
 				if (ga.enabled) {
@@ -521,8 +536,8 @@
 				// file uploader
 				FileUploadManager.getInstance().kc = _modelLocator.kalturaClient;
 				FileUploadManager.getInstance().debugMode = _flashvars.debugmode;
-				if (!_flashvars.maxUploadSize) {
-					_flashvars.maxUploadSize = parseFloat(_uiconf.upload.maxSize.toString());
+				if (!_flashvars.maxuploadsize) {
+					_flashvars.maxuploadsize = parseFloat(_uiconf.upload.maxSize.toString());
 				} 
 				// get the concurrentuploads param from kmc uiconf 
 				FileUploadManager.getInstance().concurrentUploads = parseInt(_uiconf.upload.concurrent.toString());
