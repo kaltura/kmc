@@ -11,6 +11,8 @@ package com.kaltura.kmc.modules.admin.business
 		
 		public static function getLanguagesArray(languagesXml:XML):Array {
 			var result:Array = [];
+			if (!languagesXml) return result;
+			
 			var loc:LocaleVo;
 			for each (var lang:XML in languagesXml.children()) {
 				loc = new LocaleVo();
