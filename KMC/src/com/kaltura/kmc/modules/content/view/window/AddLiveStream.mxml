@@ -177,19 +177,26 @@
 				
 				if (_isManualStream) { 
 					// manual
-					hdsurlValidator.required = true;
-					hdsurlValidator.listener = hdsurl;
-					var isUrlValid:Boolean = hdsurlValidator.validate(hdsurl.text).type == ValidationResultEvent.VALID;
-					hdsurlValidator.required = false;
-					hdsurlValidator.listener = hlsurl;
-					isUrlValid &&= hdsurlValidator.validate(hlsurl.text).type == ValidationResultEvent.VALID;
-					
-					if (isUrlValid) {
-						streamVo.flashHDSURL = hdsurl.text;
-						streamVo.mobileHLSURL = hlsurl.text;
+					// make sure we have at least one url
+					if (hdsurl.text == '' && hlsurl.text == '') {
+						hdsurl.errorString = hlsurl.errorString = resourceManager.getString('live', 'at_least_one');
+						isValid = false;
 					}
 					else {
-						isValid = false;
+						// make sure urls are valid
+						hdsurlValidator.required = false;
+						hdsurlValidator.listener = hdsurl;
+						var isUrlValid:Boolean = hdsurlValidator.validate(hdsurl.text).type == ValidationResultEvent.VALID;
+						hdsurlValidator.listener = hlsurl;
+						isUrlValid &&= hdsurlValidator.validate(hlsurl.text).type == ValidationResultEvent.VALID;
+						
+						if (isUrlValid) {
+							streamVo.flashHDSURL = hdsurl.text;
+							streamVo.mobileHLSURL = hlsurl.text;
+						}
+						else {
+							isValid = false;
+						}
 					}
 				}
 				else if (streamVo.streamType == StreamVo.STREAM_TYPE_KALTURA) {
@@ -323,7 +330,7 @@
 		<!-- form for manual -->
 		<mx:VBox styleName="noPadding" width="100%" height="100%">
 			<mx:HBox width="100%">
-				<mx:Label text="{ResourceManager.getInstance().getString('live', 'hdsurl')}*" width="{labelWidth}" styleName="boldLabel"/>
+				<mx:Label text="{ResourceManager.getInstance().getString('live', 'hdsurl')}" width="{labelWidth}" styleName="boldLabel"/>
 				<mx:TextInput id="hdsurl" width="100%" />
 			</mx:HBox>
 			<mx:HBox width="100%">
