@@ -338,6 +338,11 @@ live streaming control tab of EntryDetailsWin
 				var encode:XML = xml.encode[0] as XML;
 				(encode.video.datarate[0] as XML).appendChild(bitratesString);
 				(encode.video.outputsize[0] as XML).appendChild(dimensionsStrings);
+				
+				if (_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM) {
+					encode.video.format.appendChild("H.264");
+					xml.capture.audio.sample_rate.appendChild("44100");
+				}
 
 				var myFile:FileReference = new FileReference();
 				myFile.save(xml.toXMLString(), resourceManager.getString('drilldown', 'ExportToFme.xml'));
