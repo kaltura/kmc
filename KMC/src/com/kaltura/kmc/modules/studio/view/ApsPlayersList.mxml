@@ -251,13 +251,19 @@
 				var uiconf:KalturaUiConf;
 				for (var i:int = temp.length-1; i>=0; i--) {
 					uiconf = temp.getItemAt(i) as KalturaUiConf;
-					try {
-						XML(uiconf.confFile);
-						XML(uiconf.confFileFeatures);
-					}
-					catch (e:Error) {
+					if (!uiconf.confFile || !uiconf.confFileFeatures) {
 						Alert.show(resourceManager.getString('aps', 'playerCorrupt', [uiconf.id]), resourceManager.getString('aps', 'warning'));
 						temp.removeItemAt(i);
+					}
+					else {
+						try {
+							XML(uiconf.confFile);
+							XML(uiconf.confFileFeatures);
+						}
+						catch (e:Error) {
+							Alert.show(resourceManager.getString('aps', 'playerCorrupt', [uiconf.id]), resourceManager.getString('aps', 'warning'));
+							temp.removeItemAt(i);
+						}
 					}
 				}
 				
@@ -414,7 +420,7 @@
 			private function getTemplateName(item:Object, column:DataGridColumn):String {
 				var result:String = ''
 				if (item) {
-					var confFileXml:XML = XML(item.confFile.toString());
+					var confFileXml:XML = XML(item.confFile);
 					var type:uint = 1;
 					if (confFileXml.@isPlaylist == "false")
 						type = 1;
