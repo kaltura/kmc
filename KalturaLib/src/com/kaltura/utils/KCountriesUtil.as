@@ -1061,7 +1061,8 @@ package com.kaltura.utils
 			//arrCol.addItem({name:ResourceManager.getInstance().getString('countries', 'cc'), code:"CC"});*/
 			//arrCol.addItem({name:ResourceManager.getInstance().getString('countries', 'yu'), code:"YU"});*/
 
-
+			arrCol.source.sortOn('name');
+			arrCol.refresh();
 
 		}
 		
