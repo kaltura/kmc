@@ -5,11 +5,15 @@
 
 -->
 <mx:LineChart xmlns:mx="http://www.adobe.com/2006/mxml" seriesFilters="{[]}" 
-	dataTipFunction="onDataTip" showDataTips="true" > 
+	dataTipFunction="onDataTip" showDataTips="true" xmlns:metadata="com.kaltura.commands.metadata.*" > 
 	
+	<mx:Metadata>
+		[ResourceBundle("SharedResources")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import mx.charts.HitData;
+			import mx.charts.chartClasses.IAxis;
 			import mx.collections.ArrayCollection;
 			import mx.graphics.Stroke;
 			
@@ -78,9 +82,29 @@
             	horizontalDateTimeAxis.maximum = date;
             	_maxHAxisDate = date;
             }
+			
+			[Bindable]
+			public var horizontalAxisLabelFunction:Function = defaultHorizontalAxisLabelFunction;
+			
+			protected function defaultHorizontalAxisLabelFunction(labelValue:Object, previousValue:Object, axis:IAxis):String { 
+				return dateFormatter.format(labelValue);
+			}
+			
+			override protected function resourcesChanged():void {
+				super.resourcesChanged();
+				if (dateFormatter) {
+					dateFormatter.formatString = resourceManager.getString('SharedResources', 'dateFormat');
+				}
+				if (horizontalDateTimeAxis) {
+					horizontalDateTimeAxis.maximum = null;
+					horizontalDateTimeAxis.maximum = _maxHAxisDate;
+				}
+			}
 
 		]]>
 	</mx:Script>
+	
+	<mx:DateFormatter id="dateFormatter" formatString="{resourceManager.getString('SharedResources', 'dateFormat')}"/>
 	
 	<!-- Define chart effects -->
 	<mx:Stroke id="axis" color="0xb1b1b1" weight="2" />
@@ -92,7 +116,7 @@
      </mx:horizontalAxisRenderers>
      
 	 <mx:horizontalAxis>
-    	<mx:DateTimeAxis id="horizontalDateTimeAxis" dataUnits="days" labelUnits="days" displayLocalTime="true" />
+    	<mx:DateTimeAxis id="horizontalDateTimeAxis" dataUnits="days" labelUnits="days" displayLocalTime="true" labelFunction="horizontalAxisLabelFunction" />
      </mx:horizontalAxis>
 
      <mx:verticalAxisRenderers>
