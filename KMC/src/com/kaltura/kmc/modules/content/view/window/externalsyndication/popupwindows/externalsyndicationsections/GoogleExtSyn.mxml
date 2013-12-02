@@ -23,6 +23,8 @@
 			import mx.utils.StringUtil;
 			import mx.validators.ValidationResult;
 
+			private static const LABEL_WIDTH:Number = 180;
+			
 			[Bindable]
 			/**
 			 * external syndication data
@@ -167,14 +169,14 @@
 	<mx:Spacer height="10"/>
 
 	<mx:HBox width="100%" >
-		<mx:Label text="{resourceManager.getString('cms','flavorLabel')}" width="180" styleName="feedParamLabel"/>
-		<mx:ComboBox id="flavorsComboBox" labelField="name" width="180"
+		<mx:Label text="{resourceManager.getString('cms','flavorLabel')}" width="{LABEL_WIDTH}" styleName="feedParamLabel"/>
+		<mx:ComboBox id="flavorsComboBox" labelField="name" width="{LABEL_WIDTH}"
 					 dataProvider="{flavorParams}" />
 		<mx:CheckBox id="defaultCPCheckBox" selected="true" 
 					 label="{resourceManager.getString('cms','addDefaultConversionProfile')}" />
 	</mx:HBox>
 	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('cms','landingPageLabel')}" width="180" styleName="feedParamLabel"/>
+		<mx:Label text="{resourceManager.getString('cms','landingPageLabel')}" width="{LABEL_WIDTH}" styleName="feedParamLabel"/>
 		<mx:TextInput id="landingPageInputText" text="http://" restrict="0-9\-\/A-Z\a-z\.\_\?\:\=\#&amp;" width="100%"/>
 	</mx:HBox>
 	<mx:HBox width="100%">
@@ -182,13 +184,13 @@
 				 text="{resourceManager.getString('cms','googleLandingPageDescriptionLabel')}"/>
 	</mx:HBox>
 	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('cms', 'playbackLabel')}" width="180" styleName="feedParamLabel"/>
+		<mx:Label text="{resourceManager.getString('cms', 'playbackLabel')}" width="{LABEL_WIDTH}" styleName="feedParamLabel"/>
 		<mx:VBox width="100%">
 			<mx:RadioButtonGroup id='playBackRadioBtnsGroup'/>
 			<mx:RadioButton id="playBackRadioBtn" groupName="playBackRadioBtnsGroup"
 							label="{resourceManager.getString('cms', 'yesAndUsePlayerLabel')}" selected="true"/>
 			<mx:ComboBox id="videoPlayerComboBox" enabled="{playBackRadioBtn.selected}" selectedIndex="{_playersIndex}"
-						 dataProvider="{setDataProviderToPlayesCombo(extSynData.uiConfData)}" width="410"
+						 dataProvider="{setDataProviderToPlayesCombo(extSynData.uiConfData)}" width="100%"
 						 labelField="name" itemRenderer="mx.controls.Label"/>
 			<mx:Text text="{resourceManager.getString('cms', 'googlePlayerDescriptionLabel')}"
 					 enabled="{playBackRadioBtn.selected}" width="100%"/>
@@ -197,116 +199,8 @@
 		</mx:VBox>
 	</mx:HBox>
 	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('cms', 'googleAdultContent')}" width="180" styleName="feedParamLabel"/>
+		<mx:Label text="{resourceManager.getString('cms', 'googleAdultContent')}" width="{LABEL_WIDTH}" styleName="feedParamLabel"/>
 		<mx:CheckBox id='adultcontentCheckBox' creationComplete="setAdultContentDefault()"
 					 label="{resourceManager.getString('cms', 'googleAdultcontentDescription')}"/>
 	</mx:HBox>
-
-	<!--mx:Grid width="100%">
-		 <mx:GridRow width="100%"
-		 height="100%">
-		 <mx:GridItem width="190"
-		 height="100%"
-		 paddingLeft="3">
-		 <mx:Label text="{resourceManager.getString('cms','flavorLabel')}"
-		 styleName="feedParamLabel"/>
-		 </mx:GridItem>
-		 <mx:GridItem width="100%"
-		 height="100%">
-		 <mx:HBox>
-		 <mx:ComboBox id='flavorsComboBox'
-		 dataProvider="{_model.flavorParams}"
-		 labelField="name"/>
-		 <mx:VBox width="100%"
-		 height="100%"
-		 paddingBottom="2"
-		 paddingLeft="2"
-		 paddingRight="2"
-		 paddingTop="2"-->
-	<!--<mx:CheckBox id='additinalTranscodingCheckBox' label="{resourceManager.getString('cms','transcodingCheckBox')}" selected="true"/>-->
-	<!--mx:CheckBox id='defaultCPCheckBox'
-		 label="{resourceManager.getString('cms','addDefaultConversionProfile')}"
-		 selected="true"/>
-		 </mx:VBox>
-		 </mx:HBox>
-		 </mx:GridItem>
-		 </mx:GridRow>
-		 <mx:GridRow width="100%"
-		 height="100%">
-		 <mx:GridItem width="190"
-		 height="100%"
-		 paddingLeft="3">
-		 <mx:Label text="{resourceManager.getString('cms','landingPageLabel')}"
-		 styleName="feedParamLabel"/>
-		 </mx:GridItem>
-		 <mx:GridItem width="100%"
-		 height="100%">
-		 <mx:TextInput width="100%"
-		 id="landingPageInputText"
-		 text="http://"
-		 restrict="0-9\-\/A-Z\a-z\.\_\?\:\=\#"/>
-		 </mx:GridItem>
-		 </mx:GridRow>
-		 <mx:GridRow width="100%"
-		 height="100%">
-		 <mx:GridItem width="100%"
-		 height="100%"
-		 colSpan="2"
-		 horizontalAlign="center">
-		 <mx:Text width="100%"
-		 styleName="syndicationNote"
-		 text="{resourceManager.getString('cms','googleLandingPageDescriptionLabel')}">
-		 </mx:Text>
-		 </mx:GridItem>
-		 </mx:GridRow>
-		 <mx:GridRow width="100%"
-		 height="100%">
-		 <mx:GridItem width="195"
-		 height="100%"
-		 paddingLeft="3">
-		 <mx:Label text="{resourceManager.getString('cms', 'playbackLabel')}"
-		 styleName="feedParamLabel"/>
-		 </mx:GridItem>
-		 <mx:GridItem width="100%"
-		 height="100%">
-		 <mx:VBox width="100%"
-		 paddingBottom="2"
-		 paddingLeft="2"
-		 paddingRight="2"
-		 paddingTop="2">
-		 <mx:RadioButtonGroup id='playBackRadioBtnsGroup'/>
-		 <mx:RadioButton label="{resourceManager.getString('cms', 'yesAndUsePlayerLabel')}"
-		 id="playBackRadioBtn"
-		 groupName="playBackRadioBtnsGroup"
-		 selected="true"/>
-		 <mx:ComboBox id="videoPlayerComboBox"
-		 enabled="{playBackRadioBtn.selected}"
-		 selectedIndex="{playersIndex}"
-		 dataProvider="{setDataProviderToPlayesCombo(_model.uiConfData)}"
-		 labelField="name">
-		 </mx:ComboBox>
-		 <mx:Text text="{resourceManager.getString('cms', 'googlePlayerDescriptionLabel')}"
-		 enabled="{playBackRadioBtn.selected}"/>
-		 <mx:RadioButton label="{resourceManager.getString('cms', 'noAndLinkbackToSite')}"
-		 id="linkBackRadioBtn"
-		 groupName="playBackRadioBtnsGroup"/>
-		 </mx:VBox>
-		 </mx:GridItem>
-		 </mx:GridRow>
-		 <mx:GridRow width="100%"
-		 height="100%">
-		 <mx:GridItem width="195"
-		 height="100%"
-		 paddingLeft="3">
-		 <mx:Label text="{resourceManager.getString('cms', 'googleAdultContent')}"
-		 styleName="feedParamLabel"/>
-		 </mx:GridItem>
-		 <mx:GridItem width="100%"
-		 height="100%">
-		 <mx:CheckBox id='adultcontentCheckBox'
-		 creationComplete="setAdultContentDefault()"
-		 label="{resourceManager.getString('cms', 'googleAdultcontentDescription')}"/>
-		 </mx:GridItem>
-		 </mx:GridRow>
-		 </mx:Grid-->
 </mx:VBox>
