@@ -36,17 +36,7 @@ package com.kaltura.kmc.modules.analytics.business {
 				new LocalizedVo('last12Months', 'last12Months', 'analytics'),
 				new LocalizedVo('thisYear', 'thisYear', 'analytics'),
 				new LocalizedVo('custom', 'custom', 'analytics')
-			
-				/*resourceManager.getString('analytics', 'yesterday'),
-				resourceManager.getString('analytics', 'last7Days'),
-				resourceManager.getString('analytics', 'thisWeek'),
-				resourceManager.getString('analytics', 'lastWeek'),
-				resourceManager.getString('analytics', 'last30Days'),
-				resourceManager.getString('analytics', 'thisMonth'),
-				resourceManager.getString('analytics', 'lastMonth'),
-				resourceManager.getString('analytics', 'last12Months'),
-				resourceManager.getString('analytics', 'thisYear'),
-				resourceManager.getString('analytics', 'custom')*/];
+				];
 			
 			var today:Date = new Date();
 			_latestSelected = _dateRange[4];
