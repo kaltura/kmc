@@ -106,6 +106,7 @@ package com.kaltura.edw.components.fltr.panels {
 			_buttons = new Array();
 			var btn:CheckBox = new CheckBox();
 			btn.label = _mainButtonTitle;
+			btn.toolTip = _mainButtonTitle;
 			btn.selected = true;
 			btn.styleName = "mainFilterGroupButton";
 			btn.percentWidth = 100; 
@@ -126,6 +127,7 @@ package com.kaltura.edw.components.fltr.panels {
 				else {
 					btn.label = _dataProvider.getItemAt(i).toString();
 				}
+				btn.toolTip = btn.label;
 				btn.selected = false;
 				btn.styleName = "innerFilterGroupButton";
 				btn.percentWidth = 100;
