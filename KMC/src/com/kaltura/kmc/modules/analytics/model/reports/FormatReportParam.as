@@ -39,6 +39,7 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 				case 'count_mix':
 				case "count_loads":
 					// format as number
+					_numberFormatter.precision = 0;
 					return _numberFormatter.format(int(value));
 					break;
 
@@ -46,11 +47,13 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 				case 'play_through_ratio':
 				case "load_play_ratio":
 					// format as percents
-					return (Number(value) * 100).toFixed(2) + "%";
+					_numberFormatter.precision = 2;
+					return ResourceManager.getInstance().getString('analytics', 'percents_format', [_numberFormatter.format(Number(value))]);
 					break;
 
 				case "sum_time_viewed":
-					return _numberFormatter.format(Number(value).toFixed(2));
+					_numberFormatter.precision = 2;
+					return _numberFormatter.format(Number(value));
 					break; 
 				case "avg_time_viewed":
 					return KTimeUtil.formatTime2(Number(value) * 60);
