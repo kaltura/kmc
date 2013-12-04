@@ -24,12 +24,12 @@ package com.kaltura.kmc.modules.admin.control.commands
 			// pass result of first call to second call
 //			mr.addRequestParam("2:userRoleId", "{1:result:id}");
 			mr.mapMultiRequestParam(1, "id", 2, "userRoleId");
-			mr.addRequestParam("2:userRole:name", ResourceManager.getInstance().getString('admin', 'duplicate_name') + ' ' + role.name);
+			mr.addRequestParam("2:userRole:name", ResourceManager.getInstance().getString('admin', 'duplicate_name', [role.name]));
 			// duplicate the role
 			call = new UserRoleClone(role.id);
 			mr.addAction(call);
 			// edit new role's name (both params are dummy, real value is taken from the first call
-			call = new UserRoleUpdate(int.MIN_VALUE, new KalturaUserRole());
+			call = new UserRoleUpdate(5, new KalturaUserRole());
 			mr.addAction(call);
 			
 			// list
