@@ -1,4 +1,4 @@
-package com.kaltura.controls {
+package com.kaltura.controls.text {
 	import flash.events.FocusEvent;
 	
 	import mx.controls.TextArea;
