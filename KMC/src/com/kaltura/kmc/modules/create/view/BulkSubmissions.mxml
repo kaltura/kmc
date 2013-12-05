@@ -2,7 +2,7 @@
 <!---
  	this component handles all bulk submissions in upload module
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center" styleName="addPanelButtonBox" >
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center" styleName="addPanelButtonBox" xmlns:controls="com.kaltura.controls.*" >
 	<mx:Metadata>
 		/**
 		 * request to hide the panel
@@ -11,10 +11,6 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import mx.core.mx_internal;
-			import mx.managers.PopUpManager;
-			import mx.events.CloseEvent;
-			import mx.controls.Alert;
 			import com.kaltura.KalturaClient;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.create.BulkUploader;
@@ -23,7 +19,11 @@
 			import modules.AddEntryPanel;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.mx_internal;
+			import mx.events.CloseEvent;
 			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
 			
 			/**
 			 * KalturaClient for API calls
@@ -199,10 +199,10 @@
 		]]>
 	</mx:Script>
 	
-	<mx:ComboBox id="dropdown" styleName="actionsComboBox" selectedIndex="-1" width="{btnSamples.width}"
+	<mx:ComboBox id="dropdown" styleName="actionsComboBox" selectedIndex="-1" width="{AddEntryPanel.BTN_WIDTH}"
 				 prompt="{resourceManager.getString('create', 'bulk_btn')}"
 				 change="dropdown_changeHandler(event)" dataProvider="{_bulkTypes}" labelFunction="getLabel"/>
 	
-	<mx:LinkButton id="btnSamples" click="downloadSampleFiles(event)" styleName="addPanelLinkButton"
-				   label="{resourceManager.getString('create', 'samples_btn')}" />
+	<controls:MultilineLinkButton id="btnSamples" click="downloadSampleFiles(event)" styleName="addPanelLinkButton"
+				   label="{resourceManager.getString('create', 'samples_btn')}" width="{AddEntryPanel.BTN_WIDTH}" />
 </mx:VBox>
