@@ -3,7 +3,7 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.kmc.modules.analytics.utils.FormattingUtil;
 	import com.kaltura.utils.KTimeUtil;
-
+	
 	import mx.formatters.DateFormatter;
 	import mx.formatters.NumberFormatter;
 	import mx.resources.ResourceManager;
@@ -61,13 +61,13 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 				case "event_date_id":
 					return new Date(Number(value) * 1000).toDateString();
 					break;
+				
+				case "entry_media_source_name":
+					return getLocalised('sourceTypes', value);
+					break;
 
 				case "country":
-					var result:String = ResourceManager.getInstance().getString('map', value);
-					if (!result) {
-						result = value;
-					}
-					return result;
+					return getLocalised('map', value);
 					break;
 				case "date_id":
 					return FormattingUtil.formatFullDateString(value);
@@ -113,6 +113,15 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 
 			}
 			return value;
+		}
+		
+		
+		private static function getLocalised(bundleName:String, resourceName:String):String {
+			var result:String = ResourceManager.getInstance().getString(bundleName, resourceName);
+			if (!result) {
+				result = resourceName;
+			}
+			return result;
 		}
 	}
 }
