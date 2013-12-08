@@ -3,6 +3,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.EntryLiveStreamingHelper;
+			import com.kaltura.types.KalturaDVRStatus;
 			import com.kaltura.vo.KalturaLiveStreamEntry;
 			
 			[Bindable]
@@ -18,7 +19,8 @@
 				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
 	</mx:HBox>
 	
-	<mx:HBox width="100%">
+	<mx:HBox width="100%" visible="{selectedEntry.dvrStatus == KalturaDVRStatus.ENABLED}" 
+			 includeInLayout="{selectedEntry.dvrStatus == KalturaDVRStatus.ENABLED}">
 		<mx:Label text="{resourceManager.getString('drilldown', 'dvrWin')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
 				  styleName="drillDownLabel"/>
 		<mx:Label id="dvrWin" text="{EntryLiveStreamingHelper.getDVRWindow(selectedEntry)}" selectable="true" 
