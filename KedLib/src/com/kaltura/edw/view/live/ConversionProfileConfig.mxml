@@ -19,11 +19,21 @@
 			public var selectedEntry:KalturaLiveStreamEntry;
 			
 			public function getSelectedProfile():int {
-				return convProf.selectedItem.id;
+				if (convProf.selectedItem) {
+					return convProf.selectedItem.id;
+				}
+				else {
+					return selectedEntry.conversionProfileId;
+				}
 			}
 			
 			public function isChanged():Boolean {
-				return convProf.selectedItem.id != selectedEntry.conversionProfileId;
+				if (convProf.selectedItem) {
+					return convProf.selectedItem.id != selectedEntry.conversionProfileId;
+				}
+				else {
+					return false;
+				}
 			}
 			
 			
