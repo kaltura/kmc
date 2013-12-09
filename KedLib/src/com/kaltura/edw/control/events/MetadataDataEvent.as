@@ -16,6 +16,10 @@ package com.kaltura.edw.control.events
 		 */
 		public static const LIST : String = "content_list_metadata_data";
 		
+		/**
+		 * update current entry mtadata 
+		 * event.data is entry id
+		 */
 		public static const UPDATE : String = "content_update_metadata_data";
 		
 		/**

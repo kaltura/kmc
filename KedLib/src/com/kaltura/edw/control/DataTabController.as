@@ -38,6 +38,7 @@ package com.kaltura.edw.control
 			addCommand(MetadataProfileEvent.LIST, ListMetadataProfileCommand);
 			addCommand(MetadataProfileEvent.GET, GetMetadataProfileCommand);
 			addCommand(MetadataDataEvent.LIST, ListMetadataDataCommand);
+			addCommand(MetadataDataEvent.UPDATE, UpdateMetadataDataCommand);
 			addCommand(MetadataDataEvent.RESET, ListMetadataDataCommand);
 			addCommand(SearchEvent.SEARCH_ENTRIES, ListEntriesCommand);
 			addCommand(LoadEvent.LOAD_FILTER_DATA, LoadFilterDataCommand);

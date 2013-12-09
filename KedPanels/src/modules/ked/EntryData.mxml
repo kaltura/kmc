@@ -358,14 +358,16 @@
 					(_selectedEntry as KalturaLiveStreamEntry).offlineMessage = offlineMessage.text;
 				}
 
-				//update categories
+				// update categories
 				var saveEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_ENTRY_CATEGORIES, _selectedEntry);
 				saveEvent.data = EntryDataHelper.getCategoriesUpdateValues(catComplete.selectedItems, _entryCategories);
 				controller.dispatch(saveEvent);
+				// custom data save
+				var cdEvent:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.UPDATE);
+				cdEvent.data = _selectedEntry.id;
+				controller.dispatch(cdEvent);
 
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.PANEL_DATA_SAVED));
-
-				// custom data save is done in update entries command, not here
 			}
 
 
