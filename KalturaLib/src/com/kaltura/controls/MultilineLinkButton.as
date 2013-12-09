@@ -26,6 +26,7 @@ package com.kaltura.controls
 			{
 				textField = IUITextField(createInFontContext(NoTruncationUITextField));
 				textField.styleName = this;
+				textField.percentWidth = 100;
 				addChild(DisplayObject(textField));
 			}
 			
@@ -40,9 +41,9 @@ package com.kaltura.controls
 			if (!isNaN(explicitWidth))
 			{
 				var tempIcon:IFlexDisplayObject = getCurrentIcon();
-				var w:Number = explicitWidth;
+				var w:Number = explicitWidth - getStyle("paddingLeft") - getStyle("paddingRight");
 				if (tempIcon)
-					w -= tempIcon.width + getStyle("horizontalGap") + getStyle("paddingLeft") + getStyle("paddingRight");
+					w -= tempIcon.width + getStyle("horizontalGap");
 				textField.width = w;
 			}
 			super.measure();
@@ -53,7 +54,7 @@ package com.kaltura.controls
 		{
 			textField.text = s;
 			var lineMetrics:TextLineMetrics = textField.getLineMetrics(0);
-			lineMetrics.width = textField.textWidth + 4;
+			lineMetrics.width = textField.textWidth;// + 4;
 			lineMetrics.height = textField.textHeight + 4;
 			return lineMetrics;
 		}

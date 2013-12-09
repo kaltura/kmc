@@ -6,9 +6,16 @@ package com.kaltura.controls
 	import flash.text.TextLineMetrics;
 	
 	import mx.controls.Button;
+	import mx.controls.ButtonLabelPlacement;
+	import mx.core.EdgeMetrics;
+	import mx.core.FlexVersion;
+	import mx.core.IBorder;
+	import mx.core.IFlexAsset;
 	import mx.core.IFlexDisplayObject;
 	import mx.core.IUITextField;
+	import mx.core.UITextField;
 	import mx.core.mx_internal;
+	import mx.events.MoveEvent;
 	
 	use namespace mx_internal;
 	
@@ -25,6 +32,7 @@ package com.kaltura.controls
 			{
 				textField = IUITextField(createInFontContext(NoTruncationUITextField));
 				textField.styleName = this;
+				textField.percentWidth = 100;
 				addChild(DisplayObject(textField));
 			}
 			
@@ -43,5 +51,23 @@ package com.kaltura.controls
 			lineMetrics.height = textField.textHeight + 4;
 			return lineMetrics;
 		}
+		
+		
+		
+		override protected function measure():void
+		{
+			if (!isNaN(explicitWidth))
+			{
+				var tempIcon:IFlexDisplayObject = getCurrentIcon();
+				var w:Number = explicitWidth - getStyle("paddingLeft") - getStyle("paddingRight");
+				if (tempIcon)
+					w -= tempIcon.width + getStyle("horizontalGap");
+				textField.width = w;
+			}
+			super.measure();
+			
+		}
+		
+
 	}
 }
