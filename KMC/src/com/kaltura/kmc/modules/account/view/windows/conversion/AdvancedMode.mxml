@@ -118,11 +118,15 @@
 		</mx:HBox>
 		<!-- navigation -->
 		<mx:HBox width="100%" styleName="DataGridActions" horizontalAlign="left">
-			<mx:LinkButton id="simpleModeBtn"
+			<mx:LinkButton id="simpleModeBtn" 
+						   visible="{mode == ConversionProfileWindowMode.MODE_MEDIA}" 
+						   includeInLayout="{mode == ConversionProfileWindowMode.MODE_MEDIA}"
 						   label="{resourceManager.getString('account','switchToSimpleMode')}"
 						   click="changeState_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
-			<mx:LinkButton id="advancedModeBtn" visible="{mode != ConversionProfileWindowMode.MODE_MEDIA}" includeInLayout="{mode != ConversionProfileWindowMode.MODE_MEDIA}" 
-						   label="{resourceManager.getString('account','switchToAdvanceMode')}"
+			<mx:LinkButton id="advancedModeBtn" 
+						   visible="{mode != ConversionProfileWindowMode.MODE_MEDIA}"
+						   includeInLayout="{mode != ConversionProfileWindowMode.MODE_MEDIA}" 
+						   label="{mode == ConversionProfileWindowMode.MODE_MEDIA ? resourceManager.getString('account','switchToAdvanceMode') : resourceManager.getString('account','switchToModeBack')}"
 						   click="changeState_clickHandler(event)" styleName="switchModesLinkButtonStyle"/>
 			<mx:LinkButton id="liveModeBtn" visible="{mode != ConversionProfileWindowMode.MODE_LIVE &amp;&amp; showLiveBtn}"
 						   includeInLayout="{mode != ConversionProfileWindowMode.MODE_LIVE &amp;&amp; showLiveBtn}"
