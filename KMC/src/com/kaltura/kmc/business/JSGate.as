@@ -47,6 +47,14 @@ package com.kaltura.kmc.business
 		}
 		
 		/**
+		 * trigger the given JS function
+		 * @param funcName name of JS function to trigger
+		 */
+		public static function triggerJS(funcName:String):void {
+			ExternalInterface.call(funcName);
+		}
+		
+		/**
 		 * show the kmc swf
 		 * (used after showing HTML tab to tell js that we need to switch back to flash)
 		 */

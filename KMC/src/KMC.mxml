@@ -677,8 +677,14 @@
 				// -----------------------
 				// check for HTML tabs
 				if (o.extra.htmlUrl) {
-					// tell JS it should show a html tab
-					JSGate.openIframe(o.extra.htmlUrl);
+					if (o.extra.htmlUrl.indexOf('ei:') == 0) {
+						// trigger the rest of the string using ExternalInterface
+						JSGate.triggerJS(o.extra.htmlUrl.substring(3));
+					}
+					else {
+						// tell JS it should show a html tab
+						JSGate.openIframe(o.extra.htmlUrl);
+					}
 					// tell html
 					JSGate.writeUrlHash(o.moduleName, o.subtab);
 					JSGate.setTab(o.moduleName, true);
