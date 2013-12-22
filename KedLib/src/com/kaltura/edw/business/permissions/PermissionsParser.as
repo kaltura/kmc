@@ -84,6 +84,16 @@ package com.kaltura.edw.business.permissions {
 		 * @return true if a module should be visible, false otherwise
 		 */
 		private function showModuleByPermissions(module:XML, permissionsList:Array):Boolean {
+			// support "dependsOnFeature" on module level:  if there is a value to "dependsOnFeature" 
+			// look for the feature in the list. if it's there continue current flow, otherwise return false.
+			if (module.attribute("dependsOnFeature").length() > 0) {
+				var dependOn:String = module.attribute("dependsOnFeature").toString();
+				if (!isStringInArray(dependOn , permissionsList)) {
+					return false;
+				}
+			}
+			
+			
 			// support min attribute - minimum amount of nodes to show this tab
 			var minNodes:int = 1;
 			if (module.attribute("min").toString())
