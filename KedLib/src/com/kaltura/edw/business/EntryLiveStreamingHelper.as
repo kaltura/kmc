@@ -29,7 +29,7 @@ package com.kaltura.edw.business
 		}
 		
 		public static function getDVRWindow (entry:KalturaLiveStreamEntry):String {
-			return ResourceManager.getInstance().getString('drilldown', 'dvrWinFormat', [KTimeUtil.formatTime2(entry.dvrWindow*60, true, false)]);
+			return ResourceManager.getInstance().getString('drilldown', 'dvrWinFormat', [KTimeUtil.formatTime2(entry.dvrWindow*60, true, false, true)]);
 		}
 		
 		public static function getRecordStatus (entry:KalturaLiveStreamEntry):String {

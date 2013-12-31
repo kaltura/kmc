@@ -34,12 +34,13 @@ package com.kaltura.utils
 		/**
 		 * formats a time string without using Flash's Date object
 		 * @param secs
-		 * @param showHours
-		 * @param showSeconds
+		 * @param showHours		if hours is more than 0, show it
+		 * @param showSeconds	show seconds (even if 0)
+		 * @param forceHours	show hours even if 0
 		 * @return given value, formatted as {HH}:MM:{SS }
 		 * 
 		 */
-		public static function formatTime2(secs:int, showHours:Boolean = true, showSeconds:Boolean = true):String {
+		public static function formatTime2(secs:int, showHours:Boolean = true, showSeconds:Boolean = true, forceHours:Boolean = false):String {
 			var h:int = Math.floor(secs / 3600); // 60 * 60 = 3600
 			var sh:int = h * 3600;	// hours in seconds
 			var m:int = Math.floor((secs - sh) / 60);
@@ -47,7 +48,7 @@ package com.kaltura.utils
 			var s:int = secs - sh - sm;
 			
 			var result:String = '';
-			if (showHours && h>0) {
+			if ((showHours && h>0) || forceHours) {
 				result += addZero(h) + ':'; 
 			}
 			result += addZero(m);
