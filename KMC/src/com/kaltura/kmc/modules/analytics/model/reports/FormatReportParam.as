@@ -48,7 +48,7 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 				case "load_play_ratio":
 					// format as percents
 					_numberFormatter.precision = 2;
-					return ResourceManager.getInstance().getString('analytics', 'percents_format', [_numberFormatter.format(Number(value))]);
+					return ResourceManager.getInstance().getString('analytics', 'percents_format', [_numberFormatter.format(Number(value) * 100)]);
 					break;
 
 				case "sum_time_viewed":
