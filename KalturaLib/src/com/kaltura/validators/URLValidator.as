@@ -85,6 +85,7 @@ package com.kaltura.validators {
 		
 		override protected function resourcesChanged():void {
 			super.resourcesChanged();
+			_defaultError = ResourceManager.getInstance().getString('windows', 'urlValidatorError');
 			invalidURLError = invalidURLErrorOverride;
 		}
 	}
