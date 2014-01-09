@@ -5,7 +5,7 @@ Flavours tab of EntryDetailsWin
 <mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:entryDetails="com.kaltura.edw.view.*" width="100%"
 		   height="100%" creationComplete="onCreationComplete()" implements="com.kaltura.edw.business.IDrilldownPanel"
 		   xmlns:edw="com.kaltura.edw.*" xmlns:view="com.kaltura.edw.view.*" xmlns:control="com.kaltura.edw.control.*"
-		   label="{resourceManager.getString('drilldown', 'videoFiles')}">
+		   label="{resourceManager.getString('drilldown', 'videoFiles')}" >
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="panelDataSaved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -886,12 +886,12 @@ Flavours tab of EntryDetailsWin
 	<control:FlavorsTabController id="controller" />
 	
 	<!-- Current entry state description -->
-	<mx:HBox>
+	<mx:HBox width="100%" >
 		<mx:Label text="{resourceManager.getString('drilldown','currentState')}" styleName="drillDownLabel"/>
-		<mx:Label id="stateLabel" styleName="drillDownSubLabel"/>
+		<mx:Text id="stateLabel" styleName="drillDownSubLabel" width="100%"/>
 	</mx:HBox>
 	<!-- action buttons -->
-	<mx:HBox visible="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia, _selectedEntry)}"
+	<mx:HBox visible="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia, _selectedEntry)}" width="100%"
 			 includeInLayout="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia, _selectedEntry)}">
 		<mx:Label id="actionLabel" styleName="drillDownLabel"/>
 		<mx:Button id="uploadFilesBtn"
@@ -912,12 +912,12 @@ Flavours tab of EntryDetailsWin
 	
 	<!-- replacement info -->
 	<mx:VBox visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" width="100%"
-			 styleName="flavorsReplacementVBox">
-		<mx:HBox>
+			 styleName="flavorsReplacementVBox" >
+		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('drilldown','replementDetailsTitle')}" styleName="drillDownLabel"/>
-			<mx:Label text="{resourceManager.getString('drilldown','replacementNote')}" styleName="drillDownSubLabel"/>
+			<mx:Text text="{resourceManager.getString('drilldown','replacementNote')}" styleName="drillDownSubLabel" width="100%"/>
 		</mx:HBox>
-		<mx:HBox id="replacementInfoHBox" horizontalGap="0">
+		<mx:HBox id="replacementInfoHBox" horizontalGap="0" width="100%">
 			<mx:Label text="{resourceManager.getString('drilldown','replacementEntryId')}" styleName="drillDownLabel"/>
 			<mx:Label id="replacementEntryId" styleName="drillDownSubLabel" selectable="true"/>
 			<mx:Label text="|" width="15" enabled="false"/>
@@ -936,11 +936,12 @@ Flavours tab of EntryDetailsWin
 	<mx:HRule width="100%"/>
 	
 	<!-- flavors table -->
-	<mx:HBox width="100%">
+	<mx:HBox width="100%" >
 		<mx:Text text="{resourceManager.getString('drilldown','flavorAssetsDescription')}" width="100%"/>
 		<mx:LinkButton click="refreshData(true)" label="{resourceManager.getString('drilldown','refresh')}"
 					   styleName="recycleIcon"/>
 	</mx:HBox>
-	<view:FlavorsTable id="dg" dataProvider="{_flavorAssets}" allowImport="{allowImport}" allowLink="{allowLink}"
+	<view:FlavorsTable id="dg" width="100%" height="100%"  
+					   dataProvider="{_flavorAssets}" allowImport="{allowImport}" allowLink="{allowLink}"
 					   allowMatch="{allowMatchFromDrop}" allowUpload="{allowUpload}"/>
 </mx:Module>
