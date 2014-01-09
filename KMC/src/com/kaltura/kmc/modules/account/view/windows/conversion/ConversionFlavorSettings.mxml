@@ -2,7 +2,7 @@
 <!---
 edit ConversionProfileAssetParams attributes
 -->
-<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="420" 
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml"  
 				 styleName="TitleWindowType2" creationComplete="creationCompleteHandler(event)"
 				 title="{resourceManager.getString('account','conversionFlavorSettingsTitle')}" 
 				 showCloseButton="true" close="{onClose()}" showHelpButton="true" help="helpHandler(event)">
@@ -92,6 +92,12 @@ edit ConversionProfileAssetParams attributes
 			private function onClose():void {
 				PopUpManager.removePopUp(this);
 			}
+			
+//			override protected function resourcesChanged():void {
+//				if (sysNameLabel) {
+//					sysNameLabel.itemLabel.htmlText = resourceManager.getString('account','systemName');
+//				}
+//			}
 
 			/**
 			 * edit cpap and mark it as dirty
@@ -183,7 +189,6 @@ edit ConversionProfileAssetParams attributes
 						IFHWrap.visible = IFHWrap.includeInLayout = getIFHandleVisible(flavorVO);
 					}
 				}
-				
 			}
 
 			/**
@@ -250,45 +255,42 @@ edit ConversionProfileAssetParams attributes
 			
 		]]>
 	</mx:Script>
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('account','convProfileName')}" 
-				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
-		<mx:Text text="{profileName}" width="100%" />
-	</mx:HBox>
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('account','convFlavorName')}" 
-				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
-		<mx:Text text="{flavorVO.kFlavor.name}" width="100%"/>
-	</mx:HBox>
-	<mx:HBox visible="{cbAvailability.visible}" includeInLayout="{cbAvailability.includeInLayout}">
-		<mx:Label text="{resourceManager.getString('account','assetAvialability')}" 
-				  styleName="boldLabel" width="{LABEL_WIDTH}" />
-		<mx:ComboBox id="cbAvailability" dataProvider="{_availabilityOptions}" 
-					 labelField="name" width="{ELEMENT_WIDTH}" />
-	</mx:HBox>
-	<mx:HBox visible="{cbConvertPolicy.visible}" includeInLayout="{cbConvertPolicy.includeInLayout}">
-		<mx:Label text="{resourceManager.getString('account','convertToFlavor')}" 
-				  styleName="boldLabel" width="{LABEL_WIDTH}" />
-		<mx:ComboBox id="cbConvertPolicy" dataProvider="{_originOptions}" 
-					 labelField="name" width="{ELEMENT_WIDTH}" />
-	</mx:HBox>
-	<mx:HBox visible="{tiSystemName.visible}" includeInLayout="{tiSystemName.includeInLayout}">
-		<mx:Text htmlText="{resourceManager.getString('account','systemName')}" width="{LABEL_WIDTH}"/>
-		<mx:TextInput id="tiSystemName" width="{ELEMENT_WIDTH}" />
-	</mx:HBox>
-	<mx:HBox visible="{cbGenPolicy.visible}" includeInLayout="{cbGenPolicy.includeInLayout}">
-		<mx:Label text="{resourceManager.getString('account','generationPolicy')}" 
-				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
-		<mx:ComboBox id="cbGenPolicy" dataProvider="{_genOptions}" 
-					 labelField="name" width="{ELEMENT_WIDTH}" />
-	</mx:HBox>
-	<mx:HBox id="IFHWrap" visible="{getIFHandleVisible(flavorVO)}" 
-			 includeInLayout="{getIFHandleVisible(flavorVO)}">
-		<mx:Label text="{resourceManager.getString('account','itermediate_handle')}" 
-				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
-		<mx:ComboBox id="cbInterHandle" dataProvider="{_handleOptions}" 
-					 labelField="name" width="{ELEMENT_WIDTH}" />
-	</mx:HBox>
+	<mx:Form id="form">
+		<mx:FormItem label="{resourceManager.getString('account','convProfileName')}" >
+			<mx:Text text="{profileName}" width="100%" />
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('account','convFlavorName')}" >
+			<mx:Text text="{flavorVO.kFlavor.name}" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('account','assetAvialability')}" 
+					 visible="{cbAvailability.visible}" includeInLayout="{cbAvailability.includeInLayout}" >
+			<mx:ComboBox id="cbAvailability" dataProvider="{_availabilityOptions}" 
+						 labelField="name" width="{ELEMENT_WIDTH}" />
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('account','convertToFlavor')}"  
+					 visible="{cbConvertPolicy.visible}" includeInLayout="{cbConvertPolicy.includeInLayout}">
+			<mx:ComboBox id="cbConvertPolicy" dataProvider="{_originOptions}" 
+						 labelField="name" width="{ELEMENT_WIDTH}" />
+		</mx:FormItem>
+		
+		<mx:HBox visible="{tiSystemName.visible}" includeInLayout="{tiSystemName.includeInLayout}">
+			<mx:Text htmlText="{resourceManager.getString('account','systemName')}" width="{form.maxLabelWidth + 5}"/>
+			<mx:TextInput id="tiSystemName" width="{ELEMENT_WIDTH}" />
+		</mx:HBox>
+		
+		<mx:FormItem label="{resourceManager.getString('account','generationPolicy')}" 
+					 visible="{cbGenPolicy.visible}" includeInLayout="{cbGenPolicy.includeInLayout}">
+			<mx:ComboBox id="cbGenPolicy" dataProvider="{_genOptions}" 
+						 labelField="name" width="{ELEMENT_WIDTH}" />
+		</mx:FormItem>
+		<mx:FormItem id="IFHWrap" label="{resourceManager.getString('account','itermediate_handle')}" 
+					 visible="{getIFHandleVisible(flavorVO)}" 
+				 includeInLayout="{getIFHandleVisible(flavorVO)}">
+			<mx:ComboBox id="cbInterHandle" dataProvider="{_handleOptions}" 
+						 labelField="name" width="{ELEMENT_WIDTH}" />
+		</mx:FormItem>
+	</mx:Form>
+	
 	<mx:ControlBar width="100%" horizontalAlign="center">
 		<mx:Button id="submitBtn" label="{resourceManager.getString('account','saveFlavor')}" useHandCursor="true"
 				   buttonMode="true" click="save()"/>
