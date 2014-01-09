@@ -23,7 +23,7 @@
 			import mx.events.ListEvent;
 			import mx.events.ValidationResultEvent;
 
-			private const LBL_WIDTH:Number = 180;
+			private const LBL_WIDTH:Number = 250;
 			private const TXT_WIDTH:Number = 310;
 
 			[Bindable]
@@ -240,48 +240,48 @@
 	</mx:Script>
 	<mx:StringValidator id="nameValidator" required="true" property="text" />
 
+	
+	
 	<mx:VBox id="infoBox" width="100%" height="100%" styleName="blueBox" disabledOverlayAlpha="0" horizontalAlign="left"
 			 verticalAlign="top">
 		<mx:Label styleName="expendableButton" text="{resourceManager.getString('account', 'partnerInfo')}"/>
 		<mx:Text id="partnerInfoText" width="100%" height="40"
 				 text="{resourceManager.getString('account', 'partnerInfoText')}" styleName="pageDescription"/>
-		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'partnerIdB')}" styleName="boldLabel"/>
-			<mx:Label width="{TXT_WIDTH}" text="{partnerData.partnerId}" selectable="true"/>
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Text width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'company_name')} *" styleName="boldLabel"/>
-			<mx:TextInput id="pName" width="{TXT_WIDTH}" text="{partnerData.partner.name}"
-						  change="{partnerData.partner.name = pName.text}" enabled="{infoBox.enabled}"/>
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'owner_name')} *" styleName="boldLabel"/>
-			<mx:ComboBox id="pOwner" width="{TXT_WIDTH}"
-						 change="changeAccountOwner(event)" labelField="fullName" enabled="{infoBox.enabled}"/>
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'email')}" styleName="boldLabel"/>
-			<mx:Label id="pEmail" width="{TXT_WIDTH}" text="{(pOwner.selectedItem as KalturaUser).email}" enabled="{infoBox.enabled}" selectable="true"/>
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'phone')} *" styleName="boldLabel"/>
-			<mx:TextInput id="pPhone" width="{TXT_WIDTH}" text="{partnerData.partner.phone}"
-						  change="{partnerData.partner.phone = pPhone.text}" enabled="{infoBox.enabled}"/>
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'website')}" styleName="boldLabel"/>
-			<mx:TextInput id="pWebsite" width="{TXT_WIDTH}" text="{partnerData.partner.website}"
-						  change="{partnerData.partner.website = pWebsite.text}" enabled="{infoBox.enabled}"/>
-		</mx:HBox>
-		<mx:HBox id="dyContainer">
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'describeYourself')}" styleName="boldLabel"/>
-			<mx:ComboBox id="dyCB" width="{TXT_WIDTH}" dataProvider="{_ctComboBox}"
-						 change="{partnerData.partner.describeYourself = dyCB.selectedItem.toString()}" enabled="{infoBox.enabled}"/>
-		</mx:HBox>
-		<mx:Label text="{resourceManager.getString('account', 'reqF')}" fontSize="9"/>
-		<mx:HBox width="{dyContainer.width}" horizontalAlign="right">
+		
+		<mx:Form>
+			<mx:FormItem label="{resourceManager.getString('account', 'partnerIdB')}" styleName="boldLabel">
+				<mx:Label width="{TXT_WIDTH}" text="{partnerData.partnerId}" selectable="true"/>
+			</mx:FormItem>
+			<mx:FormItem label="{resourceManager.getString('account', 'company_name')} *" styleName="boldLabel">
+				<mx:TextInput id="pName" width="{TXT_WIDTH}" text="{partnerData.partner.name}"
+							  change="{partnerData.partner.name = pName.text}" enabled="{infoBox.enabled}"/>
+			</mx:FormItem>
+			<mx:FormItem label="{resourceManager.getString('account', 'owner_name')} *" styleName="boldLabel">
+				<mx:ComboBox id="pOwner" width="{TXT_WIDTH}"
+							 change="changeAccountOwner(event)" labelField="fullName" enabled="{infoBox.enabled}"/>
+			</mx:FormItem>
+			<mx:FormItem label="{resourceManager.getString('account', 'email')}" styleName="boldLabel">
+				<mx:Label id="pEmail" width="{TXT_WIDTH}" text="{(pOwner.selectedItem as KalturaUser).email}" enabled="{infoBox.enabled}" selectable="true"/>
+			</mx:FormItem>
+			<mx:FormItem label="{resourceManager.getString('account', 'phone')} *" styleName="boldLabel">
+				<mx:TextInput id="pPhone" width="{TXT_WIDTH}" text="{partnerData.partner.phone}"
+							  change="{partnerData.partner.phone = pPhone.text}" enabled="{infoBox.enabled}"/>
+			</mx:FormItem>
+			<mx:FormItem label="{resourceManager.getString('account', 'website')}" styleName="boldLabel">
+				<mx:TextInput id="pWebsite" width="{TXT_WIDTH}" text="{partnerData.partner.website}"
+							  change="{partnerData.partner.website = pWebsite.text}" enabled="{infoBox.enabled}"/>
+			</mx:FormItem>
+			<mx:FormItem label="{resourceManager.getString('account', 'describeYourself')}" id="dyContainer" styleName="boldLabel">
+				<mx:ComboBox id="dyCB" width="{TXT_WIDTH}" dataProvider="{_ctComboBox}"
+							 change="{partnerData.partner.describeYourself = dyCB.selectedItem.toString()}" enabled="{infoBox.enabled}"/>
+			</mx:FormItem>
+			<mx:Label text="{resourceManager.getString('account', 'reqF')}" fontSize="9"/>
+		</mx:Form>
+		
+		<mx:HBox width="{dyContainer.width + 15}" horizontalAlign="right">
 			<mx:Button id="saveChangesBtn" label="{resourceManager.getString('account', 'saveChanges')}"
 					   click="savePartnerInfo( true )" buttonMode="true"/>
 		</mx:HBox>
 	</mx:VBox>
+	
 </mx:HBox>
