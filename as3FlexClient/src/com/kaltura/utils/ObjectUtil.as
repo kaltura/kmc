@@ -146,18 +146,30 @@ package com.kaltura.utils
 			var ob1:Object = describeObject(object1);
 			var ob2:Object = describeObject(object2);
 			//run on obj1, check if the value exist in ob2 and check its value
-			for (var o:Object in ob1)
-			{
-				if (ob2.hasOwnProperty(o))
-				{
-					if(ob1[o] != ob2[o] && o!="uid")
+			for (var o:Object in ob1) {
+				if (ob2.hasOwnProperty(o)) {
+					if(ob1[o] != ob2[o] && o!="uid") {
 						if (ob1[o] is Array && ob2[o] is Array) {
 							// compare arrays
-							return compareObjects(ob1[o], ob2[o]);
+							if (ob1[o].length == ob2[o].length) {
+								var res:Boolean = true;
+								// compare array elements
+								for (var i:int = 0; i<ob1[o].length; i++) {
+									res &&= compareObjects(ob1[o][i], ob2[o][i]);
+								}
+								if (!res) {
+									return false;
+								}
+							}
+							else {
+								// array length is different
+								return false;
+							}
 						}
 						else {
 							return false;
 						}
+					}
 					
 				} 
 				else {
