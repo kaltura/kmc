@@ -3,6 +3,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.permission.PermissionList;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaPermission;
 	import com.kaltura.vo.KalturaPermissionListResponse;
 	
@@ -12,7 +13,9 @@ package com.kaltura.kmc.modules.admin.control.commands
 		 * @inheritDocs
 		 */
 		override public function execute(event:CairngormEvent):void {
-			var ul:PermissionList = new PermissionList(_model.rolesModel.permissionsFilter);
+			var largePager:KalturaFilterPager = new KalturaFilterPager();
+			largePager.pageSize = 500;
+			var ul:PermissionList = new PermissionList(_model.rolesModel.permissionsFilter, largePager);
 			ul.addEventListener(KalturaEvent.COMPLETE, result);
 			ul.addEventListener(KalturaEvent.FAILED, fault);
 			if (_model.kc) {
