@@ -91,11 +91,14 @@ package com.kaltura.kmc.business
 		 * @param is_playlist		the entry is a playlist
 		 * @param uiconfId			initial player uiconf to use
 		 * @param live_bitrates		list of bitrate objects {bitrate, width, height}
+		 * @param duration			entry duration (only for single player, not playlist)
+		 * @param thumbnail			entry thumbnail (only for single player, not playlist)
 		 */
 		public static function doPreviewEmbed(functionName:String, entryId:String, entryName:String, entryDescription:String, 
-											  previewOnly:Boolean, is_playlist:Boolean, uiconfId:String, live_bitrates:Array):void {
+											  previewOnly:Boolean, is_playlist:Boolean, uiconfId:String, live_bitrates:Array,
+											  duration:int, thumbnail:String):void {
 			KedJSGate.doPreviewEmbed(functionName, entryId, entryName, entryDescription, 
-				previewOnly, is_playlist, uiconfId, live_bitrates);
+				previewOnly, is_playlist, uiconfId, live_bitrates, duration, thumbnail);
 		}
 		
 		

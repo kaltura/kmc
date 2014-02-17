@@ -26,12 +26,15 @@ package com.kaltura.edw.business
 		 * @param is_playlist		the entry is a playlist
 		 * @param uiconfId			initial player uiconf to use
 		 * @param live_bitrates		list of bitrate objects {bitrate, width, height}
+		 * @param duration			entry duration (only for single player, not playlist)
+		 * @param thumbnail			entry thumbnail (only for single player, not playlist)
 		 */
 		public static function doPreviewEmbed(functionName:String, entryId:String, entryName:String, entryDescription:String, 
-											  previewOnly:Boolean, is_playlist:Boolean, uiconfId:String, live_bitrates:Array):void {
+											  previewOnly:Boolean, is_playlist:Boolean, uiconfId:String, live_bitrates:Array,
+											  duration:int, thumbnail:String):void {
 			//			kmc.preview_embed.doPreviewEmbed(id, name, description, previewOnly, is_playlist, uiconf id, live_bitrates);
 			ExternalInterface.call(functionName, entryId, entryName, entryDescription, previewOnly, is_playlist, uiconfId,
-				live_bitrates);
+				live_bitrates, duration, thumbnail);
 		}
 		
 		/**

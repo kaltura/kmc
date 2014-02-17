@@ -13,6 +13,7 @@ package com.kaltura.edw.business {
 	import com.kaltura.vo.KalturaFlavorAsset;
 	import com.kaltura.vo.KalturaLiveStreamBitrate;
 	import com.kaltura.vo.KalturaLiveStreamEntry;
+	import com.kaltura.vo.KalturaMediaEntry;
 	import com.kaltura.vo.KalturaPlayableEntry;
 	
 	import mx.collections.ArrayCollection;
@@ -80,7 +81,12 @@ package com.kaltura.edw.business {
 						bitrates.push(o);
 					}
 				}
-				KedJSGate.doPreviewEmbed(context.openPlayerFunc, selectedEntry.id, selectedEntry.name, selectedEntry.description, previewOnly, false, null, bitrates);
+				var duration:int = 0;
+				if (selectedEntry is KalturaMediaEntry) {
+					duration = (selectedEntry as KalturaMediaEntry).duration;
+				}
+				KedJSGate.doPreviewEmbed(context.openPlayerFunc, selectedEntry.id, selectedEntry.name, selectedEntry.description, 
+					previewOnly, false, null, bitrates, duration, selectedEntry.thumbnailUrl);
 			}
 			GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED, GoogleAnalyticsConsts.CONTENT);
 			KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_OPEN_PREVIEW_AND_EMBED, "content>Open Preview and Embed");
