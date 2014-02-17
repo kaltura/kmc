@@ -11,8 +11,8 @@ package com.kaltura.edw.control.commands {
 	import com.kaltura.types.KalturaFlavorAssetStatus;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
+	import com.kaltura.vo.KalturaLiveParams;
 	
-	import mx.automation.codec.AssetPropertyCodec;
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
@@ -80,7 +80,8 @@ package com.kaltura.edw.control.commands {
 						kawp.sources = getFlavorsByIds(assetWithParam.flavorAsset.actualSourceAssetParamsIds, arrCol);
 					}
 				}
-				else {
+				else if (assetWithParam.flavorParams && !(assetWithParam.flavorParams is KalturaLiveParams)) {
+					// only keep non-live flavor params 
 					tempAc.addItem(kawp);
 				}
 			}
