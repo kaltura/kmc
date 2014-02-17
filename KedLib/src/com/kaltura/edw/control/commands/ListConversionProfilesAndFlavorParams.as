@@ -21,6 +21,7 @@ package com.kaltura.edw.control.commands {
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaFlavorParams;
 	import com.kaltura.vo.KalturaFlavorParamsListResponse;
+	import com.kaltura.vo.KalturaLiveParams;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -40,12 +41,12 @@ package com.kaltura.edw.control.commands {
 				cpFilter.orderBy = KalturaConversionProfileOrderBy.CREATED_AT_DESC;
 				cpFilter.typeEqual = KalturaConversionProfileType.MEDIA;
 				var listConversionProfiles:ConversionProfileList = new ConversionProfileList(cpFilter, p);
-	
 				mr.addAction(listConversionProfiles);
+				
+				var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, p);
+				mr.addAction(listFlavorParams);
 			}
 
-			var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, p);
-			mr.addAction(listFlavorParams);
 			
 			var f:KalturaConversionProfileAssetParamsFilter = new KalturaConversionProfileAssetParamsFilter();
 			f.originIn = KalturaAssetParamsOrigin.INGEST + "," + KalturaAssetParamsOrigin.CONVERT_WHEN_MISSING;
@@ -82,22 +83,30 @@ package com.kaltura.edw.control.commands {
 			if (!er) {
 				var startIndex:int; 
 				var profs:Array;
+				var params:Array;
 				var fdp:FlavorsDataPack = _model.getDataPack(FlavorsDataPack) as FlavorsDataPack;
+				// conversion profiles, flavor params
 				if (fdp.conversionProfileLoaded) {
 					startIndex = 0;
 					profs = fdp.conversionProfiles;
+					params = fdp.flavorParams;
 				}
 				else {
-					startIndex = 1;
+					startIndex = 2;
 					profs = (event.data[0] as KalturaConversionProfileListResponse).objects;
 					fdp.conversionProfiles = profs;
+					var temp:Array = FlavorParamsUtil.makeManyFlavorParams((event.data[1] as KalturaFlavorParamsListResponse).objects); 
+					params = new Array();
+					for each (var fp:KalturaFlavorParams in temp) {
+						if (!(fp is KalturaLiveParams)) {
+							params.push(fp);
+						}
+					}
+					fdp.flavorParams = params;
 					fdp.conversionProfileLoaded = true;
 				}
-				// conversion profiles
-				// flavor params
-				var params:Array = FlavorParamsUtil.makeManyFlavorParams((event.data[startIndex] as KalturaFlavorParamsListResponse).objects);
 				
-				var cpaps:Array = (event.data[startIndex+1] as KalturaConversionProfileAssetParamsListResponse).objects;
+				var cpaps:Array = (event.data[startIndex] as KalturaConversionProfileAssetParamsListResponse).objects;
 				
 				var tempArrCol:ArrayCollection = new ArrayCollection();
 

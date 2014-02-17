@@ -26,11 +26,19 @@ package com.kaltura.edw.model.datapacks
 		public var storageProfiles:ArrayCollection;
 		
 		/**
-		 * indicates if this is the first drilldown
+		 * a flag indicating conversion profiles / flavor params data is up to date (only loaded once)
 		 * */
 		public var conversionProfileLoaded:Boolean;
 		
+		/**
+		 * media conversion profiles 
+		 */
 		public var conversionProfiles:Array;
+		
+		/**
+		 * media (non live) flavor params  
+		 */
+		public var flavorParams:Array;
 		
 		/**
 		 * a list of KalturaConversionProfile where type = live 
