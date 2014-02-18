@@ -117,6 +117,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(ChangeModelEvent.ENABLE_AKAMAI_LIVE, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.ENABLE_KALTURA_LIVE, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.ENABLE_KALTURA_RECORDING, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.SET_ENTRY_CATEGORIES_LIMIT, ChangeModelValueCommand);
 
 
 			// drop folder stuff

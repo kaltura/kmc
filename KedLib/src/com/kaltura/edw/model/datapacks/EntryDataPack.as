@@ -13,12 +13,23 @@ package com.kaltura.edw.model.datapacks
 	 * */
 	public class EntryDataPack implements IDataPack {
 		
+		/**
+		 * max number of categories an entry may be associated with by default
+		 * */
+		public static const DEFAULT_CATEGORIES_NUM:int = 32;
+		
+		/**
+		 * max number of categories an entry may be associated with if FEATURE_DISABLE_CATEGORY_LIMIT is on
+		 * */
+		public static const MANY_CATEGORIES_NUM:int = 200;
+		
+		
 		public var shared:Boolean = false;
 		
 		/**
 		 * the max number of categories to which an entry may be assigned 
 		 */		
-		public var maxNumCategories:int;
+		public var maxNumCategories:int = MANY_CATEGORIES_NUM;
 		
 		/**
 		 * list of Object {label}	<br>

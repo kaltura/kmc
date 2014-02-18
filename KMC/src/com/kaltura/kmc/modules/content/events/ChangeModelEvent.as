@@ -33,6 +33,9 @@ package com.kaltura.kmc.modules.content.events
 		
 		public static const ENABLE_KALTURA_RECORDING: String = "content_ENABLE_KALTURA_RECORDING";
 		
+		public static var SET_ENTRY_CATEGORIES_LIMIT:String = "content_SET_ENTRY_CATEGORIES_LIMIT";
+		
+		
 		private var _newValue:*;
 		
 		public function ChangeModelEvent(type:String, value:*, bubbles:Boolean=false, cancelable:Boolean=false)

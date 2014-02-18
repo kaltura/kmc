@@ -1,5 +1,6 @@
 package com.kaltura.kmc.modules.content.commands {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.model.datapacks.PermissionsDataPack;
 	import com.kaltura.kmc.modules.content.events.ChangeModelEvent;
 	import com.kaltura.kmvc.model.KMvCModel;
@@ -7,7 +8,8 @@ package com.kaltura.kmc.modules.content.commands {
 	public class ChangeModelValueCommand extends KalturaCommand {
 
 		override public function execute(event:CairngormEvent):void {
-			var pdp:PermissionsDataPack = KMvCModel.getInstance().getDataPack(PermissionsDataPack) as PermissionsDataPack;;
+			var pdp:PermissionsDataPack = KMvCModel.getInstance().getDataPack(PermissionsDataPack) as PermissionsDataPack;
+			
 			switch (event.type) {
 				case ChangeModelEvent.SET_SINGLE_ENTRY_EMBED_STATUS:
 					_model.showSingleEntryEmbedCode = (event as ChangeModelEvent).newValue;
@@ -50,6 +52,10 @@ package com.kaltura.kmc.modules.content.commands {
 					break;
 				case ChangeModelEvent.ENABLE_KALTURA_RECORDING:
 					pdp.enableKalturaRecording = (event as ChangeModelEvent).newValue;
+					break;
+				case ChangeModelEvent.SET_ENTRY_CATEGORIES_LIMIT:
+					var edp:EntryDataPack = KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack;
+					edp.maxNumCategories = EntryDataPack.DEFAULT_CATEGORIES_NUM;
 					break;
 			}
 		}

@@ -259,5 +259,18 @@ package com.kaltura.kmc.modules.content.business {
 		public function get enableKalturaRecording():Boolean {
 			return true;
 		}
+		
+		
+		/**
+		 * set higher/lower entry-categories limit 
+		 */
+		public function set setCategoriesLimit(value:Boolean):void {
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_ENTRY_CATEGORIES_LIMIT, value);
+			cge.dispatch();
+		}
+		
+		public function get setCategoriesLimit():Boolean {
+			return false;
+		}
 	}
 }
