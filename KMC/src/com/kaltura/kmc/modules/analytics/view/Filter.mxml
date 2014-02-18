@@ -414,34 +414,66 @@
 		]]>
 	</mx:Script>
 
-	<!-- dates and time-units -->
-	<mx:HBox width="100%" verticalAlign="middle">
-		<mx:Label text="{resourceManager.getString('analytics','dateRange')}"/>
-		<mx:ComboBox id="dateCb" dataProvider="{dateRangeManager.dateRange}" change="changeDateByRange(event)"
-					 styleName="analyticsCombo" enabled="{!isLoading}"/>
-		<mx:Label text="{resourceManager.getString('analytics', 'timeUnits')}"
-				  includeInLayout="{showTimeUnits}" visible="{showTimeUnits}" />
-		<mx:ComboBox id="timeUnitsCb" styleName="analyticsCombo" enabled="{!isLoading}"
-					 dataProvider="{_timeUnitsDp}" change="changeTimeUnits(event)" labelFunction="getTimeUnitLabel"
-					 includeInLayout="{showTimeUnits}" visible="{showTimeUnits}" selectedIndex="{_filterVo.interval == KalturaReportInterval.MONTHS ? 0 : 1}" />
-		<mx:Label text="{resourceManager.getString('analytics','dates')}"/>
-		<mx:DateField id="fromDate" width="100" buttonMode="true" selectedDate="{_filterVo.fromDate}"
-					  change="fromDateChanged( event )" enabled="{!isLoading}"/>
-		<mx:DateField id="toDate" width="100" buttonMode="true" selectedDate="{_filterVo.toDate}"
-					  change="toDateChanged( event )" enabled="{!isLoading}"/>
-	</mx:HBox>
+	<mx:Form width="100%" paddingLeft="0" >
+		<!-- dates and time-units -->
+		<mx:FormItem label="{resourceManager.getString('analytics','dateRange')}" direction="horizontal" labelStyleName="normalWeightFormItemLabel">
+			<mx:ComboBox id="dateCb" dataProvider="{dateRangeManager.dateRange}" change="changeDateByRange(event)"
+						 styleName="analyticsCombo" enabled="{!isLoading}"/>
+			<mx:Label text="{resourceManager.getString('analytics', 'timeUnits')}"
+					  includeInLayout="{showTimeUnits}" visible="{showTimeUnits}" />
+			<mx:ComboBox id="timeUnitsCb" styleName="analyticsCombo" enabled="{!isLoading}"
+						 dataProvider="{_timeUnitsDp}" change="changeTimeUnits(event)" labelFunction="getTimeUnitLabel"
+						 includeInLayout="{showTimeUnits}" visible="{showTimeUnits}" selectedIndex="{_filterVo.interval == KalturaReportInterval.MONTHS ? 0 : 1}" />
+			<mx:Label text="{resourceManager.getString('analytics','dates')}"/>
+			<mx:DateField id="fromDate" width="100" buttonMode="true" selectedDate="{_filterVo.fromDate}"
+						  change="fromDateChanged( event )" enabled="{!isLoading}"/>
+			<mx:DateField id="toDate" width="100" buttonMode="true" selectedDate="{_filterVo.toDate}"
+						  change="toDateChanged( event )" enabled="{!isLoading}"/>
+		</mx:FormItem>
 
-	<!-- categories -->
-	<mx:HBox id="categoriesBox" verticalAlign="middle" includeInLayout="{ !dateOnlyFlag || playbackContextFlag }" visible="{!dateOnlyFlag || playbackContextFlag}">
-		<mx:Label width="{LBL_WIDTH}" 
-				  text="{ playbackContextFlag ? resourceManager.getString('analytics','playbackContext') :  resourceManager.getString('analytics','categoriesTitle')}:"/>
-		<mx:LinkButton id='allCategoriesBtn' 
-					   label="{ resourceManager.getString('analytics','categoriesAll')}"
-					   click="onAllCategoriesSelection(event)" enabled="{!isLoading}"/>
-		<mx:LinkButton id='selectedCategoriesBtn' label="{resourceManager.getString('analytics','selectCategories')}"
-					   click="onCategoriesTreeOpen(event)" enabled="{!isLoading}"/>
-	</mx:HBox>
+		<!-- categories -->
+		<mx:FormItem label="{playbackContextFlag ? resourceManager.getString('analytics','playbackContext') : resourceManager.getString('analytics','categoriesTitle')}:"
+					 direction="horizontal" labelStyleName="normalWeightFormItemLabel">
+			<mx:LinkButton id='allCategoriesBtn' 
+						   label="{ resourceManager.getString('analytics','categoriesAll')}"
+						   click="onAllCategoriesSelection(event)" enabled="{!isLoading}"/>
+			<mx:LinkButton id='selectedCategoriesBtn' label="{resourceManager.getString('analytics','selectCategories')}"
+						   click="onCategoriesTreeOpen(event)" enabled="{!isLoading}"/>
+		</mx:FormItem>
 
+		<!-- free text search -->
+		<mx:FormItem label="{resourceManager.getString('analytics','searchFilter')}" direction="horizontal" labelStyleName="normalWeightFormItemLabel"
+					 includeInLayout="{!dateOnlyFlag &amp;&amp; showSearchFilter}" visible="{!dateOnlyFlag &amp;&amp; showSearchFilter}">
+			<mx:TextInput id="searchTerm" width="205" text="{_filterVo.keywords}"
+						  change="{_filterVo.keywords = searchTerm.text}"
+						  keyDown="{if(event.keyCode == Keyboard.ENTER)dispatchEvent(new Event(APPLY))}"
+						  enabled="{!isLoading}"/>
+			<mx:Button label="{resourceManager.getString('analytics','apply')}" buttonMode="true"
+					   click="{dispatchEvent(new Event(APPLY))}" styleName="buttonType2" enabled="{!isLoading}"/>
+		</mx:FormItem>
+
+		<!-- application -->
+		<mx:FormItem label="{resourceManager.getString('analytics','application')}" labelStyleName="normalWeightFormItemLabel"
+					 includeInLayout="{filterApplicationsFlag}" visible="{filterApplicationsFlag}">
+			<mx:ComboBox id="appFilter" width="{INPUT_WIDTH}" dataProvider="{applicationsList}"
+						 selectedIndex="{_filterVo.application ? (appFilter.dataProvider as ArrayCollection).getItemIndex(_filterVo.application) : 0}" 
+						 change="onAppCbChange(event)" />
+		</mx:FormItem>
+
+		<!-- users -->
+		<mx:FormItem label="{resourceManager.getString('analytics','searchUser')}" labelStyleName="normalWeightFormItemLabel"
+					 includeInLayout="{filterUsersFlag}" visible="{filterUsersFlag}">
+			<components:AutoComplete id="usersComplete" width="{INPUT_WIDTH}" height="60" 
+									 unregisteredSelectedItemStyleName="unregisteredSelectionBox"
+									 selectedItemStyleName="selectionBox" selectionItemRendererClassFactory="{new ClassFactory(UserFilterSelectedItem)}"
+									 allowNewValues="true" labelField="id" showRemoveIcon="true"
+									 creationComplete="{new KACUsersController(usersComplete, kc)}"
+									 allowMultipleSelection="true" change="usersComplete_changeHandler(event)"
+									 prompt="{resourceManager.getString('analytics', '')}" />
+		</mx:FormItem>
+	
+	</mx:Form>
+	
 	<!-- drilldown navigation -->
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{dateOnlyFlag}" visible="{dateOnlyFlag}">
 		<mx:LinkButton id="basicDetails" visible="{showDrillDownNav}"
@@ -454,49 +486,5 @@
 					   label="{resourceManager.getString('analytics','interactions')}"
 					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS)" toggle="true"
 					   enabled="{!isLoading}"/>
-	</mx:HBox>
-
-	<!-- free text search -->
-	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{!dateOnlyFlag &amp;&amp; showSearchFilter}" visible="{!dateOnlyFlag &amp;&amp; showSearchFilter}">
-		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','searchFilter')}"/>
-		<mx:TextInput id="searchTerm" width="205" text="{_filterVo.keywords}"
-					  change="{_filterVo.keywords = searchTerm.text}"
-					  keyDown="{if(event.keyCode == Keyboard.ENTER)dispatchEvent(new Event(APPLY))}"
-					  enabled="{!isLoading}"/>
-		<!--
-				<mx:RadioButton id="searchInTags" groupName="searchGroup" height="15"
-								label="{resourceManager.getString('analytics','searchInTags')}"
-								selected="{_filterVo.searchInTags}"
-								change="{_filterVo.searchInAdminTags = !(_filterVo.searchInTags = searchInTags.selected);}"
-								visible="false" includeInLayout="false" enabled="{!isLoading}"/>
-
-				<mx:RadioButton id="searchInAdminTags" groupName="searchGroup" height="15"
-								label="{resourceManager.getString('analytics','searchInAdminTags')}"
-								selected="{_filterVo.searchInAdminTags}"
-								change="{_filterVo.searchInTags = !(_filterVo.searchInAdminTags = searchInAdminTags.selected);}"
-								visible="false" includeInLayout="false" enabled="{!isLoading}"/>
-		-->
-		<mx:Button label="{resourceManager.getString('analytics','apply')}" buttonMode="true"
-				   click="{dispatchEvent(new Event(APPLY))}" styleName="buttonType2" enabled="{!isLoading}"/>
-	</mx:HBox>
-
-	<!-- application -->
-	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{filterApplicationsFlag}" visible="{filterApplicationsFlag}">
-		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','application')}" />
-		<mx:ComboBox id="appFilter" width="{INPUT_WIDTH}" dataProvider="{applicationsList}"
-					 selectedIndex="{_filterVo.application ? (appFilter.dataProvider as ArrayCollection).getItemIndex(_filterVo.application) : 0}" 
-					 change="onAppCbChange(event)" />
-	</mx:HBox>
-
-	<!-- users -->
-	<mx:HBox width="100%" includeInLayout="{filterUsersFlag}" visible="{filterUsersFlag}">
-		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','searchUser')}" />
-		<components:AutoComplete id="usersComplete" width="{INPUT_WIDTH}" height="60" 
-								 unregisteredSelectedItemStyleName="unregisteredSelectionBox"
-								 selectedItemStyleName="selectionBox" selectionItemRendererClassFactory="{new ClassFactory(UserFilterSelectedItem)}"
-								 allowNewValues="true" labelField="id" showRemoveIcon="true"
-								 creationComplete="{new KACUsersController(usersComplete, kc)}"
-								 allowMultipleSelection="true" change="usersComplete_changeHandler(event)"
-								 prompt="{resourceManager.getString('analytics', '')}" />
 	</mx:HBox>
 </mx:VBox>
