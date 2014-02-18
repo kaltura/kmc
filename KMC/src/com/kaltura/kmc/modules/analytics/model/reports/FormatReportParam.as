@@ -52,10 +52,8 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 					break;
 
 				case "sum_time_viewed":
-					_numberFormatter.precision = 2;
-					return _numberFormatter.format(Number(value));
-					break; 
 				case "avg_time_viewed":
+					// format as HH:MM:SS
 					return KTimeUtil.formatTime2(Number(value) * 60);
 					break;
 				case "event_date_id":
