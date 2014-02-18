@@ -14,12 +14,12 @@
 			import com.kaltura.kmc.modules.account.vo.AdminVO;
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.vo.KalturaPartner;
 			import com.kaltura.vo.KalturaUser;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.ComboBox;
-			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.events.ValidationResultEvent;
 
@@ -74,6 +74,7 @@
 					_clonedAdminData = adminData.clone(); //admin has the email when the application init (in flashvars) so it can be set here
 	
 					BindingUtils.bindSetter(onPartnerDataLoaded, this, "partnerData");
+					BindingUtils.bindSetter(onPartnerDataChanged, this, ["partnerData", "partner"]);
 					BindingUtils.bindSetter(onAdminDataLoaded, this, "adminData");
 	
 					// load partner data
@@ -100,6 +101,15 @@
 			}
 
 
+			/**
+			 * this is triggered after save, when only the KalturaPartner on the PartnerVO is replaced 
+			 * */
+			private function onPartnerDataChanged(kp:KalturaPartner):void {
+				if (partnerData) {
+					_clonedPartnerData = partnerData.clone();
+				}
+			}
+			
 			private function onPartnerDataLoaded(pvo:PartnerVO):void {
 				if (pvo) {
 					// remove the redundant trailing thing for partners who 
