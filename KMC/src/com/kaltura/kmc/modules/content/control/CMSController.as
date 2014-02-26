@@ -116,6 +116,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(ChangeModelEvent.SET_ALLOW_TRIMMING, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.ENABLE_AKAMAI_LIVE, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.ENABLE_KALTURA_LIVE, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.ENABLE_KALTURA_MULTICAST, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.ENABLE_KALTURA_RECORDING, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_ENTRY_CATEGORIES_LIMIT, ChangeModelValueCommand);
 

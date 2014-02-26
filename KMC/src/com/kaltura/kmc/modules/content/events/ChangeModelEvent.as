@@ -33,7 +33,9 @@ package com.kaltura.kmc.modules.content.events
 		
 		public static const ENABLE_KALTURA_RECORDING: String = "content_ENABLE_KALTURA_RECORDING";
 		
-		public static var SET_ENTRY_CATEGORIES_LIMIT:String = "content_SET_ENTRY_CATEGORIES_LIMIT";
+		public static const ENABLE_KALTURA_MULTICAST:String = "content_ENABLE_KALTURA_MULTICAST";
+		
+		public static const SET_ENTRY_CATEGORIES_LIMIT:String = "content_SET_ENTRY_CATEGORIES_LIMIT";
 		
 		
 		private var _newValue:*;

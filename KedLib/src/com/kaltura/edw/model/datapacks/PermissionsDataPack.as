@@ -52,5 +52,10 @@ package com.kaltura.edw.model.datapacks
 		 * */
 		public var enableKalturaRecording:Boolean = true;
 		
+		/**
+		 * RnP: create Kaltura multicast live streams
+		 * */
+		public var enableKalturaMulticast:Boolean = true;
+		
 	}
 }

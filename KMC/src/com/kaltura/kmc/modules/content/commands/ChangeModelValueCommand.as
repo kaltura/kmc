@@ -53,6 +53,9 @@ package com.kaltura.kmc.modules.content.commands {
 				case ChangeModelEvent.ENABLE_KALTURA_RECORDING:
 					pdp.enableKalturaRecording = (event as ChangeModelEvent).newValue;
 					break;
+				case ChangeModelEvent.ENABLE_KALTURA_MULTICAST:
+					pdp.enableKalturaMulticast = (event as ChangeModelEvent).newValue;
+					break;
 				case ChangeModelEvent.SET_ENTRY_CATEGORIES_LIMIT:
 					var edp:EntryDataPack = KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack;
 					edp.maxNumCategories = EntryDataPack.DEFAULT_CATEGORIES_NUM;

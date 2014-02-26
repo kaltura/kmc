@@ -261,6 +261,20 @@ package com.kaltura.kmc.modules.content.business {
 		}
 		
 		
+		
+		/**
+		 * enable creating Kaltura multicast live streams 
+		 */
+		public function set enableKalturaMulticast(value:Boolean):void {
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.ENABLE_KALTURA_MULTICAST, value);
+			cge.dispatch();
+		}
+		
+		public function get enableKalturaMulticast():Boolean {
+			return true;
+		}
+		
+		
 		/**
 		 * set higher/lower entry-categories limit 
 		 */
