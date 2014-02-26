@@ -76,7 +76,7 @@ package com.kaltura.kmc.modules.content.commands.live {
 			// dvr
 			if (streamVo.dvrEnabled) {
 				liveEntry.dvrStatus = KalturaDVRStatus.ENABLED;
-				liveEntry.dvrWindow = 60*24; // 24 hours, in minutes
+				liveEntry.dvrWindow = 120; // 2 hours, in minutes
 			}
 			else {
 				liveEntry.dvrStatus = KalturaDVRStatus.DISABLED;
