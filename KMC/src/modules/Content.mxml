@@ -211,10 +211,13 @@
 			/**
 			 * create a new audio entry
 			 * */
-			public function createAudioEntry():void {
+			public function createAudioEntry(conversionProfileId:int = -1):void {
 				var entry:KalturaMediaEntry = new KalturaMediaEntry();
 				entry.name = resourceManager.getString('cms','defaultEntryName');
 				entry.mediaType = KalturaMediaType.AUDIO;
+				if (conversionProfileId != -1) {
+					entry.conversionProfileId = conversionProfileId;
+				}
 				var addMedia:EntriesEvent = new EntriesEvent(EntriesEvent.ADD_ENTRY);
 				addMedia.data = entry;
 				addMedia.dispatch();
@@ -223,10 +226,13 @@
 			/**
 			 * create a new video entry
 			 * */
-			public function createVideoEntry():void {
+			public function createVideoEntry(conversionProfileId:int = -1):void {
 				var entry:KalturaMediaEntry = new KalturaMediaEntry();
 				entry.name = resourceManager.getString('cms','defaultEntryName');
 				entry.mediaType = KalturaMediaType.VIDEO;
+				if (conversionProfileId != -1) {
+					entry.conversionProfileId = conversionProfileId;
+				}
 				var addMedia:EntriesEvent = new EntriesEvent(EntriesEvent.ADD_ENTRY);
 				addMedia.data = entry;
 				addMedia.dispatch();
