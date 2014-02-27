@@ -64,6 +64,12 @@
 			 * (used by RnP)
 			 * */
 			public var showAsperaUpgrade:Boolean = false;
+			
+			/**
+			 * select conversion profile before creating draft entry
+			 * (used by RnP)
+			 * */
+			public var draftSelectProfile:Boolean = true;
 
 			public static const BTN_WIDTH:int = 170;
 			
@@ -75,6 +81,8 @@
 			private const MENU_STATE:String = "menu_state";
 			private const WEBCAM_STATE:String = "webcam_state";
 			private const SERVICES_STATE:String = "services_state";
+			private const DRAFT_VIDEO_STATE:String = "draft_video_state";
+			private const DRAFT_AUDIO_STATE:String = "draft_audio_state";
 
 			private var _showingHandler:MenuHandler;
 
@@ -176,8 +184,14 @@
 			 * of content management page
 			 * */
 			protected function btnVideo_clickHandler(event:MouseEvent):void {
-				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.createVideoEntry"}, true));
-				hidePanel();
+				if (draftSelectProfile) {
+					_state = DRAFT_VIDEO_STATE;
+					showOptionsScreen(resourceManager.getString('create', 'draftvideo_state_title'));
+				}
+				else {
+					dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.createVideoEntry"}, true));
+					hidePanel();
+				}
 			}
 
 
@@ -186,8 +200,14 @@
 			 * of content management page
 			 * */
 			protected function btnAudio_clickHandler(event:MouseEvent):void {
-				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.createAudioEntry"}, true));
-				hidePanel();
+				if (draftSelectProfile) {
+					_state = DRAFT_AUDIO_STATE;
+					showOptionsScreen(resourceManager.getString('create', 'draftaudio_state_title'));
+				}
+				else {
+					dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.createAudioEntry"}, true));
+					hidePanel();
+				}
 			}
 
 
@@ -261,6 +281,12 @@
 						break;
 					case SERVICES_STATE:
 						JSGate.openKcw(cbConvProfiles.selectedItem.id, "uploadImport");
+						break;
+					case DRAFT_VIDEO_STATE:
+						dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.createVideoEntry(" + cbConvProfiles.selectedItem.id + ")"}, true));
+						break;
+					case DRAFT_VIDEO_STATE:
+						dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.createAudioEntry(" + cbConvProfiles.selectedItem.id + ")"}, true));
 						break;
 				}
 				hidePanel();
