@@ -113,10 +113,11 @@
 			private var _currentObject:Object;
 
 			/**
-			 * _kmcFunction[0]: module on which we expect to find the following function. <br>
-			 * _kmcFunction[1]: name of function to execute when the requested module is loaded.
+			 * _kmcFunction.module: module on which we expect to find the following function. <br>
+			 * _kmcFunction.funcName: name of function to execute when the requested module is loaded. <br>
+			 * _kmcFunction.arg: (optional) a single string argument for the function
 			 * */
-			private var _kmcFunction:Array;
+			private var _kmcFunction:Object;
 
 			/**
 			 * plugins are FlexModules which do not function as KmcModules.
@@ -712,33 +713,49 @@
 				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATION_COMPLETE, o.moduleName, o.subtab)); 
 			}
 
+			
+			/**
+			 * input: [module.]funcName[(singleStringArg)]
+			 * output: {module, funcName, arg}
+			 * */
+			private function parseKmcFunction(func:String):Object {
+				var regex:RegExp = /((\w+)\.)?(\w+)(\((\w*)\))?/g ;
+				var result:Object = regex.exec(func);
+				var o:Object = {};
+				o.module = result[2] ? result[2] : null;
+				o.funcName = result[3] ? result[3] : null;
+				o.arg = result[5] ? result[5] : null;
+				return o;
+			}
 
 			/**
 			 * execute given function either on KMC itself, a module or a plugin
 			 * */
 			private function handleKmcFunction(moduleInfo:Object):void {
-				var funky:Array = moduleInfo.extra.kmcFunction.split(".");
-				var module_id:String;
-				var func_name:String;
-				if (funky.length > 1) { 
-					module_id = funky[0];
-					func_name = funky[1];
-				}
-				else {
-					func_name = funky[0];	
-				}
-
+				
+				var o:Object = parseKmcFunction(moduleInfo.extra.kmcFunction);
+				
 				// triggering KMC method
-				if (!module_id) {
-					this[func_name]();
+				if (!o.module) {
+					if (o.arg) {
+						this[o.funcName](o.arg);
+					}
+					else {
+						this[o.funcName]();
+					}
 				}
 				// triggering ready module method
-				else if (getModuleParent(module_id) && (getModuleParent(module_id).child as KmcModule).isModuleReady) {
+				else if (getModuleParent(o.module) && (getModuleParent(o.module).child as KmcModule).isModuleReady) {
 					try {
-						getModuleParent(module_id).child[func_name]();
+						if (o.arg) {
+							getModuleParent(o.module).child[o.funcName](o.arg);
+						}
+						else {
+							getModuleParent(o.module).child[o.funcName]();
+						}
 					}
 					catch (e:Error) {
-						alert(resourceManager.getString('kmc', 'method_dont_exist', [module_id, func_name]), resourceManager.getString('kmc', 'error_title'));
+						alert(resourceManager.getString('kmc', 'method_dont_exist', [o.module, o.funcName]), resourceManager.getString('kmc', 'error_title'));
 						trace("error: ", e.name);
 						trace("error: ", e.errorID, e.message);
 						trace(e.getStackTrace());
@@ -747,20 +764,20 @@
 				}
 				// either unloaded module or a plugin
 				else {
-					var mInfo:XML = _uiconf.modules.module.(@id == module_id)[0];
+					var mInfo:XML = _uiconf.modules.module.(@id == o.module)[0];
 					if (mInfo) {
 						// save func_name
-						_kmcFunction = funky;
+						_kmcFunction = o;
 						// add listener to moduleReady event
 						addEventListener(KmcModule.MODULE_READY, handleSavedKmcFunction, false, 0, true);
 						// start loading the relevant module
-						_currentObject = {moduleName: module_id, subtab: mInfo.@subtab.toString()};
+						_currentObject = {moduleName: o.module, subtab: mInfo.@subtab.toString()};
 						loadModule(mInfo);
 
 					}
 					// no module, try triggering plugin method
 					else {
-						_pluginManager.executePluginMethod(module_id, func_name);
+						_pluginManager.executePluginMethod(o.module, o.funcName);
 							// this is our last option, and if it fails a KmcErrorEvent is dispatched
 							// so basically, wer'e good.
 					}
@@ -771,14 +788,19 @@
 			 * if a kmcFunction is waiting to execute for the ready module, execute it.
 			 * */
 			private function handleSavedKmcFunction(e:Event):void {
-				if (_kmcFunction && (e.target as KmcModule).getModuleName() == _kmcFunction[0]) {
+				if (_kmcFunction && (e.target as KmcModule).getModuleName() == _kmcFunction.module) {
 					removeEventListener(KmcModule.MODULE_READY, handleSavedKmcFunction, false);
 					// try to trigger func_name on relevant module
 					try {
-						(e.target as KmcModule)[_kmcFunction[1]]();
+						if (_kmcFunction.arg) {
+							(e.target as KmcModule)[_kmcFunction.funcName](_kmcFunction.arg);
+						}
+						else {
+							(e.target as KmcModule)[_kmcFunction.funcName]();
+						}
 					}
 					catch (er:Error) {
-						alert(resourceManager.getString('kmc', 'method_dont_exist', [_kmcFunction[0], _kmcFunction[1]]), resourceManager.getString('kmc', 'error_title'));
+						alert(resourceManager.getString('kmc', 'method_dont_exist', [_kmcFunction.module, _kmcFunction.funcName]), resourceManager.getString('kmc', 'error_title'));
 						trace("error: ", er.name);
 						trace("error: ", er.errorID, er.message);
 						trace(er.getStackTrace());
