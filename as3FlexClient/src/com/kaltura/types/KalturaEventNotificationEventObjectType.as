@@ -31,7 +31,6 @@ package com.kaltura.types
 	{
 		public static const AD_CUE_POINT : String = 'adCuePointEventNotifications.AdCuePoint';
 		public static const ANNOTATION : String = 'annotationEventNotifications.Annotation';
-		public static const CAPTION_ASSET : String = 'captionAssetEventNotifications.CaptionAsset';
 		public static const CODE_CUE_POINT : String = 'codeCuePointEventNotifications.CodeCuePoint';
 		public static const DISTRIBUTION_PROFILE : String = 'contentDistributionEventNotifications.DistributionProfile';
 		public static const ENTRY_DISTRIBUTION : String = 'contentDistributionEventNotifications.EntryDistribution';

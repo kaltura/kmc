@@ -39,9 +39,8 @@ package com.kaltura.commands.systemPartner
 		/**
 		* @param partnerId int
 		* @param status int
-		* @param reason String
 		**/
-		public function SystemPartnerUpdateStatus( partnerId : int,status : int,reason : String )
+		public function SystemPartnerUpdateStatus( partnerId : int,status : int )
 		{
 			service= 'systempartner_systempartner';
 			action= 'updateStatus';
@@ -53,8 +52,6 @@ package com.kaltura.commands.systemPartner
 			valueArr.push(partnerId);
 			keyArr.push('status');
 			valueArr.push(status);
-			keyArr.push('reason');
-			valueArr.push(reason);
 			applySchema(keyArr, valueArr);
 		}
 

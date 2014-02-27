@@ -70,6 +70,14 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var lockExpirationGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var lockExpirationLessThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
 		public var executionAttemptsGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
@@ -128,6 +136,18 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var abortEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var checkAgainTimeoutGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var checkAgainTimeoutLessThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
 		public var priorityGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
@@ -148,6 +168,18 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var bulkJobIdEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var bulkJobIdIn : String = null;
+
+		/**
+		**/
+		public var bulkJobIdNotIn : String = null;
+
+		/**
+		**/
 		public var batchVersionGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
@@ -157,6 +189,30 @@ package com.kaltura.vo
 		/**
 		**/
 		public var batchVersionEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var parentJobIdEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var parentJobIdIn : String = null;
+
+		/**
+		**/
+		public var parentJobIdNotIn : String = null;
+
+		/**
+		**/
+		public var rootJobIdEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var rootJobIdIn : String = null;
+
+		/**
+		**/
+		public var rootJobIdNotIn : String = null;
 
 		/**
 		**/
@@ -215,6 +271,78 @@ package com.kaltura.vo
 		**/
 		public var urgencyGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/**
+		**/
+		public var schedulerIdEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var schedulerIdIn : String = null;
+
+		/**
+		**/
+		public var schedulerIdNotIn : String = null;
+
+		/**
+		**/
+		public var workerIdEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var workerIdIn : String = null;
+
+		/**
+		**/
+		public var workerIdNotIn : String = null;
+
+		/**
+		**/
+		public var batchIndexEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var batchIndexIn : String = null;
+
+		/**
+		**/
+		public var batchIndexNotIn : String = null;
+
+		/**
+		**/
+		public var lastSchedulerIdEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var lastSchedulerIdIn : String = null;
+
+		/**
+		**/
+		public var lastSchedulerIdNotIn : String = null;
+
+		/**
+		**/
+		public var lastWorkerIdEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var lastWorkerIdIn : String = null;
+
+		/**
+		**/
+		public var lastWorkerIdNotIn : String = null;
+
+		/**
+		**/
+		public var dcEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var dcIn : String = null;
+
+		/**
+		**/
+		public var dcNotIn : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -228,6 +356,8 @@ package com.kaltura.vo
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('updatedAtGreaterThanOrEqual');
 			arr.push('updatedAtLessThanOrEqual');
+			arr.push('lockExpirationGreaterThanOrEqual');
+			arr.push('lockExpirationLessThanOrEqual');
 			arr.push('executionAttemptsGreaterThanOrEqual');
 			arr.push('executionAttemptsLessThanOrEqual');
 			arr.push('lockVersionGreaterThanOrEqual');
@@ -242,14 +372,26 @@ package com.kaltura.vo
 			arr.push('statusEqual');
 			arr.push('statusIn');
 			arr.push('statusNotIn');
+			arr.push('abortEqual');
+			arr.push('checkAgainTimeoutGreaterThanOrEqual');
+			arr.push('checkAgainTimeoutLessThanOrEqual');
 			arr.push('priorityGreaterThanOrEqual');
 			arr.push('priorityLessThanOrEqual');
 			arr.push('priorityEqual');
 			arr.push('priorityIn');
 			arr.push('priorityNotIn');
+			arr.push('bulkJobIdEqual');
+			arr.push('bulkJobIdIn');
+			arr.push('bulkJobIdNotIn');
 			arr.push('batchVersionGreaterThanOrEqual');
 			arr.push('batchVersionLessThanOrEqual');
 			arr.push('batchVersionEqual');
+			arr.push('parentJobIdEqual');
+			arr.push('parentJobIdIn');
+			arr.push('parentJobIdNotIn');
+			arr.push('rootJobIdEqual');
+			arr.push('rootJobIdIn');
+			arr.push('rootJobIdNotIn');
 			arr.push('queueTimeGreaterThanOrEqual');
 			arr.push('queueTimeLessThanOrEqual');
 			arr.push('finishTimeGreaterThanOrEqual');
@@ -264,6 +406,24 @@ package com.kaltura.vo
 			arr.push('estimatedEffortGreaterThan');
 			arr.push('urgencyLessThanOrEqual');
 			arr.push('urgencyGreaterThanOrEqual');
+			arr.push('schedulerIdEqual');
+			arr.push('schedulerIdIn');
+			arr.push('schedulerIdNotIn');
+			arr.push('workerIdEqual');
+			arr.push('workerIdIn');
+			arr.push('workerIdNotIn');
+			arr.push('batchIndexEqual');
+			arr.push('batchIndexIn');
+			arr.push('batchIndexNotIn');
+			arr.push('lastSchedulerIdEqual');
+			arr.push('lastSchedulerIdIn');
+			arr.push('lastSchedulerIdNotIn');
+			arr.push('lastWorkerIdEqual');
+			arr.push('lastWorkerIdIn');
+			arr.push('lastWorkerIdNotIn');
+			arr.push('dcEqual');
+			arr.push('dcIn');
+			arr.push('dcNotIn');
 			return arr;
 		}
 

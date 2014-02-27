@@ -36,18 +36,11 @@ package com.kaltura.vo
 		**/
 		public var templateId : int = int.MIN_VALUE;
 
-		/**
-		* Define the content dynamic parameters
-		* 
-		**/
-		public var contentParameters : Array = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('templateId');
-			arr.push('contentParameters');
 			return arr;
 		}
 
@@ -62,9 +55,6 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
-				case 'contentParameters':
-					result = 'KalturaKeyValue';
-					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;

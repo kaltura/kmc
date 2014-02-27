@@ -32,20 +32,10 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaLiveAsset extends KalturaFlavorAsset
 	{
-		/**
-		**/
-		public var multicastIP : String = null;
-
-		/**
-		**/
-		public var multicastPort : int = int.MIN_VALUE;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('multicastIP');
-			arr.push('multicastPort');
 			return arr;
 		}
 

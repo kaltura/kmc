@@ -82,6 +82,19 @@ package com.kaltura.vo
 		public var statusNotIn : String = null;
 
 		/**
+		* @see com.kaltura.types.KalturaDropFolderFileStatus
+		**/
+		public var typeEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var typeIn : String = null;
+
+		/**
+		**/
+		public var typeNotIn : String = null;
+
+		/**
 		**/
 		public var parsedSlugEqual : String = null;
 
@@ -158,6 +171,9 @@ package com.kaltura.vo
 			arr.push('statusEqual');
 			arr.push('statusIn');
 			arr.push('statusNotIn');
+			arr.push('typeEqual');
+			arr.push('typeIn');
+			arr.push('typeNotIn');
 			arr.push('parsedSlugEqual');
 			arr.push('parsedSlugIn');
 			arr.push('parsedSlugLike');

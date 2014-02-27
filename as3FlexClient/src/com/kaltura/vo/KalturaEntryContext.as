@@ -38,19 +38,11 @@ package com.kaltura.vo
 		**/
 		public var entryId : String = null;
 
-		/**
-		* Is this a redirected entry followup?
-		* 
-		* @see com.kaltura.types.KalturaNullableBoolean
-		**/
-		public var followEntryRedirect : int = int.MIN_VALUE;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('entryId');
-			arr.push('followEntryRedirect');
 			return arr;
 		}
 

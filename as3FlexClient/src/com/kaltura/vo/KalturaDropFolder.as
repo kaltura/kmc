@@ -142,15 +142,6 @@ package com.kaltura.vo
 		**/
 		public var metadataProfileId : int = int.MIN_VALUE;
 
-		/**
-		**/
-		public var categoriesMetadataFieldName : String = null;
-
-		/**
-		* @see com.kaltura.types.kalturaBoolean
-		**/
-		public var enforceEntitlement : Boolean;
-
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -179,8 +170,6 @@ package com.kaltura.vo
 			arr.push('incremental');
 			arr.push('lastFileTimestamp');
 			arr.push('metadataProfileId');
-			arr.push('categoriesMetadataFieldName');
-			arr.push('enforceEntitlement');
 			return arr;
 		}
 

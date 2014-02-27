@@ -27,16 +27,24 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaFileSyncDescriptor;
+	import com.kaltura.vo.BaseFlexVo;
 
 	[Bindable]
-	public dynamic class KalturaSourceFileSyncDescriptor extends KalturaFileSyncDescriptor
+	public dynamic class KalturaSourceFileSyncDescriptor extends BaseFlexVo
 	{
+		/**
+		**/
+		public var fileSyncLocalPath : String = null;
+
 		/**
 		* The translated path as used by the scheduler
 		* 
 		**/
 		public var actualFileSyncLocalPath : String = null;
+
+		/**
+		**/
+		public var fileSyncRemoteUrl : String = null;
 
 		/**
 		**/
@@ -46,30 +54,40 @@ package com.kaltura.vo
 		**/
 		public var assetParamsId : int = int.MIN_VALUE;
 
-		override public function getUpdateableParamKeys():Array
+		/** 
+		* a list of attributes which may be updated on this object 
+		**/ 
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
-			arr = super.getUpdateableParamKeys();
+			arr = new Array();
+			arr.push('fileSyncLocalPath');
 			arr.push('actualFileSyncLocalPath');
+			arr.push('fileSyncRemoteUrl');
 			arr.push('assetId');
 			arr.push('assetParamsId');
 			return arr;
 		}
 
-		override public function getInsertableParamKeys():Array
+		/** 
+		* a list of attributes which may only be inserted when initializing this object 
+		**/ 
+		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
-			arr = super.getInsertableParamKeys();
+			arr = new Array();
 			return arr;
 		}
 
-		override public function getElementType(arrayName:String):String
+		/** 
+		* get the expected type of array elements 
+		* @param arrayName 	 name of an attribute of type array of the current object 
+		* @return 	 un-qualified class name 
+		**/ 
+		public function getElementType(arrayName:String):String
 		{
 			var result:String = '';
 			switch (arrayName) {
-				default:
-					result = super.getElementType(arrayName);
-					break;
 			}
 			return result;
 		}

@@ -38,19 +38,11 @@ package com.kaltura.vo
 		**/
 		public var url : String = null;
 
-		/**
-		* Force Import Job
-		* 
-		* @see com.kaltura.types.kalturaBoolean
-		**/
-		public var forceAsyncDownload : Boolean;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('url');
-			arr.push('forceAsyncDownload');
 			return arr;
 		}
 

@@ -51,12 +51,6 @@ package com.kaltura.vo
 		**/
 		public var categoryAncestorIdIn : String = null;
 
-		/**
-		* The id of the original entry
-		* 
-		**/
-		public var redirectFromEntryId : String = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -65,7 +59,6 @@ package com.kaltura.vo
 			arr.push('isRoot');
 			arr.push('categoriesFullNameIn');
 			arr.push('categoryAncestorIdIn');
-			arr.push('redirectFromEntryId');
 			return arr;
 		}
 

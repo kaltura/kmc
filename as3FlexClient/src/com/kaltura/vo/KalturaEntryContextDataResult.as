@@ -141,7 +141,7 @@ package com.kaltura.vo
 					result = 'KalturaString';
 					break;
 				case 'accessControlActions':
-					result = 'KalturaRuleAction';
+					result = 'KalturaAccessControlAction';
 					break;
 				case 'flavorAssets':
 					result = 'KalturaFlavorAsset';

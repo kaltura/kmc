@@ -32,17 +32,10 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaLiveParams extends KalturaFlavorParams
 	{
-		/**
-		* Suffix to be added to the stream name after the entry id {entry_id}_{stream_suffix}, e.g. for entry id 0_kjdu5jr6 and suffix 1, the stream name will be 0_kjdu5jr6_1
-		* 
-		**/
-		public var streamSuffix : String = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('streamSuffix');
 			return arr;
 		}
 

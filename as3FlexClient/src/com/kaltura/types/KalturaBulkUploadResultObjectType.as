@@ -33,6 +33,5 @@ package com.kaltura.types
 		public static const CATEGORY : String = '2';
 		public static const USER : String = '3';
 		public static const CATEGORY_USER : String = '4';
-		public static const CATEGORY_ENTRY : String = '5';
 	}
 }

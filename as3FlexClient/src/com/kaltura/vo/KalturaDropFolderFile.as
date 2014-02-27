@@ -62,9 +62,9 @@ package com.kaltura.vo
 		public var status : int = int.MIN_VALUE;
 
 		/**
-		* @see com.kaltura.types.KalturaDropFolderType
+		* @see com.kaltura.types.KalturaDropFolderFileStatus
 		**/
-		public var type : String = null;
+		public var type : int = int.MIN_VALUE;
 
 		/**
 		**/
@@ -73,10 +73,6 @@ package com.kaltura.vo
 		/**
 		**/
 		public var parsedFlavor : String = null;
-
-		/**
-		**/
-		public var parsedUserId : String = null;
 
 		/**
 		**/
@@ -141,7 +137,6 @@ package com.kaltura.vo
 			arr.push('fileSize');
 			arr.push('parsedSlug');
 			arr.push('parsedFlavor');
-			arr.push('parsedUserId');
 			arr.push('leadDropFolderFileId');
 			arr.push('deletedDropFolderFileId');
 			arr.push('entryId');

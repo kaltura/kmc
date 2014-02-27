@@ -35,7 +35,6 @@ package com.kaltura.types
 		public static const BMP : String = 'bmp';
 		public static const COPY : String = 'copy';
 		public static const FLV : String = 'flv';
-		public static const HLS : String = 'hls';
 		public static const ISMV : String = 'ismv';
 		public static const JPG : String = 'jpg';
 		public static const MKV : String = 'mkv';

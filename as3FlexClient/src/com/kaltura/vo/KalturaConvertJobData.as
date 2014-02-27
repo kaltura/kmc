@@ -60,14 +60,6 @@ package com.kaltura.vo
 		**/
 		public var customData : String = null;
 
-		/**
-		**/
-		public var extraDestFileSyncs : Array = null;
-
-		/**
-		**/
-		public var engineMessage : String = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -79,8 +71,6 @@ package com.kaltura.vo
 			arr.push('flavorAssetId');
 			arr.push('remoteMediaId');
 			arr.push('customData');
-			arr.push('extraDestFileSyncs');
-			arr.push('engineMessage');
 			return arr;
 		}
 
@@ -95,9 +85,6 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
-				case 'extraDestFileSyncs':
-					result = 'KalturaDestFileSyncDescriptor';
-					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;

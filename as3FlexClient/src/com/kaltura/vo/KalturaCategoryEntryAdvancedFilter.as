@@ -40,23 +40,12 @@ package com.kaltura.vo
 		**/
 		public var categoryEntryStatusIn : String = null;
 
-		/**
-		* @see com.kaltura.types.KalturaCategoryEntryAdvancedOrderBy
-		**/
-		public var orderBy : String = null;
-
-		/**
-		**/
-		public var categoryIdEqual : int = int.MIN_VALUE;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('categoriesMatchOr');
 			arr.push('categoryEntryStatusIn');
-			arr.push('orderBy');
-			arr.push('categoryIdEqual');
 			return arr;
 		}
 

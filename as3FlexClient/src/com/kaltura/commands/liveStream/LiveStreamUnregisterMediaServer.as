@@ -31,7 +31,7 @@ package com.kaltura.commands.liveStream
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	* Unregister media server from live entry
+	* Unregister media server from live-stream entry
 	* 
 	**/
 	public class LiveStreamUnregisterMediaServer extends KalturaCall

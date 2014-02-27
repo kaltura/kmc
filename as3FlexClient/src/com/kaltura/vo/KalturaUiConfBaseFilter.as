@@ -94,26 +94,6 @@ package com.kaltura.vo
 		**/
 		public var creationModeIn : String = null;
 
-		/**
-		**/
-		public var versionEqual : String = null;
-
-		/**
-		**/
-		public var versionMultiLikeOr : String = null;
-
-		/**
-		**/
-		public var versionMultiLikeAnd : String = null;
-
-		/**
-		**/
-		public var partnerTagsMultiLikeOr : String = null;
-
-		/**
-		**/
-		public var partnerTagsMultiLikeAnd : String = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -133,11 +113,6 @@ package com.kaltura.vo
 			arr.push('updatedAtLessThanOrEqual');
 			arr.push('creationModeEqual');
 			arr.push('creationModeIn');
-			arr.push('versionEqual');
-			arr.push('versionMultiLikeOr');
-			arr.push('versionMultiLikeAnd');
-			arr.push('partnerTagsMultiLikeOr');
-			arr.push('partnerTagsMultiLikeAnd');
 			return arr;
 		}
 

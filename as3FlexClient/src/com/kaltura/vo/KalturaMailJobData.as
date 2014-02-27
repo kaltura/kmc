@@ -98,10 +98,6 @@ package com.kaltura.vo
 		**/
 		public var isHtml : Boolean;
 
-		/**
-		**/
-		public var separator : String = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -121,7 +117,6 @@ package com.kaltura.vo
 			arr.push('campaignId');
 			arr.push('minSendDate');
 			arr.push('isHtml');
-			arr.push('separator');
 			return arr;
 		}
 

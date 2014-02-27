@@ -82,13 +82,6 @@ package com.kaltura.vo
 		**/
 		public var feedAuthor : String = null;
 
-		/**
-		* true in case you want to enfore the palylist order on the
-		* 
-		* @see com.kaltura.types.KalturaNullableBoolean
-		**/
-		public var enforceOrder : int = int.MIN_VALUE;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -101,7 +94,6 @@ package com.kaltura.vo
 			arr.push('feedImageUrl');
 			arr.push('adultContent');
 			arr.push('feedAuthor');
-			arr.push('enforceOrder');
 			return arr;
 		}
 
