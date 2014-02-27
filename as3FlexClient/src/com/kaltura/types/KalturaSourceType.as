@@ -29,7 +29,6 @@ package com.kaltura.types
 {
 	public class KalturaSourceType
 	{
-		public static const LIMELIGHT_LIVE : String = 'limeLight.LIVE_STREAM';
 		public static const VELOCIX_LIVE : String = 'velocix.VELOCIX_LIVE';
 		public static const FILE : String = '1';
 		public static const WEBCAM : String = '2';

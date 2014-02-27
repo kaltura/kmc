@@ -79,6 +79,12 @@ package com.kaltura.vo
 		**/
 		public var copyOnly : Boolean;
 
+		/**
+		* Destination categories fallback ids
+		* 
+		**/
+		public var destCategoryFullIds : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -90,6 +96,7 @@ package com.kaltura.vo
 			arr.push('lastMovedCategoryEntryPageIndex');
 			arr.push('moveFromChildren');
 			arr.push('copyOnly');
+			arr.push('destCategoryFullIds');
 			return arr;
 		}
 

@@ -46,7 +46,7 @@ package com.kaltura.vo
 
 		/**
 		**/
-		public var tags : int = int.MIN_VALUE;
+		public var tags : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

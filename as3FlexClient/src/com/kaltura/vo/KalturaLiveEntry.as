@@ -70,6 +70,13 @@ package com.kaltura.vo
 		**/
 		public var recordedEntryId : String = null;
 
+		/**
+		* Flag denoting whether entry should be published by the media server
+		* 
+		* @see com.kaltura.types.KalturaLivePublishStatus
+		**/
+		public var pushPublishEnabled : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -77,6 +84,7 @@ package com.kaltura.vo
 			arr.push('offlineMessage');
 			arr.push('liveStreamConfigurations');
 			arr.push('recordedEntryId');
+			arr.push('pushPublishEnabled');
 			return arr;
 		}
 

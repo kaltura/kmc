@@ -109,12 +109,6 @@ package com.kaltura.vo
 		**/
 		public var customHeaders : Array = null;
 
-		/**
-		* Define the content dynamic parameters
-		* 
-		**/
-		public var contentParameters : Array = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -130,7 +124,6 @@ package com.kaltura.vo
 			arr.push('hostname');
 			arr.push('messageID');
 			arr.push('customHeaders');
-			arr.push('contentParameters');
 			return arr;
 		}
 
@@ -158,9 +151,6 @@ package com.kaltura.vo
 					result = '';
 					break;
 				case 'customHeaders':
-					result = 'KalturaKeyValue';
-					break;
-				case 'contentParameters':
 					result = 'KalturaKeyValue';
 					break;
 				default:

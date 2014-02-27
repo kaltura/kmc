@@ -29,7 +29,6 @@ package com.kaltura.types
 {
 	public class KalturaConditionType
 	{
-		public static const ABC_WATERMARK : String = 'abcScreenersWatermarkAccessControl.abcWatermark';
 		public static const EVENT_NOTIFICATION_FIELD : String = 'eventNotification.BooleanField';
 		public static const EVENT_NOTIFICATION_OBJECT_CHANGED : String = 'eventNotification.ObjectChanged';
 		public static const METADATA_FIELD_CHANGED : String = 'metadata.FieldChanged';
@@ -43,5 +42,6 @@ package com.kaltura.types
 		public static const FIELD_MATCH : String = '6';
 		public static const FIELD_COMPARE : String = '7';
 		public static const ASSET_PROPERTIES_COMPARE : String = '8';
+		public static const USER_ROLE : String = '9';
 	}
 }

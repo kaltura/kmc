@@ -56,15 +56,6 @@ package com.kaltura.vo
 		**/
 		public var webexHostIdMetadataFieldName : String = null;
 
-		/**
-		**/
-		public var categoriesMetadataFieldName : String = null;
-
-		/**
-		* @see com.kaltura.types.kalturaBoolean
-		**/
-		public var enforceEntitlement : Boolean;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -75,8 +66,6 @@ package com.kaltura.vo
 			arr.push('webexPartnerId');
 			arr.push('webexServiceUrl');
 			arr.push('webexHostIdMetadataFieldName');
-			arr.push('categoriesMetadataFieldName');
-			arr.push('enforceEntitlement');
 			return arr;
 		}
 

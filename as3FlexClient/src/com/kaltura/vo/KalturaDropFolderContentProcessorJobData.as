@@ -34,6 +34,10 @@ package com.kaltura.vo
 	{
 		/**
 		**/
+		public var dropFolderId : int = int.MIN_VALUE;
+
+		/**
+		**/
 		public var dropFolderFileIds : String = null;
 
 		/**
@@ -49,14 +53,20 @@ package com.kaltura.vo
 		**/
 		public var conversionProfileId : int = int.MIN_VALUE;
 
+		/**
+		**/
+		public var parsedUserId : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('dropFolderId');
 			arr.push('dropFolderFileIds');
 			arr.push('parsedSlug');
 			arr.push('contentMatchPolicy');
 			arr.push('conversionProfileId');
+			arr.push('parsedUserId');
 			return arr;
 		}
 

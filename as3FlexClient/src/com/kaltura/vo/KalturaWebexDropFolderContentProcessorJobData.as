@@ -40,17 +40,12 @@ package com.kaltura.vo
 		**/
 		public var webexHostId : String = null;
 
-		/**
-		**/
-		public var dropFolderId : int = int.MIN_VALUE;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('description');
 			arr.push('webexHostId');
-			arr.push('dropFolderId');
 			return arr;
 		}
 
