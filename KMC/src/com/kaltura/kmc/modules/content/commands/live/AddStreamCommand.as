@@ -13,6 +13,7 @@ package com.kaltura.kmc.modules.content.commands.live {
 	import com.kaltura.kmc.modules.content.vo.StreamVo;
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaDVRStatus;
+	import com.kaltura.types.KalturaLivePublishStatus;
 	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.types.KalturaPlaybackProtocol;
 	import com.kaltura.types.KalturaRecordStatus;
@@ -58,6 +59,10 @@ package com.kaltura.kmc.modules.content.commands.live {
 				setKalturaLiveParams(liveEntry, streamVo);
 				_sourceType = KalturaSourceType.LIVE_STREAM;
 			}
+			else if (streamVo.streamType == StreamVo.STREAM_TYPE_MULTICAST) {
+				setMulticastParams(liveEntry, streamVo);
+				_sourceType = KalturaSourceType.LIVE_STREAM;
+			}
 
 			var addEntry:LiveStreamAdd = new LiveStreamAdd(liveEntry, _sourceType);
 			addEntry.addEventListener(KalturaEvent.COMPLETE, result);
@@ -65,6 +70,28 @@ package com.kaltura.kmc.modules.content.commands.live {
 			_model.increaseLoadCounter();
 			_model.context.kc.post(addEntry);
 		}
+		
+		
+		/**
+		 * set parameters relevant to Kaltura multicast live streams 
+		 * @param liveEntry	entry to manipulate
+		 * @param streamVo	data
+		 */
+		private function setMulticastParams(liveEntry:KalturaLiveStreamEntry, streamVo:StreamVo):void {
+			liveEntry.dvrStatus = KalturaDVRStatus.DISABLED;
+			
+			// recording
+			if (streamVo.recordingEnabled) {
+				liveEntry.recordStatus = KalturaRecordStatus.ENABLED;
+			}
+			else {
+				liveEntry.recordStatus = KalturaRecordStatus.DISABLED;
+			}
+			
+			liveEntry.conversionProfileId = streamVo.conversionProfileId;
+			
+			liveEntry.pushPublishEnabled = KalturaLivePublishStatus.ENABLED; 
+		}		
 		
 		
 		/**

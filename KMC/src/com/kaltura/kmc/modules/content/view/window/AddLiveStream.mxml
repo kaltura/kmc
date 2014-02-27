@@ -93,6 +93,11 @@
 					}
 				}
 				
+				if (pdp.enableKalturaMulticast) {
+					_streamTypes.push(new LocalizedVo(StreamVo.STREAM_TYPE_MULTICAST, 'kalturaMulticast', 'live'));
+					// live profiles load is handled by Kaltura live, which is a prerequisite for multicast
+				}
+				
 				if (pdp.enableAkamaiLive) {
 					_streamTypes.push(new LocalizedVo(StreamVo.STREAM_TYPE_UNIVERSAL, 'universalStream', 'live'));
 					_streamTypes.push(new LocalizedVo(StreamVo.STREAM_TYPE_MANUAL, 'manualStream', 'live'));
@@ -119,6 +124,7 @@
 						anchor = 'section_add_live_stream_man';
 						break;
 					case StreamVo.STREAM_TYPE_KALTURA:
+					case StreamVo.STREAM_TYPE_MULTICAST:
 						anchor = 'section_add_live_stream_kal';
 						break;
 				}
@@ -147,6 +153,7 @@
 						forms.selectedIndex = 2;
 						break;
 					case StreamVo.STREAM_TYPE_KALTURA:
+					case StreamVo.STREAM_TYPE_MULTICAST:
 						_isManualStream = false;
 						forms.selectedIndex = 0;
 						break;
@@ -199,12 +206,18 @@
 						}
 					}
 				}
-				else if (streamVo.streamType == StreamVo.STREAM_TYPE_KALTURA) {
+				else if (streamVo.streamType == StreamVo.STREAM_TYPE_KALTURA || streamVo.streamType == StreamVo.STREAM_TYPE_MULTICAST) {
 					// kaltura
-					var conversionProfileId:int = getLiveProfileId();
+					var conversionProfileId:int = getLiveProfileId(liveProfileKaltura);
 					
 					if (conversionProfileId != 0) {
-						streamVo.dvrEnabled = useDvrKaltura.selected;
+						if (streamVo.streamType == StreamVo.STREAM_TYPE_KALTURA) {
+							streamVo.dvrEnabled = useDvrKaltura.selected;
+						}
+						else {
+							// multicast doesn't support dvr
+							streamVo.dvrEnabled = false;
+						}
 						streamVo.recordingEnabled = useRecKaltura.selected;
 						streamVo.conversionProfileId = conversionProfileId;
 					} 
@@ -247,11 +260,11 @@
 			/**
 			 * get the id of the selected live conversion profile
 			 * */
-			private function getLiveProfileId():int
+			private function getLiveProfileId(combo:ComboBox):int
 			{
 				var ret:int = 0;
-				if (liveProfileKaltura.selectedItem) {
-					ret = (liveProfileKaltura.selectedItem as KalturaConversionProfile).id;
+				if (combo.selectedItem) {
+					ret = (combo.selectedItem as KalturaConversionProfile).id;
 				}
 				else if (liveProfiles && liveProfiles.length > 0) {
 					ret = (liveProfiles[0] as KalturaConversionProfile).id;
@@ -284,13 +297,14 @@
 	</mx:HBox>
 	<mx:Spacer height="10" />
 	<mx:ViewStack id="forms" width="100%" height="100%">
-		<!-- form for kaltura -->
+		<!-- form for kaltura and multicast -->
 		<mx:VBox styleName="noPadding" width="100%" height="100%">
 			<mx:HBox width="100%">
 				<mx:Label text="{ResourceManager.getInstance().getString('live', 'liveProfile')}" width="{labelWidth}" styleName="boldLabel" />
 				<mx:ComboBox id="liveProfileKaltura" dataProvider="{liveProfiles}" width="290" labelField="name" />
 			</mx:HBox>
-			<mx:HBox width="100%" >
+			<mx:HBox width="100%" visible="{streamType.selectedItem.value == StreamVo.STREAM_TYPE_KALTURA}"
+					 includeInLayout="{streamType.selectedItem.value == StreamVo.STREAM_TYPE_KALTURA}">
 				<mx:CheckBox id="useDvrKaltura" selected="false"/>
 				<mx:Text text="{ResourceManager.getInstance().getString('live', 'enableDvrKaltura')}" width="100%" />
 			</mx:HBox>

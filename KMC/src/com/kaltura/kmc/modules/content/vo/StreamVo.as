@@ -3,6 +3,7 @@ package com.kaltura.kmc.modules.content.vo
 	public class StreamVo
 	{
 		public static const STREAM_TYPE_KALTURA:String = 'kaltura';
+		public static const STREAM_TYPE_MULTICAST:String = 'multicast';
 		public static const STREAM_TYPE_UNIVERSAL:String = 'universal';
 		public static const STREAM_TYPE_LEGACY:String = 'legacy';
 		public static const STREAM_TYPE_MANUAL:String = 'manual';
