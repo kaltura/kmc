@@ -239,6 +239,10 @@
 					cpl.addEventListener(KalturaEvent.FAILED, onConvProfListed);
 					_kc.post(cpl);
 				}
+				else {
+					// select the profile from the cookie
+					selectDefaultProfile();
+				}
 			}
 
 			protected function onConvProfListed(e:KalturaEvent):void {
@@ -263,8 +267,34 @@
 						ar.unshift(def);
 					}
 					cbConvProfiles.dataProvider = ar;
+					// select the profile from the cookie
+					selectDefaultProfile();
 				}
 			}
+			
+			
+			protected function selectDefaultProfile():void {
+				var kmcSO:SharedObject = SharedObject.getLocal("kmcSO");
+				var defaultProfileId:int = kmcSO.data.lastConversionProfile;
+				if (defaultProfileId) {
+					for each (var cp:KalturaConversionProfile in cbConvProfiles.dataProvider) {
+						if (cp.id == defaultProfileId) {
+							cbConvProfiles.selectedItem = cp;
+						}
+					}
+				}
+			}
+			
+			
+			
+			protected function saveDefaultProfile():void {
+				var kmcSO:SharedObject = SharedObject.getLocal("kmcSO");
+				if (kmcSO.data.lastConversionProfile != cbConvProfiles.selectedItem.id) {
+					kmcSO.data.lastConversionProfile = cbConvProfiles.selectedItem.id;
+					kmcSO.flush();
+				}
+			}
+			
 
 			protected function cancel_clickHandler(event:MouseEvent):void {
 				resetPanel();
@@ -289,6 +319,8 @@
 						dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.createAudioEntry(" + cbConvProfiles.selectedItem.id + ")"}, true));
 						break;
 				}
+				//TODO save selected profile as default
+				saveDefaultProfile();
 				hidePanel();
 			}
 
