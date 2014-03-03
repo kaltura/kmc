@@ -29,6 +29,7 @@
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Alert;
 			import mx.controls.videoClasses.CuePointManager;
+			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 
 			public static const EDIT_STATE:String = "edit_state";
@@ -142,8 +143,6 @@
 				conversionDescTextArea.text = _conversionProfile.profile.description;
 				txtDefaultEntryId.text = _conversionProfile.profile.defaultEntryId;
 				showStorageProfile(cbRemoteProfile.dataProvider);
-				// flavors are set in the cProfile
-				validateInput();
 			}
 			
 			/**
@@ -168,13 +167,13 @@
 			}
 
 			
-			private function validateInput(event:Event = null):Boolean {
+			private function validateProfileName(event:Event = null):Boolean {
 				var isValid:Boolean = true
 				var name:String = conversionNameTextInput.text;
 				name = name.replace(new RegExp(' ', 'g'), '');
 				isValid = (name != '');
 
-				return isValid && flavorsTable.isFlavorsSelected();
+				return isValid ;//&& flavorsTable.isFlavorsSelected();
 			}
 
 
@@ -219,8 +218,32 @@
 				closeWindow();
 			}
 			
-			private function validateBeforeSave(event:Event):void {
-				if (validateInput()) {
+			
+			/**
+			 * if no flavors are selected, prompt
+			 * */
+			private function verifyFlavors():void {
+				//TODO sfsd
+				if (flavorsTable.isFlavorsSelected()) {
+					validateBeforeSave();
+				}
+				else {
+					Alert.show(resourceManager.getString('account', 'noFlavorSelected'), resourceManager.getString('account', 'noFlavorTitle'), Alert.OK|Alert.CANCEL, null, verifyNoFlavorsHanlder);
+				}
+			}
+			
+			
+			/**
+			 * event handler after asking user if they want to save profile with no flavors - advanced mode
+			 * */
+			private function verifyNoFlavorsHanlder(e:CloseEvent):void {
+				if (e.detail == Alert.OK) {
+					validateBeforeSave();
+				}
+			}
+			
+			private function validateBeforeSave():void {
+				if (validateProfileName()) {
 					if (txtDefaultEntryId.text && txtDefaultEntryId.text != _conversionProfile.profile.defaultEntryId) {
 						// get this entry to make sure it's valid
 						// dispatch list, bind to model (_model.defaultEntry) and respond
@@ -254,7 +277,7 @@
 		<mx:Label text="{resourceManager.getString('account','requiredName')}"
 				  toolTip="{resourceManager.getString('account','requiredNameToolTip')}"
 				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
-		<mx:TextInput id="conversionNameTextInput" width="100%" change='validateInput(event)'/>
+		<mx:TextInput id="conversionNameTextInput" width="100%" change="validateProfileName(event)"/>
 	</mx:HBox>
 	<mx:HBox width="100%" >
 		<mx:Label text="{resourceManager.getString('account','description')}" 
@@ -286,6 +309,6 @@
 	</mx:HBox>
 	<mx:ControlBar width="100%" horizontalAlign="center" >
 		<mx:Button id="submitBtn" label="{resourceManager.getString('account','createNewConvProfile')}" 
-				   useHandCursor="true" buttonMode="true" click="validateBeforeSave(event)"/>
+				   useHandCursor="true" buttonMode="true" click="verifyFlavors()"/>
 	</mx:ControlBar>
 </HelpTitleWindow>

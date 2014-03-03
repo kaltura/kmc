@@ -37,6 +37,7 @@
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			
 			
@@ -129,15 +130,11 @@
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_SAVE_TRANSCODING_SETTINGS, "Account>Save transcoding Settings");
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_DEF_TRANSCODING_PROF, GoogleAnalyticsConsts.ACCOUNT);
 
-				if (simpleTable.isFlavorsSelected() && (simpleTable.cProfile.profile.flavorParamsIds != null)) {
-					var up:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, simpleTable.cProfile);
-					// list profiles afterwards
-					up.nextEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
-					
-					up.dispatch();
+				if (simpleTable.isFlavorsSelected()) {
+					saveChanges();
 				}
 				else {
-					Alert.show(resourceManager.getString('account', 'oneFlvorSelection'), resourceManager.getString('account', 'missingFlavorTitle'));
+					Alert.show(resourceManager.getString('account', 'noFlavorSelected'), resourceManager.getString('account', 'noFlavorTitle'), Alert.OK|Alert.CANCEL, null, verifyNoFlavorsHanlder);
 				}
 			}
 
@@ -153,6 +150,15 @@
 
 
 			public function saveChanges():void {
+				if (viewStack.selectedChild == simpleMode) {
+					// save simple mode data 
+					var up:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, simpleTable.cProfile);
+					// list profiles afterwards
+					up.nextEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
+					
+					up.dispatch();
+				}
+				// don't handle save of advanced data
 			}
 
 
@@ -172,6 +178,17 @@
 				_profilesWatcher = BindingUtils.bindSetter(setData, this, ["model", "mediaConversionProfiles"]);
 			}
 
+			
+			/**
+			 * event handler after asking user if they want to save profile with no flavors - simple mode
+			 * */
+			private function verifyNoFlavorsHanlder(e:CloseEvent):void {
+				if (e.detail == Alert.OK) {
+					saveChanges();
+				}
+				
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:Label styleName="filterTitleHeader" width="100%" id="titleText"
@@ -185,7 +202,7 @@
 
 	<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all">
 		<!-- simple mode -->
-		<mx:VBox width="100%" verticalGap="0">
+		<mx:VBox id="simpleMode" width="100%" verticalGap="0">
 			<conversion:ConversionSettingsTable id="simpleTable" height="100%" 
 												dataProvider="{model.mediaFlavorsData}" />
 			<mx:HBox width="100%" styleName="DataGridActions">

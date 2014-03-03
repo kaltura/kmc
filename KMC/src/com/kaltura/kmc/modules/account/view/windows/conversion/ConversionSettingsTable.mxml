@@ -41,14 +41,17 @@
 
 
 			/**
-			 * make sure only "real" flavours are listed on the profile. <br>
+			 * make sure only "real" flavors are listed on the profile. <br>
 			 * since thumbs params are part of a conversionProfile, we scan them too.
 			 * */
 			private function validateProfileFlavors():void {
 				if (!_cProfile || !dataProvider )
 					return;
 
-				var idsArr:Array = _cProfile.profile.flavorParamsIds.split(',');
+				var idsArr:Array = []; // support profiles with no flavors
+				if (_cProfile.profile.flavorParamsIds) {
+					idsArr = _cProfile.profile.flavorParamsIds.split(',');
+				}
 				var currentFlavors:Array = new Array(); // flavours in the CP
 				var vo:FlavorVO;
 				var isFlavor:Boolean; // is a media flavour
@@ -81,7 +84,16 @@
 
 
 			public function isFlavorsSelected():Boolean {
-				return !(_cProfile.profile.flavorParamsIds == null);
+				//return !(_cProfile.profile.flavorParamsIds == null);
+				// we only look at video flavors, other flavors are not relevant here
+				var result:Boolean = false;
+				for each (var vo:FlavorVO in dataProvider) {
+					if (vo.selected) {
+						result = true;
+						break;
+					}
+				}
+				return result;
 			}
 
 
