@@ -50,7 +50,6 @@ Thumbnails tab of EntryDetailsWin
 			private var _fileReference:FileReference;
 			
 			
-//			private var _resetActions:Boolean = true;
 			/**
 			 * @copy #selectedEntry
 			 * */
@@ -64,7 +63,6 @@ Thumbnails tab of EntryDetailsWin
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (!value)
 					return;
-//				_resetActions = true;
 				_selectedEntry = value;
 			}
 			
@@ -75,10 +73,6 @@ Thumbnails tab of EntryDetailsWin
 			 * */
 			private var _tumbDimCW:ChangeWatcher;
 			
-//			/**
-//			 * change watcher for entry flavors
-//			 * */
-//			private var _flavorsCW:ChangeWatcher;
 			
 			/**
 			 * distribution info
@@ -174,12 +168,7 @@ Thumbnails tab of EntryDetailsWin
 			
 			public function initData():void {
 				_distributionModel.loadThumbs(controller, _selectedEntry);
-//				if (_flavorsCW) {
-//					_flavorsCW.unwatch();
-//				}
-//				if (_resetActions) {
-					setActions();
-//				}
+				setActions();
 			}
 			
 			
@@ -187,47 +176,24 @@ Thumbnails tab of EntryDetailsWin
 				// set the available operations for current entry:
 				// you can always upload
 				var temp:Array = new Array(resourceManager.getString('drilldown', 'upload'));
+				// you can always crop (if no thumbs exist, you'll get an error later)
+				temp.push(resourceManager.getString('drilldown', 'cropNewThumbnail'));
+				
 				// entry has content + either mix or video = can grab from video
 				if (_selectedEntry.status != KalturaEntryStatus.NO_CONTENT) {
-					if (_selectedEntry is KalturaMixEntry) {
+					if (_selectedEntry is KalturaMixEntry || _selectedEntry.mediaType == KalturaMediaType.VIDEO) {
 						temp.push(resourceManager.getString('drilldown', 'grabFromVideo'));
-					}
-					else if (_selectedEntry.mediaType == KalturaMediaType.VIDEO) {
-						// if it's a video, you can crop (??)
-						temp.push(resourceManager.getString('drilldown', 'cropNewThumbnail'));
-						
-						temp.push(resourceManager.getString('drilldown', 'grabFromVideo'));	
-//						// see if we can grab (requires source)
-//						_flavorsCW = BindingUtils.bindSetter(setGrabAllowed, _distributionModel, "flavorParamsAndAssetsByEntryId");
 					}
 				}
 				_uploadThumbnailActionsDP = temp;
 				if (actionCB.dropdown) {
 					actionCB.dropdown.dataProvider = temp;
 				}
-//				_resetActions = false;
 			}
 			
-//			private function setGrabAllowed(flavors:ArrayCollection):void {
-//				if (!flavors || !flavors.length || !_uploadThumbnailActionsDP) return;
-//				var temp:Array = _uploadThumbnailActionsDP.slice();
-//				if (EntryDataHelper.entryHasSource(_distributionModel.flavorParamsAndAssetsByEntryId)) {
-//					temp.push(resourceManager.getString('drilldown', 'grabFromVideo'));		
-//				}
-//				_uploadThumbnailActionsDP = temp;
-//				if (actionCB.dropdown) {
-//					actionCB.dropdown.dataProvider = temp;
-//				}
-////				if (_flavorsCW) {
-////					_flavorsCW.unwatch();
-////				}
-//			}
 			
 			public function destroy():void {
 				_tumbDimCW.unwatch();
-//				if (_flavorsCW) {
-//					_flavorsCW.unwatch();
-//				}
 				dataGrid.addEventListener(ThumbnailsActionType.SET_DEFAULT, thumbActionHandler);
 				dataGrid.addEventListener(ThumbnailsActionType.DOWNLOAD, thumbActionHandler);
 				dataGrid.addEventListener(ThumbnailsActionType.DELETE, thumbActionHandler);
@@ -347,7 +313,6 @@ Thumbnails tab of EntryDetailsWin
 				_cropperWindow.width = this.stage.stageWidth;
 				_cropperWindow.height = this.stage.stageHeight;
 				_cropperWindow.thumbnailsList = _distributionModel.distributionInfo.thumbnailDimensions;
-				//				_cropperWindow.entryDetailsModel = _entryDetailsModel;  //Atar: not used?
 				_cropperWindow.selectedEntry = selectedEntry;
 				_cropperWindow.controller = controller;
 				_cropperWindow.addEventListener(CropThumbnailWindow.WINDOW_CLOSE, onCropperClosed);
