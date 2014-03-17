@@ -11,7 +11,9 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.commands.uiConf.UiConfGet;
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.vo.LocalizedVo;
 			import com.kaltura.events.KalturaEvent;
+			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsNavigationEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsUiConfEvent;
@@ -21,8 +23,10 @@
 			import com.kaltura.kmc.vo.Context;
 			import com.kaltura.vo.KalturaUiConf;
 			
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
+			import mx.events.ItemClickEvent;
 			import mx.managers.PopUpManager;
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;
@@ -32,7 +36,8 @@
 			 * this const as the id of this module.
 			 * */
 			public static const NAME:String = "studio";
-
+			
+			
 
 			override public function getModuleName():String {
 				return NAME;
@@ -41,6 +46,20 @@
 			override public function showSubtab(subtab:String, data:Object = null):void {
 				// studio don't have tabs, empty implementation
 			}
+			
+			[Bindable]
+			private var _subtabs:ArrayCollection;
+			
+			/**
+			 * RnP - show flash studio
+			 * */
+			public var showFlashStudio:Boolean = true;
+			
+			/**
+			 * RnP - show HTML studio
+			 * */
+			public var showUniversalStudio:Boolean = true;
+
 
 			/**
 			 * player edit/creation window
@@ -115,7 +134,7 @@
 					_media["kpl" + i + "Url"] = s;
 					
 				}
-				
+				//TODO only if flash studio is on
 				// get templates info:
 				var uiconf:UiConfGet = new UiConfGet(conf.uiconf.text().toString());
 				uiconf.addEventListener(KalturaEvent.COMPLETE, loadedAppstudioUiconf);
@@ -124,6 +143,22 @@
 				
 				PermissionManager.getInstance().applyAllAttributes(this,id);
 				
+				// create navigation DP
+				_subtabs = new ArrayCollection();
+				if (showFlashStudio) {
+					_subtabs.addItem(new LocalizedVo('flash_studio', 'flash_studio', 'aps'));
+				}
+				if (showUniversalStudio) {
+					_subtabs.addItem(new LocalizedVo('uni_studio', 'uni_studio', 'aps'));
+				}
+				if (_subtabs.length > 0) {
+					secTln.selectedIndex = 0;
+					if (_subtabs.getItemAt(0).value == 'uni_studio') {
+						JSGate.triggerJS('kmc.functions.openStudio');
+					}
+				}
+				
+				secTln.visible = true;
 				setModuleReady();
 			}
 			
@@ -264,6 +299,19 @@
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section_studio_player_list'));
 			}
 			
+			
+			
+			private function secTln_itemClickHandler(event:ItemClickEvent):void {
+				switch (event.item.value) {
+					case 'uni_studio':
+						JSGate.triggerJS('kmc.functions.openStudio');
+						break;
+					case 'flash_studio':
+						// do nothing;
+						break;
+				}
+			}
+			
 		]]>
 	</mx:Script>
 
@@ -279,6 +327,9 @@
 	
 	<mx:VBox id="mainView" width="100%" height="100%" >
 		<mx:HBox width="100%" styleName="tabsContainer">
+			<mx:TabBar id="secTln" styleName="tln" buttonMode="true" dataProvider="{_subtabs}" visible="false" 
+					   itemClick="secTln_itemClickHandler(event)">
+			</mx:TabBar>
 			<mx:Spacer width="100%"/>
 			<mx:Button styleName="help" buttonMode="true" click="help()"/>
 		</mx:HBox>
