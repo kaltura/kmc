@@ -8,6 +8,10 @@
 							creationComplete="creationCompleteHandler(event)"
 							title="{ResourceManager.getInstance().getString('create', 'uploadSettingTitle')}"
 							>
+	<mx:Metadata>
+		[ResourceBundle("create")]
+		[ResourceBundle("common")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
@@ -217,7 +221,15 @@
 				var bytesInMega:int = 1024*1024;
 				var maxSize:Number = getUploadLimit();
 				for each (var file:UploadFile in _files) {
-					if ((file.fr.size/bytesInMega) > maxSize) {
+					try {
+						// try to access size attribute to see if it is more than a uint
+						if ((file.fr.size/bytesInMega) > maxSize) {
+							result = false;
+							break;
+						}
+					}
+					catch (e:Error) {
+						// if it was more than a uint, it is too large.
 						result = false;
 						break;
 					}

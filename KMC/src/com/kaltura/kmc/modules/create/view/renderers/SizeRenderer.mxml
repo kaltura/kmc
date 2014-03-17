@@ -6,12 +6,19 @@
 			
 			override public function set data(value:Object):void {
 				super.data = value;
-				var size:Number = (data.fr as FileReference).size; 
-				size /= (1024 * 1024);
-				size *= 100;
-				size = Math.floor(size);
-				size /= 100;
-				txt.text = size + " MB";
+				try {
+					var size:Number = (data.fr as FileReference).size;
+					
+					size /= (1024 * 1024);
+					size *= 100;
+					size = Math.floor(size);
+					size /= 100;
+					txt.text = size + " MB";
+				}
+				catch (e:Error) {
+					txt.text = resourceManager.getString('create', 'n_a');
+				}
+				
 			}
 		]]>
 	</mx:Script>
