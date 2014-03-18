@@ -35,5 +35,6 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 		public var platformDrilldown:Array = ['os'];
 		public var browsers:Array = ['browser'];
 
+		public var liveContent:Array = ['entry_name'];
 	}
 }

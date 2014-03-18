@@ -370,6 +370,7 @@ package com.kaltura.analytics {
 		// ==================================================================
 		// page views
 		// ==============================
+		public static const ANALYTICS_LIVE:String = "Live Reports";
 		public static const ANALYTICS_PLATFORM:String = "Platform Reports";
 		public static const ANALYTICS_BANDWIDTH_USAGE:String = "BandWidth Usage";
 		public static const ANALYTICS_CONTENT_REPORTS:String = "Content Reports";

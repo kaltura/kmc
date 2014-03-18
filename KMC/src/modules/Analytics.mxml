@@ -52,6 +52,7 @@
 			
 			
 			// the following const values match *keys* in locale, not values.
+			private static const LIVE:String = "liveContent";
 			private static const PLATFORM:String = "platformReports";
 			private static const BANDWIDTH_USAGE:String = "usageTabTitle";
 			private static const CONTENT:String = "contentDashboard";
@@ -68,7 +69,7 @@
 				// if already added to stage, just go there
 				if (stage) {
 					showTab(_initialTab);
-					//TODO load categories everytime we navigate to analytics
+					// load categories everytime we navigate to analytics
 					var listCategories:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 					listCategories.dispatch();
 				}
@@ -103,6 +104,7 @@
 				content.init();
 				community.init();
 				platform.init();
+				liveContent.init();
 				
 				if (stage) {
 					onAddedToStage();
@@ -146,6 +148,10 @@
 					case PLATFORM:
 						onItemClick(new ItemClickEvent("itemClick", false, false, "dummy", 3))
 						contentView.selectedIndex = 3;
+						break;
+					case LIVE:
+						onItemClick(new ItemClickEvent("itemClick", false, false, "dummy", 4))
+						contentView.selectedIndex = 4;
 						break;
 					default:
 						trace("din't get annea dese, eh got " + subtab);
@@ -257,14 +263,23 @@
 				else if (event.index == 3) {
 					// trackers:
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ANALYTICS_PLATFORM , GoogleAnalyticsConsts.ANALYTICS);
-					//KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ANALYTICS,KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_TAB,
-					//	"Main Menu>Bandwidth Usage Tab");
 					JSGate.writeUrlHash(Analytics.NAME, PLATFORM);
 					
 					if (platform.platforms && platform.dtn.selectedIndex == 0)
 						platform.platforms.onShow();
 					
 					stateEvent = new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.PLATFORM);
+					stateEvent.dispatch();
+				}
+				else if (event.index == 4) {
+					// trackers:
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ANALYTICS_LIVE, GoogleAnalyticsConsts.ANALYTICS);
+					JSGate.writeUrlHash(Analytics.NAME, LIVE);
+					
+					if (liveContent.topContet)
+						liveContent.topContet.onShow();
+					
+					stateEvent = new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.LIVE_CONTENT);
 					stateEvent.dispatch();
 				}
 				
@@ -283,6 +298,9 @@
 						break;
 					case platform:
 						platform.help();
+						break;
+					case liveContent:
+						liveContent.help();
 						break;
 				}
 			}
@@ -324,6 +342,10 @@
 			
 			<view:Platform id='platform' horizontalScrollPolicy="off" verticalScrollPolicy="off" width="100%" height="100%"
 						label="{resourceManager.getString('analytics','platformReports')}" styleName="pageStyle"/>
+			
+			<view:LiveContent id="liveContent" width="100%" height="100%" horizontalScrollPolicy="off"
+						  verticalScrollPolicy="off" label="{resourceManager.getString('analytics','liveContent')}"
+						  styleName="pageStyle"/>
 		</mx:ViewStack>
 		
 	</mx:VBox>

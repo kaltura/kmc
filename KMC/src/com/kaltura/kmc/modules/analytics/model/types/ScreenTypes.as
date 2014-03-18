@@ -133,5 +133,15 @@ package com.kaltura.kmc.modules.analytics.model.types
 		 * Browsers Report 
 		 */
 		public static const BROWSER : int = 22;
+		
+		
+		// ------------------------------------------------------------------
+		// Live Reports
+		// ------------------------------------------------------------------
+		
+		/**
+		 * Live Report 
+		 */
+		public static const LIVE_CONTENT : int = 19;
 	}
 }

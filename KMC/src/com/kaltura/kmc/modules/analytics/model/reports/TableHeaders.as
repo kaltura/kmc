@@ -30,5 +30,6 @@ package com.kaltura.kmc.modules.analytics.model.reports
 		public var browsers : Array = ['browser', 'count_plays', 'sum_time_viewed', 'avg_time_viewed', 'count_loads', 'load_play_ratio'];
 		public var platformDrilldown : Array = ['os', 'count_plays', 'sum_time_viewed', 'avg_time_viewed', 'count_loads', 'load_play_ratio'];
 
+		public var liveContent : Array = ['count_video', 'count_plays'];
 	}
 }
