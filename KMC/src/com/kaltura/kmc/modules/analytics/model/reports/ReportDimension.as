@@ -20,6 +20,8 @@ package com.kaltura.kmc.modules.analytics.model.reports
 		public var platform : Array = [ 'count_plays','sum_time_viewed','avg_time_viewed','count_loads']; 
 		public var opsys : Array = [ 'count_plays','sum_time_viewed','avg_time_viewed','count_loads']; 
 		public var browsers : Array = [ 'count_plays','sum_time_viewed','avg_time_viewed','count_loads']; 
-		public var platformDrilldown : Array = [ 'count_plays','sum_time_viewed','avg_time_viewed','count_loads']; 
+		public var platformDrilldown : Array = [ 'count_plays','sum_time_viewed','avg_time_viewed','count_loads'];
+		
+		public var liveContent : Array = ['count_plays']; 
 	}
 }

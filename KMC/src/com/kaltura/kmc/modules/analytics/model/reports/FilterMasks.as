@@ -3,12 +3,12 @@ package com.kaltura.kmc.modules.analytics.model.reports
 	import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 	import com.kaltura.kmc.modules.analytics.vo.filterMasks.DatesOnlyMask;
 	import com.kaltura.kmc.modules.analytics.vo.filterMasks.DrillDownMask;
+	import com.kaltura.kmc.modules.analytics.vo.filterMasks.PlatformMask;
 	import com.kaltura.kmc.modules.analytics.vo.filterMasks.TopLevelMask;
 	import com.kaltura.kmc.modules.analytics.vo.filterMasks.UnitsDatesMask;
 	import com.kaltura.kmc.modules.analytics.vo.filterMasks.UnitsDatesUsersMask;
 	import com.kaltura.kmc.modules.analytics.vo.filterMasks.UserEngDrillDownMask;
 	import com.kaltura.kmc.modules.analytics.vo.filterMasks.UserEngMask;
-	import com.kaltura.kmc.modules.analytics.vo.filterMasks.PlatformMask;
 
 	[Bindable]
 	/**
@@ -48,6 +48,9 @@ package com.kaltura.kmc.modules.analytics.model.reports
 		public var opsys : FilterVo;
 		public var browsers : FilterVo;
 
+		// Live
+		public var liveContent : FilterVo;
+		
 		
 		public function FilterMasks(fvo:FilterVo)
 		{
@@ -74,6 +77,8 @@ package com.kaltura.kmc.modules.analytics.model.reports
 			platforms = new PlatformMask(fvo);
 			opsys = new PlatformMask(fvo);
 			browsers = new PlatformMask(fvo);
+			
+			liveContent = new TopLevelMask(fvo);
 			
 		}
 		

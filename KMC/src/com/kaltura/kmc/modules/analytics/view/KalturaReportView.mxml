@@ -6,7 +6,6 @@
 
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.analytics.business.IDateRangeManager;
@@ -17,7 +16,6 @@
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 			import com.kaltura.kmc.modules.analytics.model.Context;
 			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
-			import com.kaltura.kmc.modules.analytics.utils.TimeConsts;
 			import com.kaltura.kmc.modules.analytics.view.window.PreviewEntryWin;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 			import com.kaltura.types.KalturaReportInterval;
@@ -106,6 +104,12 @@
 			public var helpUrl:String = "reportAndAnalyticsSection4";
 
 			// SHOW & HIDE FLAGS
+			[Bindable]
+			/**
+			 * show hours as well as dates in Graph's X axis labels  
+			 * */
+			public var showGraphHours:Boolean = false;
+			
 			[Bindable]
 			/**
 			 * default: true
@@ -703,7 +707,7 @@
 	<mx:Canvas width="100%">
 		<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}"
 						   includeInLayout="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}"
-						   visible="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}"
+						   visible="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}" showHours="{showGraphHours}"
 						   minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>
 		<mx:Legend id="lineLegend" dataProvider="{lineChart}" right="{lineLegend.width - 10}" 
 				   styleName="analyticsGraphLegend"/>

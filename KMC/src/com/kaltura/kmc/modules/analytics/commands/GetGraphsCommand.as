@@ -188,9 +188,13 @@ package com.kaltura.kmc.modules.analytics.commands {
 						yVal = isNaN(yVal) ? 0 : yVal;
 						obj = new Object();
 						if (_screenType == ScreenTypes.CONTENT_DROPOFF || _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF) {
-							// content dropoff reports
+							// content dropoff reports, bar charts with texts
 							obj.x = ResourceManager.getInstance().getString('analytics', xYArr[0]);
 							obj.y = yVal;
+						}
+						if (_screenType == ScreenTypes.LIVE_CONTENT) {
+							// 10 digit string - probably a date-time like 1979011510 (YYYYMMDDHH)
+							obj = generateFullDateVo(String(xYArr[0]), yVal, krp.id);
 						}
 						else {
 							if (String(xYArr[0]).length == 8 && !isNaN(parseInt(xYArr[0]))) {
@@ -235,13 +239,18 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 		/**
 		 * @param sdate	a string that represents a date (i.e, 20130112)
+		 * @param includeHours	if true, digits 9-10 are expected to be hours
 		 * @return timestamp for the given date
 		 */
-		private function getTimeStampFromString(sdate:String):Number {
+		private function getTimeStampFromString(sdate:String, includeHours:Boolean = true):Number {
 			var year:String = sdate.substring(0, 4);
 			var month:String = sdate.substring(4, 6);
 			var day:String = sdate.substring(6, 8);
-			var date:Date = new Date(Number(year), Number(month) - 1, Number(day));
+			var hours:String = '0';
+			if (includeHours) {
+				hours = sdate.substring(8, 10);
+			}
+			var date:Date = new Date(Number(year), Number(month) - 1, Number(day), Number(hours));
 			return date.time;
 		}
 
