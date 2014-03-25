@@ -24,6 +24,11 @@
 			 * */
 			public var dataFormatFunc:Function = defaultDataFormat;
 			
+			/**
+			 * if true, x axis labels show hours as well as dates
+			 * */
+			public var showHours:Boolean = false;
+			
 			private var _minHAxisDate:Date;
 			private var _maxHAxisDate:Date;
 
@@ -222,6 +227,9 @@
 				}
 				var df:DateFormatter = new DateFormatter();
 				//df.formatString = "M/D/YY"; // use the default value from SharedResources
+				if (showHours) {
+					df.formatString = resourceManager.getString('analytics', 'liveXAxisTimeFormat');
+				}
 				var result:String =  df.format(labelValue);
 				return result;
 			}
