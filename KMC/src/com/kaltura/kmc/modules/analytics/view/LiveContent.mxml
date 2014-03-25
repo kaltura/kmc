@@ -4,7 +4,7 @@
 		 xmlns:drilldown="com.kaltura.kmc.modules.analytics.view.content.drilldown.*"
 		 xmlns:dtn="com.kaltura.kmc.modules.analytics.view.dtn.*"
 		 xmlns:view="com.kaltura.kmc.modules.analytics.view.*" 
-		 creationComplete="init(event)">
+		 creationComplete="init(event)" hide="hideHandler(event)">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.events.KmcHelpEvent;
@@ -15,6 +15,7 @@
 			import com.kaltura.types.KalturaReportType;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.events.FlexEvent;
 
 
 			private var _ready:Boolean = false;
@@ -84,6 +85,12 @@
 				var anchor:String = (contentViewStack.selectedChild as KalturaReportView).helpUrl;
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
 			}
+			
+			protected function hideHandler(event:FlexEvent):void
+			{
+				topContet.onHide();
+			}
+			
 		]]>
 	</mx:Script>
 	
