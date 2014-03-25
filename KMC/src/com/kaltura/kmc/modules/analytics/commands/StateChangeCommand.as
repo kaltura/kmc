@@ -89,6 +89,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 				case ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE:
 				case ScreenTypes.BROWSER:
 				case ScreenTypes.OS:
+				case ScreenTypes.LIVE_CONTENT:
 					//if it's not drilldown make the name null
 					_model.drillDownName = null;
 					_model.tableSupportDrillDown = false;

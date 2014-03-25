@@ -161,6 +161,9 @@ package com.kaltura.kmc.modules.analytics.model {
 				case ScreenTypes.BROWSER :
 					res = filterMasks.browsers;  
 					break;
+				case ScreenTypes.LIVE_CONTENT:
+					res = filterMasks.liveContent;  
+					break;
 			}
 			return res;
 		}

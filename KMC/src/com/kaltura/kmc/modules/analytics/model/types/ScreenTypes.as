@@ -142,6 +142,6 @@ package com.kaltura.kmc.modules.analytics.model.types
 		/**
 		 * Live Report 
 		 */
-		public static const LIVE_CONTENT : int = 19;
+		public static const LIVE_CONTENT : int = 23;
 	}
 }

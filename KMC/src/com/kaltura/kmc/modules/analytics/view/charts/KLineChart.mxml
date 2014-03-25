@@ -24,6 +24,7 @@
 			 * */
 			public var dataFormatFunc:Function = defaultDataFormat;
 			
+			[Bindable]
 			/**
 			 * if true, x axis labels show hours as well as dates
 			 * */
@@ -50,39 +51,74 @@
 
 				// fill the 0 points from min to max and not using the build in interpolation
 				// first we create all points with correct x and y=0
-				if (_maxHAxisDate && _minHAxisDate) {
-					var minMaxDays:int = (_maxHAxisDate.time - _minHAxisDate.time) / TimeConsts.DAY;
-					for (var j:int = 0; j <= minMaxDays; j++) {
-						var obj:Object = new Object();
-						obj.x = _minHAxisDate.time + (j * TimeConsts.DAY);
-						if (series.length) {
-							for each (var line:LineSeries in series) {
-								obj[line.yField] = 0;
-							}
-						}
-						else {
-							obj.y = 0;
-						}
-						provider.addItem(obj);
-					}
-				}
-				// if in the value received there is a point matching a point on the graph, 
-				// use its value instead of the initial 0.
+				
 				if (value && value is ArrayCollection) {
-					var arrCol:ArrayCollection = value as ArrayCollection;
-					provider = fixTimeOffsets2(provider, arrCol);
-					for (var i:int = 0; i < arrCol.length; i++) {
-						var secondDate:Date = new Date(arrCol[i].x);
-						for (var k:int = 0; k < provider.length; k++) {
-							var firstDate:Date = new Date(provider[k].x);
-							if (firstDate.date == secondDate.date && firstDate.fullYear == secondDate.fullYear && firstDate.month == secondDate.month) {
-								// need to copy values, so we will keep fields with "0" (no value)
-								ObjectUtil.copyObject(arrCol[i], provider[k]); 
-								break;
+					if (showHours) {
+						if (_maxHAxisDate && _minHAxisDate) {
+							var minMaxHrs:int = (_maxHAxisDate.time - _minHAxisDate.time) / TimeConsts.HOUR;
+							for (var j:int = 0; j <= minMaxHrs; j++) {
+								var obj:Object = new Object();
+								obj.x = _minHAxisDate.time + (j * TimeConsts.HOUR);
+								if (series.length) {
+									for each (var line:LineSeries in series) {
+										obj[line.yField] = 0;
+									}
+								}
+								else {
+									obj.y = 0;
+								}
+								provider.addItem(obj);
+							}
+						}
+						// if in the value received there is a point matching a point on the graph, 
+						// use its value instead of the initial 0.
+						var arrCol:ArrayCollection = value as ArrayCollection;
+						provider = fixTimeOffsets2(provider, arrCol);
+						for (var i:int = 0; i < arrCol.length; i++) {
+							var secondDate:Date = new Date(arrCol[i].x);
+							for (var k:int = 0; k < provider.length; k++) {
+								var firstDate:Date = new Date(provider[k].x);
+								if (firstDate.hours == secondDate.hours && firstDate.date == secondDate.date && firstDate.fullYear == secondDate.fullYear && firstDate.month == secondDate.month) {
+									// need to copy values, so we will keep fields with "0" (no value)
+									ObjectUtil.copyObject(arrCol[i], provider[k]); 
+									break;
+								}
 							}
 						}
 					}
-
+					else {
+						if (_maxHAxisDate && _minHAxisDate) {
+							var minMaxDays:int = (_maxHAxisDate.time - _minHAxisDate.time) / TimeConsts.DAY;
+							for (var j:int = 0; j <= minMaxDays; j++) {
+								var obj:Object = new Object();
+								obj.x = _minHAxisDate.time + (j * TimeConsts.DAY);
+								if (series.length) {
+									for each (var line:LineSeries in series) {
+										obj[line.yField] = 0;
+									}
+								}
+								else {
+									obj.y = 0;
+								}
+								provider.addItem(obj);
+							}
+						}
+						// if in the value received there is a point matching a point on the graph, 
+						// use its value instead of the initial 0.
+						var arrCol:ArrayCollection = value as ArrayCollection;
+						provider = fixTimeOffsets2(provider, arrCol);
+						for (var i:int = 0; i < arrCol.length; i++) {
+							var secondDate:Date = new Date(arrCol[i].x);
+							for (var k:int = 0; k < provider.length; k++) {
+								var firstDate:Date = new Date(provider[k].x);
+								if (firstDate.date == secondDate.date && firstDate.fullYear == secondDate.fullYear && firstDate.month == secondDate.month) {
+									// need to copy values, so we will keep fields with "0" (no value)
+									ObjectUtil.copyObject(arrCol[i], provider[k]); 
+									break;
+								}
+							}
+						}
+					}
 					this.showAllDataTips = false;
 					this.showDataTips = true;
 					super.dataProvider = provider;
@@ -173,7 +209,8 @@
 
 
 			private function onDataTip(data:HitData):String {
-				var dateString:String = new Date(data.item.x).toDateString();
+				var date:Date = new Date(data.item.x);
+				var dateString:String = df.format(date);
 				var tipString:String = dateString + '\n';
 				tipString += dataFormatFunc(data.item[(data.element as LineSeries).yField]);
 				return tipString;
@@ -225,7 +262,7 @@
 				if (previousValue != null && labelValue != null && (labelValue as Date).date == (previousValue as Date).date) {
 					labelValue.time += TimeConsts.HOUR;
 				}
-				var df:DateFormatter = new DateFormatter();
+				
 				//df.formatString = "M/D/YY"; // use the default value from SharedResources
 				if (showHours) {
 					df.formatString = resourceManager.getString('analytics', 'liveXAxisTimeFormat');
@@ -236,6 +273,7 @@
 		]]>
 	</mx:Script>
 
+	<mx:DateFormatter id="df" />
 	<!-- Define chart effects -->
 	<mx:Stroke id="axis" color="0xb1b1b1" weight="2"/>
 
@@ -246,7 +284,7 @@
 	</mx:horizontalAxisRenderers>
 
 	<mx:horizontalAxis>
-		<mx:DateTimeAxis id="horizontalDateTimeAxis" dataUnits="days" labelUnits="{'days'}"
+		<mx:DateTimeAxis id="horizontalDateTimeAxis" dataUnits="{showHours ? 'hours' : 'days'}" labelUnits="{showHours ? 'hours' : 'days'}"
 						 displayLocalTime="true" labelFunction="horizAxisLabelFunction" />
 	</mx:horizontalAxis>
 
