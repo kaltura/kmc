@@ -258,12 +258,19 @@ package com.kaltura.kmc.modules.analytics.model {
 		}
 		
 		/**
-		 * dataprovider for content reports tab sub-navigation
+		 * dataprovider for platform reports tab sub-navigation
 		 */
 		public var platformDtnDp:ArrayCollection = new ArrayCollection([
 			new LocalizedVo('platforms', 'platforms', 'analytics'),
 			new LocalizedVo('opsyss', 'opsyss', 'analytics'),
 			new LocalizedVo('browsers', 'browsers', 'analytics')]);
+
+		
+		/**
+		 * dataprovider for live content reports tab sub-navigation
+		 */
+		public var liveDtnDp:ArrayCollection = new ArrayCollection([
+			new LocalizedVo('liveContent', 'liveContent', 'analytics')]);
 
 
 		//---------------------------------------------------------
