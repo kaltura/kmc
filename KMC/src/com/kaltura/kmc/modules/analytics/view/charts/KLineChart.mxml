@@ -225,7 +225,13 @@
 
 
 			public function set maxHAxisDate(date:Date):void {
-				var dummy:Date = new Date(date.fullYear, date.month, date.date);
+				var dummy:Date;
+				if (showHours) {
+					dummy = new Date(date.fullYear, date.month, date.date, date.hours, date.minutes);
+				}
+				else {
+					dummy = new Date(date.fullYear, date.month, date.date);
+				}
 				horizontalDateTimeAxis.maximum = dummy;
 				_maxHAxisDate = dummy;
 			}
