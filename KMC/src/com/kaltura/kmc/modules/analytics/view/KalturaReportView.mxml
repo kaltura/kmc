@@ -16,6 +16,7 @@
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 			import com.kaltura.kmc.modules.analytics.model.Context;
 			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
+			import com.kaltura.kmc.modules.analytics.utils.TimeConsts;
 			import com.kaltura.kmc.modules.analytics.view.window.PreviewEntryWin;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 			import com.kaltura.types.KalturaReportInterval;
@@ -350,7 +351,7 @@
 			}
 
 			private function isOneDay(fromDate:Date, toDate:Date):Boolean {
-				if (fromDate.day != toDate.day) {
+				if (fromDate.date != toDate.date) {
 					return false;
 				}
 				if (fromDate.month != toDate.month) {
@@ -465,14 +466,13 @@
 					lineLegend.visible = false;
 					if (showLineChart) {
 						// if linechart requested and only one day - we show barchart instead
-						if (_isMonths || _isOneDay) {
+						if ((_isMonths || _isOneDay) && reportType != KalturaReportType.LIVE) {
+							// for live report we always want line chart, even if one day
 							if (rdtc.type == KalturaReportType.PLATFORMS) {
 								dateBarChart.yFields = rdtc.selectedChartHeaders;
-								//barLegend.visible = true;
 							}
 							else {
 								dateBarChart.yFields = ["y"];
-								//barLegend.visible = false;
 							}
 							dateBarChart.dataProvider = rdtc.chartDp;
 						}
@@ -705,9 +705,9 @@
 						 includeInLayout="{showColumnChart}" />
 
 	<mx:Canvas width="100%">
-		<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}"
-						   includeInLayout="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}"
-						   visible="{showLineChart &amp;&amp; ! (_isOneDay || _isMonths)}" showHours="{showGraphHours}"
+		<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}" showHours="{showGraphHours}"
+						   includeInLayout="{showLineChart &amp;&amp; (!(_isOneDay || _isMonths) || reportType == KalturaReportType.LIVE)}"
+						   visible="{showLineChart &amp;&amp; (!(_isOneDay || _isMonths) || reportType == KalturaReportType.LIVE)}" 
 						   minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>
 		<mx:Legend id="lineLegend" dataProvider="{lineChart}" right="{lineLegend.width - 10}" 
 				   styleName="analyticsGraphLegend"/>
@@ -716,8 +716,8 @@
 	<mx:Canvas width="100%">
 		<charts:KDateColumnChart id="dateBarChart" width="100%"
 								 oneDayDate="{_isOneDay &amp;&amp; ! _isMonths ? filterVo.fromDate : null}"
-								 includeInLayout="{showLineChart &amp;&amp; (_isOneDay || _isMonths)}"
-								 visible="{showLineChart &amp;&amp; (_isOneDay || _isMonths)}"/>
+								 includeInLayout="{showLineChart &amp;&amp; (_isOneDay || _isMonths) &amp;&amp; reportType != KalturaReportType.LIVE}"
+								 visible="{showLineChart &amp;&amp; (_isOneDay || _isMonths) &amp;&amp; reportType != KalturaReportType.LIVE}"/>
 		<mx:Legend id="barLegend" dataProvider="{dateBarChart}" right="{barLegend.width - 10}" 
 				   visible="{dateBarChart.visible}" styleName="analyticsGraphLegend" />
 	</mx:Canvas>
