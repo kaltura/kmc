@@ -209,7 +209,7 @@ live streaming control tab of EntryDetailsWin
 						<capture>
 							<video>
 								<device></device>
-								<crossbar_input></crossbar_input>
+								<crossbar_input>0</crossbar_input>
 								<frame_rate></frame_rate>
 								<size>
 									<width></width>
@@ -218,10 +218,10 @@ live streaming control tab of EntryDetailsWin
 							</video>
 							<audio>
 								<device></device>
-								<crossbar_input></crossbar_input>
+								<crossbar_input>0</crossbar_input>
 								<sample_rate></sample_rate>
-								<channels></channels>
-								<input_volume></input_volume>
+								<channels>2</channels>
+								<input_volume>75</input_volume>
 							</audio>
 						</capture>
 						<encode>
@@ -297,28 +297,42 @@ live streaming control tab of EntryDetailsWin
 						<preview>
 							<video>
 								<input>
-									<zoom></zoom>
+									<zoom>100%</zoom>
 								</input>
 								<output>
-									<zoom></zoom>
+									<zoom>100%</zoom>
 								</output>
 							</video>
 							<audio></audio>
 						</preview>
 						<log>
-							<level></level>
+							<level>100</level>
 							<directory></directory>
 						</log>
 					</flashmedialiveencoder_profile>
 					;
+				
+				// capture devices
+				var captureXML:XML = xml.capture[0];
+				var cam:Camera = Camera.getCamera();
+				if (cam) {
+					captureXML.video.device.appendChild(cam.name);
+					captureXML.video.frame_rate.appendChild(cam.fps);
+					captureXML.video.size.width.appendChild(cam.width);
+					captureXML.video.size.height.appendChild(cam.height);
+				}
+				if (mic) {
+					var mic:Microphone = Microphone.getMicrophone();
+					captureXML.audio.device.appendChild(mic.name);
+				}
 
-				//assign outputs 
+				// assign outputs 
 				var outputXML:XML = xml.output[0];
 				(outputXML.rtmp.url[0] as XML).appendChild(_selectedEntry.primaryBroadcastingUrl);
 				(outputXML.rtmp.backup_url[0] as XML).appendChild(_selectedEntry.secondaryBroadcastingUrl);
 				(outputXML.rtmp.stream[0] as XML).appendChild(_selectedEntry.streamName);
 
-				//assign bitrates
+				// assign bitrates
 				var bitratesString:String = "";
 				var dimensionsStrings:String = "";
 				var bitrates:Array;
@@ -339,8 +353,16 @@ live streaming control tab of EntryDetailsWin
 				(encode.video.datarate[0] as XML).appendChild(bitratesString);
 				(encode.video.outputsize[0] as XML).appendChild(dimensionsStrings);
 				
+				encode.audio.format.appendChild("MP3");
+				encode.audio.datarate.appendChild("128");
+				
+				// additional
 				if (_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM) {
 					encode.video.format.appendChild("H.264");
+					encode.video.advanced.profile.appendChild("Baseline");
+					encode.video.advanced.level.appendChild("3.1");
+					encode.video.advanced.keyframe_frequency.appendChild("5 seconds");
+						
 					xml.capture.audio.sample_rate.appendChild("44100");
 				}
 
