@@ -192,7 +192,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 							obj.x = ResourceManager.getInstance().getString('analytics', xYArr[0]);
 							obj.y = yVal;
 						}
-						if (_screenType == ScreenTypes.LIVE_CONTENT) {
+						else if (_screenType == ScreenTypes.LIVE_CONTENT) {
 							// 10 digit string - probably a date-time like 1979011510 (YYYYMMDDHH)
 							obj = generateFullDateVo(String(xYArr[0]), yVal, krp.id);
 						}
