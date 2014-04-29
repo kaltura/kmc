@@ -6,6 +6,7 @@ package com.kaltura.edw.components.et
 	import com.kaltura.utils.KTimeUtil;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaClipAttributes;
+	import com.kaltura.vo.KalturaLiveEntry;
 	import com.kaltura.vo.KalturaLiveStreamEntry;
 	import com.kaltura.vo.KalturaOperationAttributes;
 	
@@ -67,6 +68,9 @@ package com.kaltura.edw.components.et
 		 * format the timer
 		 */
 		public static function getTimeFormat(item:Object, column:DataGridColumn):String {
+			if (item is KalturaLiveEntry) {
+				return ResourceManager.getInstance().getString('cms', 'n_a');
+			}
 			return KTimeUtil.formatTime2(item.duration, true, true);
 		}
 		
