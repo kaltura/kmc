@@ -32,6 +32,8 @@ package com.kaltura.kmc.modules.content.commands.cat {
 		
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
+			// reset selected categories
+			_model.categoriesModel.selectedCategories = [];
 			
 			if (event.data) {
 				_model.categoriesModel.filter = event.data[0] as KalturaCategoryFilter;
