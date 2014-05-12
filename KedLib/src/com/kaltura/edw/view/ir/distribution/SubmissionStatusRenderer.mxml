@@ -19,6 +19,7 @@
 			import com.kaltura.types.KalturaDistributionValidationErrorType;
 			import com.kaltura.types.KalturaEntryDistributionFlag;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
+			import com.kaltura.vo.KalturaDistributionValidationErrorConditionNotMet;
 			import com.kaltura.vo.KalturaDistributionValidationErrorInvalidData;
 			import com.kaltura.vo.KalturaDistributionValidationErrorInvalidMetadata;
 			import com.kaltura.vo.KalturaDistributionValidationErrorMissingFlavor;
@@ -55,13 +56,27 @@
 			[Bindable]
 			private var _metadataErrorVisible:Boolean;
 			[Bindable]
-			private var _statusVisible:Boolean;
+			private var _conditionErrorVisible:Boolean;
+			
+			
+			
 			[Bindable]
+			/**
+			 * show status label
+			 * */
+			private var _statusVisible:Boolean;
+			
+			[Bindable]
+			/**
+			 * is there a "real" distribution error
+			 * */
 			private var _distributionError:Boolean;
+			
 			private var _thumbErrorsArray:Array;
 			private var _flavorErrorsArray:Array;
 			private var _metadataMissingArray:Array;
 			private var _metadataErrorsArray:Array;
+			private var _conditionErrorsArray:Array;
 
 			private var _entryDis:KalturaEntryDistribution;
 
@@ -110,7 +125,7 @@
 				if (status) {
 					statusLabel.text = resourceManager.getString('drilldown', status);
 					if (status2) {
-						statusLabel.text = statusLabel.text + ", " + resourceManager.getString('drilldown', status2);
+						statusLabel.text += ", " + resourceManager.getString('drilldown', status2);
 					}
 				}
 
@@ -168,6 +183,7 @@
 				_flavorErrorsArray = new Array();
 				_metadataMissingArray = new Array();
 				_metadataErrorsArray = new Array();
+				_conditionErrorsArray = new Array();
 				_metadataMissingErrorVisible = false;
 				_flavorMissingErrorVisible = false;
 				_thumbMissingErrorVisible = false;
@@ -189,6 +205,10 @@
 					else if (errors[i] is KalturaDistributionValidationErrorMissingThumbnail) {
 						_thumbErrorsArray.push(errors[i]);
 						_thumbMissingErrorVisible = true;
+					}
+					else if (errors[i] is KalturaDistributionValidationErrorConditionNotMet) {
+						_conditionErrorsArray.push(errors[i]);
+						_conditionErrorVisible = true;
 					}
 				}
 
@@ -292,20 +312,30 @@
 				for each (var err:KalturaDistributionValidationErrorMissingMetadata in _metadataMissingArray) {
 					errorDetails.addErrorDetail(err.fieldName);
 				}
-
 				PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(errorDetails);
 			}
 
 
 			private function onMetadataErrorLink():void {
-				
 				var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.METADATA_ERROR, resourceManager.getString('drilldown', 'metadataValidationFailed'));
 				for (var i:int = 0; i < _metadataErrorsArray.length; i++) {
 					if (_metadataErrorsArray[i] is KalturaDistributionValidationErrorInvalidMetadata)
 						errorDetails.showCustomDataBtn = true;
 					errorDetails.addErrorDetail(returnValidationErroString(_metadataErrorsArray[i] as KalturaDistributionValidationErrorInvalidData), true);
 				}
+
+				PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(errorDetails);
+			}
+
+			
+			private function onConditionErrorLink():void {
+				var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.CONDITION_NOT_MET, resourceManager.getString('drilldown', 'conditionError'));
+				for (var i:int = 0; i < _conditionErrorsArray.length; i++) {
+					errorDetails.addErrorDetail((_conditionErrorsArray[i] as KalturaDistributionValidationErrorConditionNotMet).conditionName, true);
+				}
+				errorDetails.showCustomDataBtn = true;
 
 				PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(errorDetails);
@@ -338,7 +368,6 @@
 		]]>
 	</mx:Script>
 
-	<!--<containers:FlowBox id="tile" width="100%" height="100%"  borderColor="red" borderStyle="solid">-->
 		<mx:Label id="statusLabel" visible="{_statusVisible}" includeInLayout="{_statusVisible}" />
 		
 		<mx:LinkButton id="distributionErrorLink" label="{resourceManager.getString('drilldown','distributionError')}"
@@ -361,5 +390,8 @@
 					   visible="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}" 
 					   includeInLayout="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}"
 					   styleName="distributionError" click="{onMetadataErrorLink()}"/>
-	<!--</containers:FlowBox>-->
+		<mx:LinkButton id="conditionLink" label="{resourceManager.getString('drilldown','conditionError')}"
+					   visible="{(_errorsVisible &amp;&amp; _conditionErrorVisible)}" 
+					   includeInLayout="{(_errorsVisible &amp;&amp; _conditionErrorVisible)}"
+					   styleName="distributionWarning" click="{onConditionErrorLink()}"/>
 </containers:FlowBox>

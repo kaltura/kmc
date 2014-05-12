@@ -18,21 +18,44 @@
 			import mx.controls.LinkButton;
 			import mx.core.Container;
 			import mx.managers.PopUpManager;
+			
 			public static const MISSING_THUMB_ERROR:String = "missingThumbError";
 			public static const MISSING_FLAVOR_ERROR:String = "missingFlavorError";
 			public static const METADATA_ERROR:String = "metadataError";
 			public static const MISSING_METADATA:String = "missingMetadataError";
+			public static const CONDITION_NOT_MET:String = "conditionNotMet";
 			public static const GENERAL_ERROR:String = "generalError";
 			
+			/**
+			 * the type of error shown in current window
+			 * */
 			private var _type:String;
+			
 			[Bindable]
+			/**
+			 * show the "go to tab" button
+			 * */
 			private var _visibleBtn:Boolean = false;
+			
 			[Bindable]
+			/**
+			 * label for the "go to tab" button
+			 * */
 			private var _btnText:String;
+			
 			[Bindable]
+			/**
+			 * error description
+			 * */
 			private var _infoLabel:String;
+			
 			[Bindable]
+			/**
+			 * how to fix error
+			 * */
 			private var _extraInfoLabel:String;
+			
+			
 			private var _isFirstParam:Boolean = true;
 			[Bindable]
 			public var enableLinks:Boolean = false;
@@ -49,32 +72,36 @@
 			}
 			
 			public function setType(type:String):void {
-				var st:String;
 				_type = type;
+				_btnText = null;
 				switch (_type) {
 					case MISSING_THUMB_ERROR:
 						_infoLabel = resourceManager.getString('drilldown','missingDimensions');
 						_extraInfoLabel = resourceManager.getString('drilldown','gotoThumbnailTabMsg');
-						st = resourceManager.getString('drilldown','gotoThumbnailTab');
+						_btnText = resourceManager.getString('drilldown','gotoThumbnailTab');
 						break;
 					case MISSING_FLAVOR_ERROR:
 						_infoLabel = resourceManager.getString('drilldown','missingFlavors');
 						_extraInfoLabel = resourceManager.getString('drilldown','gotoFlavorTabMsg');
-						st = resourceManager.getString('drilldown','gotoFlavorTab');
+						_btnText = resourceManager.getString('drilldown','gotoFlavorTab');
 						break;
 					case MISSING_METADATA:
 						_infoLabel = resourceManager.getString('drilldown','missingMetadataMsg');
 						_extraInfoLabel = resourceManager.getString('drilldown','gotoMetadataTabMsg');
-						st = resourceManager.getString('drilldown','gotoMetadataTab');
+						_btnText = resourceManager.getString('drilldown','gotoMetadataTab');
 						break;
 					case METADATA_ERROR:
 						_infoLabel = resourceManager.getString('drilldown','invalidMetadata');
 						_extraInfoLabel = resourceManager.getString('drilldown','gotoMetadataTabMsgInvalid');
-						st = resourceManager.getString('drilldown','gotoMetadataTab');
+						_btnText = resourceManager.getString('drilldown','gotoMetadataTab');
+						break;
+					case CONDITION_NOT_MET:
+						_infoLabel = resourceManager.getString('drilldown','invalidAutoDist');
+						_extraInfoLabel = resourceManager.getString('drilldown','invalidAutoDistMsg');
+						_btnText = resourceManager.getString('drilldown','gotoMetadataTab');
 						break;
 				}
 				
-				_btnText = st;
 				if (_btnText) {
 					_visibleBtn = true;
 				}
@@ -97,6 +124,7 @@
 						break;
 					case MISSING_METADATA:
 					case METADATA_ERROR:
+					case CONDITION_NOT_MET:
 						setSelectedChild(PanelConsts.METADATA_PANEL)
 						break;
 				}
@@ -133,7 +161,7 @@
 			
 		]]>
 	</mx:Script>
-	<mx:Text  htmlText="{_infoLabel}" width="100%"/>
+	<mx:Text htmlText="{_infoLabel}" width="100%"/>
 	<mx:Text text="{_extraInfoLabel}" width="100%" visible="{_visibleBtn}" includeInLayout="{_visibleBtn}"/>
 	
 	<mx:ControlBar>
