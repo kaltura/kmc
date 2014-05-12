@@ -254,6 +254,10 @@ package com.kaltura.vo
 		**/
 		public var partnerParentId : int = int.MIN_VALUE;
 
+		/**
+		**/
+		public var referenceId : String = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
