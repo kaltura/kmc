@@ -32,5 +32,6 @@ package com.kaltura.types
 		public static const NOT_REQUIRED : int = 0;
 		public static const REQUIRED_BY_PROVIDER : int = 1;
 		public static const REQUIRED_BY_PARTNER : int = 2;
+		public static const REQUIRED_FOR_AUTOMATIC_DISTRIBUTION : int = 3;
 	}
 }
