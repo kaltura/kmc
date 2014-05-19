@@ -256,6 +256,10 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var crmId : String = null;
+
+		/**
+		**/
 		public var referenceId : String = null;
 
 		/** 
@@ -292,6 +296,7 @@ package com.kaltura.vo
 			arr.push('lastName');
 			arr.push('country');
 			arr.push('state');
+			arr.push('referenceId');
 			return arr;
 		}
 
