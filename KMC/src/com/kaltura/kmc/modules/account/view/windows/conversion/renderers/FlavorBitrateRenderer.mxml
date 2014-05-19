@@ -4,8 +4,23 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.vo.FlavorVO;
+			import com.kaltura.vo.KalturaFlavorParams;
+			import com.kaltura.vo.KalturaLiveParams;
+			
+			[Bindable]
+			private var txt:String = '';
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				var flv:KalturaFlavorParams = (value as FlavorVO).kFlavor;  
+				if (flv is KalturaLiveParams && flv.tags && flv.tags.indexOf('ingest') != -1) {
+					txt = resourceManager.getString('account', 'n_a');
+				}
+				else {
+					txt = ((data as FlavorVO).kFlavor.audioBitrate + (data as FlavorVO).kFlavor.videoBitrate).toString();
+				}
+			}
 		]]>
 	</mx:Script>
-	<mx:Label text="{(data as FlavorVO).kFlavor.audioBitrate + (data as FlavorVO).kFlavor.videoBitrate}"
-			  toolTip="{(data as FlavorVO).kFlavor.audioBitrate + (data as FlavorVO).kFlavor.videoBitrate}"/>
+	<mx:Label text="{txt}" toolTip="{txt}"/>
 </mx:HBox>

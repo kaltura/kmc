@@ -4,26 +4,28 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.vo.FlavorVO;
+			import com.kaltura.vo.KalturaFlavorParams;
+			import com.kaltura.vo.KalturaLiveParams;
 
+			
+			[Bindable]
+			private var txt:String = '';
 
-			private function setDimLabel():void {
-				var dimStr:String = '';
-
-				var w:int = (data as FlavorVO).kFlavor.width;
-				var h:int = (data as FlavorVO).kFlavor.height;
-
-				var sWi:String = (w == 0) ? resourceManager.getString('account', 'autoDim') : w + '';
-				var sHi:String = (h == 0) ? resourceManager.getString('account', 'autoDim') : h + '';
-
-				dimLabel.text = sWi + ' x ' + sHi;
+			override public function set data(value:Object):void {
+				super.data = value;
+				
+				var flv:KalturaFlavorParams = (value as FlavorVO).kFlavor;  
+				if (flv is KalturaLiveParams && flv.tags && flv.tags.indexOf('ingest') != -1) {
+					txt = resourceManager.getString('account', 'n_a');
+				}
+				else {
+					var sWi:String = (flv.width == 0) ? resourceManager.getString('account', 'autoDim') : flv.width + '';
+					var sHi:String = (flv.height == 0) ? resourceManager.getString('account', 'autoDim') : flv.height + '';
+					txt = sWi + ' x ' + sHi;
+				}				
 			}
 
-
-			override public function validateNow():void {
-				super.validateNow();
-				setDimLabel();
-			}
 		]]>
 	</mx:Script>
-	<mx:Label id='dimLabel' toolTip="{dimLabel.text}" creationComplete="setDimLabel()"/>
+	<mx:Label text="{txt}" toolTip="{txt}" />
 </mx:HBox>
