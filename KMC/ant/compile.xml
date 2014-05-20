@@ -2,9 +2,9 @@
 
 <project name="KMC Compiler" basedir="./.." default="build">
 	
-	<!-- path to Flex SDK -->
-    <property name="FLEX_HOME" value="C:/Program Files (x86)/Adobe/Adobe Flash Builder 4.5/sdks/3.6.0"/>
 	
+	<!-- Load the platform specific properties file. -->
+        <property file="./${os.name}.properties" />
 	<!-- directory for the compiled swf -->
     <property name="DEPLOY_DIR" value="${basedir}/bin-release"/>
 	
@@ -40,46 +40,49 @@
 	<target name="create_keys_locale" description="set 'keys' locale files" >
 		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" >
 			<property name="basedir" value="${basedir}"/>
-		</ant> 
-		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" > 
+		</ant>
+		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" >
 			<property name="basedir" value="${basedir}/../KedLib"/>
-		</ant> 
-		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" > 
+		</ant>
+		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" >
 			<property name="basedir" value="${basedir}/../KalturaLib"/>
-		</ant> 
-		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" > 
+		</ant>
+		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" >
 			<property name="basedir" value="${basedir}/../AutoComplete"/>
-		</ant> 
-		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" > 
+		</ant>
+		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" >
 			<property name="basedir" value="${basedir}/../vendors/Cairngorm"/>
-		</ant> 
+		</ant>
 	</target>
 		
 	<target name="compile_locales" description="compile locale files" depends="create_keys_locale">
- 		<ant antfile="ant/compileLocale.xml" target="build"> 
- 			<property name="LANGUAGE" value="en_US"/> 
-		</ant>  
- 		<ant antfile="ant/compileLocale.xml" target="build"> 
-			<property name="LANGUAGE" value="ja_JP"/> 
- 		</ant> 
- 		<ant antfile="ant/compileLocale.xml" target="build"> 
- 			<property name="LANGUAGE" value="es_ES"/> 
- 		</ant>  
- 		<ant antfile="ant/compileLocale.xml" target="build"> 
- 			<property name="LANGUAGE" value="fr_FR"/> 
- 		</ant>  
+ 		<ant antfile="ant/compileLocale.xml" target="build">
+ 			<property name="LANGUAGE" value="en_US"/>
+		</ant>
+<!-- 		<ant antfile="ant/compileLocale.xml" target="build">
+ 			<property name="LANGUAGE" value="ko_KR"/>
+		</ant>
+ 		<ant antfile="ant/compileLocale.xml" target="build">
+ 			<property name="LANGUAGE" value="es_ES"/>
+ 		</ant>
+ 		<ant antfile="ant/compileLocale.xml" target="build">
+			<property name="LANGUAGE" value="ja_JP"/>
+ 		</ant>
+ 		<ant antfile="ant/compileLocale.xml" target="build">
+ 			<property name="LANGUAGE" value="fr_FR"/>
+ 		</ant>
 		<ant antfile="ant/compileLocale.xml" target="build">
 			<property name="LANGUAGE" value="de_DE"/>
-		</ant> 
+		</ant>-->
 		<ant antfile="ant/compileLocale.xml" target="build">
 			<property name="LANGUAGE" value="keys"/>
-		</ant> 
+		</ant>
 	</target>
 	
 	<target name="compile" description="compile release build of KMC and drilldown panels">
-		<fb.exportReleaseBuild project="KMC" /> 
+		<fb.exportReleaseBuild project="KMC" />
 		<echo>KMC release build created</echo>
-		<fb.exportReleaseBuild project="KedPanels" destdir="${DEPLOY_DIR}" /> 
+		<fb.exportReleaseBuild project="KedPanels" destdir="${DEPLOY_DIR}" />
 		<echo>Ked Panels release build created</echo>
 	</target>
 			
