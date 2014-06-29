@@ -240,7 +240,7 @@ package com.kaltura.kmc.modules.dashboard {
 				dimMap.put(krp.id, graphPoints);
 			}
 
-			// set the first AC as the defualt for the graph
+			// set the first AC as the default for the graph
 			selectedDim = dimMap.getValue('count_plays');
 		}
 
