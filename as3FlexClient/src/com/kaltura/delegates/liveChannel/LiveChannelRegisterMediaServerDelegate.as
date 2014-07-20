@@ -25,57 +25,19 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.delegates.liveChannel
 {
-	import com.kaltura.vo.KalturaJobData;
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	[Bindable]
-	public dynamic class KalturaWidevineRepositorySyncJobData extends KalturaJobData
+	public class LiveChannelRegisterMediaServerDelegate extends WebDelegateBase
 	{
-		/**
-		* @see com.kaltura.types.KalturaWidevineRepositorySyncMode
-		**/
-		public var syncMode : int = int.MIN_VALUE;
-
-		/**
-		**/
-		public var wvAssetIds : String = null;
-
-		/**
-		**/
-		public var modifiedAttributes : String = null;
-
-		/**
-		**/
-		public var monitorSyncCompletion : int = int.MIN_VALUE;
-
-		override public function getUpdateableParamKeys():Array
+		public function LiveChannelRegisterMediaServerDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('syncMode');
-			arr.push('wvAssetIds');
-			arr.push('modifiedAttributes');
-			arr.push('monitorSyncCompletion');
-			return arr;
+			super(call, config);
 		}
 
-		override public function getInsertableParamKeys():Array
-		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
-		}
-
-		override public function getElementType(arrayName:String):String
-		{
-			var result:String = '';
-			switch (arrayName) {
-				default:
-					result = super.getElementType(arrayName);
-					break;
-			}
-			return result;
-		}
 	}
 }

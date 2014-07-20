@@ -25,19 +25,43 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.delegates.virusScanProfile
+package com.kaltura.vo
 {
-	import com.kaltura.config.KalturaConfig;
-	import com.kaltura.net.KalturaCall;
-	import com.kaltura.delegates.WebDelegateBase;
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.vo.KalturaCondition;
 
-	public class VirusScanProfileUpdateDelegate extends WebDelegateBase
+	[Bindable]
+	public dynamic class KalturaUserRoleCondition extends KalturaCondition
 	{
-		public function VirusScanProfileUpdateDelegate(call:KalturaCall, config:KalturaConfig)
+		/**
+		* Comma separated list of role ids
+		* 
+		**/
+		public var roleIds : String = null;
+
+		override public function getUpdateableParamKeys():Array
 		{
-			super(call, config);
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			arr.push('roleIds');
+			return arr;
 		}
 
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
+		}
 	}
 }

@@ -27,25 +27,30 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDropFolderContentProcessorJobData;
+	import com.kaltura.vo.KalturaCuePoint;
 
 	[Bindable]
-	public dynamic class KalturaWebexDropFolderContentProcessorJobData extends KalturaDropFolderContentProcessorJobData
+	public dynamic class KalturaThumbCuePoint extends KalturaCuePoint
 	{
+		/**
+		**/
+		public var assetId : String = null;
+
 		/**
 		**/
 		public var description : String = null;
 
 		/**
 		**/
-		public var webexHostId : String = null;
+		public var title : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('assetId');
 			arr.push('description');
-			arr.push('webexHostId');
+			arr.push('title');
 			return arr;
 		}
 

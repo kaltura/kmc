@@ -60,6 +60,14 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var primaryRtspBroadcastingUrl : String = null;
+
+		/**
+		**/
+		public var secondaryRtspBroadcastingUrl : String = null;
+
+		/**
+		**/
 		public var streamName : String = null;
 
 		/**
@@ -111,6 +119,8 @@ package com.kaltura.vo
 			arr.push('bitrates');
 			arr.push('primaryBroadcastingUrl');
 			arr.push('secondaryBroadcastingUrl');
+			arr.push('primaryRtspBroadcastingUrl');
+			arr.push('secondaryRtspBroadcastingUrl');
 			arr.push('streamName');
 			arr.push('streamUrl');
 			arr.push('hlsStreamUrl');

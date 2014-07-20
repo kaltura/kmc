@@ -25,42 +25,19 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.varConsole
+package com.kaltura.delegates.liveStream
 {
-	import com.kaltura.delegates.varConsole.VarConsoleUpdateStatusDelegate;
+	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	/**
-	* Function to change a sub-publisher's status
-	* 
-	**/
-	public class VarConsoleUpdateStatus extends KalturaCall
+	public class LiveStreamValidateRegisteredMediaServersDelegate extends WebDelegateBase
 	{
-		public var filterFields : String;
-		
-		/**
-		* @param id int
-		* @param status int
-		**/
-		public function VarConsoleUpdateStatus( id : int,status : int )
+		public function LiveStreamValidateRegisteredMediaServersDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			service= 'varconsole_varconsole';
-			action= 'updateStatus';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			keyArr.push('id');
-			valueArr.push(id);
-			keyArr.push('status');
-			valueArr.push(status);
-			applySchema(keyArr, valueArr);
+			super(call, config);
 		}
 
-		override public function execute() : void
-		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new VarConsoleUpdateStatusDelegate( this , config );
-		}
 	}
 }

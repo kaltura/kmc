@@ -25,39 +25,19 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.eventNotificationTemplate
+package com.kaltura.delegates.liveChannel
 {
-	import com.kaltura.delegates.eventNotificationTemplate.EventNotificationTemplateGetDelegate;
+	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	/**
-	* Retrieve an event notification template object by id
-	* 
-	**/
-	public class EventNotificationTemplateGet extends KalturaCall
+	public class LiveChannelAppendRecordingDelegate extends WebDelegateBase
 	{
-		public var filterFields : String;
-		
-		/**
-		* @param id int
-		**/
-		public function EventNotificationTemplateGet( id : int )
+		public function LiveChannelAppendRecordingDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			service= 'eventnotification_eventnotificationtemplate';
-			action= 'get';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			keyArr.push('id');
-			valueArr.push(id);
-			applySchema(keyArr, valueArr);
+			super(call, config);
 		}
 
-		override public function execute() : void
-		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new EventNotificationTemplateGetDelegate( this , config );
-		}
 	}
 }

@@ -25,39 +25,11 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.eventNotificationTemplate
+package com.kaltura.types
 {
-	import com.kaltura.delegates.eventNotificationTemplate.EventNotificationTemplateDeleteDelegate;
-	import com.kaltura.net.KalturaCall;
-
-	/**
-	* Delete an event notification template object
-	* 
-	**/
-	public class EventNotificationTemplateDelete extends KalturaCall
+	public class KalturaCategoryEntryAdvancedOrderBy
 	{
-		public var filterFields : String;
-		
-		/**
-		* @param id int
-		**/
-		public function EventNotificationTemplateDelete( id : int )
-		{
-			service= 'eventnotification_eventnotificationtemplate';
-			action= 'delete';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			keyArr.push('id');
-			valueArr.push(id);
-			applySchema(keyArr, valueArr);
-		}
-
-		override public function execute() : void
-		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new EventNotificationTemplateDeleteDelegate( this , config );
-		}
+		public static const CREATED_AT_ASC : String = '+createdAt';
+		public static const CREATED_AT_DESC : String = '-createdAt';
 	}
 }

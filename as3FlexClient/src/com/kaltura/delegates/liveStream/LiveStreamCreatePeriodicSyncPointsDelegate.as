@@ -25,41 +25,19 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.eventNotificationTemplate
+package com.kaltura.delegates.liveStream
 {
-		import com.kaltura.vo.KalturaEventNotificationTemplate;
-	import com.kaltura.delegates.eventNotificationTemplate.EventNotificationTemplateAddDelegate;
+	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	/**
-	* Allows you to add a new event notification template object
-	* 
-	**/
-	public class EventNotificationTemplateAdd extends KalturaCall
+	public class LiveStreamCreatePeriodicSyncPointsDelegate extends WebDelegateBase
 	{
-		public var filterFields : String;
-		
-		/**
-		* @param eventNotificationTemplate KalturaEventNotificationTemplate
-		**/
-		public function EventNotificationTemplateAdd( eventNotificationTemplate : KalturaEventNotificationTemplate )
+		public function LiveStreamCreatePeriodicSyncPointsDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			service= 'eventnotification_eventnotificationtemplate';
-			action= 'add';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-				keyValArr = kalturaObject2Arrays(eventNotificationTemplate, 'eventNotificationTemplate');
-				keyArr = keyArr.concat(keyValArr[0]);
-				valueArr = valueArr.concat(keyValArr[1]);
-			applySchema(keyArr, valueArr);
+			super(call, config);
 		}
 
-		override public function execute() : void
-		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new EventNotificationTemplateAddDelegate( this , config );
-		}
 	}
 }

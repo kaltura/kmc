@@ -25,23 +25,18 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.delegates.virusScanProfile
+package com.kaltura.delegates.liveStream
 {
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
 	import flash.utils.getDefinitionByName;
 
-	public class VirusScanProfileScanDelegate extends WebDelegateBase
+	public class LiveStreamAddLiveStreamPushPublishConfigurationDelegate extends WebDelegateBase
 	{
-		public function VirusScanProfileScanDelegate(call:KalturaCall, config:KalturaConfig)
+		public function LiveStreamAddLiveStreamPushPublishConfigurationDelegate(call:KalturaCall, config:KalturaConfig)
 		{
 			super(call, config);
-		}
-
-		override public function parse(result:XML) : *
-		{
-			return result.result.toString();
 		}
 
 	}

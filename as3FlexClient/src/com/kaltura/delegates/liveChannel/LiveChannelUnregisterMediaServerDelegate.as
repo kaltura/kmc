@@ -25,42 +25,19 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.eventNotificationTemplate
+package com.kaltura.delegates.liveChannel
 {
-	import com.kaltura.delegates.eventNotificationTemplate.EventNotificationTemplateUpdateStatusDelegate;
+	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	/**
-	* Update event notification template status by id
-	* 
-	**/
-	public class EventNotificationTemplateUpdateStatus extends KalturaCall
+	public class LiveChannelUnregisterMediaServerDelegate extends WebDelegateBase
 	{
-		public var filterFields : String;
-		
-		/**
-		* @param id int
-		* @param status int
-		**/
-		public function EventNotificationTemplateUpdateStatus( id : int,status : int )
+		public function LiveChannelUnregisterMediaServerDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			service= 'eventnotification_eventnotificationtemplate';
-			action= 'updateStatus';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			keyArr.push('id');
-			valueArr.push(id);
-			keyArr.push('status');
-			valueArr.push(status);
-			applySchema(keyArr, valueArr);
+			super(call, config);
 		}
 
-		override public function execute() : void
-		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new EventNotificationTemplateUpdateStatusDelegate( this , config );
-		}
 	}
 }

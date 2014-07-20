@@ -25,16 +25,16 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.delegates.varConsole
+package com.kaltura.delegates.liveStream
 {
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
 	import flash.utils.getDefinitionByName;
 
-	public class VarConsoleGetPartnerUsageDelegate extends WebDelegateBase
+	public class LiveStreamAppendRecordingDelegate extends WebDelegateBase
 	{
-		public function VarConsoleGetPartnerUsageDelegate(call:KalturaCall, config:KalturaConfig)
+		public function LiveStreamAppendRecordingDelegate(call:KalturaCall, config:KalturaConfig)
 		{
 			super(call, config);
 		}

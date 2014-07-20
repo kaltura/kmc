@@ -25,50 +25,19 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.virusScanProfile
+package com.kaltura.delegates.liveChannel
 {
-		import com.kaltura.vo.KalturaVirusScanProfileFilter;
-		import com.kaltura.vo.KalturaFilterPager;
-	import com.kaltura.delegates.virusScanProfile.VirusScanProfileListDelegate;
+	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	/**
-	* List virus scan profile objects by filter and pager
-	* 
-	**/
-	public class VirusScanProfileList extends KalturaCall
+	public class LiveChannelValidateRegisteredMediaServersDelegate extends WebDelegateBase
 	{
-		public var filterFields : String;
-		
-		/**
-		* @param filter KalturaVirusScanProfileFilter
-		* @param pager KalturaFilterPager
-		**/
-		public function VirusScanProfileList( filter : KalturaVirusScanProfileFilter=null,pager : KalturaFilterPager=null )
+		public function LiveChannelValidateRegisteredMediaServersDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			service= 'virusscan_virusscanprofile';
-			action= 'list';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			if (filter) { 
-				keyValArr = kalturaObject2Arrays(filter, 'filter');
-				keyArr = keyArr.concat(keyValArr[0]);
-				valueArr = valueArr.concat(keyValArr[1]);
-			} 
-			if (pager) { 
-				keyValArr = kalturaObject2Arrays(pager, 'pager');
-				keyArr = keyArr.concat(keyValArr[0]);
-				valueArr = valueArr.concat(keyValArr[1]);
-			} 
-			applySchema(keyArr, valueArr);
+			super(call, config);
 		}
 
-		override public function execute() : void
-		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new VirusScanProfileListDelegate( this , config );
-		}
 	}
 }

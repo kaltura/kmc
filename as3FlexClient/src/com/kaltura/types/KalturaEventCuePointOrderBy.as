@@ -25,61 +25,19 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.types
 {
-	import com.kaltura.vo.KalturaDropFolderFile;
-
-	[Bindable]
-	public dynamic class KalturaWebexDropFolderFile extends KalturaDropFolderFile
+	public class KalturaEventCuePointOrderBy
 	{
-		/**
-		**/
-		public var recordingId : int = int.MIN_VALUE;
-
-		/**
-		**/
-		public var webexHostId : String = null;
-
-		/**
-		**/
-		public var description : String = null;
-
-		/**
-		**/
-		public var confId : String = null;
-
-		/**
-		**/
-		public var contentUrl : String = null;
-
-		override public function getUpdateableParamKeys():Array
-		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('recordingId');
-			arr.push('webexHostId');
-			arr.push('description');
-			arr.push('confId');
-			arr.push('contentUrl');
-			return arr;
-		}
-
-		override public function getInsertableParamKeys():Array
-		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
-		}
-
-		override public function getElementType(arrayName:String):String
-		{
-			var result:String = '';
-			switch (arrayName) {
-				default:
-					result = super.getElementType(arrayName);
-					break;
-			}
-			return result;
-		}
+		public static const CREATED_AT_ASC : String = '+createdAt';
+		public static const PARTNER_SORT_VALUE_ASC : String = '+partnerSortValue';
+		public static const START_TIME_ASC : String = '+startTime';
+		public static const TRIGGERED_AT_ASC : String = '+triggeredAt';
+		public static const UPDATED_AT_ASC : String = '+updatedAt';
+		public static const CREATED_AT_DESC : String = '-createdAt';
+		public static const PARTNER_SORT_VALUE_DESC : String = '-partnerSortValue';
+		public static const START_TIME_DESC : String = '-startTime';
+		public static const TRIGGERED_AT_DESC : String = '-triggeredAt';
+		public static const UPDATED_AT_DESC : String = '-updatedAt';
 	}
 }

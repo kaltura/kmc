@@ -25,39 +25,43 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.virusScanProfile
+package com.kaltura.vo
 {
-	import com.kaltura.delegates.virusScanProfile.VirusScanProfileGetDelegate;
-	import com.kaltura.net.KalturaCall;
+	import com.kaltura.vo.KalturaThumbAsset;
 
-	/**
-	* Retrieve an virus scan profile object by id
-	* 
-	**/
-	public class VirusScanProfileGet extends KalturaCall
+	[Bindable]
+	public dynamic class KalturaTimedThumbAsset extends KalturaThumbAsset
 	{
-		public var filterFields : String;
-		
 		/**
-		* @param virusScanProfileId int
+		* Associated thumb cue point ID
+		* 
 		**/
-		public function VirusScanProfileGet( virusScanProfileId : int )
-		{
-			service= 'virusscan_virusscanprofile';
-			action= 'get';
+		public var cuePointId : String = null;
 
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			keyArr.push('virusScanProfileId');
-			valueArr.push(virusScanProfileId);
-			applySchema(keyArr, valueArr);
+		override public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			return arr;
 		}
 
-		override public function execute() : void
+		override public function getInsertableParamKeys():Array
 		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new VirusScanProfileGetDelegate( this , config );
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			arr.push('cuePointId');
+			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }

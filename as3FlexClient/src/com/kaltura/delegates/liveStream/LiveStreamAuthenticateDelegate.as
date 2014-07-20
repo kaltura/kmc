@@ -25,39 +25,19 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.virusScanProfile
+package com.kaltura.delegates.liveStream
 {
-	import com.kaltura.delegates.virusScanProfile.VirusScanProfileDeleteDelegate;
+	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	/**
-	* Mark the virus scan profile as deleted
-	* 
-	**/
-	public class VirusScanProfileDelete extends KalturaCall
+	public class LiveStreamAuthenticateDelegate extends WebDelegateBase
 	{
-		public var filterFields : String;
-		
-		/**
-		* @param virusScanProfileId int
-		**/
-		public function VirusScanProfileDelete( virusScanProfileId : int )
+		public function LiveStreamAuthenticateDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			service= 'virusscan_virusscanprofile';
-			action= 'delete';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			keyArr.push('virusScanProfileId');
-			valueArr.push(virusScanProfileId);
-			applySchema(keyArr, valueArr);
+			super(call, config);
 		}
 
-		override public function execute() : void
-		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new VirusScanProfileDeleteDelegate( this , config );
-		}
 	}
 }
