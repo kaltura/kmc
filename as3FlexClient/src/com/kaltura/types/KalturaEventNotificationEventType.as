@@ -41,5 +41,6 @@ package com.kaltura.types
 		public static const OBJECT_SAVED : String = '10';
 		public static const OBJECT_UPDATED : String = '11';
 		public static const OBJECT_REPLACED : String = '12';
+		public static const OBJECT_READY_FOR_INDEX : String = '13';
 	}
 }

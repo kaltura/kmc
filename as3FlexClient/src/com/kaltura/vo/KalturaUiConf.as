@@ -129,6 +129,16 @@ package com.kaltura.vo
 		**/
 		public var html5Url : String = null;
 
+		/**
+		* UiConf version
+		* 
+		**/
+		public var version : String = null;
+
+		/**
+		**/
+		public var partnerTags : String = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -152,6 +162,7 @@ package com.kaltura.vo
 			arr.push('swfUrlVersion');
 			arr.push('creationMode');
 			arr.push('html5Url');
+			arr.push('partnerTags');
 			return arr;
 		}
 

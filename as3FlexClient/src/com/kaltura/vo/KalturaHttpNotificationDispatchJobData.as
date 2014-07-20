@@ -148,10 +148,10 @@ package com.kaltura.vo
 		public var customHeaders : Array = null;
 
 		/**
-		* Define the content dynamic parameters
+		* The secret to sign the notification with
 		* 
 		**/
-		public var contentParameters : Array = null;
+		public var signSecret : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -175,7 +175,7 @@ package com.kaltura.vo
 			arr.push('sslKey');
 			arr.push('sslKeyPassword');
 			arr.push('customHeaders');
-			arr.push('contentParameters');
+			arr.push('signSecret');
 			return arr;
 		}
 
@@ -191,9 +191,6 @@ package com.kaltura.vo
 			var result:String = '';
 			switch (arrayName) {
 				case 'customHeaders':
-					result = 'KalturaKeyValue';
-					break;
-				case 'contentParameters':
 					result = 'KalturaKeyValue';
 					break;
 				default:

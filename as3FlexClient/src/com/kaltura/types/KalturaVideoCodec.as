@@ -43,11 +43,13 @@ package com.kaltura.types
 		public static const H264B : String = 'h264b';
 		public static const H264H : String = 'h264h';
 		public static const H264M : String = 'h264m';
+		public static const H265 : String = 'h265';
 		public static const MPEG2 : String = 'mpeg2';
 		public static const MPEG4 : String = 'mpeg4';
 		public static const THEORA : String = 'theora';
 		public static const VP6 : String = 'vp6';
 		public static const VP8 : String = 'vp8';
+		public static const VP9 : String = 'vp9';
 		public static const WMV2 : String = 'wmv2';
 		public static const WMV3 : String = 'wmv3';
 		public static const WVC1A : String = 'wvc1a';

@@ -28,6 +28,7 @@
 package com.kaltura.commands.baseEntry
 {
 		import com.kaltura.vo.KalturaResource;
+		import com.kaltura.vo.KalturaEntryReplacementOptions;
 	import com.kaltura.delegates.baseEntry.BaseEntryUpdateContentDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -43,8 +44,9 @@ package com.kaltura.commands.baseEntry
 		* @param entryId String
 		* @param resource KalturaResource
 		* @param conversionProfileId int
+		* @param advancedOptions KalturaEntryReplacementOptions
 		**/
-		public function BaseEntryUpdateContent( entryId : String,resource : KalturaResource,conversionProfileId : int=int.MIN_VALUE )
+		public function BaseEntryUpdateContent( entryId : String,resource : KalturaResource,conversionProfileId : int=int.MIN_VALUE,advancedOptions : KalturaEntryReplacementOptions=null )
 		{
 			service= 'baseentry';
 			action= 'updateContent';
@@ -59,6 +61,11 @@ package com.kaltura.commands.baseEntry
 				valueArr = valueArr.concat(keyValArr[1]);
 			keyArr.push('conversionProfileId');
 			valueArr.push(conversionProfileId);
+			if (advancedOptions) { 
+				keyValArr = kalturaObject2Arrays(advancedOptions, 'advancedOptions');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			} 
 			applySchema(keyArr, valueArr);
 		}
 

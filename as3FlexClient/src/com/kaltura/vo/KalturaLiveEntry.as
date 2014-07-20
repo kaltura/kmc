@@ -77,6 +77,12 @@ package com.kaltura.vo
 		**/
 		public var pushPublishEnabled : int = int.MIN_VALUE;
 
+		/**
+		* The first time in which the entry was broadcast
+		* 
+		**/
+		public var firstBroadcast : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;

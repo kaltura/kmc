@@ -64,6 +64,10 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var triggeredAt : int = int.MIN_VALUE;
+
+		/**
+		**/
 		public var tags : String = null;
 
 		/**
@@ -104,6 +108,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
+			arr.push('triggeredAt');
 			arr.push('tags');
 			arr.push('startTime');
 			arr.push('partnerData');

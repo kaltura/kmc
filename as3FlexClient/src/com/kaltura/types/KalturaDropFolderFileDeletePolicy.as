@@ -31,5 +31,6 @@ package com.kaltura.types
 	{
 		public static const MANUAL_DELETE : int = 1;
 		public static const AUTO_DELETE : int = 2;
+		public static const AUTO_DELETE_WHEN_ENTRY_IS_READY : int = 3;
 	}
 }

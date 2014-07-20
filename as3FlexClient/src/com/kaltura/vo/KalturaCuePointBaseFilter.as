@@ -84,6 +84,14 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var triggeredAtGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var triggeredAtLessThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
 		public var tagsLike : String = null;
 
 		/**
@@ -155,6 +163,8 @@ package com.kaltura.vo
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('updatedAtGreaterThanOrEqual');
 			arr.push('updatedAtLessThanOrEqual');
+			arr.push('triggeredAtGreaterThanOrEqual');
+			arr.push('triggeredAtLessThanOrEqual');
 			arr.push('tagsLike');
 			arr.push('tagsMultiLikeOr');
 			arr.push('tagsMultiLikeAnd');

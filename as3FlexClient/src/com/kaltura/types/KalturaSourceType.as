@@ -42,5 +42,6 @@ package com.kaltura.types
 		public static const LIVE_CHANNEL : String = '33';
 		public static const RECORDED_LIVE : String = '34';
 		public static const CLIP : String = '35';
+		public static const LIVE_STREAM_ONTEXTDATA_CAPTIONS : String = '42';
 	}
 }

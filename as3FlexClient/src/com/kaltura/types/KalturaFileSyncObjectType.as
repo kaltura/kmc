@@ -43,5 +43,6 @@ package com.kaltura.types
 		public static const METADATA_PROFILE : String = '6';
 		public static const SYNDICATION_FEED : String = '7';
 		public static const CONVERSION_PROFILE : String = '8';
+		public static const FILE_ASSET : String = '9';
 	}
 }

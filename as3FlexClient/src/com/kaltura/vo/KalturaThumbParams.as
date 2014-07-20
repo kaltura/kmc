@@ -109,6 +109,12 @@ package com.kaltura.vo
 		**/
 		public var stripProfiles : Boolean;
 
+		/**
+		* Create thumbnail from the videoLengthpercentage second
+		* 
+		**/
+		public var videoOffsetInPercentage : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -129,6 +135,7 @@ package com.kaltura.vo
 			arr.push('format');
 			arr.push('density');
 			arr.push('stripProfiles');
+			arr.push('videoOffsetInPercentage');
 			return arr;
 		}
 

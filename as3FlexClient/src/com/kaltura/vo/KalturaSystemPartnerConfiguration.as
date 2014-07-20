@@ -80,10 +80,6 @@ package com.kaltura.vo
 		public var moderateContent : Boolean;
 
 		/**
-		**/
-		public var rtmpUrl : String = null;
-
-		/**
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var storageDeleteFromKaltura : Boolean;
@@ -206,6 +202,10 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var referenceId : String = null;
+
+		/**
+		**/
 		public var crmLink : String = null;
 
 		/**
@@ -223,7 +223,12 @@ package com.kaltura.vo
 
 		/**
 		**/
-		public var deliveryRestrictions : String = null;
+		public var deliveryProfileIds : String = null;
+
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var enforceDelivery : Boolean;
 
 		/**
 		**/
@@ -274,7 +279,7 @@ package com.kaltura.vo
 
 		/**
 		**/
-		public var disabledDeliveryTypes : Array = null;
+		public var customDeliveryTypes : Array = null;
 
 		/**
 		* @see com.kaltura.types.kalturaBoolean
@@ -285,6 +290,14 @@ package com.kaltura.vo
 		* @see com.kaltura.types.KalturaLanguageCode
 		**/
 		public var language : String = null;
+
+		/**
+		**/
+		public var audioThumbEntryId : String = null;
+
+		/**
+		**/
+		public var liveThumbEntryId : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -303,7 +316,6 @@ package com.kaltura.vo
 			arr.push('partnerPackage');
 			arr.push('monitorUsage');
 			arr.push('moderateContent');
-			arr.push('rtmpUrl');
 			arr.push('storageDeleteFromKaltura');
 			arr.push('storageServePriority');
 			arr.push('kmcVersion');
@@ -331,11 +343,13 @@ package com.kaltura.vo
 			arr.push('extendedFreeTrailExpiryDate');
 			arr.push('extendedFreeTrail');
 			arr.push('crmId');
+			arr.push('referenceId');
 			arr.push('crmLink');
 			arr.push('verticalClasiffication');
 			arr.push('partnerPackageClassOfService');
 			arr.push('enableBulkUploadNotificationsEmails');
-			arr.push('deliveryRestrictions');
+			arr.push('deliveryProfileIds');
+			arr.push('enforceDelivery');
 			arr.push('bulkUploadNotificationsEmail');
 			arr.push('internalUse');
 			arr.push('defaultLiveStreamEntrySourceType');
@@ -347,9 +361,11 @@ package com.kaltura.vo
 			arr.push('apiAccessControlId');
 			arr.push('defaultDeliveryType');
 			arr.push('defaultEmbedCodeType');
-			arr.push('disabledDeliveryTypes');
+			arr.push('customDeliveryTypes');
 			arr.push('restrictEntryByMetadata');
 			arr.push('language');
+			arr.push('audioThumbEntryId');
+			arr.push('liveThumbEntryId');
 			return arr;
 		}
 
@@ -381,8 +397,8 @@ package com.kaltura.vo
 				case 'autoModerateEntryFilter':
 					result = '';
 					break;
-				case 'disabledDeliveryTypes':
-					result = 'KalturaString';
+				case 'customDeliveryTypes':
+					result = 'KalturaKeyBooleanValue';
 					break;
 			}
 			return result;

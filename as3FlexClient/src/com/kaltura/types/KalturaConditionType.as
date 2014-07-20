@@ -43,5 +43,7 @@ package com.kaltura.types
 		public static const FIELD_MATCH : String = '6';
 		public static const FIELD_COMPARE : String = '7';
 		public static const ASSET_PROPERTIES_COMPARE : String = '8';
+		public static const USER_ROLE : String = '9';
+		public static const GEO_DISTANCE : String = '10';
 	}
 }

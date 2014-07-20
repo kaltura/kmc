@@ -117,6 +117,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
+			arr.push('partnerId');
 			arr.push('name');
 			arr.push('systemName');
 			arr.push('description');

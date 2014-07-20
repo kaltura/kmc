@@ -32,5 +32,7 @@ package com.kaltura.types
 		public static const AD : String = 'adCuePoint.Ad';
 		public static const ANNOTATION : String = 'annotation.Annotation';
 		public static const CODE : String = 'codeCuePoint.Code';
+		public static const EVENT : String = 'eventCuePoint.Event';
+		public static const THUMB : String = 'thumbCuePoint.Thumb';
 	}
 }

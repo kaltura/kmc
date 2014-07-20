@@ -242,6 +242,12 @@ package com.kaltura.vo
 		public var conversionProfileId : int = int.MIN_VALUE;
 
 		/**
+		* IF not empty, points to an entry ID the should replace this current entry's id.
+		* 
+		**/
+		public var redirectEntryId : String = null;
+
+		/**
 		* ID of source root entry, used for clipped, skipped and cropped entries that created from another entry
 		* 
 		**/
@@ -289,6 +295,7 @@ package com.kaltura.vo
 			arr.push('referenceId');
 			arr.push('partnerSortValue');
 			arr.push('conversionProfileId');
+			arr.push('redirectEntryId');
 			arr.push('operationAttributes');
 			arr.push('entitledUsersEdit');
 			arr.push('entitledUsersPublish');

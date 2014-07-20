@@ -212,6 +212,14 @@ package com.kaltura.vo
 		**/
 		public var multiStream : String = null;
 
+		/**
+		**/
+		public var isFastStart : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var contentStreams : String = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -249,6 +257,8 @@ package com.kaltura.vo
 			arr.push('multiStreamInfo');
 			arr.push('scanType');
 			arr.push('multiStream');
+			arr.push('isFastStart');
+			arr.push('contentStreams');
 			return arr;
 		}
 

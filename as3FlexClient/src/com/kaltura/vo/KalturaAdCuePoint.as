@@ -68,6 +68,7 @@ package com.kaltura.vo
 			arr.push('adType');
 			arr.push('title');
 			arr.push('endTime');
+			arr.push('duration');
 			return arr;
 		}
 

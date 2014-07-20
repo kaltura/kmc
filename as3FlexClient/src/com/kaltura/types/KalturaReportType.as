@@ -49,7 +49,7 @@ package com.kaltura.types
 		public static const PLATFORMS : int = 21;
 		public static const OPERATION_SYSTEM : int = 22;
 		public static const BROWSERS : int = 23;
-		public static const PARTNER_USAGE : int = 201;
 		public static const LIVE : int = 24;
+		public static const PARTNER_USAGE : int = 201;
 	}
 }

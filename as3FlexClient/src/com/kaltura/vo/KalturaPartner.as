@@ -238,10 +238,6 @@ package com.kaltura.vo
 		public var cdnHost : String = null;
 
 		/**
-		**/
-		public var rtmpUrl : String = null;
-
-		/**
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var isFirstLogin : Boolean;

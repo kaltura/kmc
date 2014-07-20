@@ -48,6 +48,11 @@ package com.kaltura.vo
 		**/
 		public var minVersion : String = null;
 
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var enabledByDefault : Boolean;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -59,6 +64,7 @@ package com.kaltura.vo
 			arr.push('label');
 			arr.push('flashvars');
 			arr.push('minVersion');
+			arr.push('enabledByDefault');
 			return arr;
 		}
 

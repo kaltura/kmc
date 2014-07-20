@@ -34,10 +34,12 @@ package com.kaltura.types
 		public static const READY_AT_ASC : String = '+readyAt';
 		public static const SYNC_TIME_ASC : String = '+syncTime';
 		public static const UPDATED_AT_ASC : String = '+updatedAt';
+		public static const VERSION_ASC : String = '+version';
 		public static const CREATED_AT_DESC : String = '-createdAt';
 		public static const FILE_SIZE_DESC : String = '-fileSize';
 		public static const READY_AT_DESC : String = '-readyAt';
 		public static const SYNC_TIME_DESC : String = '-syncTime';
 		public static const UPDATED_AT_DESC : String = '-updatedAt';
+		public static const VERSION_DESC : String = '-version';
 	}
 }

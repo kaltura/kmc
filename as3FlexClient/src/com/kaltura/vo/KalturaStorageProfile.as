@@ -93,18 +93,6 @@ package com.kaltura.vo
 
 		/**
 		**/
-		public var deliveryHttpBaseUrl : String = null;
-
-		/**
-		**/
-		public var deliveryRmpBaseUrl : String = null;
-
-		/**
-		**/
-		public var deliveryIisBaseUrl : String = null;
-
-		/**
-		**/
 		public var minFileSize : int = int.MIN_VALUE;
 
 		/**
@@ -128,14 +116,6 @@ package com.kaltura.vo
 		public var pathManagerParams : Array = null;
 
 		/**
-		**/
-		public var urlManagerClass : String = null;
-
-		/**
-		**/
-		public var urlManagerParams : Array = null;
-
-		/**
 		* No need to create enum for temp field
 		* 
 		**/
@@ -151,10 +131,6 @@ package com.kaltura.vo
 		* @see com.kaltura.types.KalturaStorageProfileDeliveryStatus
 		**/
 		public var deliveryStatus : int = int.MIN_VALUE;
-
-		/**
-		**/
-		public var rtmpPrefix : String = null;
 
 		/**
 		* @see com.kaltura.types.KalturaStorageProfileReadyBehavior
@@ -180,6 +156,12 @@ package com.kaltura.vo
 		**/
 		public var rules : Array = null;
 
+		/**
+		* Delivery profile ids
+		* 
+		**/
+		public var deliveryProfileIds : Array = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -197,25 +179,20 @@ package com.kaltura.vo
 			arr.push('storageUsername');
 			arr.push('storagePassword');
 			arr.push('storageFtpPassiveMode');
-			arr.push('deliveryHttpBaseUrl');
-			arr.push('deliveryRmpBaseUrl');
-			arr.push('deliveryIisBaseUrl');
 			arr.push('minFileSize');
 			arr.push('maxFileSize');
 			arr.push('flavorParamsIds');
 			arr.push('maxConcurrentConnections');
 			arr.push('pathManagerClass');
 			arr.push('pathManagerParams');
-			arr.push('urlManagerClass');
-			arr.push('urlManagerParams');
 			arr.push('trigger');
 			arr.push('deliveryPriority');
 			arr.push('deliveryStatus');
-			arr.push('rtmpPrefix');
 			arr.push('readyBehavior');
 			arr.push('allowAutoDelete');
 			arr.push('createFileLink');
 			arr.push('rules');
+			arr.push('deliveryProfileIds');
 			return arr;
 		}
 
@@ -241,11 +218,11 @@ package com.kaltura.vo
 				case 'pathManagerParams':
 					result = 'KalturaKeyValue';
 					break;
-				case 'urlManagerParams':
-					result = 'KalturaKeyValue';
-					break;
 				case 'rules':
 					result = 'KalturaRule';
+					break;
+				case 'deliveryProfileIds':
+					result = 'KalturaKeyValue';
 					break;
 			}
 			return result;

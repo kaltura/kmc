@@ -49,6 +49,7 @@ package com.kaltura.types
 		public static const SYNACOR_HBO : String = 'synacorHboDistribution.SYNACOR_HBO';
 		public static const TIME_WARNER : String = 'timeWarnerDistribution.TIME_WARNER';
 		public static const TVCOM : String = 'tvComDistribution.TVCOM';
+		public static const TVINCI : String = 'tvinciDistribution.TVINCI';
 		public static const UVERSE_CLICK_TO_ORDER : String = 'uverseClickToOrderDistribution.UVERSE_CLICK_TO_ORDER';
 		public static const UVERSE : String = 'uverseDistribution.UVERSE';
 		public static const VERIZON_VCAST : String = 'verizonVcastDistribution.VERIZON_VCAST';

@@ -31,5 +31,6 @@ package com.kaltura.types
 	{
 		public static const READY : int = 1;
 		public static const DELETED : int = 2;
+		public static const HANDLED : int = 3;
 	}
 }

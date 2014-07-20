@@ -160,6 +160,10 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var multiStream : String = null;
+
+		/**
+		**/
 		public var anamorphicPixels : Number = Number.NEGATIVE_INFINITY;
 
 		/**
@@ -177,6 +181,10 @@ package com.kaltura.vo
 		/**
 		**/
 		public var videoBitrateTolerance : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var watermarkData : String = null;
 
 		/**
 		**/
@@ -214,11 +222,13 @@ package com.kaltura.vo
 			arr.push('isAvoidVideoShrinkFramesizeToSource');
 			arr.push('isAvoidVideoShrinkBitrateToSource');
 			arr.push('isVideoFrameRateForLowBrAppleHls');
+			arr.push('multiStream');
 			arr.push('anamorphicPixels');
 			arr.push('isAvoidForcedKeyFrames');
 			arr.push('maxFrameRate');
 			arr.push('videoConstantBitrate');
 			arr.push('videoBitrateTolerance');
+			arr.push('watermarkData');
 			arr.push('clipOffset');
 			arr.push('clipDuration');
 			return arr;
