@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.business.EntryLiveStreamingHelper;
+			import com.kaltura.types.KalturaDVRStatus;
+			import com.kaltura.vo.KalturaLiveStreamEntry;
+			
+			[Bindable]
+			public var selectedEntry:KalturaLiveStreamEntry;
+		]]>
+	</mx:Script>
+	
+	<!-- rtsp broadcast urls -->
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('drilldown', 'rtspBroadcastingUrls')}" styleName="drillDownLabel"/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('drilldown', 'PrimaryURL')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="primaryUrl" text="{selectedEntry.primaryRtspBroadcastingUrl}" selectable="true"
+				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('drilldown', 'BackupURL')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="backupUrl" text="{selectedEntry.secondaryRtspBroadcastingUrl}" selectable="true"
+				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+	</mx:HBox>
+	
+	<mx:Spacer height="20"/>
+</mx:VBox>
