@@ -51,7 +51,7 @@ package com.kaltura.kmc.business
 		 * @param funcName name of JS function to trigger
 		 */
 		public static function triggerJS(funcName:String):void {
-			ExternalInterface.call(funcName);
+			KedJSGate.triggerJS(funcName);
 		}
 		
 		/**
