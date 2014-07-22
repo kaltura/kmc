@@ -13,6 +13,7 @@ live streaming control tab of EntryDetailsWin
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.EntryLiveStreamingHelper;
+			import com.kaltura.edw.business.KedJSGate;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.control.events.ProfileEvent;
@@ -351,6 +352,11 @@ live streaming control tab of EntryDetailsWin
 			
 			
 			
+			private function openLiveReport(event:MouseEvent):void
+			{
+				KedJSGate.triggerJS('kmc.functions.openLiveAnalyticsDrilldown', _selectedEntry.id, _selectedEntry.name);
+			}
+			
 		]]>
 	</mx:Script>
 	<control:LivestreamTabController id="controller"/>
@@ -448,7 +454,13 @@ live streaming control tab of EntryDetailsWin
 						visible="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}"
 						includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}" />
 		
-		<mx:Button id="exportBtn" label="{resourceManager.getString('drilldown', 'exportToFme')}" click="{fmeExport()}"/>
+		<mx:HBox width="100%" styleName="noPadding">
+			<mx:Button id="exportBtn" label="{resourceManager.getString('drilldown', 'exportToFme')}" click="{fmeExport()}"/>
+			<mx:LinkButton styleName="liveReportsButton" label="{resourceManager.getString('drilldown', 'openLiveReport')}" 
+						   visible="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
+						   includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
+						   click="openLiveReport(event)"/>
+		</mx:HBox>
 	</mx:VBox>
 	
 	<!-- manual stream -->
