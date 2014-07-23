@@ -54,6 +54,15 @@ package com.kaltura.edw.business
 		
 		
 		/**
+		 * open live analytics in modal win directly to given entry 
+		 * @param entryId
+		 * @param entryName
+		 */
+		public static function openLiveAnalyticsDrilldown(entryId:String, entryName:String):void { 
+			ExternalInterface.call("kmc.functions.openLiveAnalyticsDrilldown", entryId, entryName);
+		}
+		
+		/**
 		 * trigger the given JS function
 		 * @param funcName name of JS function to trigger
 		 */
