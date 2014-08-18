@@ -235,12 +235,16 @@ package com.kaltura.utils.parsers
 			}
 			var children:XMLList = element.children();
 			if (children.length()>1) {
-				//nested elments
+				//nested elements
 				if (XML(children[1]).name().localName == XSDConstants.COMPLEX_TYPE) {
 					var sequence:XML = children[1].children()[0];
 					if (sequence.name().localName == XSDConstants.SEQUENCE_TYPE) {
 						for each (var nestedElement:XML in sequence.children()) {
 							var nestedField:MetadataFieldVO = fromXSDToField(nestedElement, field.xpath);
+							//TODO if any of the nested fields are searchable, make the parent field searcheable too
+							if (nestedField.appearInSearch) {
+								field.appearInSearch = true;
+							}
 							field.nestedFieldsArray.addItem(nestedField);
 						}
 					}
