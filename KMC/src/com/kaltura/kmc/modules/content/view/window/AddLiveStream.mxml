@@ -100,10 +100,8 @@
 				
 				if (pdp.enableAkamaiLive) {
 					_streamTypes.push(new LocalizedVo(StreamVo.STREAM_TYPE_UNIVERSAL, 'universalStream', 'live'));
-					_streamTypes.push(new LocalizedVo(StreamVo.STREAM_TYPE_MANUAL, 'manualStream', 'live'));
 				}
-				
-				_streamTypes.push(new LocalizedVo(StreamVo.STREAM_TYPE_LEGACY, 'legacyStream', 'live'));
+				_streamTypes.push(new LocalizedVo(StreamVo.STREAM_TYPE_MANUAL, 'manualStream', 'live'));
 				
 				streamType.selectedIndex = 0; // select the first item in the list
 				streamType.dispatchEvent(new ListEvent(Event.CHANGE));
@@ -144,7 +142,6 @@
 			private function streamType_changeHandler(event:ListEvent):void {
 				switch ((streamType.selectedItem as LocalizedVo).value) {
 					case StreamVo.STREAM_TYPE_UNIVERSAL:
-					case StreamVo.STREAM_TYPE_LEGACY:
 						_isManualStream = false;
 						forms.selectedIndex = 1;
 						break;
@@ -178,8 +175,8 @@
 					streamVo.streamType = (streamType.selectedItem as LocalizedVo).value;
 				} 
 				else {
-					// only "legacy" stream available
-					streamVo.streamType = StreamVo.STREAM_TYPE_LEGACY;
+					// only "manual" stream available
+					streamVo.streamType = StreamVo.STREAM_TYPE_MANUAL;
 				}
 				
 				if (_isManualStream) { 

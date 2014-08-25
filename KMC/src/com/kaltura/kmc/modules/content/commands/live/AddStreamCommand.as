@@ -44,10 +44,7 @@ package com.kaltura.kmc.modules.content.commands.live {
 			liveEntry.name = streamVo.streamName;
 			liveEntry.description = streamVo.description;
 			
-			if (streamVo.streamType == StreamVo.STREAM_TYPE_LEGACY) {
-				setAkamaiLegacyParams(liveEntry, streamVo);
-			}
-			else if (streamVo.streamType == StreamVo.STREAM_TYPE_UNIVERSAL) {
+			if (streamVo.streamType == StreamVo.STREAM_TYPE_UNIVERSAL) {
 				setAkamaiUniversalParams(liveEntry, streamVo);
 				_sourceType = KalturaSourceType.AKAMAI_UNIVERSAL_LIVE;
 			}
@@ -157,23 +154,6 @@ package com.kaltura.kmc.modules.content.commands.live {
 				liveEntry.streamPassword = streamVo.password;
 		}		
 		
-		
-		/**
-		 * set parameters relevant to Akamai legacy live streams 
-		 * @param liveEntry	entry to manipulate
-		 * @param streamVo	data
-		 */
-		private function setAkamaiLegacyParams(liveEntry:KalturaLiveStreamEntry, streamVo:StreamVo):void {
-			liveEntry.encodingIP1 = streamVo.primaryIp;
-			liveEntry.encodingIP2 = streamVo.secondaryIp;	
-			
-			if (!streamVo.password)
-				liveEntry.streamPassword = "";
-			else
-				liveEntry.streamPassword = streamVo.password;
-		}
-		
-
 
 		override public function result(data:Object):void {
 			super.result(data);
