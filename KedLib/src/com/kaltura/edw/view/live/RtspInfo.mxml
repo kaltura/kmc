@@ -8,6 +8,11 @@
 			
 			[Bindable]
 			public var selectedEntry:KalturaLiveStreamEntry;
+			
+			private function replaceIndex(str:String):String {
+				return str.replace(/%i/, '1');
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -19,14 +24,14 @@
 	<mx:HBox width="100%">
 		<mx:Label text="{resourceManager.getString('drilldown', 'PrimaryURL')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
 				  styleName="drillDownLabel"/>
-		<mx:Label id="primaryUrl" text="{selectedEntry.primaryRtspBroadcastingUrl}" selectable="true"
+		<mx:Label id="primaryUrl" text="{replaceIndex(selectedEntry.primaryRtspBroadcastingUrl)}" selectable="true"
 				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
 	</mx:HBox>
 	
 	<mx:HBox width="100%">
 		<mx:Label text="{resourceManager.getString('drilldown', 'BackupURL')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
 				  styleName="drillDownLabel"/>
-		<mx:Label id="backupUrl" text="{selectedEntry.secondaryRtspBroadcastingUrl}" selectable="true"
+		<mx:Label id="backupUrl" text="{replaceIndex(selectedEntry.secondaryRtspBroadcastingUrl)}" selectable="true"
 				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
 	</mx:HBox>
 	
