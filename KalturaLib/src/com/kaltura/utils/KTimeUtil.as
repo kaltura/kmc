@@ -41,11 +41,12 @@ package com.kaltura.utils
 		 * 
 		 */
 		public static function formatTime2(secs:int, showHours:Boolean = true, showSeconds:Boolean = true, forceHours:Boolean = false):String {
-			var h:int = Math.floor(secs / 3600); // 60 * 60 = 3600
-			var sh:int = h * 3600;	// hours in seconds
-			var m:int = Math.floor((secs - sh) / 60);
-			var sm:int = m * 60;	// minutes in seconds
-			var s:int = secs - sh - sm;
+			secs = Math.floor(secs);
+			var h:Number = Math.floor(secs / 3600); // 60 * 60 = 3600
+			var sh:Number = h * 3600;	// hours in seconds
+			var m:Number = Math.floor((secs - sh) / 60);
+			var sm:Number = m * 60;	// minutes in seconds
+			var s:Number = secs - sh - sm;
 			
 			var result:String = '';
 			if ((showHours && h>0) || forceHours) {
