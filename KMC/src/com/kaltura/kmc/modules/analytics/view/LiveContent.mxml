@@ -7,7 +7,6 @@
 		 creationComplete="init(event)" hide="hideHandler(event)">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
@@ -61,27 +60,24 @@
 			 * set report message according to report data
 			 * */
 			private function selectedReportChange(report:ReportData):void {
-				if (_model.currentScreenState == ScreenTypes.LIVE_CONTENT) {
-					JSGate.triggerJS('kmc.functions.openLiveAnalytics');
+				if (report && report.aggregatedData) {
+					var message:String = '';
+					switch (_model.currentScreenState) {
+						case ScreenTypes.LIVE_CONTENT:
+							if (report.totalCount && report.aggregatedData.length) {
+								message = resourceManager.getString('analytics', 'topContentLbl',
+									[report.totalCount, report.aggregatedData[0].formattedValue]);
+							}
+
+							break;
+						
+						default:
+							// make sure we don't override another report's message
+							return;
+					}
+
+					report.message = message;
 				}
-//				if (report && report.aggregatedData) {
-//					var message:String = '';
-//					switch (_model.currentScreenState) {
-//						case ScreenTypes.LIVE_CONTENT:
-//							if (report.totalCount && report.aggregatedData.length) {
-//								message = resourceManager.getString('analytics', 'topContentLbl',
-//									[report.totalCount, report.aggregatedData[0].formattedValue]);
-//							}
-//
-//							break;
-//						
-//						default:
-//							// make sure we don't override another report's message
-//							return;
-//					}
-//
-//					report.message = message;
-//				}
 			}
 
 
