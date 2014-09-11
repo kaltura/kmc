@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 creationComplete="init(event)" >
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.business.JSGate;
+			import com.kaltura.kmc.modules.analytics.control.StateEvent;
+			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
+			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
+			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
+			
+			import mx.binding.utils.BindingUtils;
+
+
+			private var _ready:Boolean = false;
+
+			/**
+			 * data model
+			 * */
+			[Bindable]
+			private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
+
+
+			/**
+			 * watch model changes
+			 * */
+			public function init(event:Event = null):void {
+				if (_ready) {
+					BindingUtils.bindSetter(selectedReportChange, _model, "selectedReportData");
+					var stateEvent:StateEvent = new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.REAL_TIME_CONTENT);
+					stateEvent.dispatch();
+				}
+				else {
+					_ready = true;
+				}
+			}
+
+
+			/**
+			 * set report message according to report data
+			 * */
+			private function selectedReportChange(report:ReportData):void {
+				if (_model.currentScreenState == ScreenTypes.REAL_TIME_CONTENT) {
+					JSGate.triggerJS('kmc.functions.openLiveAnalytics');
+				}
+			}
+
+
+//			public function help():void {
+//				var anchor:String = (contentViewStack.selectedChild as KalturaReportView).helpUrl;
+//				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
+//			}
+
+
+
+		]]>
+	</mx:Script>
+</mx:HBox>
