@@ -17,8 +17,16 @@
 			private function onCreationComplete():void {
 				_timeManager = new DateFieldWithTimeStepperLogic(dateField, null, dateTime, null);
 				if (selectedDate) {
-					dateTime.timeValue = dateTime.getTimeAsObject(selectedDate.time / 1000)
-					dateField.selectedDate = selectedDate;
+					var n:Number = selectedDate.time / 1000; // seconds GMT
+					n -= selectedDate.timezoneOffset * 60; // seconds, local time
+					var o:Object = dateTime.getTimeAsObject(n);
+					dateTime.timeValue = o;
+					// remove ms of hours, minutes, seconds
+					n = selectedDate.time;
+					n -= o.second * 1000;
+					n -= o.minute * 60000;
+					n -= o.hour * 3600000;
+					dateField.selectedDate = new Date(n);
 				}
 			}
 
@@ -32,7 +40,7 @@
 				seconds += _timeManager.calculateTime(dateTime.timeValue, dateTime.am_pm);
 				if (!selectedDate)
 					selectedDate = new Date();
-				selectedDate.time = (seconds - selectedDate.timezoneOffset * 60) * 1000;
+				selectedDate.time = (seconds) * 1000;
 
 			}
 		]]>
