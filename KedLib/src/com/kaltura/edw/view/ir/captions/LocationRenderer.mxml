@@ -4,6 +4,7 @@
 		<![CDATA[
 			import com.kaltura.edw.view.captions.CaptionsTable;
 			import com.kaltura.edw.vo.EntryCaptionVO;
+			import com.kaltura.types.KalturaCaptionType;
 			
 			override public function set data(value:Object):void {
 				super.data = value;
@@ -12,6 +13,13 @@
 				}
 				else {
 					txt.text = (value as EntryCaptionVO).downloadUrl;
+				}
+				// don't allow editing vtt captions
+				if ((value as EntryCaptionVO).caption.format == KalturaCaptionType.WEBVTT) {
+					txt.enabled = false;
+				}
+				else {
+					txt.enabled = true;
 				}
 			}
 			
