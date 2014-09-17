@@ -56,6 +56,11 @@ package com.kaltura.kmc.modules.content.vo
 		/* manual stream specific fields */
 		public var flashHDSURL:String;
 		public var mobileHLSURL:String; 
+		
+		/**
+		 * for HDS url, is it Akamai HDS  
+		 */
+		public var isAkamaiHds:Boolean; 
 
 		
 		public function StreamVo() {

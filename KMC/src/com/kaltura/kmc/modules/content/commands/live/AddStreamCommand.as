@@ -123,11 +123,28 @@ package com.kaltura.kmc.modules.content.commands.live {
 		 * @param streamVo	data
 		 */
 		private function setManualParams(liveEntry:KalturaLiveStreamEntry, streamVo:StreamVo):void {
-			liveEntry.hlsStreamUrl = streamVo.mobileHLSURL;
-			var cfg:KalturaLiveStreamConfiguration = new KalturaLiveStreamConfiguration();
-			cfg.protocol = KalturaPlaybackProtocol.AKAMAI_HDS;
-			cfg.url = streamVo.flashHDSURL;
-			liveEntry.liveStreamConfigurations = [cfg];
+			liveEntry.hlsStreamUrl = streamVo.mobileHLSURL; // legacy, empty value is ok
+			liveEntry.liveStreamConfigurations = new Array();
+			var cfg:KalturaLiveStreamConfiguration;
+			// add config for hls
+			if (streamVo.mobileHLSURL) {
+				cfg = new KalturaLiveStreamConfiguration();
+				cfg.protocol = KalturaPlaybackProtocol.APPLE_HTTP;
+				cfg.url = streamVo.mobileHLSURL;
+				liveEntry.liveStreamConfigurations.push(cfg);
+			}
+			// add config for hds
+			if (streamVo.flashHDSURL) {
+				cfg = new KalturaLiveStreamConfiguration();
+				if (streamVo.isAkamaiHds) {
+					cfg.protocol = KalturaPlaybackProtocol.AKAMAI_HDS;
+				}
+				else {
+					cfg.protocol = KalturaPlaybackProtocol.HDS;
+				}
+				cfg.url = streamVo.flashHDSURL;
+				liveEntry.liveStreamConfigurations.push(cfg);
+			}
 		}
 		
 		

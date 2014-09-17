@@ -78,7 +78,7 @@
 
 
 			private function creationCompleteHandler(event:FlexEvent):void {
-				title = ResourceManager.getInstance().getString('live', 'liveStreamTitle');
+				title = resourceManager.getString('live', 'liveStreamTitle');
 				PermissionManager.getInstance().applyAllAttributes(this, "createLiveStream");
 				
 				// now we can say if akamai/kaltura streams are available
@@ -197,6 +197,7 @@
 						if (isUrlValid) {
 							streamVo.flashHDSURL = hdsurl.text;
 							streamVo.mobileHLSURL = hlsurl.text;
+							streamVo.isAkamaiHds = isAkamaiHds.selected;
 						}
 						else {
 							isValid = false;
@@ -250,7 +251,7 @@
 					cgEv.dispatch();
 				}
 				else {
-					Alert.show(ResourceManager.getInstance().getString('live', 'fillAllMandatoryCorrect'));
+					Alert.show(resourceManager.getString('live', 'fillAllMandatoryCorrect'));
 				}
 			}
 			
@@ -279,17 +280,17 @@
 
 	<mx:Spacer height="5" />	
 	<mx:HBox width="100%" id="streamTypeWrap">
-		<mx:Label text="{ResourceManager.getInstance().getString('live', 'streamType')}" width="{labelWidth}" styleName="boldLabel"/>
+		<mx:Label text="{resourceManager.getString('live', 'streamType')}" width="{labelWidth}" styleName="boldLabel"/>
 		<mx:ComboBox id="streamType" width="290" dataProvider="{_streamTypes}" change="streamType_changeHandler(event)"/>
 	</mx:HBox>
 	<mx:HRule width="100%" visible="{streamTypeWrap.visible}" includeInLayout="{streamTypeWrap.includeInLayout}" styleName="paddedHRule"/>
 
 	<mx:HBox width="100%">
-		<mx:Label text="{ResourceManager.getInstance().getString('live', 'name')}*" width="{labelWidth}" styleName="boldLabel"/>
+		<mx:Label text="{resourceManager.getString('live', 'name')}*" width="{labelWidth}" styleName="boldLabel"/>
 		<mx:TextInput id="streamName" width="100%"/>
 	</mx:HBox>
 	<mx:HBox width="100%">
-		<mx:Label text="{ResourceManager.getInstance().getString('live', 'liveDescription')}" width="{labelWidth}" styleName="boldLabel"/>
+		<mx:Label text="{resourceManager.getString('live', 'liveDescription')}" width="{labelWidth}" styleName="boldLabel"/>
 		<mx:TextInput id="streamDescription" width="100%"/>
 	</mx:HBox>
 	<mx:Spacer height="10" />
@@ -297,43 +298,43 @@
 		<!-- form for kaltura and multicast -->
 		<mx:VBox styleName="noPadding" width="100%" height="100%">
 			<mx:HBox width="100%">
-				<mx:Label text="{ResourceManager.getInstance().getString('live', 'liveProfile')}" width="{labelWidth}" styleName="boldLabel" />
+				<mx:Label text="{resourceManager.getString('live', 'liveProfile')}" width="{labelWidth}" styleName="boldLabel" />
 				<mx:ComboBox id="liveProfileKaltura" dataProvider="{liveProfiles}" width="290" labelField="name" />
 			</mx:HBox>
 			<mx:HBox width="100%" visible="{streamType.selectedItem.value == StreamVo.STREAM_TYPE_KALTURA}"
 					 includeInLayout="{streamType.selectedItem.value == StreamVo.STREAM_TYPE_KALTURA}">
 				<mx:CheckBox id="useDvrKaltura" selected="false"/>
-				<mx:Text text="{ResourceManager.getInstance().getString('live', 'enableDvrKaltura')}" width="100%" />
+				<mx:Text text="{resourceManager.getString('live', 'enableDvrKaltura')}" width="100%" />
 			</mx:HBox>
 			<mx:HBox width="100%" >
 				<mx:CheckBox id="useRecKaltura" selected="{_recordByDefault}" />
-				<mx:Text text="{ResourceManager.getInstance().getString('live', 'enableRecording')}" width="100%" />
+				<mx:Text text="{resourceManager.getString('live', 'enableRecording')}" width="100%" />
 			</mx:HBox>
 		</mx:VBox>
 		
 		<!-- form for universal and legacy -->
 		<mx:VBox styleName="noPadding" width="100%" height="100%">
 			<mx:HBox width="100%">
-				<mx:Label text="{ResourceManager.getInstance().getString('live', 'primaryIp')}*" width="{labelWidth}" styleName="boldLabel"/>
+				<mx:Label text="{resourceManager.getString('live', 'primaryIp')}*" width="{labelWidth}" styleName="boldLabel"/>
 				<mx:TextInput id="streamPrimaryIp" width="100%" restrict="0-9\.\-\/" text="{defaultIP}"/>
 			</mx:HBox>
 			<mx:HBox width="100%">
-				<mx:Label text="{ResourceManager.getInstance().getString('live', 'secondaryIp')}*" width="{labelWidth}" styleName="boldLabel"/>
+				<mx:Label text="{resourceManager.getString('live', 'secondaryIp')}*" width="{labelWidth}" styleName="boldLabel"/>
 				<mx:TextInput id="streamSecondaryIp" width="100%" restrict="0-9\.\-\/" text="{defaultIP}"/>
 			</mx:HBox>
 			<mx:HBox width="100%">
-				<mx:Label text="{ResourceManager.getInstance().getString('live', 'ipdefault')}" width="100%" />
+				<mx:Label text="{resourceManager.getString('live', 'ipdefault')}" width="100%" />
 			</mx:HBox>
 			<mx:Spacer height="10" />
 			<mx:HBox width="100%">
-				<mx:Label text="{ResourceManager.getInstance().getString('live', 'passwordOptional')}"
+				<mx:Label text="{resourceManager.getString('live', 'passwordOptional')}"
 						  width="{labelWidth}" styleName="boldLabel"/>
 				<mx:TextInput id="streamBroadcastPassword" width="100%"/>
 			</mx:HBox>
 			<mx:HBox width="100%" visible="{streamType.selectedItem.value == StreamVo.STREAM_TYPE_UNIVERSAL}"
 					 includeInLayout="{streamType.selectedItem.value == StreamVo.STREAM_TYPE_UNIVERSAL}">
 				<mx:CheckBox id="useDvr" selected="false"/>
-				<mx:Text text="{ResourceManager.getInstance().getString('live', 'enableDvr')}" width="100%"/>
+				<mx:Text text="{resourceManager.getString('live', 'enableDvr')}" width="100%"/>
 			</mx:HBox>
 			
 		</mx:VBox>
@@ -341,11 +342,14 @@
 		<!-- form for manual -->
 		<mx:VBox styleName="noPadding" width="100%" height="100%">
 			<mx:HBox width="100%">
-				<mx:Label text="{ResourceManager.getInstance().getString('live', 'hdsurl')}" width="{labelWidth}" styleName="boldLabel"/>
+				<mx:Label text="{resourceManager.getString('live', 'hdsurl')}" width="{labelWidth}" styleName="boldLabel"/>
 				<mx:TextInput id="hdsurl" width="100%" />
 			</mx:HBox>
 			<mx:HBox width="100%">
-				<mx:Label text="{ResourceManager.getInstance().getString('live', 'hlsurl')}" width="{labelWidth}" styleName="boldLabel"/>
+				<mx:CheckBox id="isAkamaiHds" selected="true" label="{resourceManager.getString('live', 'is_akamai_hds')}" />
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('live', 'hlsurl')}" width="{labelWidth}" styleName="boldLabel"/>
 				<mx:TextInput id="hlsurl" width="100%" />
 			</mx:HBox>
 		</mx:VBox>
@@ -353,10 +357,10 @@
 		
 	</mx:ViewStack>
 
-	<mx:Label text="{ResourceManager.getInstance().getString('live', 'mandatory')}" width="100%"/>
+	<mx:Label text="{resourceManager.getString('live', 'mandatory')}" width="100%"/>
 
 	<mx:ControlBar>
-		<mx:Button id="saveButton" label="{ResourceManager.getInstance().getString('live', 'createLiveBtn')}"
+		<mx:Button id="saveButton" label="{resourceManager.getString('live', 'createLiveBtn')}"
 				   click="onSave()"/>
 	</mx:ControlBar>
 
