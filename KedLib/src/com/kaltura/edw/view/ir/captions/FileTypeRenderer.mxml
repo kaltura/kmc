@@ -12,17 +12,22 @@
 			[Bindable]
 			private static var captionTypes:Array = [
 				{label:ResourceManager.getInstance().getString('drilldown','srtLabel') , value:KalturaCaptionType.SRT},
-				{label:ResourceManager.getInstance().getString('drilldown','dfxpLabel'), value:KalturaCaptionType.DFXP},
-				{label:ResourceManager.getInstance().getString('drilldown','vttLabel'), value:KalturaCaptionType.WEBVTT}];
+				{label:ResourceManager.getInstance().getString('drilldown','dfxpLabel'), value:KalturaCaptionType.DFXP}];
 			
 			
-//			override public function set data(value:Object):void {
-//				super.data = value;
-//				var vo:EntryCaptionVO = value as EntryCaptionVO; 
-//				// cb enabled if caption doesn't already exist and user is allowed to edit 
-//				typeCB.enabled = vo.caption.id ? false : true;
-//				typeCB.enabled &&= EntryCaptionVO.editable;
-//			}
+			override public function set data(value:Object):void {
+				super.data = value;
+				var vo:EntryCaptionVO = value as EntryCaptionVO; 
+				if (vo.caption.id) {
+					typeCB.visible = typeCB.includeInLayout = false;
+					typeTxt.text = getFormatString(vo.caption.format);
+				}
+				else {
+					typeCB.visible = typeCB.includeInLayout = true;
+					typeTxt.text = '';
+				}
+				
+			}
 			
 			/**
 			 * get the index of the required value in the captionTypes array
@@ -43,13 +48,33 @@
 			}
 			
 			public function getValue():String {
-				return typeCB.selectedItem.value;
+				if (typeCB.visible) {
+					return typeCB.selectedItem.value;
+				}
+				return data.caption.format;
 			}
 
+			private function getFormatString(format:String):String
+			{
+				switch (format) {
+					case KalturaCaptionType.SRT:
+						return ResourceManager.getInstance().getString('drilldown','srtLabel');
+						break;
+					case KalturaCaptionType.DFXP:
+						return ResourceManager.getInstance().getString('drilldown','dfxpLabel');
+						break;
+					case KalturaCaptionType.WEBVTT:
+						return ResourceManager.getInstance().getString('drilldown','vttLabel');
+						break;
+				}
+				return '';
+			}
+			
 		]]>
 	</mx:Script>
 	
 	<mx:ComboBox id="typeCB" dataProvider="{captionTypes}" width="90%" 
 				 selectedIndex="{getFormatIndex(data)}" change="typeCB_changeHandler(event)"
 				 enabled="{EntryCaptionVO.editable &amp;&amp; !(data.caption.id)}"/>
+	<mx:Label id="typeTxt" />
 </mx:VBox>
