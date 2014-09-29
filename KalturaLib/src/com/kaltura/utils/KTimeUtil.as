@@ -36,11 +36,11 @@ package com.kaltura.utils
 		 * @param secs
 		 * @param showHours		if hours is more than 0, show it
 		 * @param showSeconds	show seconds (even if 0)
-		 * @param forceHours	show hours even if 0
+		 * @param forceHours	show hours even if 0 
 		 * @return given value, formatted as {HH}:MM:{SS }
 		 * 
 		 */
-		public static function formatTime2(secs:int, showHours:Boolean = true, showSeconds:Boolean = true, forceHours:Boolean = false):String {
+		public static function formatTime2(secs:Number, showHours:Boolean = true, showSeconds:Boolean = true, forceHours:Boolean = false):String {
 			secs = Math.floor(secs);
 			var h:Number = Math.floor(secs / 3600); // 60 * 60 = 3600
 			var sh:Number = h * 3600;	// hours in seconds
