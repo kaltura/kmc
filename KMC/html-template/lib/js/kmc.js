@@ -29,6 +29,10 @@ kmc.functions = {
 	getAddPanelPosition : function() {
 		var el = $("#add").parent();
 		return (el.position().left + el.width());
+	}, 
+	
+	openStudio : function() {
+		alert("open studio");
 	}
 };
 
