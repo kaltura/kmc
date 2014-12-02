@@ -104,44 +104,38 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			switch (event.item.data) {
 				case "delete":
 					cgEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORIES);
-					cgEvent.dispatch();
 					break;
 				
 				case "changeContribution":
 					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORIES_CONTRIBUTION_WINDOW);
-					cgEvent.dispatch();
 					break;
 				
 				case "changeAccess":
 					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORIES_ACCESS_WINDOW);
-					cgEvent.dispatch();
 					break;
 				
 				case "changeListing":
 					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORIES_LISTING_WINDOW);
-					cgEvent.dispatch();
 					break;
 				
 				case "changeOwner":
 					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORIES_OWNER_WINDOW);
-					cgEvent.dispatch();
 					break;
 				
 				case "moveCategories":
 					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.MOVE_CATEGORIES_WINDOW);
-					cgEvent.dispatch();
 					break;
 				
 				case "addTags":
 					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ADD_CATEGORY_TAGS_WINDOW);
-					cgEvent.dispatch()
 					break;
 				
 				case "removeTags":
 					cgEvent = new WindowEvent(WindowEvent.OPEN , WindowsStates.REMOVE_CATEGORY_TAGS_WINDOW);
-					cgEvent.dispatch();
 					break;
 			}
+			if (cgEvent)
+				cgEvent.dispatch();
 		}
 	}
 }
