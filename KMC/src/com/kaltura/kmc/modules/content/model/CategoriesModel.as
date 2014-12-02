@@ -11,6 +11,13 @@ package com.kaltura.kmc.modules.content.model
 	[Bindable]
 	public class CategoriesModel {
 		
+		
+		/**
+		 * if KalturaCategory.tags include this value, 
+		 * kmc should show warning when editing it. 
+		 * */
+		public static const EDIT_WARN_TAG:String = "__EditWarning";
+		
 		/**
 		 * numbers of subcategories that may be reordered 
 		 */
