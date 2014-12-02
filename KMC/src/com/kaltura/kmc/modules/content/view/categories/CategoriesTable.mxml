@@ -8,6 +8,7 @@
 		[Event(name="selectionChanged", type="flash.events.Event")] 
 		[Event(name="showDetails", type="com.kaltura.edw.events.GeneralNonCairngormEvent")] 
 		[Event(name="moveCategory", type="com.kaltura.edw.events.GeneralNonCairngormEvent")] 
+		[Event(name="deleteCategory", type="com.kaltura.edw.events.GeneralNonCairngormEvent")] 
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
@@ -49,6 +50,11 @@
 			 * defines the value of the type property for the <code>moveCategory</code> event.
 			 * */
 			public static const MOVE_CATEGORY:String = "moveCategory";
+			
+			/**
+			 * defines the value of the type property for the <code>deleteCategory</code> event.
+			 * */
+			public static const DELETE_CATEGORY:String = "deleteCategory";
 			
 			
 			
@@ -222,10 +228,9 @@
 			}
 			
 			private function deleteCategory(e:Event):void {
-				var kCat:KalturaCategory = e.target.data as KalturaCategory;
-				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORIES);
-				cgEvent.data = [[kCat.id], kCat.directSubCategoriesCount > 0];
-				cgEvent.dispatch();
+				var nce:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(CategoriesTable.DELETE_CATEGORY);
+				nce.data = e.target.data as KalturaCategory;
+				dispatchEvent(nce);
 			}
 			
 			private function moveCategory(e:Event):void {

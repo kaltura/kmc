@@ -50,7 +50,6 @@ package com.kaltura.kmc.modules.content.commands.cat {
 				return;
 			}
 			else if (_ids.length == 1) {
-				// batch action
 				if (hasSubCats) {
 					// "subcats will be deleted"
 					msg = rm.getString('cms', 'deleteCategoryWarn');
@@ -61,6 +60,7 @@ package com.kaltura.kmc.modules.content.commands.cat {
 				}
 			}
 			else {
+				// batch action
 				msg = rm.getString('cms', 'deleteCategoriesWarn');
 			}
 
