@@ -263,9 +263,14 @@
 
 
 
-			private function removeColumns(event:Event):void {
+			private function removeColumns(event:Event, showActions:Boolean = true):void {
 				var ar:Array = [EntryTableColumns.THUMBNAIL, EntryTableColumns.ID, EntryTableColumns.NAME, EntryTableColumns.MEDIA_TYPE,
-					EntryTableColumns.PLAYS, EntryTableColumns.CREATE_AT, EntryTableColumns.FLAGS, EntryTableColumns.MOD_STATUS, EntryTableColumns.ACTIONS];
+					EntryTableColumns.PLAYS, EntryTableColumns.CREATE_AT, EntryTableColumns.FLAGS, EntryTableColumns.MOD_STATUS];
+				
+				if (showActions) {
+					ar.push(EntryTableColumns.ACTIONS);
+				}
+				
 				entryTable.showColumns(ar);
 
 				for each (var col:DataGridColumn in entryTable.columns) {
@@ -500,6 +505,17 @@
 
 			public function set moderationModel(value:ModerationModel):void {
 				_moderationModel = value;
+			}
+			
+
+			public function get showActions():Boolean
+			{
+				return true;
+			}
+
+			public function set showActions(value:Boolean):void
+			{
+				removeColumns(null, false);
 			}
 
 
