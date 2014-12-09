@@ -120,7 +120,11 @@
 					al.data = kCat;
 				}
 				else {
-					handler(new CloseEvent(CloseEvent.CLOSE, false, false, Alert.YES));
+					var eventush:CloseEvent = new CloseEvent(CloseEvent.CLOSE, false, false, Alert.YES);
+					this.data = kCat;
+					this.addEventListener(CloseEvent.CLOSE, handler);
+					dispatchEvent(eventush);
+					this.removeEventListener(CloseEvent.CLOSE, handler);
 				}
 			}
 
