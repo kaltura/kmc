@@ -143,5 +143,10 @@ package com.kaltura.kmc.modules.analytics.model.types
 		 * Live Report 
 		 */
 		public static const LIVE_CONTENT : int = 23;
+		
+		/**
+		 * Real Time Live Report 
+		 */
+		public static const REAL_TIME_CONTENT : int = 24;
 	}
 }
