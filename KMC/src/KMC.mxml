@@ -766,6 +766,10 @@
 				else {
 					var mInfo:XML = _uiconf.modules.module.(@id == o.module)[0];
 					if (mInfo) {
+						if (moduleInfo.extra.forceLoad == "false") {
+							// this means we don't load a module, the function will not be triggered at all.
+							return;
+						}
 						// save func_name
 						_kmcFunction = o;
 						// add listener to moduleReady event
@@ -773,7 +777,7 @@
 						// start loading the relevant module
 						_currentObject = {moduleName: o.module, subtab: mInfo.@subtab.toString()};
 						loadModule(mInfo);
-
+						
 					}
 					// no module, try triggering plugin method
 					else {

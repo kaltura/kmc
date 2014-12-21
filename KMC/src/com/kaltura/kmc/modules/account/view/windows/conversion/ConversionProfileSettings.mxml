@@ -16,6 +16,7 @@
 			import com.kaltura.KalturaClient;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.account.control.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.account.control.events.EntryEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
@@ -215,6 +216,9 @@
 				updateProfileEvent.nextEvent = new ConversionSettingsEvent(ConversionSettingsEvent.getListEventByMode(mode));
 				updateProfileEvent.dispatch();
 				
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "addCode.resetConvProfList"}, true));
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.resetLiveConversionProfilesList", forceLoad: "false"}, true));
+				
 				closeWindow();
 			}
 			
@@ -223,7 +227,6 @@
 			 * if no flavors are selected, prompt
 			 * */
 			private function verifyFlavors():void {
-				//TODO sfsd
 				if (flavorsTable.isFlavorsSelected()) {
 					validateBeforeSave();
 				}

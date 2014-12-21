@@ -208,6 +208,15 @@
 				}
 			}
 
+			
+			/**
+			 * reset list of live conversion profiles so it will be reloaded when needed.
+			 * (triggered using KMCNavigationEvent)
+			 * */
+			public function resetLiveConversionProfilesList():void {
+				_model.liveConversionProfiles = null;
+			}
+
 			/**
 			 * create a new audio entry
 			 * */
@@ -353,7 +362,7 @@
 				switchToTab(_initialTab);
 				
 				setModuleReady();
-
+				
 			}
 
 
@@ -376,6 +385,7 @@
 			 * tabs such as "settings"
 			 * */
 			private function loadChangableData():void {
+				trace("loadChangableData");
 				var listAccessControlProfs:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
 				listAccessControlProfs.dispatch();
 

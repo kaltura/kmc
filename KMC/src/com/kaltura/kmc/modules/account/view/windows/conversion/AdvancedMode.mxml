@@ -8,6 +8,7 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.account.control.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.account.events.TranscodingEvent;
 			import com.kaltura.kmc.modules.account.model.types.ConversionProfileWindowMode;
@@ -49,6 +50,9 @@
 				// list profiles afterwards
 				deleteProfiles.nextEvent = new ConversionSettingsEvent(ConversionSettingsEvent.getListEventByMode(mode));
 				deleteProfiles.dispatch();
+				
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "addCode.resetConvProfList"}, true));
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.resetLiveConversionProfilesList", forceLoad: "false"}, true));
 			}
 			
 			

@@ -9,6 +9,7 @@ package com.kaltura.kmc.modules.content.commands.cat {
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CatTrackEvent;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	import com.kaltura.kmc.modules.content.model.CategoriesModel;
 	import com.kaltura.vo.KalturaCategory;
 	
 	import mx.controls.Alert;
@@ -28,44 +29,71 @@ package com.kaltura.kmc.modules.content.commands.cat {
 
 
 		override public function execute(event:CairngormEvent):void {
-			var rm:IResourceManager = ResourceManager.getInstance();
-			var hasSubCats:Boolean;
-			if (event.data) {
+			var hasSubCats:Boolean;		// has direct sub cats
+			var hasEditWarn:Boolean;	// bulk && any has editWarn tag (single cat warning is handled earlier)
+			
+			if (event.data) {	// handling a single category
 				hasSubCats = event.data[1];
 				_ids = event.data[0] as Array;
 			}
-			if (!_ids) {
-				// get from model
+			if (!_ids) {	// handling bulk, get from model
 				_ids = [];
 				for each (var kCat:KalturaCategory in _model.categoriesModel.selectedCategories) {
 					_ids.push(kCat.id);
+					if (!hasEditWarn && kCat.tags && kCat.tags.indexOf(CategoriesModel.EDIT_WARN_TAG) > -1) {
+						hasEditWarn = true;
+					}
+					if (!hasSubCats && kCat.directSubCategoriesCount > 0) {
+						hasSubCats = true;
+					}
 				}
 			}
 
-			var msg:String;
-			if (_ids.length == 0) {
+			showMessage(_ids.length, hasSubCats, hasEditWarn);
+		}
+
+		
+		private function showMessage(nCats:int, hasSubCats:Boolean, hasEditWarn:Boolean):void
+		{
+			var resourceManager:IResourceManager = ResourceManager.getInstance();
+			var msgs:Array = [];
+			if (nCats == 0) {
 				// no categories
-				Alert.show(rm.getString('entrytable', 'selectCategoriesFirst'),
-					rm.getString('cms', 'selectCategoriesFirstTitle'));
+				Alert.show(resourceManager.getString('entrytable', 'selectCategoriesFirst'),
+					resourceManager.getString('cms', 'selectCategoriesFirstTitle'));
 				return;
 			}
-			else if (_ids.length == 1) {
-				// batch action
-				if (hasSubCats) {
-					// "subcats will be deleted"
-					msg = rm.getString('cms', 'deleteCategoryWarn');
+			else {
+				if (hasEditWarn) {
+					// "some categories created by another app"
+					msgs.push(resourceManager.getString('cms', 'multipleCategoriesEditWarning'));
+				}
+				if (nCats == 1) {
+					if (hasSubCats) {
+						// "subcats will be deleted"
+						msgs.push(resourceManager.getString('cms', 'deleteCategoryWarn'));
+					}
+					else if (!hasEditWarn) {
+						// simple "Are you sure"
+						msgs.push(resourceManager.getString('cms', 'deleteCategoryWarn2'));
+					}
 				}
 				else {
-					// simple "Are you sure"
-					msg = rm.getString('cms', 'deleteCategoryWarn2');
+					// batch action - "Categories will be deleted with their sub-categories"
+					msgs.push(resourceManager.getString('cms', 'deleteCategoriesWarn'));
+				}
+			}				
+			// let the user know:
+			var msg:String = '';
+			if (msgs.length > 1) {
+				for (var i:int = 0; i<msgs.length; i++) {
+					msg += (i+1) + ') ' + msgs[i] + '\n';
 				}
 			}
 			else {
-				msg = rm.getString('cms', 'deleteCategoriesWarn');
+				msg = msgs[0];
 			}
-
-			// let the user know:
-			Alert.show(msg, rm.getString('cms', 'attention'), Alert.OK | Alert.CANCEL, null, deleteCatsApprove);
+			Alert.show(msg, resourceManager.getString('cms', 'attention'), Alert.OK | Alert.CANCEL, null, deleteCatsApprove);
 		}
 
 

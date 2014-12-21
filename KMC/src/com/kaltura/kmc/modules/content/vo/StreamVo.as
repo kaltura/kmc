@@ -5,10 +5,9 @@ package com.kaltura.kmc.modules.content.vo
 		public static const STREAM_TYPE_KALTURA:String = 'kaltura';
 		public static const STREAM_TYPE_MULTICAST:String = 'multicast';
 		public static const STREAM_TYPE_UNIVERSAL:String = 'universal';
-		public static const STREAM_TYPE_LEGACY:String = 'legacy';
 		public static const STREAM_TYPE_MANUAL:String = 'manual';
 		
-		public var streamType:String = STREAM_TYPE_LEGACY;
+		public var streamType:String = STREAM_TYPE_MANUAL;
 		
 		/**
 		 * live stream name 
@@ -57,6 +56,11 @@ package com.kaltura.kmc.modules.content.vo
 		/* manual stream specific fields */
 		public var flashHDSURL:String;
 		public var mobileHLSURL:String; 
+		
+		/**
+		 * for HDS url, is it Akamai HDS  
+		 */
+		public var isAkamaiHds:Boolean; 
 
 		
 		public function StreamVo() {

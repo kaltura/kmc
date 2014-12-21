@@ -189,18 +189,13 @@
 
 
 			public function set selectedEntry(value:KalturaBaseEntry):void {
+				_recordedEntryId = null;
 				if (value is KalturaLiveStreamEntry) {
 					if ((value as KalturaLiveStreamEntry).sourceType == KalturaSourceType.LIVE_STREAM) {
 						if ((value as KalturaLiveStreamEntry).recordedEntryId != null) {
 							_recordedEntryId = (value as KalturaLiveStreamEntry).recordedEntryId;
 						}
 					}
-					offlineHolder.visible = true;
-					offlineHolder.includeInLayout = true;
-				}
-				else {
-					offlineHolder.visible = false;
-					offlineHolder.includeInLayout = false;
 				}
 
 				if (value) {
@@ -1011,7 +1006,9 @@
 											 selectionItemRendererClassFactory="{new ClassFactory(CategorySelectedItem)}"
 											 prompt="{resourceManager.getString('drilldown','categoriesPrompt')}"/>
 				</mx:HBox>
-				<mx:HBox id="offlineHolder" width="100%">
+				<mx:HBox id="offlineHolder" width="100%" 
+						 visible="{selectedEntry is KalturaLiveStreamEntry}"
+						 includeInLayout="{selectedEntry is KalturaLiveStreamEntry}">
 					<mx:Label text="{resourceManager.getString('drilldown','offlineMessage')}" width="{LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
 					<mx:TextArea id="offlineMessage" width="{TEXT_WIDTH}" text="{selectedEntry.offlineMessage}"
@@ -1074,20 +1071,21 @@
 						  styleName="drillDownLabel"/>
 				<mx:Label text="{selectedEntry.creatorId}" width="100%" styleName="drillDownSubLabel"/>
 			</mx:HBox>
-			<mx:HBox width="100%">
+			<mx:HBox width="100%" >
 				<mx:Label text="{resourceManager.getString('drilldown','createdDate')}:" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
 				<mx:Label text="{EntryDataHelper.formatDate(selectedEntry.createdAt)}" width="100%"
 						  styleName="drillDownSubLabel"/>
 			</mx:HBox>
-			<mx:HBox width="100%" paddingBottom="15" visible="{landingPageLabel.text != ''}" includeInLayout="{landingPageLabel.text != ''}">
+			<mx:HBox width="100%" paddingBottom="15" visible="{landingPageLabel.text != ''}" includeInLayout="{landingPageLabel.text != ''}" >
 				<mx:Label text="{resourceManager.getString('drilldown','landingPage')}:" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
 				<mx:Label id="landingPageLabel" selectable="true" width="220" truncateToFit="false" styleName="drillDownSubLabel" 
 						  click="landingPageLabel_clickHandler(event)"/>
 			</mx:HBox>
 			<!-- recorded entry id - when this is a live entry, the corresponding VOD entry -->
-			<mx:HBox width="100%" paddingBottom="15" visible="{_recordedEntryId != null}" includeInLayout="{_recordedEntryId != null}" >
+			<mx:HBox width="100%" paddingBottom="15"  
+					 visible="{_recordedEntryId != null}" includeInLayout="{_recordedEntryId != null}" >
 				<mx:Label text="{resourceManager.getString('drilldown','vodEntry')}:" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
 				<mx:LinkButton label="{_recordedEntryId}" click="showRecordedEntry(event)" />
@@ -1095,7 +1093,7 @@
 			<!-- when this is a recorded entry - the original live entry -->
 			<mx:HBox width="100%" paddingBottom="15" 
 					 visible="{selectedEntry.sourceType == KalturaSourceType.RECORDED_LIVE}"
-					 includeInLayout="{selectedEntry.sourceType != KalturaSourceType.RECORDED_LIVE}" >
+					 includeInLayout="{selectedEntry.sourceType == KalturaSourceType.RECORDED_LIVE}" >
 				<mx:Label text="{resourceManager.getString('drilldown','archive')}:" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
 				<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)" />
@@ -1103,7 +1101,7 @@
 	
 			<mx:HRule width="100%"/>
 			<!-- - - - - - - 2 columns - - - - - - - -->
-			<mx:HBox width="100%" styleName="noPadding" paddingTop="15">
+			<mx:HBox width="100%" styleName="noPadding" paddingTop="15" >
 				<mx:VBox width="100%" styleName="noPadding">
 					<mx:HBox width="100%">
 						<mx:Label text="{resourceManager.getString('drilldown','type')}:" width="{RIGHT_LABEL_WIDTH}"

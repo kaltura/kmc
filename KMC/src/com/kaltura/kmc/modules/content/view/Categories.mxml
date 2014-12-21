@@ -16,7 +16,6 @@
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.types.WindowsStates;
-			import com.kaltura.kmc.modules.content.events.BulkEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.SelectionEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -31,6 +30,7 @@
 			import com.kaltura.vo.KalturaCategoryFilter;
 			
 			import mx.controls.Alert;
+			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 
 			
@@ -103,40 +103,86 @@
 				paging.selectedPage = 1;
 				loadCategories();
 			}
-
-
-			private function categoriesTable_moveCategoryHandler(event:GeneralNonCairngormEvent):void {
+			
+			/* ============================================================================== */
+			
+			private function warnHandler(event:GeneralNonCairngormEvent, handler:Function, textKey:String):void
+			{
 				// set the single selected category  (event.data is KalturaCategory)
 				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.SET_SELECTED_CATEGORY);
 				cgEvent.data = event.data;
 				cgEvent.dispatch();
 				
-				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.MOVE_CATEGORY_WINDOW);
+				var kCat:KalturaCategory = event.data as KalturaCategory;
+				if (kCat.tags && kCat.tags.indexOf(CategoriesModel.EDIT_WARN_TAG) > -1) {
+					var txt:String = resourceManager.getString('cms', textKey);
+					var al:Alert = Alert.show(txt, resourceManager.getString('cms', 'attention'), Alert.YES|Alert.NO, null, handler);
+					al.data = kCat;
+				}
+				else {
+					var eventush:CloseEvent = new CloseEvent(CloseEvent.CLOSE, false, false, Alert.YES);
+					this.data = kCat;
+					this.addEventListener(CloseEvent.CLOSE, handler);
+					dispatchEvent(eventush);
+					this.removeEventListener(CloseEvent.CLOSE, handler);
+				}
+			}
+
+			private function categoriesTable_moveCategoryHandler(event:CloseEvent):void {
+				var cgEvent:CairngormEvent;
+				if (event.detail == Alert.YES) {
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.MOVE_CATEGORY_WINDOW);
+					cgEvent.dispatch();
+				}
+				else {
+					// clear category selection from model
+					cgEvent = new CategoryEvent(CategoryEvent.SET_SELECTED_CATEGORY);
+					cgEvent.data = null;
+					cgEvent.dispatch();
+				}
+			}
+
+			
+			private function categoriesTable_deleteCategoryHandler(event:CloseEvent):void {
+				var cgEvent:CairngormEvent;
+				if (event.detail == Alert.YES) {
+					var kCat:KalturaCategory = event.target.data as KalturaCategory;
+					cgEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORIES);
+					cgEvent.data = [[kCat.id], kCat.directSubCategoriesCount > 0];
+					cgEvent.dispatch();
+				}
+				// clear category selection from model
+				cgEvent = new CategoryEvent(CategoryEvent.SET_SELECTED_CATEGORY);
+				cgEvent.data = null;
 				cgEvent.dispatch();
 			}
 
+			
 
+			protected function categoriesTable_showDetailsHandler(event:CloseEvent):void
+			{
+				var cgEvent:CairngormEvent;
+				if (event.detail == Alert.YES) {
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORY_DETAILS_WINDOW);
+					cgEvent.dispatch();
+				}
+				else {
+					// clear category selection from model
+					cgEvent = new CategoryEvent(CategoryEvent.SET_SELECTED_CATEGORY);
+					cgEvent.data = null;
+					cgEvent.dispatch();
+				}
+			}
+			
+			/* ============================================================================== */
+			
 			private function categoriesTable_itemClickHandler(event:Event):void {
 				// set the list of selected categories
 				var et:CategoriesTable = event.target as CategoriesTable;
 				var cgEvent:SelectionEvent = new SelectionEvent(SelectionEvent.CATEGORIES_SELECTION_CHANGED, et.selectedItems);
 				cgEvent.dispatch();
 			}
-
-
-
-
-			protected function categoriesTable_showDetailsHandler(event:GeneralNonCairngormEvent):void
-			{
-				// set the single selected category  (event.data is KalturaCategory)
-				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.SET_SELECTED_CATEGORY);
-				cgEvent.data = event.data;
-				cgEvent.dispatch();
-
-				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORY_DETAILS_WINDOW);
-				cgEvent.dispatch();
-			}
-
+			
 
 			protected function addCatBtn_clickHandler(event:MouseEvent):void
 			{
@@ -199,8 +245,9 @@
 											 dataProvider="{categoriesModel.categoriesList}" 
 											 orderByChanged="loadCategories()"
 											 selectionChanged="categoriesTable_itemClickHandler(event)"
-											 moveCategory="categoriesTable_moveCategoryHandler(event)"
-											 showDetails="categoriesTable_showDetailsHandler(event)"/>
+											 moveCategory="warnHandler(event, categoriesTable_moveCategoryHandler, 'moveCategoryWarning')"
+											 deleteCategory="warnHandler(event, categoriesTable_deleteCategoryHandler, 'deleteCategoryWarning')"
+											 showDetails="warnHandler(event, categoriesTable_showDetailsHandler, 'editCategoryWarning')"/>
 
 				<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
 					<bulkactions:BulkCategoryActionsMenu id="bulkActions" height="{paging.height}" />

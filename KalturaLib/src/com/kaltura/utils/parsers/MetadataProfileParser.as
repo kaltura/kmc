@@ -201,7 +201,7 @@ package com.kaltura.utils.parsers
 			field.name = element.@name;
 			field.maxNumberOfValues = element.@maxOccurs == XSDConstants.MAX_OCCURS_SINGLE? 
 				MetadataCustomFieldMaxOccursTypes.SINGLE : MetadataCustomFieldMaxOccursTypes.UNBOUND;
-			field.type = setFieldType(element.@type);
+			field.type = setFieldType(element);
 			field.xpath = xPathRoot + buildXpath(element.@name); 
 			
 			var appInfo:XMLList = element.children()[0].children();
@@ -235,12 +235,16 @@ package com.kaltura.utils.parsers
 			}
 			var children:XMLList = element.children();
 			if (children.length()>1) {
-				//nested elments
+				//nested elements
 				if (XML(children[1]).name().localName == XSDConstants.COMPLEX_TYPE) {
 					var sequence:XML = children[1].children()[0];
 					if (sequence.name().localName == XSDConstants.SEQUENCE_TYPE) {
 						for each (var nestedElement:XML in sequence.children()) {
 							var nestedField:MetadataFieldVO = fromXSDToField(nestedElement, field.xpath);
+							// if any of the nested fields are searchable, make the parent field searcheable too
+							if (nestedField.appearInSearch) {
+								field.appearInSearch = true;
+							}
 							field.nestedFieldsArray.addItem(nestedField);
 						}
 					}
@@ -361,9 +365,9 @@ package com.kaltura.utils.parsers
 		 * @return the type
 		 * 
 		 */		
-		private static function setFieldType(type:String):int {
+		private static function setFieldType(element:XML):int {
 			var typeResult:int;
-			
+			var type:String = element.@type;
 			switch (type) {
 				case XSDConstants.TEXT_TYPE:
 					typeResult = MetadataCustomFieldTypes.TEXT
@@ -374,9 +378,18 @@ package com.kaltura.utils.parsers
 				case XSDConstants.OBJECT_TYPE: 
 					typeResult = MetadataCustomFieldTypes.OBJECT;
 					break;
-				//case XSDConstants.LIST_TYPE or no type:
-				default:
+				case XSDConstants.LIST_TYPE:
 					typeResult = MetadataCustomFieldTypes.LIST;
+					break;
+				default:
+					// no type, if has children it's a container, otherwise set to list for BW compat.
+					typeResult = MetadataCustomFieldTypes.LIST;
+					var children:XMLList = element.children(); 
+					if (children.length() > 1) {
+						if (XML(children[1]).name().localName == XSDConstants.COMPLEX_TYPE) {
+							typeResult = MetadataCustomFieldTypes.CONTAINER;		
+						}
+					}
 					break;
 			}
 			

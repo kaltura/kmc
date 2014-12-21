@@ -49,13 +49,25 @@
 			
 			override public function showSubtab(subtab:String, data:Object = null):void {
 				if (isModuleReady) {
-					// studio don't have tabs, empty implementation
 					if (subtab == 'playersList') subtab = 'flash_studio';
-					if (subtab == 'flash_studio' && _subtabs.getItemAt(0).value == 'flash_studio') {
-						secTln.selectedIndex = 0;
+					
+					if (subtab == 'flash_studio' && showFlashStudio) {
+						// only need to mark tln, the rest is already on screen and init'ed
+						if (_subtabs.getItemAt(0).value == 'flash_studio') {
+							secTln.selectedIndex = 0;
+						}
+						else if (_subtabs.getItemAt(1).value == 'flash_studio') {
+							secTln.selectedIndex = 1;
+						}
 					}
-					else /* if (subtab == 'uni_studio') */ {
-						JSGate.triggerJS('kmc.functions.openStudio'); 
+					else {
+						// verify we have uni studio
+						if (showUniversalStudio)
+							JSGate.triggerJS('kmc.functions.openStudio');
+						else {
+							// we only have flash studio, it's in the 0th index
+							secTln.selectedIndex = 0;
+						}
 					}
 				}
 				else {
@@ -161,17 +173,14 @@
 				
 				// create navigation DP
 				_subtabs = new ArrayCollection();
-				if (showFlashStudio) {
-					_subtabs.addItem(new LocalizedVo('flash_studio', 'flash_studio', 'aps'));
-				}
 				if (showUniversalStudio) {
 					_subtabs.addItem(new LocalizedVo('uni_studio', 'uni_studio', 'aps'));
 				}
+				if (showFlashStudio) {
+					_subtabs.addItem(new LocalizedVo('flash_studio', 'flash_studio', 'aps'));
+				}
 				if (_subtabs.length > 0) {
 					secTln.selectedIndex = 0;
-					if (_subtabs.getItemAt(0).value == 'uni_studio') {
-						JSGate.triggerJS('kmc.functions.openStudio');
-					}
 				}
 				
 				secTln.visible = true;
@@ -179,6 +188,11 @@
 				if (_initTab) {
 					showSubtab(_initTab);
 					_initTab = null;
+				}
+				else {
+					if (_subtabs.getItemAt(0).value == 'uni_studio') {
+						JSGate.triggerJS('kmc.functions.openStudio');
+					}
 				}
 			}
 			
