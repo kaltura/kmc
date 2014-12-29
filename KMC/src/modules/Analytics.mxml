@@ -3,7 +3,7 @@
 				   preloader="com.kaltura.preloaders.KmcPreloader" backgroundColor="#034F57" layout="absolute"
 				   horizontalScrollPolicy="off" verticalScrollPolicy="off"
 				   xmlns:business="com.kaltura.kmc.modules.analytics.business.*"
-				   xmlns:control="com.kaltura.kmc.modules.analytics.control.*"
+				   xmlns:control="com.kaltura.kmc.modules.analytics.control.*" creationComplete="kmcmodule1_creationCompleteHandler(event)"
 				   xmlns:view="com.kaltura.kmc.modules.analytics.view.*" minHeight="520" minWidth="950"
 				   >
 	<mx:Metadata>
@@ -29,6 +29,7 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
+			import mx.events.FlexEvent;
 			import mx.events.ItemClickEvent;
 			
 			/**
@@ -198,6 +199,7 @@
 				for each (var subtabName:String in tabsToHide) {
 					contentView.removeChild(this[subtabName]);
 				}
+				secTln.visible = true;
 			}
 			
 			
@@ -326,6 +328,12 @@
 			public function set entitlementEnabled( value : Boolean ):void {
 				_model.entitlementEnabled = value;
 			}
+			
+			protected function kmcmodule1_creationCompleteHandler(event:FlexEvent):void
+			{
+				secTln.visible = false;
+			}
+			
 		]]>
 	</mx:Script>
 	
