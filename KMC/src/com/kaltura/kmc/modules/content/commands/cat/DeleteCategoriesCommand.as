@@ -66,7 +66,7 @@ package com.kaltura.kmc.modules.content.commands.cat {
 			else {
 				if (hasEditWarn) {
 					// "some categories created by another app"
-					msgs.push(resourceManager.getString('cms', 'multipleCategoriesEditWarning'));
+					msgs.push(resourceManager.getString('cms', 'multipleCategoriesDeleteWarning'));
 				}
 				if (nCats == 1) {
 					if (hasSubCats) {
