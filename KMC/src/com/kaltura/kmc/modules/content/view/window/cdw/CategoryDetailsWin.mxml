@@ -301,14 +301,27 @@
 					setNextCategory();
 				}
 			}
-
-
-			private function setNextCategory(event:CloseEvent = null):void {
-				if (_nextPendingCategory == 0) {
-					throw new Error("calling setNextCategory() with _nextPendingCategory == 0");
-					return;
+			
+			
+			/**
+			 * if the next category has edit warn tags, warn
+			 * */
+			private function editWarn(kCat:KalturaCategory):void {
+				if (kCat.tags && kCat.tags.indexOf(CategoriesModel.EDIT_WARN_TAG) > -1) {
+					var txt:String = resourceManager.getString('cms', 'editCategoryWarning');
+					Alert.show(txt, resourceManager.getString('cms', 'attention'), Alert.YES|Alert.NO, null, showNextCategory);
 				}
-				if ((event == null || event.detail == Alert.YES)) {
+				else {
+					showNextCategory();
+				}
+			}
+
+			
+			/**
+			 * set the next category to the model so its details will appear in the window
+			 * */
+			private function showNextCategory(event:CloseEvent = null):void {
+				if (!event || event.detail == Alert.YES) {
 					tabsNav.clear();
 					itemIndex = getNavigatableItemIndex(_nextPendingCategory == 1, itemIndex);
 					var selectCategory:CategoryEvent = new CategoryEvent(CategoryEvent.SET_SELECTED_CATEGORY);
@@ -316,6 +329,24 @@
 					selectCategory.dispatch();
 				}
 				_nextPendingCategory = 0;
+			}
+			
+			
+			/**
+			 * initiate next category flow:
+			 * setNextCategory > editWarn > showNextCategory
+			 * */
+			private function setNextCategory(event:CloseEvent = null):void {
+				if (_nextPendingCategory == 0) {
+					throw new Error("calling setNextCategory() with _nextPendingCategory == 0");
+					_nextPendingCategory = 0;
+					return;
+				}
+				if ((event == null || event.detail == Alert.YES)) {
+					var localItemIndex:int = getNavigatableItemIndex(_nextPendingCategory == 1, itemIndex);
+					var kCat:KalturaCategory = _itemsAC.getItemAt(localItemIndex) as KalturaCategory; 
+					editWarn(kCat);
+				}
 			}
 
 
