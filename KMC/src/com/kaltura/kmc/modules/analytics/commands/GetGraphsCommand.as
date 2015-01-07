@@ -12,7 +12,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 	import com.kaltura.vo.KalturaReportBaseTotal;
 	import com.kaltura.vo.KalturaReportGraph;
 	import com.kaltura.vo.KalturaReportInputFilter;
-
+	
 	import mx.binding.utils.BindingUtils;
 	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayCollection;
@@ -132,6 +132,11 @@ package com.kaltura.kmc.modules.analytics.commands {
 			var obj:Object;
 			var j:int;
 			var addTotalsReport:Boolean = _addTotals && krp.id.substr(0, 5) == "added"; // this report should be followed by a "totals" report
+			var deductTotalsReport:Boolean = _addTotals && krp.id.substr(0, 7) == "deleted"; // this report should be considered in the "totals" report
+			/*
+			 *	in deleted_x report we assume the added_x already created 
+			 *	the totals report, and we will only update it. 
+			*/
 			// for totals calculation
 			var totalsGraphPoints:ArrayCollection; // points for totals graph
 			var totalsSum:Number; // sums up y values
@@ -140,13 +145,20 @@ package com.kaltura.kmc.modules.analytics.commands {
 			if (!reportData.selectedDim)
 				reportData.selectedDim = krp.id;
 
+			
+			var totalDimName:String;
 			if (addTotalsReport) {
 				// add graph dimension for relevant "total"
 				totalsGraphPoints = new ArrayCollection();
-				var totalDimName:String = "total" + krp.id.slice(5);
+				totalDimName = "total" + krp.id.slice(5); // remove "added" from id
 				totalsSum = getBaseTotal(totalDimName);
 				var totalDimObj:Object = createDimObject(totalDimName);
 				reportData.dimArrColl.addItem(totalDimObj);
+			}
+			else if (deductTotalsReport) {
+				totalsGraphPoints = new ArrayCollection();
+				totalsSum = 0;
+				totalDimName = "total" + krp.id.slice(7);	// remove "deleted" from id
 			}
 
 			var pointsArr:Array = krp.data.split(";"); // each element is string: x,y
@@ -207,7 +219,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 							}
 
-							if (addTotalsReport) {
+							if (addTotalsReport || deductTotalsReport) {
 								totalsSum += yVal;
 								totalsGraphPoints.addItem({x: obj.x, y: standartize(totalsSum, totalDimName)});
 							}
@@ -218,6 +230,17 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 				if (addTotalsReport) {
 					reportData.dimToChartDpMap[totalDimName] = totalsGraphPoints;
+				}
+				else if (deductTotalsReport) {
+					// update added_totals data
+					var totals:ArrayCollection = reportData.dimToChartDpMap[totalDimName] as ArrayCollection;
+					j = 0;	// deleted index
+					for (var i:int = 0; i<totals.length; i++) {
+						if (j<totalsGraphPoints.length-1 && totals[i].x >= totalsGraphPoints[j+1].x) {
+							j++;
+						}
+						totals[i].y -= totalsGraphPoints[j].y;
+					}
 				}
 			}
 

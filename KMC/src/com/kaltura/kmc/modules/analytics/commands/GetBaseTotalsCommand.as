@@ -30,6 +30,9 @@ package com.kaltura.kmc.modules.analytics.commands
 			_model.loadingBaseTotals = true;
 			
 			
+			// reset base totals info
+			_model.selectedReportData.baseTotals = null;
+			
 			if (!_model.selectedReportData.pager) {
 				_model.selectedReportData.pager = new KalturaFilterPager();
 				_model.selectedReportData.pager.pageSize = ReportData.DEF_PAGER_SIZE;
@@ -54,10 +57,9 @@ package com.kaltura.kmc.modules.analytics.commands
 		
 		public function result(data:Object):void
 		{
+			_model.selectedReportData.baseTotals = data.data as Array;
 			_model.loadingBaseTotals = false;
 			_model.checkLoading();
-			
-			_model.selectedReportData.baseTotals = data.data as Array;
 		}
 		
 		
