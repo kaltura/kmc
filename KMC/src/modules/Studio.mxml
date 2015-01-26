@@ -15,6 +15,7 @@
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsNavigationEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsUiConfEvent;
 			import com.kaltura.kmc.modules.studio.view.ApsWizard;
@@ -339,7 +340,8 @@
 			private function secTln_itemClickHandler(event:ItemClickEvent):void {
 				switch (event.item.value) {
 					case 'uni_studio':
-						JSGate.triggerJS('kmc.functions.openStudio');
+						// go through navigation, so url will be updated
+						dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "studio", "uni_studio"));
 						break;
 					case 'flash_studio':
 						// do nothing;
