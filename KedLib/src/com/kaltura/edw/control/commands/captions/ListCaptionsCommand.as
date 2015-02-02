@@ -14,6 +14,7 @@ package com.kaltura.edw.control.commands.captions {
 	import com.kaltura.vo.KalturaAssetFilter;
 	import com.kaltura.vo.KalturaCaptionAsset;
 	import com.kaltura.vo.KalturaCaptionAssetListResponse;
+	import com.kaltura.vo.KalturaFilterPager;
 
 	public class ListCaptionsCommand extends KedCommand {
 		private var _captionsArray:Array;
@@ -27,7 +28,9 @@ package com.kaltura.edw.control.commands.captions {
 			_model.increaseLoadCounter();
 			var filter:KalturaAssetFilter = new KalturaAssetFilter();
 			filter.entryIdEqual = (_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id;
-			var listCaptions:CaptionAssetList = new CaptionAssetList(filter);
+			var pager:KalturaFilterPager = new KalturaFilterPager();
+			pager.pageSize = 100;
+			var listCaptions:CaptionAssetList = new CaptionAssetList(filter, pager);
 			listCaptions.addEventListener(KalturaEvent.COMPLETE, listResult);
 			listCaptions.addEventListener(KalturaEvent.FAILED, fault);
 
