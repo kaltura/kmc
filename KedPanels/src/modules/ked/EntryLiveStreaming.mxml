@@ -50,9 +50,16 @@ live streaming control tab of EntryDetailsWin
 			public var liveProfiles:ArrayCollection;
 			
 			/**
-			 * RnP
+			 * @RnP
 			 * */
 			public var enableKalturaLive:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * @RnP
+			 * */
+			public var showLiveReportsButton:Boolean = true;
+			
 
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (value is KalturaLiveStreamEntry) {
@@ -453,8 +460,8 @@ live streaming control tab of EntryDetailsWin
 		<mx:HBox width="100%" styleName="noPadding">
 			<mx:Button id="exportBtn" label="{resourceManager.getString('drilldown', 'exportToFme')}" click="{fmeExport()}"/>
 			<mx:LinkButton styleName="liveReportsButton" label="{resourceManager.getString('drilldown', 'openLiveReport')}" 
-						   visible="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
-						   includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
+						   visible="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM &amp;&amp; showLiveReportsButton}"
+						   includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM &amp;&amp; showLiveReportsButton}"
 						   click="openLiveReport(event)"/>
 		</mx:HBox>
 	</mx:VBox>
