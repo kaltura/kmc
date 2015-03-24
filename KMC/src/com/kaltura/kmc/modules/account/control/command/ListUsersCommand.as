@@ -45,12 +45,13 @@ package com.kaltura.kmc.modules.account.control.command {
 			ufilter.isAdminEqual = KalturaNullableBoolean.TRUE_VALUE;
 			ufilter.loginEnabledEqual = KalturaNullableBoolean.TRUE_VALUE;
 			ufilter.statusEqual = KalturaUserStatus.ACTIVE;
-			// server can't filter by user role
+			ufilter.roleIdsEqual = '0';
 			var ul:UserList = new UserList(ufilter);
 			mr.addAction(ul);
+			mr.mapMultiRequestParam(1, 'objects:0:id', 2, 'filter:roleIdsEqual');
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
-
+			mr.queued = false;
 			_model.context.kc.post(mr);
 		}
 
@@ -71,18 +72,7 @@ package com.kaltura.kmc.modules.account.control.command {
 					}
 				}
 			}
-			
-			// get the publisher administrator role's id
-			var roleid:String = (event.data[0] as KalturaUserRoleListResponse).objects[0].id;
-			// filter only the admin users
-			var orig:Array = (event.data[1] as KalturaUserListResponse).objects;
-			var result:Array = [];
-			for each (var user:KalturaUser in orig) {
-				if (user.roleIds == roleid) {
-					result.push(user);
-				}
-			}
-			_model.usersList = new ArrayCollection(result);
+			_model.usersList = new ArrayCollection((event.data[1] as KalturaUserListResponse).objects);
 		}
 
 
