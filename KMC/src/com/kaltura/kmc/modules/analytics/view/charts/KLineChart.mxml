@@ -46,7 +46,10 @@
 			 * we received and replace y values where we have matching x values (dates).
 			 */
 			override public function set dataProvider(value:Object):void {
-
+				var i:int, j:int, k:int;
+				var obj:Object;
+				var arrCol:ArrayCollection;
+				var line:LineSeries;
 				var provider:ArrayCollection = new ArrayCollection(); // actual data provider
 
 				// fill the 0 points from min to max and not using the build in interpolation
@@ -56,11 +59,11 @@
 					if (showHours) {
 						if (_maxHAxisDate && _minHAxisDate) {
 							var minMaxHrs:int = (_maxHAxisDate.time - _minHAxisDate.time) / TimeConsts.HOUR;
-							for (var j:int = 0; j <= minMaxHrs; j++) {
-								var obj:Object = new Object();
+							for (j = 0; j <= minMaxHrs; j++) {
+								obj = new Object();
 								obj.x = _minHAxisDate.time + (j * TimeConsts.HOUR);
 								if (series.length) {
-									for each (var line:LineSeries in series) {
+									for each (line in series) {
 										obj[line.yField] = 0;
 									}
 								}
@@ -72,11 +75,11 @@
 						}
 						// if in the value received there is a point matching a point on the graph, 
 						// use its value instead of the initial 0.
-						var arrCol:ArrayCollection = value as ArrayCollection;
+						arrCol = value as ArrayCollection;
 						provider = fixTimeOffsets2(provider, arrCol);
-						for (var i:int = 0; i < arrCol.length; i++) {
+						for (i = 0; i < arrCol.length; i++) {
 							var secondDate:Date = new Date(arrCol[i].x);
-							for (var k:int = 0; k < provider.length; k++) {
+							for (k = 0; k < provider.length; k++) {
 								var firstDate:Date = new Date(provider[k].x);
 								if (firstDate.hours == secondDate.hours && firstDate.date == secondDate.date && firstDate.fullYear == secondDate.fullYear && firstDate.month == secondDate.month) {
 									// need to copy values, so we will keep fields with "0" (no value)
@@ -89,11 +92,11 @@
 					else {
 						if (_maxHAxisDate && _minHAxisDate) {
 							var minMaxDays:int = (_maxHAxisDate.time - _minHAxisDate.time) / TimeConsts.DAY;
-							for (var j:int = 0; j <= minMaxDays; j++) {
-								var obj:Object = new Object();
+							for (j = 0; j <= minMaxDays; j++) {
+								obj = new Object();
 								obj.x = _minHAxisDate.time + (j * TimeConsts.DAY);
 								if (series.length) {
-									for each (var line:LineSeries in series) {
+									for each (line in series) {
 										obj[line.yField] = 0;
 									}
 								}
@@ -105,11 +108,11 @@
 						}
 						// if in the value received there is a point matching a point on the graph, 
 						// use its value instead of the initial 0.
-						var arrCol:ArrayCollection = value as ArrayCollection;
+						arrCol = value as ArrayCollection;
 						provider = fixTimeOffsets2(provider, arrCol);
-						for (var i:int = 0; i < arrCol.length; i++) {
+						for (i = 0; i < arrCol.length; i++) {
 							var secondDate:Date = new Date(arrCol[i].x);
-							for (var k:int = 0; k < provider.length; k++) {
+							for (k = 0; k < provider.length; k++) {
 								var firstDate:Date = new Date(provider[k].x);
 								if (firstDate.date == secondDate.date && firstDate.fullYear == secondDate.fullYear && firstDate.month == secondDate.month) {
 									// need to copy values, so we will keep fields with "0" (no value)
