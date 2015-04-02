@@ -48,6 +48,11 @@ package com.kaltura.kmc.modules.content.vo
 		public var recordingEnabled:Boolean;
 		
 		/**
+		 * append/per-session 
+		 */
+		public var recordingType:String;
+		
+		/**
 		 * conversion profile to be used (Kaltura streams)  
 		 */
 		public var conversionProfileId:int;
@@ -61,6 +66,8 @@ package com.kaltura.kmc.modules.content.vo
 		 * for HDS url, is it Akamai HDS  
 		 */
 		public var isAkamaiHds:Boolean; 
+		
+		
 
 		
 		public function StreamVo() {

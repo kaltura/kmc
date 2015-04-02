@@ -20,6 +20,7 @@
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.vo.StreamVo;
+			import com.kaltura.types.KalturaRecordStatus;
 			import com.kaltura.vo.KalturaConversionProfile;
 			
 			import mx.binding.utils.BindingUtils;
@@ -75,6 +76,9 @@
 			 * manual stream type selected
 			 * */
 			private var _isManualStream:Boolean = false;
+			
+			[Bindable]
+			private var recordingOptions:ArrayCollection = new ArrayCollection();
 
 
 			private function creationCompleteHandler(event:FlexEvent):void {
@@ -109,6 +113,10 @@
 				streamTypeWrap.includeInLayout = streamTypeWrap.visible = pdp.enableAkamaiLive || pdp.enableKalturaLive;
 				
 				_recordByDefault = pdp.enableKalturaRecording;
+				//build the dataprovider items list :
+				recordingOptions.addItem(new LocalizedVo(String(KalturaRecordStatus.APPENDED), 'rec_append', 'live'));
+				recordingOptions.addItem(new LocalizedVo(String(KalturaRecordStatus.PER_SESSION), 'rec_slice', 'live'));
+				
 			}
 
 
@@ -217,6 +225,7 @@
 							streamVo.dvrEnabled = false;
 						}
 						streamVo.recordingEnabled = useRecKaltura.selected;
+						streamVo.recordingType = recordingType.selectedItem.value;
 						streamVo.conversionProfileId = conversionProfileId;
 					} 
 					else {
@@ -309,6 +318,8 @@
 			<mx:HBox width="100%" >
 				<mx:CheckBox id="useRecKaltura" selected="{_recordByDefault}" />
 				<mx:Text text="{resourceManager.getString('live', 'enableRecording')}" width="100%" />
+				<mx:ComboBox id="recordingType" enabled="{useRecKaltura.selected}" 
+							 dataProvider="{recordingOptions}" width="290" />
 			</mx:HBox>
 		</mx:VBox>
 		
