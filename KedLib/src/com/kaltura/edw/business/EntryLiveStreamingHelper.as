@@ -37,7 +37,7 @@ package com.kaltura.edw.business
 			if (!entry.recordStatus || entry.recordStatus == KalturaRecordStatus.DISABLED) {
 				result = ResourceManager.getInstance().getString('drilldown', 'off');
 			}
-			else if (entry.recordStatus == KalturaRecordStatus.ENABLED) {
+			else if (entry.recordStatus == KalturaRecordStatus.APPENDED || entry.recordStatus == KalturaRecordStatus.PER_SESSION) {
 				result = ResourceManager.getInstance().getString('drilldown', 'on');
 			}
 			return result;

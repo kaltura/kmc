@@ -79,7 +79,7 @@ package com.kaltura.kmc.modules.content.commands.live {
 			
 			// recording
 			if (streamVo.recordingEnabled) {
-				liveEntry.recordStatus = KalturaRecordStatus.ENABLED;
+				liveEntry.recordStatus = KalturaRecordStatus.APPENDED;
 			}
 			else {
 				liveEntry.recordStatus = KalturaRecordStatus.DISABLED;
@@ -107,7 +107,7 @@ package com.kaltura.kmc.modules.content.commands.live {
 			}
 			// recording
 			if (streamVo.recordingEnabled) {
-				liveEntry.recordStatus = KalturaRecordStatus.ENABLED;
+				liveEntry.recordStatus = KalturaRecordStatus.APPENDED;
 			}
 			else {
 				liveEntry.recordStatus = KalturaRecordStatus.DISABLED;
