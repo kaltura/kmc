@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,8 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
+	import com.kaltura.vo.KalturaLiveEntryRecordingOptions;
+
 	import com.kaltura.vo.KalturaMediaEntry;
 
 	[Bindable]
@@ -59,6 +61,12 @@ package com.kaltura.vo
 		public var dvrWindow : int = int.MIN_VALUE;
 
 		/**
+		* Elapsed recording time (in msec) up to the point where the live stream was last stopped (unpublished).
+		* 
+		**/
+		public var lastElapsedRecordingTime : int = int.MIN_VALUE;
+
+		/**
 		* Array of key value protocol->live stream url objects
 		* 
 		**/
@@ -78,19 +86,44 @@ package com.kaltura.vo
 		public var pushPublishEnabled : int = int.MIN_VALUE;
 
 		/**
+		* Array of publish configurations
+		* 
+		**/
+		public var publishConfigurations : Array = null;
+
+		/**
 		* The first time in which the entry was broadcast
 		* 
 		**/
 		public var firstBroadcast : int = int.MIN_VALUE;
+
+		/**
+		* The Last time in which the entry was broadcast
+		* 
+		**/
+		public var lastBroadcast : int = int.MIN_VALUE;
+
+		/**
+		* The time (unix timestamp in milliseconds) in which the entry broadcast started or 0 when the entry is off the air
+		* 
+		**/
+		public var currentBroadcastStartTime : Number = Number.NEGATIVE_INFINITY;
+
+		/**
+		**/
+		public var recordingOptions : KalturaLiveEntryRecordingOptions;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('offlineMessage');
+			arr.push('lastElapsedRecordingTime');
 			arr.push('liveStreamConfigurations');
 			arr.push('recordedEntryId');
 			arr.push('pushPublishEnabled');
+			arr.push('publishConfigurations');
+			arr.push('currentBroadcastStartTime');
 			return arr;
 		}
 
@@ -101,6 +134,7 @@ package com.kaltura.vo
 			arr.push('recordStatus');
 			arr.push('dvrStatus');
 			arr.push('dvrWindow');
+			arr.push('recordingOptions');
 			return arr;
 		}
 
@@ -110,6 +144,12 @@ package com.kaltura.vo
 			switch (arrayName) {
 				case 'liveStreamConfigurations':
 					result = 'KalturaLiveStreamConfiguration';
+					break;
+				case 'publishConfigurations':
+					result = 'KalturaLiveStreamPushPublishConfiguration';
+					break;
+				case 'recordingOptions':
+					result = '';
 					break;
 				default:
 					result = super.getElementType(arrayName);

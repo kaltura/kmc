@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,6 +29,9 @@ package com.kaltura.types
 {
 	public class KalturaEventNotificationTemplateType
 	{
+		public static const BPM_ABORT : String = 'businessProcessNotification.BusinessProcessAbort';
+		public static const BPM_SIGNAL : String = 'businessProcessNotification.BusinessProcessSignal';
+		public static const BPM_START : String = 'businessProcessNotification.BusinessProcessStart';
 		public static const EMAIL : String = 'emailNotification.Email';
 		public static const HTTP : String = 'httpNotification.Http';
 	}

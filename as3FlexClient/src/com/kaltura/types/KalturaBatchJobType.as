@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,13 +34,14 @@ package com.kaltura.types
 		public static const DISTRIBUTION_DISABLE : String = 'contentDistribution.DistributionDisable';
 		public static const DISTRIBUTION_ENABLE : String = 'contentDistribution.DistributionEnable';
 		public static const DISTRIBUTION_FETCH_REPORT : String = 'contentDistribution.DistributionFetchReport';
-		public static const DISTRIBUTION_SYNC : String = 'contentDistribution.DistributionSync';
-		public static const DISTRIBUTION_UPDATE : String = 'contentDistribution.DistributionUpdate';
 		public static const CONVERT : String = '0';
 		public static const DISTRIBUTION_SUBMIT : String = 'contentDistribution.DistributionSubmit';
+		public static const DISTRIBUTION_SYNC : String = 'contentDistribution.DistributionSync';
+		public static const DISTRIBUTION_UPDATE : String = 'contentDistribution.DistributionUpdate';
 		public static const DROP_FOLDER_CONTENT_PROCESSOR : String = 'dropFolder.DropFolderContentProcessor';
 		public static const DROP_FOLDER_WATCHER : String = 'dropFolder.DropFolderWatcher';
 		public static const EVENT_NOTIFICATION_HANDLER : String = 'eventNotification.EventNotificationHandler';
+		public static const INTEGRATION : String = 'integration.Integration';
 		public static const SCHEDULED_TASK : String = 'scheduledTask.ScheduledTask';
 		public static const INDEX_TAGS : String = 'tagSearch.IndexTagsByPrivacyContext';
 		public static const TAG_RESOLVE : String = 'tagSearch.TagResolve';
@@ -81,5 +82,6 @@ package com.kaltura.types
 		public static const COPY_PARTNER : String = '37';
 		public static const VALIDATE_LIVE_MEDIA_SERVERS : String = '38';
 		public static const SYNC_CATEGORY_PRIVACY_CONTEXT : String = '39';
+		public static const LIVE_REPORT_EXPORT : String = '40';
 	}
 }

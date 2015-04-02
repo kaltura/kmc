@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -45,8 +45,9 @@ package com.kaltura.commands.liveStream
 		* @param mediaServerIndex int
 		* @param resource KalturaDataCenterContentResource
 		* @param duration Number
+		* @param isLastChunk Boolean
 		**/
-		public function LiveStreamAppendRecording( entryId : String,assetId : String,mediaServerIndex : int,resource : KalturaDataCenterContentResource,duration : Number )
+		public function LiveStreamAppendRecording( entryId : String,assetId : String,mediaServerIndex : int,resource : KalturaDataCenterContentResource,duration : Number,isLastChunk : Boolean=false )
 		{
 			service= 'livestream';
 			action= 'appendRecording';
@@ -65,6 +66,8 @@ package com.kaltura.commands.liveStream
 				valueArr = valueArr.concat(keyValArr[1]);
 			keyArr.push('duration');
 			valueArr.push(duration);
+			keyArr.push('isLastChunk');
+			valueArr.push(isLastChunk);
 			applySchema(keyArr, valueArr);
 		}
 

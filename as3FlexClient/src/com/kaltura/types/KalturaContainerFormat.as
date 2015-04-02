@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -38,6 +38,7 @@ package com.kaltura.types
 		public static const HLS : String = 'hls';
 		public static const ISMV : String = 'ismv';
 		public static const JPG : String = 'jpg';
+		public static const M4V : String = 'm4v';
 		public static const MKV : String = 'mkv';
 		public static const MOV : String = 'mov';
 		public static const MP3 : String = 'mp3';

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -27,11 +27,17 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
+	import com.kaltura.vo.map;
+
 	import com.kaltura.vo.BaseFlexVo;
 
 	[Bindable]
 	public dynamic class KalturaObject extends BaseFlexVo
 	{
+		/**
+		**/
+		public var relatedObjects : map;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -39,6 +45,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
+			arr.push('relatedObjects');
 			return arr;
 		}
 
@@ -61,6 +68,9 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'relatedObjects':
+					result = 'KalturaListResponse';
+					break;
 			}
 			return result;
 		}

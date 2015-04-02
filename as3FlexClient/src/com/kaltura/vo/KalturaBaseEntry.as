@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -79,13 +79,13 @@ package com.kaltura.vo
 		public var adminTags : String = null;
 
 		/**
-		* Categories with no entitlement that this entry belongs to.
+		* Comma separated list of full names of categories to which this entry belongs. Only categories that don't have entitlement (privacy context) are listed, to retrieve the full list of categories, use the categoryEntry.list action.
 		* 
 		**/
 		public var categories : String = null;
 
 		/**
-		* Categories Ids of categories with no entitlement that this entry belongs to
+		* Comma separated list of ids of categories to which this entry belongs. Only categories that don't have entitlement (privacy context) are listed, to retrieve the full list of categories, use the categoryEntry.list action.
 		* 
 		**/
 		public var categoriesIds : String = null;
@@ -254,6 +254,12 @@ package com.kaltura.vo
 		public var rootEntryId : String = null;
 
 		/**
+		* ID of source root entry, used for defining entires association
+		* 
+		**/
+		public var parentEntryId : String = null;
+
+		/**
 		* clipping, skipping and cropping attributes that used to create this entry
 		* 
 		**/
@@ -296,6 +302,7 @@ package com.kaltura.vo
 			arr.push('partnerSortValue');
 			arr.push('conversionProfileId');
 			arr.push('redirectEntryId');
+			arr.push('parentEntryId');
 			arr.push('operationAttributes');
 			arr.push('entitledUsersEdit');
 			arr.push('entitledUsersPublish');

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,7 @@
 // ===================================================================================================
 package com.kaltura.commands.liveStream
 {
+		import com.kaltura.vo.KalturaLiveStreamConfiguration;
 	import com.kaltura.delegates.liveStream.LiveStreamAddLiveStreamPushPublishConfigurationDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -42,8 +43,9 @@ package com.kaltura.commands.liveStream
 		* @param entryId String
 		* @param protocol String
 		* @param url String
+		* @param liveStreamConfiguration KalturaLiveStreamConfiguration
 		**/
-		public function LiveStreamAddLiveStreamPushPublishConfiguration( entryId : String,protocol : String,url : String )
+		public function LiveStreamAddLiveStreamPushPublishConfiguration( entryId : String,protocol : String,url : String = null,liveStreamConfiguration : KalturaLiveStreamConfiguration=null )
 		{
 			service= 'livestream';
 			action= 'addLiveStreamPushPublishConfiguration';
@@ -57,6 +59,11 @@ package com.kaltura.commands.liveStream
 			valueArr.push(protocol);
 			keyArr.push('url');
 			valueArr.push(url);
+			if (liveStreamConfiguration) { 
+				keyValArr = kalturaObject2Arrays(liveStreamConfiguration, 'liveStreamConfiguration');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			} 
 			applySchema(keyArr, valueArr);
 		}
 

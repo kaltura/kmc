@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -50,6 +50,7 @@ package com.kaltura.types
 		public static const OPERATION_SYSTEM : int = 22;
 		public static const BROWSERS : int = 23;
 		public static const LIVE : int = 24;
+		public static const TOP_PLAYBACK_CONTEXT : int = 25;
 		public static const PARTNER_USAGE : int = 201;
 	}
 }

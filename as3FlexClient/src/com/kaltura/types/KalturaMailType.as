@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -68,5 +68,8 @@ package com.kaltura.types
 		public static const MAIL_TYPE_SYSTEM_USER_RESET_PASSWORD_SUCCESS : String = '111';
 		public static const MAIL_TYPE_SYSTEM_USER_NEW_PASSWORD : String = '112';
 		public static const MAIL_TYPE_SYSTEM_USER_CREDENTIALS_SAVED : String = '113';
+		public static const MAIL_TYPE_LIVE_REPORT_EXPORT_SUCCESS : String = '130';
+		public static const MAIL_TYPE_LIVE_REPORT_EXPORT_FAILURE : String = '131';
+		public static const MAIL_TYPE_LIVE_REPORT_EXPORT_ABORT : String = '132';
 	}
 }

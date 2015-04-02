@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -44,6 +44,10 @@ package com.kaltura.vo
 		**/
 		public var playbackContext : String = null;
 
+		/**
+		**/
+		public var ancestorPlaybackContext : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -51,6 +55,7 @@ package com.kaltura.vo
 			arr.push('application');
 			arr.push('userIds');
 			arr.push('playbackContext');
+			arr.push('ancestorPlaybackContext');
 			return arr;
 		}
 

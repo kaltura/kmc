@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -32,10 +32,15 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaCuePointFilter extends KalturaCuePointBaseFilter
 	{
+		/**
+		**/
+		public var freeText : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('freeText');
 			return arr;
 		}
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -27,10 +27,10 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaFilter;
+	import com.kaltura.vo.KalturaRelatedFilter;
 
 	[Bindable]
-	public dynamic class KalturaBaseEntryBaseFilter extends KalturaFilter
+	public dynamic class KalturaBaseEntryBaseFilter extends KalturaRelatedFilter
 	{
 		/**
 		* This filter should be in use for retrieving only a specific entry (identified by its entryId).
@@ -89,6 +89,10 @@ package com.kaltura.vo
 		* 
 		**/
 		public var userIdEqual : String = null;
+
+		/**
+		**/
+		public var userIdIn : String = null;
 
 		/**
 		**/
@@ -349,6 +353,18 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var parentEntryIdEqual : String = null;
+
+		/**
+		**/
+		public var entitledUsersEditMatchAnd : String = null;
+
+		/**
+		**/
+		public var entitledUsersPublishMatchAnd : String = null;
+
+		/**
+		**/
 		public var tagsNameMultiLikeOr : String = null;
 
 		/**
@@ -385,6 +401,7 @@ package com.kaltura.vo
 			arr.push('partnerIdEqual');
 			arr.push('partnerIdIn');
 			arr.push('userIdEqual');
+			arr.push('userIdIn');
 			arr.push('creatorIdEqual');
 			arr.push('tagsLike');
 			arr.push('tagsMultiLikeOr');
@@ -440,6 +457,9 @@ package com.kaltura.vo
 			arr.push('partnerSortValueLessThanOrEqual');
 			arr.push('rootEntryIdEqual');
 			arr.push('rootEntryIdIn');
+			arr.push('parentEntryIdEqual');
+			arr.push('entitledUsersEditMatchAnd');
+			arr.push('entitledUsersPublishMatchAnd');
 			arr.push('tagsNameMultiLikeOr');
 			arr.push('tagsAdminTagsMultiLikeOr');
 			arr.push('tagsAdminTagsNameMultiLikeOr');

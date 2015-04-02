@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -42,8 +42,9 @@ package com.kaltura.commands.liveStream
 		* @param entryId String
 		* @param hostname String
 		* @param mediaServerIndex int
+		* @param applicationName String
 		**/
-		public function LiveStreamRegisterMediaServer( entryId : String,hostname : String,mediaServerIndex : int )
+		public function LiveStreamRegisterMediaServer( entryId : String,hostname : String,mediaServerIndex : int,applicationName : String = null )
 		{
 			service= 'livestream';
 			action= 'registerMediaServer';
@@ -57,6 +58,8 @@ package com.kaltura.commands.liveStream
 			valueArr.push(hostname);
 			keyArr.push('mediaServerIndex');
 			valueArr.push(mediaServerIndex);
+			keyArr.push('applicationName');
+			valueArr.push(applicationName);
 			applySchema(keyArr, valueArr);
 		}
 

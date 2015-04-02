@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -27,10 +27,10 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaFilter;
+	import com.kaltura.vo.KalturaRelatedFilter;
 
 	[Bindable]
-	public dynamic class KalturaMetadataBaseFilter extends KalturaFilter
+	public dynamic class KalturaMetadataBaseFilter extends KalturaRelatedFilter
 	{
 		/**
 		**/
@@ -53,6 +53,8 @@ package com.kaltura.vo
 		public var metadataProfileVersionLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
+		* When null, default is KalturaMetadataObjectType::ENTRY
+		* 
 		* @see com.kaltura.types.KalturaMetadataObjectType
 		**/
 		public var metadataObjectTypeEqual : String = null;

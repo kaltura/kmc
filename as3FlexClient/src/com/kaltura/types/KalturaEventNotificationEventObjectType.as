@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -36,6 +36,8 @@ package com.kaltura.types
 		public static const DISTRIBUTION_PROFILE : String = 'contentDistributionEventNotifications.DistributionProfile';
 		public static const ENTRY_DISTRIBUTION : String = 'contentDistributionEventNotifications.EntryDistribution';
 		public static const CUE_POINT : String = 'cuePointEventNotifications.CuePoint';
+		public static const DROP_FOLDER : String = 'dropFolderEventNotifications.DropFolder';
+		public static const DROP_FOLDER_FILE : String = 'dropFolderEventNotifications.DropFolderFile';
 		public static const METADATA : String = 'metadataEventNotifications.Metadata';
 		public static const ENTRY : String = '1';
 		public static const CATEGORY : String = '2';

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,11 +29,14 @@ package com.kaltura.types
 {
 	public class KalturaObjectTaskType
 	{
+		public static const DISTRIBUTE : String = 'scheduledTaskContentDistribution.Distribute';
 		public static const DISPATCH_EVENT_NOTIFICATION : String = 'scheduledTaskEventNotification.DispatchEventNotification';
 		public static const EXECUTE_METADATA_XSLT : String = 'scheduledTaskMetadata.ExecuteMetadataXslt';
 		public static const DELETE_ENTRY : String = '1';
 		public static const MODIFY_CATEGORIES : String = '2';
 		public static const DELETE_ENTRY_FLAVORS : String = '3';
 		public static const CONVERT_ENTRY_FLAVORS : String = '4';
+		public static const DELETE_LOCAL_CONTENT : String = '5';
+		public static const STORAGE_EXPORT : String = '6';
 	}
 }

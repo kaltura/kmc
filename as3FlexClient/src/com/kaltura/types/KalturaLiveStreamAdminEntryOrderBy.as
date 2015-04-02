@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -33,6 +33,7 @@ package com.kaltura.types
 		public static const DURATION_ASC : String = '+duration';
 		public static const END_DATE_ASC : String = '+endDate';
 		public static const FIRST_BROADCAST_ASC : String = '+firstBroadcast';
+		public static const LAST_BROADCAST_ASC : String = '+lastBroadcast';
 		public static const LAST_PLAYED_AT_ASC : String = '+lastPlayedAt';
 		public static const MEDIA_TYPE_ASC : String = '+mediaType';
 		public static const MODERATION_COUNT_ASC : String = '+moderationCount';
@@ -50,6 +51,7 @@ package com.kaltura.types
 		public static const DURATION_DESC : String = '-duration';
 		public static const END_DATE_DESC : String = '-endDate';
 		public static const FIRST_BROADCAST_DESC : String = '-firstBroadcast';
+		public static const LAST_BROADCAST_DESC : String = '-lastBroadcast';
 		public static const LAST_PLAYED_AT_DESC : String = '-lastPlayedAt';
 		public static const MEDIA_TYPE_DESC : String = '-mediaType';
 		public static const MODERATION_COUNT_DESC : String = '-moderationCount';

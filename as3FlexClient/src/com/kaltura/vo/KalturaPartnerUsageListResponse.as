@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2011  Kaltura Inc.
+// Copyright (C) 2006-2015  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,10 +29,10 @@ package com.kaltura.vo
 {
 	import com.kaltura.vo.KalturaVarPartnerUsageItem;
 
-	import com.kaltura.vo.BaseFlexVo;
+	import com.kaltura.vo.KalturaListResponse;
 
 	[Bindable]
-	public dynamic class KalturaPartnerUsageListResponse extends BaseFlexVo
+	public dynamic class KalturaPartnerUsageListResponse extends KalturaListResponse
 	{
 		/**
 		**/
@@ -42,39 +42,23 @@ package com.kaltura.vo
 		**/
 		public var objects : Array = null;
 
-		/**
-		**/
-		public var totalCount : int = int.MIN_VALUE;
-
-		/** 
-		* a list of attributes which may be updated on this object 
-		**/ 
-		public function getUpdateableParamKeys():Array
+		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
-			arr = new Array();
+			arr = super.getUpdateableParamKeys();
 			arr.push('total');
 			arr.push('objects');
-			arr.push('totalCount');
 			return arr;
 		}
 
-		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		**/ 
-		public function getInsertableParamKeys():Array
+		override public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
-			arr = new Array();
+			arr = super.getInsertableParamKeys();
 			return arr;
 		}
 
-		/** 
-		* get the expected type of array elements 
-		* @param arrayName 	 name of an attribute of type array of the current object 
-		* @return 	 un-qualified class name 
-		**/ 
-		public function getElementType(arrayName:String):String
+		override public function getElementType(arrayName:String):String
 		{
 			var result:String = '';
 			switch (arrayName) {
@@ -83,6 +67,9 @@ package com.kaltura.vo
 					break;
 				case 'objects':
 					result = 'KalturaVarPartnerUsageItem';
+					break;
+				default:
+					result = super.getElementType(arrayName);
 					break;
 			}
 			return result;
