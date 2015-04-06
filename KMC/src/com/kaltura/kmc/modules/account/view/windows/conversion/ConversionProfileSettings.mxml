@@ -21,6 +21,7 @@
 			import com.kaltura.kmc.modules.account.control.events.EntryEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.model.types.ConversionProfileWindowMode;
+			import com.kaltura.kmc.modules.account.utils.ListConversionProfilesUtil;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.types.KalturaConversionProfileType;
 			import com.kaltura.vo.KalturaBaseEntry;
@@ -28,6 +29,7 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.videoClasses.CuePointManager;
 			import mx.events.CloseEvent;
@@ -105,10 +107,12 @@
 			 */
 			private function onCreationComplete(event:Event):void {
 				if (currentState == EDIT_STATE) {
+					flavorsTable.dataProvider = _model.cloneFlavorsData(mode);
 					PermissionManager.getInstance().applyAllAttributes(this, "conversionProfileDrilldown_edit");
 					showConvProfData();
 				}
 				else {
+					flavorsTable.dataProvider = _model.cloneFlavorsDataUnselected(mode);
 					// when we use this pop-up to create a new Conversion profile
 					conversionProfile = new ConversionProfileVO();
 					// set profile type
@@ -133,6 +137,12 @@
 					var cg:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_STORAGE_PROFILES);
 					cg.dispatch();
 				}
+				
+				var ids:Array = [];
+				if (_conversionProfile.profile.flavorParamsIds) {
+					ids = _conversionProfile.profile.flavorParamsIds.split(',');
+				}
+				ListConversionProfilesUtil.selectFlavorParamsByIds(flavorsTable.dataProvider as ArrayCollection, ids);
 			}
 
 
@@ -291,9 +301,7 @@
 		<mx:Label text="{resourceManager.getString('account','requiredFlavors')}" 
 				  toolTip="{resourceManager.getString('account','requiredFlavorsToolTip')}"
 				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
-		<conversion:ConversionSettingsTable id="flavorsTable" height="100%" 
-			dataProvider="{currentState == EDIT_STATE ? _model.cloneFlavorsData(mode) : _model.cloneFlavorsDataUnselected(mode)}"
-			cProfile="{conversionProfile}"  />
+		<conversion:ConversionSettingsTable id="flavorsTable" height="100%" cProfile="{conversionProfile}"  />
 	</mx:HBox>
 	<mx:HBox width="100%" verticalAlign="middle">
 		<mx:Text text="{resourceManager.getString('account','ingestion_settings')}"   

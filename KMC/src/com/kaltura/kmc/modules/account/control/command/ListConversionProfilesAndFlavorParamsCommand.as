@@ -148,16 +148,8 @@ package com.kaltura.kmc.modules.account.control.command {
 			else {
 				selectedItems = new Array();
 			}
-			for each (var flavora:String in selectedItems) {
-				for each (var flavorVO:FlavorVO in flvorsTmpArrCol) {
-					if (flavora == flavorVO.kFlavor.id.toString()) {
-						flavorVO.selected = true;
-					}
-					else {
-						flavorVO.selected = false;
-					}
-				}
-			}
+			
+			ListConversionProfilesUtil.selectFlavorParamsByIds(flvorsTmpArrCol, selectedItems);
 
 			_model.mediaFlavorsData = flvorsTmpArrCol;
 			_model.totalMediaConversionProfiles = convsProfilesRespones.totalCount; 

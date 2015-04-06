@@ -1,6 +1,7 @@
 package com.kaltura.kmc.modules.account.utils {
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
+	import com.kaltura.vo.FlavorVO;
 	import com.kaltura.vo.KalturaConversionProfile;
 	import com.kaltura.vo.KalturaConversionProfileAssetParams;
 	
@@ -51,6 +52,20 @@ package com.kaltura.kmc.modules.account.utils {
 					}
 				}
 				cpvo.flavors = ar;
+			}
+		}
+		
+		
+		public static function selectFlavorParamsByIds(flavors:ArrayCollection, ids:Array):void {
+			for each (var flavorId:String in ids) {
+				for each (var flavorVO:FlavorVO in flavors) {
+					if (flavorId == flavorVO.kFlavor.id.toString()) {
+						flavorVO.selected = true;
+					}
+					else {
+						flavorVO.selected = false;
+					}
+				}
 			}
 		}
 	}
