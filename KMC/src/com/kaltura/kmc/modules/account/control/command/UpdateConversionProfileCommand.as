@@ -1,6 +1,7 @@
 package com.kaltura.kmc.modules.account.control.command {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.conversionProfile.ConversionProfileUpdate;
 	import com.kaltura.commands.conversionProfileAssetParams.ConversionProfileAssetParamsUpdate;
@@ -12,7 +13,7 @@ package com.kaltura.kmc.modules.account.control.command {
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 	import com.kaltura.vo.KalturaConversionProfile;
 	import com.kaltura.vo.KalturaConversionProfileAssetParams;
-
+	
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
@@ -32,6 +33,9 @@ package com.kaltura.kmc.modules.account.control.command {
 
 			var id:int = cProfile.profile.id;
 			var updateProfile:KalturaConversionProfile = cProfile.profile; //prepareForUpdate(profileVo.profile);
+			if (updateProfile.flavorParamsIds == null) {
+				updateProfile.flavorParamsIds = KalturaClient.NULL_STRING;
+			}
 			updateProfile.setUpdatedFieldsOnly(true);
 			var cpu:ConversionProfileUpdate = new ConversionProfileUpdate(cProfile.profile.id, updateProfile);
 			mr.addAction(cpu);
