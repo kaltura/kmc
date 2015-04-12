@@ -61,10 +61,11 @@ package com.kaltura.kmc.modules.account.utils {
 				for each (var flavorVO:FlavorVO in flavors) {
 					if (flavorId == flavorVO.kFlavor.id.toString()) {
 						flavorVO.selected = true;
+						break;
 					}
-					else {
+					/*else {
 						flavorVO.selected = false;
-					}
+					}*/
 				}
 			}
 		}
