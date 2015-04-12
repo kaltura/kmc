@@ -11,9 +11,7 @@ package com.kaltura.kmc.modules.account.model {
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaAccessControlFilter;
 	import com.kaltura.vo.KalturaBaseEntry;
-	import com.kaltura.vo.KalturaCaptionParams;
 	import com.kaltura.vo.KalturaCategory;
-	import com.kaltura.vo.KalturaConversionProfile;
 	import com.kaltura.vo.KalturaConversionProfileFilter;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaStorageProfile;
