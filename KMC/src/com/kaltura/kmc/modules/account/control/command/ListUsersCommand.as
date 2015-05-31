@@ -51,7 +51,7 @@ package com.kaltura.kmc.modules.account.control.command {
 			mr.mapMultiRequestParam(1, 'objects:0:id', 2, 'filter:roleIdsEqual');
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
-			mr.queued = false;
+			mr.queued = false;	// so numbering won't get messed up
 			_model.context.kc.post(mr);
 		}
 
