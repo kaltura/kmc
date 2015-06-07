@@ -112,6 +112,7 @@ package com.kaltura.types
 		public static const MR : String = 'mr';
 		public static const MS : String = 'ms';
 		public static const MT : String = 'mt';
+		public static const MU : String = 'multilingual';
 		public static const MY : String = 'my';
 		public static const NA : String = 'na';
 		public static const NE : String = 'ne';

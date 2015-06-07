@@ -114,6 +114,7 @@ package com.kaltura.types
 		public static const MR : String = 'Marathi';
 		public static const MO : String = 'Moldavian';
 		public static const MN : String = 'Mongolian';
+		public static const MU : String = 'Multilingual';
 		public static const NA : String = 'Nauru';
 		public static const NE : String = 'Nepali';
 		public static const NO : String = 'Norwegian';
@@ -168,8 +169,8 @@ package com.kaltura.types
 		public static const CY : String = 'Welsh';
 		public static const WO : String = 'Wolof';
 		public static const XH : String = 'Xhosa';
-		public static const YI : String = 'Yiddish';
 		public static const JI : String = 'Yiddish';
+		public static const YI : String = 'Yiddish';
 		public static const YO : String = 'Yoruba';
 		public static const ZU : String = 'Zulu';
 	}
