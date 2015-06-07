@@ -153,6 +153,7 @@ package com.kaltura.utils {
 				{label: rm.getString('languages', 'MK'), code: "MK", value:KalturaLanguage.MK},
 				{label: rm.getString('languages', 'ML'), code: "ML", value:KalturaLanguage.ML},
 				{label: rm.getString('languages', 'MN'), code: "MN", value:KalturaLanguage.MN},
+				{label: rm.getString('languages', 'MU'), code: "MU", value:KalturaLanguage.MU},
 				{label: rm.getString('languages', 'MO'), code: "MO", value:KalturaLanguage.MO},
 				{label: rm.getString('languages', 'MR'), code: "MR", value:KalturaLanguage.MR},
 				{label: rm.getString('languages', 'MS'), code: "MS", value:KalturaLanguage.MS},
