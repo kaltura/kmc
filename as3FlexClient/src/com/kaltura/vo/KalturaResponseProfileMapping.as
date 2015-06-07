@@ -40,6 +40,11 @@ package com.kaltura.vo
 		**/
 		public var filterProperty : String = null;
 
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var allowNull : Boolean;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -49,6 +54,7 @@ package com.kaltura.vo
 			arr = new Array();
 			arr.push('parentProperty');
 			arr.push('filterProperty');
+			arr.push('allowNull');
 			return arr;
 		}
 

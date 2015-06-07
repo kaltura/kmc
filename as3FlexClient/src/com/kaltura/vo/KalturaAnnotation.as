@@ -70,12 +70,28 @@ package com.kaltura.vo
 		**/
 		public var directChildrenCount : int = int.MIN_VALUE;
 
+		/**
+		* Is the annotation public.
+		* 
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var isPublic : int = int.MIN_VALUE;
+
+		/**
+		* Should the cue point get indexed on the entry.
+		* 
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var searchableOnEntry : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('text');
 			arr.push('endTime');
+			arr.push('isPublic');
+			arr.push('searchableOnEntry');
 			return arr;
 		}
 

@@ -187,6 +187,10 @@ package com.kaltura.vo
 		**/
 		public var releaseClaims : Boolean;
 
+		/**
+		**/
+		public var apiAuthorizeUrl : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -228,6 +232,7 @@ package com.kaltura.vo
 			arr.push('captionAutosync');
 			arr.push('deleteReference');
 			arr.push('releaseClaims');
+			arr.push('apiAuthorizeUrl');
 			return arr;
 		}
 

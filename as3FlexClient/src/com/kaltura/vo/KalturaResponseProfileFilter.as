@@ -27,10 +27,10 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDetachedResponseProfileFilter;
+	import com.kaltura.vo.KalturaResponseProfileBaseFilter;
 
 	[Bindable]
-	public dynamic class KalturaResponseProfileFilter extends KalturaDetachedResponseProfileFilter
+	public dynamic class KalturaResponseProfileFilter extends KalturaResponseProfileBaseFilter
 	{
 		override public function getUpdateableParamKeys():Array
 		{

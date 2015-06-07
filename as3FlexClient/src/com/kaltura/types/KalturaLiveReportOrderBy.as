@@ -29,6 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaLiveReportOrderBy
 	{
+		public static const NAME_ASC : String = '+name';
 		public static const AUDIENCE_DESC : String = '-audience';
 		public static const EVENT_TIME_DESC : String = '-eventTime';
 		public static const PLAYS_DESC : String = '-plays';

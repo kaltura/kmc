@@ -38,6 +38,7 @@ package com.kaltura.types
 		public static const HLS : String = 'hls';
 		public static const ISMV : String = 'ismv';
 		public static const JPG : String = 'jpg';
+		public static const M2TS : String = 'm2ts';
 		public static const M4V : String = 'm4v';
 		public static const MKV : String = 'mkv';
 		public static const MOV : String = 'mov';
@@ -45,6 +46,7 @@ package com.kaltura.types
 		public static const MP4 : String = 'mp4';
 		public static const MPEG : String = 'mpeg';
 		public static const MPEGTS : String = 'mpegts';
+		public static const MXF : String = 'mxf';
 		public static const OGG : String = 'ogg';
 		public static const OGV : String = 'ogv';
 		public static const PDF : String = 'pdf';

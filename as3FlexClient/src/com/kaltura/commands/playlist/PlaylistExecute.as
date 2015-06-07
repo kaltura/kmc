@@ -29,6 +29,7 @@ package com.kaltura.commands.playlist
 {
 		import com.kaltura.vo.KalturaContext;
 		import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
+		import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.delegates.playlist.PlaylistExecuteDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -45,8 +46,9 @@ package com.kaltura.commands.playlist
 		* @param detailed String
 		* @param playlistContext KalturaContext
 		* @param filter KalturaMediaEntryFilterForPlaylist
+		* @param pager KalturaFilterPager
 		**/
-		public function PlaylistExecute( id : String,detailed : String='',playlistContext : KalturaContext=null,filter : KalturaMediaEntryFilterForPlaylist=null )
+		public function PlaylistExecute( id : String,detailed : String='',playlistContext : KalturaContext=null,filter : KalturaMediaEntryFilterForPlaylist=null,pager : KalturaFilterPager=null )
 		{
 			service= 'playlist';
 			action= 'execute';
@@ -65,6 +67,11 @@ package com.kaltura.commands.playlist
 			} 
 			if (filter) { 
 				keyValArr = kalturaObject2Arrays(filter, 'filter');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			} 
+			if (pager) { 
+				keyValArr = kalturaObject2Arrays(pager, 'pager');
 				keyArr = keyArr.concat(keyValArr[0]);
 				valueArr = valueArr.concat(keyValArr[1]);
 			} 

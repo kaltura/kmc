@@ -74,6 +74,10 @@ package com.kaltura.vo
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 
+		/**
+		**/
+		public var signingKey : String = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -87,6 +91,7 @@ package com.kaltura.vo
 			arr.push('status');
 			arr.push('licenseServerUrl');
 			arr.push('defaultPolicy');
+			arr.push('signingKey');
 			return arr;
 		}
 

@@ -29,6 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaDropFolderType
 	{
+		public static const FEED : String = 'FeedDropFolder.FEED';
 		public static const WEBEX : String = 'WebexDropFolder.WEBEX';
 		public static const LOCAL : String = '1';
 		public static const FTP : String = '2';

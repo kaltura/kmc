@@ -38,11 +38,7 @@ package com.kaltura.vo
 
 		/**
 		**/
-		public var password : String = null;
-
-		/**
-		**/
-		public var defaultCategory : String = null;
+		public var defaultCategory : int = int.MIN_VALUE;
 
 		/**
 		**/
@@ -60,17 +56,42 @@ package com.kaltura.vo
 		**/
 		public var allowResponses : String = null;
 
+		/**
+		**/
+		public var apiAuthorizeUrl : String = null;
+
+		/**
+		**/
+		public var googleClientId : String = null;
+
+		/**
+		**/
+		public var googleClientSecret : String = null;
+
+		/**
+		**/
+		public var googleTokenData : String = null;
+
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var assumeSuccess : Boolean;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('username');
-			arr.push('password');
 			arr.push('defaultCategory');
 			arr.push('allowComments');
 			arr.push('allowEmbedding');
 			arr.push('allowRatings');
 			arr.push('allowResponses');
+			arr.push('apiAuthorizeUrl');
+			arr.push('googleClientId');
+			arr.push('googleClientSecret');
+			arr.push('googleTokenData');
+			arr.push('assumeSuccess');
 			return arr;
 		}
 

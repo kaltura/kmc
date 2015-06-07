@@ -27,6 +27,7 @@
 // ===================================================================================================
 package com.kaltura.commands.playlist
 {
+		import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.delegates.playlist.PlaylistExecuteFromFiltersDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -42,8 +43,9 @@ package com.kaltura.commands.playlist
 		* @param filters Array
 		* @param totalResults int
 		* @param detailed String
+		* @param pager KalturaFilterPager
 		**/
-		public function PlaylistExecuteFromFilters( filters : Array,totalResults : int,detailed : String='' )
+		public function PlaylistExecuteFromFilters( filters : Array,totalResults : int,detailed : String='1',pager : KalturaFilterPager=null )
 		{
 			service= 'playlist';
 			action= 'executeFromFilters';
@@ -58,6 +60,11 @@ package com.kaltura.commands.playlist
 			valueArr.push(totalResults);
 			keyArr.push('detailed');
 			valueArr.push(detailed);
+			if (pager) { 
+				keyValArr = kalturaObject2Arrays(pager, 'pager');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			} 
 			applySchema(keyArr, valueArr);
 		}
 

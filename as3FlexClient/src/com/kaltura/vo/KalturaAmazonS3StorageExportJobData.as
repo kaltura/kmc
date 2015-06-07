@@ -37,11 +37,16 @@ package com.kaltura.vo
 		**/
 		public var filesPermissionInS3 : String = null;
 
+		/**
+		**/
+		public var s3Region : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('filesPermissionInS3');
+			arr.push('s3Region');
 			return arr;
 		}
 

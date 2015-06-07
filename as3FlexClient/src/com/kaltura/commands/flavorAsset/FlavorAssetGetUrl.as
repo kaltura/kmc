@@ -27,6 +27,7 @@
 // ===================================================================================================
 package com.kaltura.commands.flavorAsset
 {
+		import com.kaltura.vo.KalturaFlavorAssetUrlOptions;
 	import com.kaltura.delegates.flavorAsset.FlavorAssetGetUrlDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -42,8 +43,9 @@ package com.kaltura.commands.flavorAsset
 		* @param id String
 		* @param storageId int
 		* @param forceProxy Boolean
+		* @param options KalturaFlavorAssetUrlOptions
 		**/
-		public function FlavorAssetGetUrl( id : String,storageId : int=int.MIN_VALUE,forceProxy : Boolean=false )
+		public function FlavorAssetGetUrl( id : String,storageId : int=int.MIN_VALUE,forceProxy : Boolean=false,options : KalturaFlavorAssetUrlOptions=null )
 		{
 			service= 'flavorasset';
 			action= 'getUrl';
@@ -57,6 +59,11 @@ package com.kaltura.commands.flavorAsset
 			valueArr.push(storageId);
 			keyArr.push('forceProxy');
 			valueArr.push(forceProxy);
+			if (options) { 
+				keyValArr = kalturaObject2Arrays(options, 'options');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			} 
 			applySchema(keyArr, valueArr);
 		}
 

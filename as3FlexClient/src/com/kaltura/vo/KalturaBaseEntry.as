@@ -317,7 +317,6 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('creatorId');
-			arr.push('thumbnailUrl');
 			return arr;
 		}
 

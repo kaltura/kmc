@@ -130,6 +130,12 @@ package com.kaltura.vo
 		**/
 		public var mediaProtocols : String = null;
 
+		/**
+		* priority used for ordering similar delivery profiles
+		* 
+		**/
+		public var priority : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -147,6 +153,7 @@ package com.kaltura.vo
 			arr.push('recognizer');
 			arr.push('tokenizer');
 			arr.push('mediaProtocols');
+			arr.push('priority');
 			return arr;
 		}
 

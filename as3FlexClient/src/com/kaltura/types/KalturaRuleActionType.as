@@ -29,10 +29,11 @@ package com.kaltura.types
 {
 	public class KalturaRuleActionType
 	{
-		public static const DRM_POLICY : String = 'playReady.DRM_POLICY';
+		public static const DRM_POLICY : String = 'drm.DRM_POLICY';
 		public static const BLOCK : String = '1';
 		public static const PREVIEW : String = '2';
 		public static const LIMIT_FLAVORS : String = '3';
 		public static const ADD_TO_STORAGE : String = '4';
+		public static const LIMIT_DELIVERY_PROFILES : String = '5';
 	}
 }

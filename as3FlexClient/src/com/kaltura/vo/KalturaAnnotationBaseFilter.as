@@ -68,6 +68,11 @@ package com.kaltura.vo
 		**/
 		public var durationLessThanOrEqual : int = int.MIN_VALUE;
 
+		/**
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var isPublicEqual : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -81,6 +86,7 @@ package com.kaltura.vo
 			arr.push('endTimeLessThanOrEqual');
 			arr.push('durationGreaterThanOrEqual');
 			arr.push('durationLessThanOrEqual');
+			arr.push('isPublicEqual');
 			return arr;
 		}
 

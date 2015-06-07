@@ -38,6 +38,10 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var label : String = null;
+
+		/**
+		**/
 		public var filePath : String = null;
 
 		/**
@@ -65,6 +69,7 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('language');
+			arr.push('label');
 			arr.push('filePath');
 			arr.push('remoteId');
 			arr.push('action');

@@ -105,6 +105,12 @@ package com.kaltura.vo
 		**/
 		public var flavorAssets : Array = null;
 
+		/**
+		* Array of allowed flavor assets according to access control limitations and requested tags
+		* 
+		**/
+		public var pluginData : Object;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -123,6 +129,7 @@ package com.kaltura.vo
 			arr.push('accessControlMessages');
 			arr.push('accessControlActions');
 			arr.push('flavorAssets');
+			arr.push('pluginData');
 			return arr;
 		}
 
@@ -145,6 +152,9 @@ package com.kaltura.vo
 					break;
 				case 'flavorAssets':
 					result = 'KalturaFlavorAsset';
+					break;
+				case 'pluginData':
+					result = 'KalturaPluginData';
 					break;
 				default:
 					result = super.getElementType(arrayName);
