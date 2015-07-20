@@ -91,6 +91,11 @@ package com.kaltura.vo
 		**/
 		public var createMode : int = int.MIN_VALUE;
 
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var disableReIndexing : Boolean;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -103,6 +108,7 @@ package com.kaltura.vo
 			arr.push('systemName');
 			arr.push('description');
 			arr.push('createMode');
+			arr.push('disableReIndexing');
 			return arr;
 		}
 

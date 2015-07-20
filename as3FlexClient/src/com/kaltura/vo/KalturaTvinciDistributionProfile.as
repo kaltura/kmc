@@ -44,6 +44,18 @@ package com.kaltura.vo
 		**/
 		public var password : String = null;
 
+		/**
+		**/
+		public var schemaId : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var language : String = null;
+
+		/**
+		**/
+		public var xsltFile : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -51,6 +63,9 @@ package com.kaltura.vo
 			arr.push('ingestUrl');
 			arr.push('username');
 			arr.push('password');
+			arr.push('schemaId');
+			arr.push('language');
+			arr.push('xsltFile');
 			return arr;
 		}
 

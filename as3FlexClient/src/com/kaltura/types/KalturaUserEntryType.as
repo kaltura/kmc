@@ -29,5 +29,6 @@ package com.kaltura.types
 {
 	public class KalturaUserEntryType
 	{
+		public static const QUIZ : String = 'quiz.QUIZ';
 	}
 }

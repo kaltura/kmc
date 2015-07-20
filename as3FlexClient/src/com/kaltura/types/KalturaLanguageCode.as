@@ -54,6 +54,8 @@ package com.kaltura.types
 		public static const DZ : String = 'dz';
 		public static const EL : String = 'el';
 		public static const EN : String = 'en';
+		public static const EN_GB : String = 'en_gb';
+		public static const EN_US : String = 'en_us';
 		public static const EO : String = 'eo';
 		public static const ES : String = 'es';
 		public static const ET : String = 'et';

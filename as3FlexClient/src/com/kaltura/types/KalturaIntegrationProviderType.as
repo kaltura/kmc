@@ -29,5 +29,6 @@ package com.kaltura.types
 {
 	public class KalturaIntegrationProviderType
 	{
+		public static const EXAMPLE : String = 'exampleIntegration.Example';
 	}
 }

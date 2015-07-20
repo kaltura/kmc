@@ -33,6 +33,8 @@ package com.kaltura.types
 		public static const ANNOTATION : String = 'annotation.Annotation';
 		public static const CODE : String = 'codeCuePoint.Code';
 		public static const EVENT : String = 'eventCuePoint.Event';
+		public static const QUIZ_ANSWER : String = 'quiz.QUIZ_ANSWER';
+		public static const QUIZ_QUESTION : String = 'quiz.QUIZ_QUESTION';
 		public static const THUMB : String = 'thumbCuePoint.Thumb';
 	}
 }

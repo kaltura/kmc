@@ -29,12 +29,13 @@ package com.kaltura.types
 {
 	public class KalturaBatchJobType
 	{
+		public static const PARSE_MULTI_LANGUAGE_CAPTION_ASSET : String = 'caption.parsemultilanguagecaptionasset';
 		public static const PARSE_CAPTION_ASSET : String = 'captionSearch.parseCaptionAsset';
 		public static const DISTRIBUTION_DELETE : String = 'contentDistribution.DistributionDelete';
 		public static const DISTRIBUTION_DISABLE : String = 'contentDistribution.DistributionDisable';
+		public static const CONVERT : String = '0';
 		public static const DISTRIBUTION_ENABLE : String = 'contentDistribution.DistributionEnable';
 		public static const DISTRIBUTION_FETCH_REPORT : String = 'contentDistribution.DistributionFetchReport';
-		public static const CONVERT : String = '0';
 		public static const DISTRIBUTION_SUBMIT : String = 'contentDistribution.DistributionSubmit';
 		public static const DISTRIBUTION_SYNC : String = 'contentDistribution.DistributionSync';
 		public static const DISTRIBUTION_UPDATE : String = 'contentDistribution.DistributionUpdate';

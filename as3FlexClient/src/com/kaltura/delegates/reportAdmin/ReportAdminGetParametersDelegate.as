@@ -25,58 +25,35 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.delegates.reportAdmin
 {
-	import com.kaltura.vo.KalturaPartnerFilter;
+	import com.kaltura.vo.KalturaString;KalturaString;;
 
-	[Bindable]
-	public dynamic class KalturaVarConsolePartnerFilter extends KalturaPartnerFilter
+	import com.kaltura.core.KClassFactory;
+
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
+
+	public class ReportAdminGetParametersDelegate extends WebDelegateBase
 	{
-		/**
-		* Eq filter for the partner's group type
-		* 
-		* @see com.kaltura.types.KalturaPartnerGroupType
-		**/
-		public var groupTypeEq : int = int.MIN_VALUE;
-
-		/**
-		* In filter for the partner's group type
-		* 
-		**/
-		public var groupTypeIn : String = null;
-
-		/**
-		* Filter for partner permissions- filter contains comma-separated string of permission names which the returned partners should have.
-		* 
-		**/
-		public var partnerPermissionsExist : String = null;
-
-		override public function getUpdateableParamKeys():Array
+		public function ReportAdminGetParametersDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('groupTypeEq');
-			arr.push('groupTypeIn');
-			arr.push('partnerPermissionsExist');
-			return arr;
+			super(call, config);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function parse(result:XML) : *
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
-		}
-
-		override public function getElementType(arrayName:String):String
-		{
-			var result:String = '';
-			switch (arrayName) {
-				default:
-					result = super.getElementType(arrayName);
-					break;
+			var arr : Array = new Array();
+			for( var i:int=0; i<result.result.children().length() ; i++)
+			{
+				var cls : Class = getDefinitionByName('com.kaltura.vo.'+ result.result.children()[i].objectType) as Class;
+				var obj : * = (new KClassFactory( cls )).newInstanceFromXML( XMLList(result.result.children()[i]) );
+				arr.push(obj);
 			}
-			return result;
+			return arr;
 		}
+
 	}
 }

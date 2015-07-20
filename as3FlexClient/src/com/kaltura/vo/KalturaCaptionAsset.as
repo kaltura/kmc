@@ -79,6 +79,12 @@ package com.kaltura.vo
 		**/
 		public var status : int = int.MIN_VALUE;
 
+		/**
+		* The parent id of the asset
+		* 
+		**/
+		public var parentId : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -95,6 +101,7 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			arr.push('captionParamsId');
 			arr.push('format');
+			arr.push('parentId');
 			return arr;
 		}
 

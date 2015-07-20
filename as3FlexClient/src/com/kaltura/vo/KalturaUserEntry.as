@@ -44,16 +44,11 @@ package com.kaltura.vo
 
 		/**
 		**/
-		public var userId : int = int.MIN_VALUE;
+		public var userId : String = null;
 
 		/**
 		**/
 		public var partnerId : int = int.MIN_VALUE;
-
-		/**
-		* @see com.kaltura.types.KalturaUserEntryType
-		**/
-		public var type : String = null;
 
 		/**
 		* @see com.kaltura.types.KalturaUserEntryStatus
@@ -67,6 +62,11 @@ package com.kaltura.vo
 		/**
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
+
+		/**
+		* @see com.kaltura.types.KalturaUserEntryType
+		**/
+		public var type : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

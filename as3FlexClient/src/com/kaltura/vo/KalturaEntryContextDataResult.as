@@ -109,7 +109,7 @@ package com.kaltura.vo
 		* Array of allowed flavor assets according to access control limitations and requested tags
 		* 
 		**/
-		public var pluginData : Object;
+		public var pluginData : Object = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -95,6 +95,13 @@ package com.kaltura.vo
 		**/
 		public var flavorParamsIds : String = null;
 
+		/**
+		* True if trim action is disabled for this entry
+		* 
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var isTrimDisabled : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;

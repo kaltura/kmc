@@ -27,15 +27,92 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaRelatedFilter;
+	import com.kaltura.vo.KalturaFilter;
 
 	[Bindable]
-	public dynamic class KalturaUserEntryBaseFilter extends KalturaRelatedFilter
+	public dynamic class KalturaUserEntryBaseFilter extends KalturaFilter
 	{
+		/**
+		**/
+		public var idEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var idIn : String = null;
+
+		/**
+		**/
+		public var idNotIn : String = null;
+
+		/**
+		**/
+		public var entryIdEqual : String = null;
+
+		/**
+		**/
+		public var entryIdIn : String = null;
+
+		/**
+		**/
+		public var entryIdNotIn : String = null;
+
+		/**
+		**/
+		public var userIdEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var userIdIn : String = null;
+
+		/**
+		**/
+		public var userIdNotIn : String = null;
+
+		/**
+		* @see com.kaltura.types.KalturaUserEntryStatus
+		**/
+		public var statusEqual : String = null;
+
+		/**
+		**/
+		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		* @see com.kaltura.types.KalturaUserEntryType
+		**/
+		public var typeEqual : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('idEqual');
+			arr.push('idIn');
+			arr.push('idNotIn');
+			arr.push('entryIdEqual');
+			arr.push('entryIdIn');
+			arr.push('entryIdNotIn');
+			arr.push('userIdEqual');
+			arr.push('userIdIn');
+			arr.push('userIdNotIn');
+			arr.push('statusEqual');
+			arr.push('createdAtLessThanOrEqual');
+			arr.push('createdAtGreaterThanOrEqual');
+			arr.push('updatedAtLessThanOrEqual');
+			arr.push('updatedAtGreaterThanOrEqual');
+			arr.push('typeEqual');
 			return arr;
 		}
 

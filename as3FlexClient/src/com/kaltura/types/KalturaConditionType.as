@@ -46,5 +46,6 @@ package com.kaltura.types
 		public static const USER_ROLE : String = '9';
 		public static const GEO_DISTANCE : String = '10';
 		public static const OR_OPERATOR : String = '11';
+		public static const HASH : String = '12';
 	}
 }

@@ -32,10 +32,25 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaIpAddressCondition extends KalturaMatchCondition
 	{
+		/**
+		* allow internal ips
+		* 
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var acceptInternalIps : Boolean;
+
+		/**
+		* http header name for extracting the ip
+		* 
+		**/
+		public var httpHeader : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('acceptInternalIps');
+			arr.push('httpHeader');
 			return arr;
 		}
 

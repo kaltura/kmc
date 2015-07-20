@@ -58,6 +58,8 @@ package com.kaltura.types
 		public static const DA : String = 'Danish';
 		public static const NL : String = 'Dutch';
 		public static const EN : String = 'English';
+		public static const EN_US : String = 'English (American)';
+		public static const EN_GB : String = 'English (British)';
 		public static const EO : String = 'Esperanto';
 		public static const ET : String = 'Estonian';
 		public static const FO : String = 'Faeroese';
@@ -76,13 +78,13 @@ package com.kaltura.types
 		public static const GN : String = 'Guarani';
 		public static const GU : String = 'Gujarati';
 		public static const HA : String = 'Hausa';
-		public static const IW : String = 'Hebrew';
 		public static const HE : String = 'Hebrew';
+		public static const IW : String = 'Hebrew';
 		public static const HI : String = 'Hindi';
 		public static const HU : String = 'Hungarian';
 		public static const IS : String = 'Icelandic';
-		public static const IN : String = 'Indonesian';
 		public static const ID : String = 'Indonesian';
+		public static const IN : String = 'Indonesian';
 		public static const IA : String = 'Interlingua';
 		public static const IE : String = 'Interlingue';
 		public static const IU : String = 'Inuktitut';

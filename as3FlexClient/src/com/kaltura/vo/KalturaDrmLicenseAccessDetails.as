@@ -36,7 +36,7 @@ package com.kaltura.vo
 		* Drm policy name
 		* 
 		**/
-		public var policyName : String = null;
+		public var policy : String = null;
 
 		/**
 		* movie duration in seconds
@@ -48,7 +48,7 @@ package com.kaltura.vo
 		* playback window in seconds
 		* 
 		**/
-		public var absoluteExpiration : int = int.MIN_VALUE;
+		public var absolute_duration : int = int.MIN_VALUE;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -57,9 +57,9 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
-			arr.push('policyName');
+			arr.push('policy');
 			arr.push('duration');
-			arr.push('absoluteExpiration');
+			arr.push('absolute_duration');
 			return arr;
 		}
 

@@ -34,7 +34,7 @@ package com.kaltura.vo
 	{
 		/**
 		**/
-		public var relatedObjects : Object;
+		public var relatedObjects : Object = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

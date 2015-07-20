@@ -35,5 +35,6 @@ package com.kaltura.types
 		public static const LIMIT_FLAVORS : String = '3';
 		public static const ADD_TO_STORAGE : String = '4';
 		public static const LIMIT_DELIVERY_PROFILES : String = '5';
+		public static const SERVE_FROM_REMOTE_SERVER : String = '6';
 	}
 }
