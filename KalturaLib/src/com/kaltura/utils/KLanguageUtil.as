@@ -104,6 +104,8 @@ package com.kaltura.utils {
 				{label: rm.getString('languages', 'DZ'), code: "DZ", value:KalturaLanguage.DZ},
 				{label: rm.getString('languages', 'EL'), code: "EL", value:KalturaLanguage.EL},
 //				{label: rm.getString('languages', 'EN'), code: "EN", value:KalturaLanguage.EN},
+				{label: rm.getString('languages', 'EN_GB'), code: "EN_GB", value:KalturaLanguage.EN_GB},
+				{label: rm.getString('languages', 'EN_US'), code: "EN_US", value:KalturaLanguage.EN_US},
 				{label: rm.getString('languages', 'EO'), code: "EO", value:KalturaLanguage.EO},
 				{label: rm.getString('languages', 'ES'), code: "ES", value:KalturaLanguage.ES},
 				{label: rm.getString('languages', 'ET'), code: "ET", value:KalturaLanguage.ET},
