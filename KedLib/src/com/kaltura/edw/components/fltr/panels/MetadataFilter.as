@@ -60,7 +60,7 @@ package com.kaltura.edw.components.fltr.panels
 					if (_buttons[i].selected) {
 						fieldValueSearchCondition = new KalturaSearchCondition();
 						fieldValueSearchCondition.field = (data as MetadataFieldVO).xpath;
-						fieldValueSearchCondition.value = _buttons[i].data;
+						fieldValueSearchCondition.value = "\"" + _buttons[i].data + "\"";
 						fieldKalturaMetadataSearchItem.items.push(fieldValueSearchCondition);
 					}
 				}
