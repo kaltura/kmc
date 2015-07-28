@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.admin.model {
 	
 	import flash.events.EventDispatcher;
 	
-	import modules.Administration;
+	import modules.Management;
 	
 	import mx.collections.ArrayCollection;
 	import mx.resources.ResourceManager;
@@ -36,7 +36,7 @@ package com.kaltura.kmc.modules.admin.model {
 		/**
 		 * reference to module
 		 * */
-		public var app:Administration;
+		public var app:Management;
 		
 		
 		[Bindable(event="loadingFlagChanged")]
@@ -67,7 +67,7 @@ package com.kaltura.kmc.modules.admin.model {
 		 */		
 		public function decreaseLoadCounter():void {
 			if (_loadingCounter <= 0) {
-				trace("trying to reduce load calls under 0 - something is rotten in the state of Administration");
+				trace("trying to reduce load calls under 0 - something is rotten in the state of Management (Administration)");
 			}
 			else {
 				_loadingCounter--;
