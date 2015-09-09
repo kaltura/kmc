@@ -360,6 +360,10 @@ live streaming control tab of EntryDetailsWin
 				KedJSGate.openLiveAnalyticsDrilldown(_selectedEntry.id, _selectedEntry.name);
 			}
 			
+			private function fixStreamName(name:String):String {
+				return name.replace('%i', '1');
+			}
+			
 		]]>
 	</mx:Script>
 	<control:LivestreamTabController id="controller"/>
@@ -391,12 +395,20 @@ live streaming control tab of EntryDetailsWin
 			<mx:Spacer width="30"/>
 		</mx:HBox>
 	
-		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('drilldown', 'streamName')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:Label id="streamName" text="{_selectedEntry.streamName}" selectable="true" truncateToFit="false"
-					  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
-		</mx:HBox>
+		<mx:VBox width="100%">
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('drilldown', 'streamName')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+						  styleName="drillDownLabel"/>
+				<mx:Label id="streamName" text="{fixStreamName(_selectedEntry.streamName)}" selectable="true" truncateToFit="false"
+						  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+						  styleName="drillDownLabel"/>
+				<mx:Text text="{resourceManager.getString('drilldown', 'streamNameNote')}" selectable="true" truncateToFit="false"
+						  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+			</mx:HBox>
+		</mx:VBox>
 	
 		<mx:Spacer height="20"/>
 		
