@@ -68,14 +68,6 @@
 			}
 			
 			protected function creationCompleteHandler(event:FlexEvent):void {
-				var tabsToHide:Array = permissionManager.getRelevantSubTabsToHide(NAME);
-				for each (var subtabName:String in tabsToHide) {
-					var tabToRemove:DisplayObject = contentView.getChildByName(subtabName);
-					if (tabToRemove) {
-						contentView.removeChild(tabToRemove);
-					}
-				}
-				
 				BindingUtils.bindSetter(toggleLoading, _model, "isLoading");
 				handleReady();
 			}
@@ -95,11 +87,17 @@
 			override protected function start():void {
 				Security.allowDomain("*");
 				
-//				// roles and permissions 
-//				var tabsToHide:Array = permissionManager.getRelevantSubTabsToHide(NAME);
-//				for each (var subtabName:String in tabsToHide) {
-//					contentView.removeChild(this[subtabName]);
-//				}
+				// roles and permissions 
+				var tabsToHide:Array = permissionManager.getRelevantSubTabsToHide(NAME);
+				for each (var subtabName:String in tabsToHide) {
+					var tabToRemove:DisplayObject = contentView.getChildByName(subtabName);
+					if (tabToRemove) {
+						contentView.removeChild(tabToRemove);
+					}
+				}
+				secTln.visible = true;
+				contentView.visible = true;
+				
 				GoogleAnalyticsTracker.getInstance().setBasePath(GoogleAnalyticsConsts.ADMIN);
 				initModel();
 				handleReady();
@@ -149,10 +147,10 @@
 				_model.usersModel.currentUserInfo = _userInfo;
 				_model.rolesModel.partnerPermissionsUiconf = permissionManager.partnerUIDefinitions;
 				// list partner permissions
-				var cge:CairngormEvent = new ListItemsEvent(ListItemsEvent.LIST_PARTNER_PERMISSIONS);
-				cge.dispatch();
-				cge = new PartnerEvent(PartnerEvent.GET_PARTNER_DATA);
-				cge.dispatch();
+//				var cge:CairngormEvent = new ListItemsEvent(ListItemsEvent.LIST_PARTNER_PERMISSIONS);
+//				cge.dispatch();
+//				cge = new PartnerEvent(PartnerEvent.GET_PARTNER_DATA);
+//				cge.dispatch();
 			}
 
 
@@ -202,12 +200,12 @@
 
 	<mx:HBox width="100%" styleName="tabsContainer" enabled="{true}">
 		<mx:TabBar id="secTln" styleName="tln" itemClick="onItemClick(event)" buttonMode="true"
-				   dataProvider="contentView"/>
+				   dataProvider="contentView" visible="false"/>
 		<mx:Spacer width="100%"/>
 		<mx:Button styleName="help" buttonMode="true" click="{onHelp()}"/>
 	</mx:HBox>
 	<mx:ViewStack id="contentView" width="100%" height="100%" styleName="adminViewstack"
-				  horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				  horizontalScrollPolicy="off" verticalScrollPolicy="off" visible="false">
 		<view:Users id="users" label="{resourceManager.getString('admin','users_tab')}" enableHeader="enableHeaderHandler(event)"
 					width="100%" model="{_model.usersModel}" rolesModel="{_model.rolesModel}" userInfo="{_userInfo}" isLoading="{_model.isLoading}"/>
 		<view:Roles id="roles" label="{resourceManager.getString('admin','roles_tab')}" enableHeader="enableHeaderHandler(event)"
