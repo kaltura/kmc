@@ -62,6 +62,11 @@ package com.kaltura.edw.vo
 			return _value;
 		}
 		
+		public function get id():String
+		{
+			return _key;
+		}
+		
 		override public function toString():String {
 			return _label;
 		}
