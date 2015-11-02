@@ -76,10 +76,14 @@
 			 * */
 			public function refreshData():void {
 				listRoles(0);
+				var cge:CairngormEvent;
+				if (!model.partnerPermissions) {
+					cge = new ListItemsEvent(ListItemsEvent.LIST_PARTNER_PERMISSIONS);
+					cge.dispatch();
+				}
 				// reset selected user
-				var ce:RoleEvent;
-				ce = new RoleEvent(RoleEvent.SELECT_ROLE, null);
-				ce.dispatch();
+				cge = new RoleEvent(RoleEvent.SELECT_ROLE, null);
+				cge.dispatch();
 			}
 			
 			/**
