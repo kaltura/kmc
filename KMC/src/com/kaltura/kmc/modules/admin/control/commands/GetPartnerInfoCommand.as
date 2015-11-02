@@ -20,7 +20,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			if (data.success) {
 				_model.usersModel.loginUsersQuota = (data.data as KalturaPartner).adminLoginUsersQuota;
 				_model.usersModel.adminUserId = (data.data as KalturaPartner).adminUserId;
-				_model.usersModel.crippledUsers = [(data.data as KalturaPartner).adminUserId, _model.usersModel.currentUserInfo.user.id/*KSUtil.getUserId(_model.kc.ks)*/]; 
+				_model.usersModel.crippledUsers = [(data.data as KalturaPartner).adminUserId, _model.usersModel.currentUserInfo.user.id]; 
 			}
 			_model.decreaseLoadCounter();
 		}
