@@ -124,14 +124,23 @@
 				switch (tab) {
 					case 'roles':
 						secTln.selectedIndex = 1;
-						roles.refreshData();
+						if (roles.parent && roles.parent == contentView) {
+							roles.refreshData();
+						}
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_ROLES);
 						break;
 					case 'users':
 					default:
 						secTln.selectedIndex = 0;
-						users.refreshData();
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_USERS);
+						if (users.parent && users.parent == contentView) {
+							users.refreshData();
+							GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_USERS);
+						}
+						else {
+							// this is probabaly navigation from main menu and we don't have users tab
+							roles.refreshData();
+							GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_ROLES);
+						}
 						break;
 				}
 			}
