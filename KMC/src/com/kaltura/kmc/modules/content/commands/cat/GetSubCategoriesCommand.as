@@ -60,7 +60,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 				var ar:Array = (data.data as KalturaCategoryListResponse).objects;
 				if (ar && ar.length > 1) {
 					if (ar[0].partnerSortValue || ar[1].partnerSortValue) { 
-						ar.sortOn("partnerSortValue");
+						ar.sortOn("partnerSortValue", Array.NUMERIC);
 					}
 					else {
 						ar.sortOn("name");
