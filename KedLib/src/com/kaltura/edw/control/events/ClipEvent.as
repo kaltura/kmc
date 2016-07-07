@@ -6,7 +6,7 @@ package com.kaltura.edw.control.events
 		
 		/**
 		 * get a list of clips derived from the given entry.
-		 * event.data should be {id:id of the root entry, pager:kalturaPager}
+		 * event.data should be {id:id of the root entry, pager:kalturaPager, orderBy: string, list order}
 		 */		
 		public static const GET_ENTRY_CLIPS:String = "GET_ENTRY_CLIPS";
 		

@@ -16,6 +16,7 @@ package com.kaltura.edw.control.commands.clips
 			_model.increaseLoadCounter();
 			var f:KalturaBaseEntryFilter = new KalturaBaseEntryFilter();
 			f.rootEntryIdEqual = event.data.id;
+			f.orderBy = event.data.orderBy;
 			
 			var list:BaseEntryList = new BaseEntryList(f, event.data.pager);
 			list.addEventListener(KalturaEvent.COMPLETE, result);
