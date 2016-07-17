@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -42,70 +42,59 @@ package com.kaltura.vo
 	{
 		/**
 		* Define the email sender email
-		* 
 		**/
 		public var fromEmail : String = null;
 
 		/**
 		* Define the email sender name
-		* 
 		**/
 		public var fromName : String = null;
 
 		/**
 		* Email recipient emails and names, key is mail address and value is the name
-		* 
 		**/
 		public var to : KalturaEmailNotificationRecipientJobData;
 
 		/**
 		* Email cc emails and names, key is mail address and value is the name
-		* 
 		**/
 		public var cc : KalturaEmailNotificationRecipientJobData;
 
 		/**
 		* Email bcc emails and names, key is mail address and value is the name
-		* 
 		**/
 		public var bcc : KalturaEmailNotificationRecipientJobData;
 
 		/**
 		* Email addresses that a replies should be sent to, key is mail address and value is the name
-		* 
 		**/
 		public var replyTo : KalturaEmailNotificationRecipientJobData;
 
 		/**
 		* Define the email priority
-		* 
 		* @see com.kaltura.types.KalturaEmailNotificationTemplatePriority
 		**/
 		public var priority : int = int.MIN_VALUE;
 
 		/**
 		* Email address that a reading confirmation will be sent to
-		* 
 		**/
 		public var confirmReadingTo : String = null;
 
 		/**
 		* Hostname to use in Message-Id and Received headers and as default HELO string.
 		* If empty, the value returned by SERVER_NAME is used or 'localhost.localdomain'.
-		* 
 		**/
 		public var hostname : String = null;
 
 		/**
 		* Sets the message ID to be used in the Message-Id header.
 		* If empty, a unique id will be generated.
-		* 
 		**/
 		public var messageID : String = null;
 
 		/**
 		* Adds a e-mail custom header
-		* 
 		**/
 		public var customHeaders : Array = null;
 

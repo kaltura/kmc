@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -82,6 +82,10 @@ package com.kaltura.vo
 		public var partnerPackageLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
+		**/
+		public var partnerPackageIn : String = null;
+
+		/**
 		* @see com.kaltura.types.KalturaPartnerGroupType
 		**/
 		public var partnerGroupTypeEqual : int = int.MIN_VALUE;
@@ -106,6 +110,7 @@ package com.kaltura.vo
 			arr.push('partnerPackageEqual');
 			arr.push('partnerPackageGreaterThanOrEqual');
 			arr.push('partnerPackageLessThanOrEqual');
+			arr.push('partnerPackageIn');
 			arr.push('partnerGroupTypeEqual');
 			arr.push('partnerNameDescriptionWebsiteAdminNameAdminEmailLike');
 			return arr;

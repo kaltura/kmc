@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,31 +34,26 @@ package com.kaltura.vo
 	{
 		/**
 		* Key-value array where the keys are IDs of distributed flavor assets in the source account and the values are the matching IDs in the target account
-		* 
 		**/
 		public var distributedFlavorAssets : String = null;
 
 		/**
 		* Key-value array where the keys are IDs of distributed thumb assets in the source account and the values are the matching IDs in the target account
-		* 
 		**/
 		public var distributedThumbAssets : String = null;
 
 		/**
 		* Key-value array where the keys are IDs of distributed metadata objects in the source account and the values are the matching IDs in the target account
-		* 
 		**/
 		public var distributedMetadata : String = null;
 
 		/**
 		* Key-value array where the keys are IDs of distributed caption assets in the source account and the values are the matching IDs in the target account
-		* 
 		**/
 		public var distributedCaptionAssets : String = null;
 
 		/**
 		* Key-value array where the keys are IDs of distributed cue points in the source account and the values are the matching IDs in the target account
-		* 
 		**/
 		public var distributedCuePoints : String = null;
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,75 +34,63 @@ package com.kaltura.vo
 	{
 		/**
 		* The video codec of the Flavor Params
-		* 
 		* @see com.kaltura.types.KalturaVideoCodec
 		**/
 		public var videoCodec : String = null;
 
 		/**
 		* The video bitrate (in KBits) of the Flavor Params
-		* 
 		**/
 		public var videoBitrate : int = int.MIN_VALUE;
 
 		/**
 		* The audio codec of the Flavor Params
-		* 
 		* @see com.kaltura.types.KalturaAudioCodec
 		**/
 		public var audioCodec : String = null;
 
 		/**
 		* The audio bitrate (in KBits) of the Flavor Params
-		* 
 		**/
 		public var audioBitrate : int = int.MIN_VALUE;
 
 		/**
 		* The number of audio channels for "downmixing"
-		* 
 		**/
 		public var audioChannels : int = int.MIN_VALUE;
 
 		/**
 		* The audio sample rate of the Flavor Params
-		* 
 		**/
 		public var audioSampleRate : int = int.MIN_VALUE;
 
 		/**
 		* The desired width of the Flavor Params
-		* 
 		**/
 		public var width : int = int.MIN_VALUE;
 
 		/**
 		* The desired height of the Flavor Params
-		* 
 		**/
 		public var height : int = int.MIN_VALUE;
 
 		/**
 		* The frame rate of the Flavor Params
-		* 
 		**/
-		public var frameRate : int = int.MIN_VALUE;
+		public var frameRate : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* The gop size of the Flavor Params
-		* 
 		**/
 		public var gopSize : int = int.MIN_VALUE;
 
 		/**
 		* The list of conversion engines (comma separated)
-		* 
 		**/
 		public var conversionEngines : String = null;
 
 		/**
 		* The list of conversion engines extra params (separated with "|")
-		* 
 		**/
 		public var conversionEnginesExtraParams : String = null;
 
@@ -129,7 +117,6 @@ package com.kaltura.vo
 
 		/**
 		* The container format of the Flavor Params
-		* 
 		* @see com.kaltura.types.KalturaContainerFormat
 		**/
 		public var format : String = null;
@@ -196,6 +183,18 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var subtitlesData : String = null;
+
+		/**
+		**/
+		public var isEncrypted : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var contentAwareness : Number = Number.NEGATIVE_INFINITY;
+
+		/**
+		**/
 		public var clipOffset : int = int.MIN_VALUE;
 
 		/**
@@ -239,6 +238,9 @@ package com.kaltura.vo
 			arr.push('videoConstantBitrate');
 			arr.push('videoBitrateTolerance');
 			arr.push('watermarkData');
+			arr.push('subtitlesData');
+			arr.push('isEncrypted');
+			arr.push('contentAwareness');
 			arr.push('clipOffset');
 			arr.push('clipDuration');
 			return arr;

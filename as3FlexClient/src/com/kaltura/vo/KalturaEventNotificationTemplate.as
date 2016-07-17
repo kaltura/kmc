@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -72,47 +72,40 @@ package com.kaltura.vo
 
 		/**
 		* Define that the template could be dispatched manually from the API
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var manualDispatchEnabled : Boolean;
 
 		/**
 		* Define that the template could be dispatched automatically by the system
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var automaticDispatchEnabled : Boolean;
 
 		/**
 		* Define the event that should trigger this notification
-		* 
 		* @see com.kaltura.types.KalturaEventNotificationEventType
 		**/
 		public var eventType : String = null;
 
 		/**
 		* Define the object that raied the event that should trigger this notification
-		* 
 		* @see com.kaltura.types.KalturaEventNotificationEventObjectType
 		**/
 		public var eventObjectType : String = null;
 
 		/**
 		* Define the conditions that cause this notification to be triggered
-		* 
 		**/
 		public var eventConditions : Array = null;
 
 		/**
 		* Define the content dynamic parameters
-		* 
 		**/
 		public var contentParameters : Array = null;
 
 		/**
 		* Define the content dynamic parameters
-		* 
 		**/
 		public var userParameters : Array = null;
 

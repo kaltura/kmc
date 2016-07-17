@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -36,76 +36,64 @@ package com.kaltura.vo
 	{
 		/**
 		* The message to be presented when the stream is offline
-		* 
 		**/
 		public var offlineMessage : String = null;
 
 		/**
 		* Recording Status Enabled/Disabled
-		* 
 		* @see com.kaltura.types.KalturaRecordStatus
 		**/
 		public var recordStatus : int = int.MIN_VALUE;
 
 		/**
 		* DVR Status Enabled/Disabled
-		* 
 		* @see com.kaltura.types.KalturaDVRStatus
 		**/
 		public var dvrStatus : int = int.MIN_VALUE;
 
 		/**
 		* Window of time which the DVR allows for backwards scrubbing (in minutes)
-		* 
 		**/
 		public var dvrWindow : int = int.MIN_VALUE;
 
 		/**
 		* Elapsed recording time (in msec) up to the point where the live stream was last stopped (unpublished).
-		* 
 		**/
 		public var lastElapsedRecordingTime : int = int.MIN_VALUE;
 
 		/**
 		* Array of key value protocol->live stream url objects
-		* 
 		**/
 		public var liveStreamConfigurations : Array = null;
 
 		/**
 		* Recorded entry id
-		* 
 		**/
 		public var recordedEntryId : String = null;
 
 		/**
 		* Flag denoting whether entry should be published by the media server
-		* 
 		* @see com.kaltura.types.KalturaLivePublishStatus
 		**/
 		public var pushPublishEnabled : int = int.MIN_VALUE;
 
 		/**
 		* Array of publish configurations
-		* 
 		**/
 		public var publishConfigurations : Array = null;
 
 		/**
 		* The first time in which the entry was broadcast
-		* 
 		**/
 		public var firstBroadcast : int = int.MIN_VALUE;
 
 		/**
 		* The Last time in which the entry was broadcast
-		* 
 		**/
 		public var lastBroadcast : int = int.MIN_VALUE;
 
 		/**
 		* The time (unix timestamp in milliseconds) in which the entry broadcast started or 0 when the entry is off the air
-		* 
 		**/
 		public var currentBroadcastStartTime : Number = Number.NEGATIVE_INFINITY;
 
@@ -113,17 +101,27 @@ package com.kaltura.vo
 		**/
 		public var recordingOptions : KalturaLiveEntryRecordingOptions;
 
+		/**
+		* the status of the entry of type EntryServerNodeStatus
+		* @see com.kaltura.types.KalturaEntryServerNodeStatus
+		**/
+		public var liveStatus : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('offlineMessage');
+			arr.push('recordStatus');
+			arr.push('dvrStatus');
+			arr.push('dvrWindow');
 			arr.push('lastElapsedRecordingTime');
 			arr.push('liveStreamConfigurations');
 			arr.push('recordedEntryId');
 			arr.push('pushPublishEnabled');
 			arr.push('publishConfigurations');
 			arr.push('currentBroadcastStartTime');
+			arr.push('recordingOptions');
 			return arr;
 		}
 
@@ -131,10 +129,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
-			arr.push('recordStatus');
-			arr.push('dvrStatus');
-			arr.push('dvrWindow');
-			arr.push('recordingOptions');
 			return arr;
 		}
 

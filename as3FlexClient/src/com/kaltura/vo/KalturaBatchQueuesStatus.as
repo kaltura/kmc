@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -39,25 +39,21 @@ package com.kaltura.vo
 
 		/**
 		* The worker configured id
-		* 
 		**/
 		public var workerId : int = int.MIN_VALUE;
 
 		/**
 		* The friendly name of the type
-		* 
 		**/
 		public var typeName : String = null;
 
 		/**
 		* The size of the queue
-		* 
 		**/
 		public var size : int = int.MIN_VALUE;
 
 		/**
 		* The avarage wait time
-		* 
 		**/
 		public var waitTime : int = int.MIN_VALUE;
 

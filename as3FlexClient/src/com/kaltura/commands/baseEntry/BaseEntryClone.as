@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -32,7 +32,6 @@ package com.kaltura.commands.baseEntry
 
 	/**
 	* Clone an entry with optional attributes to apply to the clone
-	* 
 	**/
 	public class BaseEntryClone extends KalturaCall
 	{
@@ -40,8 +39,9 @@ package com.kaltura.commands.baseEntry
 		
 		/**
 		* @param entryId String
+		* @param cloneOptions Array
 		**/
-		public function BaseEntryClone( entryId : String )
+		public function BaseEntryClone( entryId : String,cloneOptions : Array=null )
 		{
 			service= 'baseentry';
 			action= 'clone';
@@ -51,6 +51,11 @@ package com.kaltura.commands.baseEntry
 			var keyValArr : Array = new Array();
 			keyArr.push('entryId');
 			valueArr.push(entryId);
+			if (cloneOptions) { 
+				keyValArr = extractArray(cloneOptions,'cloneOptions');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			} 
 			applySchema(keyArr, valueArr);
 		}
 

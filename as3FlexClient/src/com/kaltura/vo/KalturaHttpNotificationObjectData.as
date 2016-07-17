@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,27 +34,23 @@ package com.kaltura.vo
 	{
 		/**
 		* Kaltura API object type
-		* 
 		**/
 		public var apiObjectType : String = null;
 
 		/**
 		* Data format
-		* 
 		* @see com.kaltura.types.KalturaResponseType
 		**/
 		public var format : int = int.MIN_VALUE;
 
 		/**
 		* Ignore null attributes during serialization
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var ignoreNull : Boolean;
 
 		/**
 		* PHP code
-		* 
 		**/
 		public var code : String = null;
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,19 +34,16 @@ package com.kaltura.vo
 	{
 		/**
 		* Auto generated unique id
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
 		/**
 		* Profile creation date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* Profile last update date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 
@@ -90,79 +87,66 @@ package com.kaltura.vo
 
 		/**
 		* Comma separated flavor params ids that should be auto converted
-		* 
 		**/
 		public var autoCreateFlavors : String = null;
 
 		/**
 		* Comma separated thumbnail params ids that should be auto generated
-		* 
 		**/
 		public var autoCreateThumb : String = null;
 
 		/**
 		* Comma separated flavor params ids that should be submitted if ready
-		* 
 		**/
 		public var optionalFlavorParamsIds : String = null;
 
 		/**
 		* Comma separated flavor params ids that required to be ready before submission
-		* 
 		**/
 		public var requiredFlavorParamsIds : String = null;
 
 		/**
 		* Thumbnail dimensions that should be submitted if ready
-		* 
 		**/
 		public var optionalThumbDimensions : Array = null;
 
 		/**
 		* Thumbnail dimensions that required to be readt before submission
-		* 
 		**/
 		public var requiredThumbDimensions : Array = null;
 
 		/**
 		* Asset Distribution Rules for assets that should be submitted if ready
-		* 
 		**/
 		public var optionalAssetDistributionRules : Array = null;
 
 		/**
 		* Assets Asset Distribution Rules for assets that are required to be ready before submission
-		* 
 		**/
 		public var requiredAssetDistributionRules : Array = null;
 
 		/**
 		* If entry distribution sunrise not specified that will be the default since entry creation time, in seconds
-		* 
 		**/
 		public var sunriseDefaultOffset : int = int.MIN_VALUE;
 
 		/**
 		* If entry distribution sunset not specified that will be the default since entry creation time, in seconds
-		* 
 		**/
 		public var sunsetDefaultOffset : int = int.MIN_VALUE;
 
 		/**
 		* The best external storage to be used to download the asset files from
-		* 
 		**/
 		public var recommendedStorageProfileForDownload : int = int.MIN_VALUE;
 
 		/**
 		* The best Kaltura data center to be used to download the asset files to
-		* 
 		**/
 		public var recommendedDcForDownload : int = int.MIN_VALUE;
 
 		/**
 		* The best Kaltura data center to be used to execute the distribution job
-		* 
 		**/
 		public var recommendedDcForExecute : int = int.MIN_VALUE;
 

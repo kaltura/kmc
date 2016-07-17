@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -37,6 +37,16 @@ package com.kaltura.vo
 		**/
 		public var shouldCopyEntitlement : int = int.MIN_VALUE;
 
+		/**
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var shouldCopyScheduling : int = int.MIN_VALUE;
+
+		/**
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var shouldCopyThumbnail : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -45,6 +55,8 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('shouldCopyEntitlement');
+			arr.push('shouldCopyScheduling');
+			arr.push('shouldCopyThumbnail');
 			return arr;
 		}
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -42,7 +42,6 @@ package com.kaltura.vo
 		* The following might be extracted from the file name and used if defined:
 		* - (?P<referenceId>\w+) - will be used as the drop folder file's parsed slug.
 		* - (?P<flavorName>\w+)  - will be used as the drop folder file's parsed flavor.
-		* 
 		**/
 		public var slugRegex : String = null;
 

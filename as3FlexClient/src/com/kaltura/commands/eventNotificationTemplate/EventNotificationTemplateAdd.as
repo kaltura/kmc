@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -32,8 +32,7 @@ package com.kaltura.commands.eventNotificationTemplate
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	* Allows you to add a new event notification template object
-	* 
+	* This action allows for the creation of new backend event types in the system. This action requires access to the Kaltura server Admin Console. If you're looking to register to existing event types, please use the clone action instead.
 	**/
 	public class EventNotificationTemplateAdd extends KalturaCall
 	{

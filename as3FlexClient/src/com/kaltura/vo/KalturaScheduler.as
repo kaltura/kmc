@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,61 +34,51 @@ package com.kaltura.vo
 	{
 		/**
 		* The id of the Scheduler
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
 		/**
 		* The id as configured in the batch config
-		* 
 		**/
 		public var configuredId : int = int.MIN_VALUE;
 
 		/**
 		* The scheduler name
-		* 
 		**/
 		public var name : String = null;
 
 		/**
 		* The host name
-		* 
 		**/
 		public var host : String = null;
 
 		/**
 		* Array of the last statuses
-		* 
 		**/
 		public var statuses : Array = null;
 
 		/**
 		* Array of the last configs
-		* 
 		**/
 		public var configs : Array = null;
 
 		/**
 		* Array of the workers
-		* 
 		**/
 		public var workers : Array = null;
 
 		/**
 		* creation time
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* last status time
-		* 
 		**/
 		public var lastStatus : int = int.MIN_VALUE;
 
 		/**
 		* last status formated
-		* 
 		**/
 		public var lastStatusStr : String = null;
 

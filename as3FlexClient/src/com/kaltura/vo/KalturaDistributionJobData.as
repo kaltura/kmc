@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -56,7 +56,6 @@ package com.kaltura.vo
 
 		/**
 		* Id of the media in the remote system
-		* 
 		**/
 		public var remoteId : String = null;
 
@@ -67,26 +66,22 @@ package com.kaltura.vo
 
 		/**
 		* Additional data that relevant for the provider only
-		* 
 		**/
 		public var providerData : KalturaDistributionJobProviderData;
 
 		/**
 		* The results as returned from the remote destination
-		* 
 		**/
 		public var results : String = null;
 
 		/**
 		* The data as sent to the remote destination
-		* 
 		**/
 		public var sentData : String = null;
 
 		/**
 		* Stores array of media files that submitted to the destination site
 		* Could be used later for media update
-		* 
 		**/
 		public var mediaFiles : Array = null;
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,71 +34,68 @@ package com.kaltura.vo
 	{
 		/**
 		* The Flavor Params used to create this Flavor Asset
-		* 
 		**/
 		public var flavorParamsId : int = int.MIN_VALUE;
 
 		/**
 		* The width of the Flavor Asset
-		* 
 		**/
 		public var width : int = int.MIN_VALUE;
 
 		/**
 		* The height of the Flavor Asset
-		* 
 		**/
 		public var height : int = int.MIN_VALUE;
 
 		/**
 		* The overall bitrate (in KBits) of the Flavor Asset
-		* 
 		**/
 		public var bitrate : int = int.MIN_VALUE;
 
 		/**
 		* The frame rate (in FPS) of the Flavor Asset
-		* 
 		**/
 		public var frameRate : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* True if this Flavor Asset is the original source
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var isOriginal : Boolean;
 
 		/**
 		* True if this Flavor Asset is playable in KDP
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var isWeb : Boolean;
 
 		/**
 		* The container format
-		* 
 		**/
 		public var containerFormat : String = null;
 
 		/**
 		* The video codec
-		* 
 		**/
 		public var videoCodecId : String = null;
 
 		/**
 		* The status of the Flavor Asset
-		* 
 		* @see com.kaltura.types.KalturaFlavorAssetStatus
 		**/
 		public var status : int = int.MIN_VALUE;
+
+		/**
+		* The language of the flavor asset
+		* @see com.kaltura.types.KalturaLanguage
+		**/
+		public var language : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('language');
 			return arr;
 		}
 

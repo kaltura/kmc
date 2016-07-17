@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -35,13 +35,11 @@ package com.kaltura.vo
 		/**
 		* The property name to look for, this will match to a getter on the asset object.
 		* Should be camelCase naming convention (defining "myPropertyName" will look for getMyPropertyName())
-		* 
 		**/
 		public var propertyName : String = null;
 
 		/**
 		* The value to compare
-		* 
 		**/
 		public var propertyValue : String = null;
 

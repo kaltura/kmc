@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,6 +29,9 @@ package com.kaltura.types
 {
 	public class KalturaIntegrationProviderType
 	{
+		public static const CIELO24 : String = 'cielo24.Cielo24';
+		public static const DEXTER : String = 'dexterIntegration.Dexter';
 		public static const EXAMPLE : String = 'exampleIntegration.Example';
+		public static const VOICEBASE : String = 'voicebase.Voicebase';
 	}
 }

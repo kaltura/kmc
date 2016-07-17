@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -36,6 +36,7 @@ package com.kaltura.types
 		public static const PDF : String = 'document.PDF';
 		public static const SWF : String = 'document.SWF';
 		public static const TIMED_THUMB_ASSET : String = 'thumbCuePoint.timedThumb';
+		public static const TRANSCRIPT : String = 'transcript.Transcript';
 		public static const WIDEVINE_FLAVOR : String = 'widevine.WidevineFlavor';
 		public static const FLAVOR : String = '1';
 		public static const THUMBNAIL : String = '2';

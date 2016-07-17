@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,49 +34,56 @@ package com.kaltura.vo
 	{
 		/**
 		* The id of the conversion profile
-		* 
 		**/
 		public var conversionProfileId : int = int.MIN_VALUE;
 
 		/**
 		* The id of the asset params
-		* 
 		**/
 		public var assetParamsId : int = int.MIN_VALUE;
 
 		/**
 		* The ingestion origin of the asset params
-		* 
 		* @see com.kaltura.types.KalturaFlavorReadyBehaviorType
 		**/
 		public var readyBehavior : int = int.MIN_VALUE;
 
 		/**
 		* The ingestion origin of the asset params
-		* 
 		* @see com.kaltura.types.KalturaAssetParamsOrigin
 		**/
 		public var origin : int = int.MIN_VALUE;
 
 		/**
 		* Asset params system name
-		* 
 		**/
 		public var systemName : String = null;
 
 		/**
 		* Starts conversion even if the decision layer reduced the configuration to comply with the source
-		* 
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var forceNoneComplied : int = int.MIN_VALUE;
 
 		/**
 		* Specifies how to treat the flavor after conversion is finished
-		* 
 		* @see com.kaltura.types.KalturaAssetParamsDeletePolicy
 		**/
 		public var deletePolicy : int = int.MIN_VALUE;
+
+		/**
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var isEncrypted : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var contentAwareness : Number = Number.NEGATIVE_INFINITY;
+
+		/**
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var twoPass : int = int.MIN_VALUE;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -90,6 +97,9 @@ package com.kaltura.vo
 			arr.push('systemName');
 			arr.push('forceNoneComplied');
 			arr.push('deletePolicy');
+			arr.push('isEncrypted');
+			arr.push('contentAwareness');
+			arr.push('twoPass');
 			return arr;
 		}
 

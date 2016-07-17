@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -47,5 +47,7 @@ package com.kaltura.types
 		public static const GEO_DISTANCE : String = '10';
 		public static const OR_OPERATOR : String = '11';
 		public static const HASH : String = '12';
+		public static const DELIVERY_PROFILE : String = '13';
+		public static const ACTIVE_EDGE_VALIDATE : String = '14';
 	}
 }

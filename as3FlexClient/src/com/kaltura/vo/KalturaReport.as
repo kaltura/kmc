@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,49 +34,41 @@ package com.kaltura.vo
 	{
 		/**
 		* Report id
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
 		/**
 		* Partner id associated with the report
-		* 
 		**/
 		public var partnerId : int = int.MIN_VALUE;
 
 		/**
 		* Report name
-		* 
 		**/
 		public var name : String = null;
 
 		/**
 		* Used to identify system reports in a friendly way
-		* 
 		**/
 		public var systemName : String = null;
 
 		/**
 		* Report description
-		* 
 		**/
 		public var description : String = null;
 
 		/**
 		* Report query
-		* 
 		**/
 		public var query : String = null;
 
 		/**
 		* Creation date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* Last update date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 

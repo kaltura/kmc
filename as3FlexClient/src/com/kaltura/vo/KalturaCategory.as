@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,6 @@ package com.kaltura.vo
 	{
 		/**
 		* The id of the Category
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
@@ -53,186 +52,168 @@ package com.kaltura.vo
 		/**
 		* The name of the Category.
 		* The following characters are not allowed: '<', '>', ','
-		* 
 		**/
 		public var name : String = null;
 
 		/**
 		* The full name of the Category
-		* 
 		**/
 		public var fullName : String = null;
 
 		/**
 		* The full ids of the Category
-		* 
 		**/
 		public var fullIds : String = null;
 
 		/**
 		* Number of entries in this Category (including child categories)
-		* 
 		**/
 		public var entriesCount : int = int.MIN_VALUE;
 
 		/**
 		* Creation date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* Update date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/**
 		* Category description
-		* 
 		**/
 		public var description : String = null;
 
 		/**
 		* Category tags
-		* 
 		**/
 		public var tags : String = null;
 
 		/**
 		* If category will be returned for list action.
-		* 
 		* @see com.kaltura.types.KalturaAppearInListType
 		**/
 		public var appearInList : int = int.MIN_VALUE;
 
 		/**
 		* defines the privacy of the entries that assigned to this category
-		* 
 		* @see com.kaltura.types.KalturaPrivacyType
 		**/
 		public var privacy : int = int.MIN_VALUE;
 
 		/**
 		* If Category members are inherited from parent category or set manualy.
-		* 
 		* @see com.kaltura.types.KalturaInheritanceType
 		**/
 		public var inheritanceType : int = int.MIN_VALUE;
 
 		/**
 		* Who can ask to join this category
-		* 
 		* @see com.kaltura.types.KalturaUserJoinPolicyType
 		**/
 		public var userJoinPolicy : int = int.MIN_VALUE;
 
 		/**
 		* Default permissionLevel for new users
-		* 
 		* @see com.kaltura.types.KalturaCategoryUserPermissionLevel
 		**/
 		public var defaultPermissionLevel : int = int.MIN_VALUE;
 
 		/**
 		* Category Owner (User id)
-		* 
 		**/
 		public var owner : String = null;
 
 		/**
 		* Number of entries that belong to this category directly
-		* 
 		**/
 		public var directEntriesCount : int = int.MIN_VALUE;
 
 		/**
 		* Category external id, controlled and managed by the partner.
-		* 
 		**/
 		public var referenceId : String = null;
 
 		/**
 		* who can assign entries to this category
-		* 
 		* @see com.kaltura.types.KalturaContributionPolicyType
 		**/
 		public var contributionPolicy : int = int.MIN_VALUE;
 
 		/**
 		* Number of active members for this category
-		* 
 		**/
 		public var membersCount : int = int.MIN_VALUE;
 
 		/**
 		* Number of pending members for this category
-		* 
 		**/
 		public var pendingMembersCount : int = int.MIN_VALUE;
 
 		/**
 		* Set privacy context for search entries that assiged to private and public categories. the entries will be private if the search context is set with those categories.
-		* 
 		**/
 		public var privacyContext : String = null;
 
 		/**
 		* comma separated parents that defines a privacyContext for search
-		* 
 		**/
 		public var privacyContexts : String = null;
 
 		/**
 		* Status
-		* 
 		* @see com.kaltura.types.KalturaCategoryStatus
 		**/
 		public var status : int = int.MIN_VALUE;
 
 		/**
 		* The category id that this category inherit its members and members permission (for contribution and join)
-		* 
 		**/
 		public var inheritedParentId : int = int.MIN_VALUE;
 
 		/**
 		* Can be used to store various partner related data as a numeric value
-		* 
 		**/
 		public var partnerSortValue : int = int.MIN_VALUE;
 
 		/**
 		* Can be used to store various partner related data as a string
-		* 
 		**/
 		public var partnerData : String = null;
 
 		/**
 		* Enable client side applications to define how to sort the category child categories
-		* 
 		* @see com.kaltura.types.KalturaCategoryOrderBy
 		**/
 		public var defaultOrderBy : String = null;
 
 		/**
 		* Number of direct children categories
-		* 
 		**/
 		public var directSubCategoriesCount : int = int.MIN_VALUE;
 
 		/**
 		* Moderation to add entries to this category by users that are not of permission level Manager or Moderator.
-		* 
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var moderation : int = int.MIN_VALUE;
 
 		/**
 		* Nunber of pending moderation entries
-		* 
 		**/
 		public var pendingEntriesCount : int = int.MIN_VALUE;
+
+		/**
+		* Flag indicating that the category is an aggregation category
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var isAggregationCategory : int = int.MIN_VALUE;
+
+		/**
+		* List of aggregation channels the category belongs to
+		**/
+		public var aggregationCategories : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -257,6 +238,8 @@ package com.kaltura.vo
 			arr.push('partnerData');
 			arr.push('defaultOrderBy');
 			arr.push('moderation');
+			arr.push('isAggregationCategory');
+			arr.push('aggregationCategories');
 			return arr;
 		}
 

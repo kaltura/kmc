@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,26 +34,22 @@ package com.kaltura.vo
 	{
 		/**
 		* UiConf Type
-		* 
 		* @see com.kaltura.types.KalturaUiConfObjType
 		**/
 		public var type : int = int.MIN_VALUE;
 
 		/**
 		* Available versions
-		* 
 		**/
 		public var versions : Array = null;
 
 		/**
 		* The direcotry this type is saved at
-		* 
 		**/
 		public var directory : String = null;
 
 		/**
 		* Filename for this UiConf type
-		* 
 		**/
 		public var filename : String = null;
 

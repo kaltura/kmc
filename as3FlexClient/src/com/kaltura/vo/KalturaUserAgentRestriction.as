@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,14 +34,12 @@ package com.kaltura.vo
 	{
 		/**
 		* User agent restriction type (Allow or deny)
-		* 
 		* @see com.kaltura.types.KalturaUserAgentRestrictionType
 		**/
 		public var userAgentRestrictionType : int = int.MIN_VALUE;
 
 		/**
 		* A comma seperated list of user agent regular expressions
-		* 
 		**/
 		public var userAgentRegexList : String = null;
 

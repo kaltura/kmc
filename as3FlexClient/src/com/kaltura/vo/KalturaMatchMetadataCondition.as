@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -37,19 +37,16 @@ package com.kaltura.vo
 		* 1. Slashed xPath, e.g. /metadata/myElementName
 		* 2. Using local-name function, e.g. /[local-name()='metadata']/[local-name()='myElementName']
 		* 3. Using only the field name, e.g. myElementName, it will be searched as //myElementName
-		* 
 		**/
 		public var xPath : String = null;
 
 		/**
 		* Metadata profile id
-		* 
 		**/
 		public var profileId : int = int.MIN_VALUE;
 
 		/**
 		* Metadata profile system name
-		* 
 		**/
 		public var profileSystemName : String = null;
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -117,13 +117,11 @@ package com.kaltura.vo
 
 		/**
 		* No need to create enum for temp field
-		* 
 		**/
 		public var trigger : int = int.MIN_VALUE;
 
 		/**
 		* Delivery Priority
-		* 
 		**/
 		public var deliveryPriority : int = int.MIN_VALUE;
 
@@ -139,26 +137,22 @@ package com.kaltura.vo
 
 		/**
 		* Flag sugnifying that the storage exported content should be deleted when soure entry is deleted
-		* 
 		**/
 		public var allowAutoDelete : int = int.MIN_VALUE;
 
 		/**
 		* Indicates to the local file transfer manager to create a link to the file instead of copying it
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var createFileLink : Boolean;
 
 		/**
 		* Holds storage profile export rules
-		* 
 		**/
 		public var rules : Array = null;
 
 		/**
 		* Delivery profile ids
-		* 
 		**/
 		public var deliveryProfileIds : Array = null;
 

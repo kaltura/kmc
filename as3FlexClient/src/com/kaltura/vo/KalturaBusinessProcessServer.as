@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,19 +34,16 @@ package com.kaltura.vo
 	{
 		/**
 		* Auto generated identifier
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
 		/**
 		* Server creation date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* Server update date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 
@@ -73,7 +70,6 @@ package com.kaltura.vo
 
 		/**
 		* The type of the server, this is auto filled by the derived server object
-		* 
 		* @see com.kaltura.types.KalturaBusinessProcessProvider
 		**/
 		public var type : String = null;

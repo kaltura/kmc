@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -38,7 +38,7 @@ package com.kaltura.vo
 	{
 		/**
 		**/
-		public var callbackNotificationBaseUrl : String = null;
+		public var callbackNotificationUrl : String = null;
 
 		/**
 		* @see com.kaltura.types.KalturaIntegrationProviderType
@@ -47,7 +47,6 @@ package com.kaltura.vo
 
 		/**
 		* Additional data that relevant for the provider only
-		* 
 		**/
 		public var providerData : KalturaIntegrationJobProviderData;
 
@@ -58,7 +57,6 @@ package com.kaltura.vo
 
 		/**
 		* Additional data that relevant for the trigger only
-		* 
 		**/
 		public var triggerData : KalturaIntegrationJobTriggerData;
 
@@ -66,7 +64,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('callbackNotificationBaseUrl');
 			arr.push('providerType');
 			arr.push('providerData');
 			arr.push('triggerType');

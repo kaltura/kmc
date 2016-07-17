@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -79,39 +79,33 @@ package com.kaltura.vo
 
 		/**
 		* Hexadecimal value
-		* 
 		**/
 		public var backgroundColor : String = null;
 
 		/**
 		* Id of the flavor params or the thumbnail params to be used as source for the thumbnail creation
-		* 
 		**/
 		public var sourceParamsId : int = int.MIN_VALUE;
 
 		/**
 		* The container format of the Flavor Params
-		* 
 		* @see com.kaltura.types.KalturaContainerFormat
 		**/
 		public var format : String = null;
 
 		/**
 		* The image density (dpi) for example: 72 or 96
-		* 
 		**/
 		public var density : int = int.MIN_VALUE;
 
 		/**
 		* Strip profiles and comments
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var stripProfiles : Boolean;
 
 		/**
 		* Create thumbnail from the videoLengthpercentage second
-		* 
 		**/
 		public var videoOffsetInPercentage : int = int.MIN_VALUE;
 

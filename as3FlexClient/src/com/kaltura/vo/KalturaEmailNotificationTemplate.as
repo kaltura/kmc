@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -42,89 +42,75 @@ package com.kaltura.vo
 	{
 		/**
 		* Define the email body format
-		* 
 		* @see com.kaltura.types.KalturaEmailNotificationFormat
 		**/
 		public var format : String = null;
 
 		/**
 		* Define the email subject
-		* 
 		**/
 		public var subject : String = null;
 
 		/**
 		* Define the email body content
-		* 
 		**/
 		public var body : String = null;
 
 		/**
 		* Define the email sender email
-		* 
 		**/
 		public var fromEmail : String = null;
 
 		/**
 		* Define the email sender name
-		* 
 		**/
 		public var fromName : String = null;
 
 		/**
 		* Email recipient emails and names
-		* 
 		**/
 		public var to : KalturaEmailNotificationRecipientProvider;
 
 		/**
 		* Email recipient emails and names
-		* 
 		**/
 		public var cc : KalturaEmailNotificationRecipientProvider;
 
 		/**
 		* Email recipient emails and names
-		* 
 		**/
 		public var bcc : KalturaEmailNotificationRecipientProvider;
 
 		/**
 		* Default email addresses to whom the reply should be sent.
-		* 
 		**/
 		public var replyTo : KalturaEmailNotificationRecipientProvider;
 
 		/**
 		* Define the email priority
-		* 
 		* @see com.kaltura.types.KalturaEmailNotificationTemplatePriority
 		**/
 		public var priority : int = int.MIN_VALUE;
 
 		/**
 		* Email address that a reading confirmation will be sent
-		* 
 		**/
 		public var confirmReadingTo : String = null;
 
 		/**
 		* Hostname to use in Message-Id and Received headers and as default HELLO string.
 		* If empty, the value returned by SERVER_NAME is used or 'localhost.localdomain'.
-		* 
 		**/
 		public var hostname : String = null;
 
 		/**
 		* Sets the message ID to be used in the Message-Id header.
 		* If empty, a unique id will be generated.
-		* 
 		**/
 		public var messageID : String = null;
 
 		/**
 		* Adds a e-mail custom header
-		* 
 		**/
 		public var customHeaders : Array = null;
 

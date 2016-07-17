@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -37,11 +37,11 @@ package com.kaltura.commands.systemPartner
 		public var filterFields : String;
 		
 		/**
-		* @param partnerId int
+		* @param id int
 		* @param status int
 		* @param reason String
 		**/
-		public function SystemPartnerUpdateStatus( partnerId : int,status : int,reason : String )
+		public function SystemPartnerUpdateStatus( id : int,status : int,reason : String )
 		{
 			service= 'systempartner_systempartner';
 			action= 'updateStatus';
@@ -49,8 +49,8 @@ package com.kaltura.commands.systemPartner
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push('partnerId');
-			valueArr.push(partnerId);
+			keyArr.push('id');
+			valueArr.push(id);
 			keyArr.push('status');
 			valueArr.push(status);
 			keyArr.push('reason');

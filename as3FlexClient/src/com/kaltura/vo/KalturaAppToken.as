@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,13 +34,11 @@ package com.kaltura.vo
 	{
 		/**
 		* The id of the application token
-		* 
 		**/
 		public var id : String = null;
 
 		/**
 		* The application token
-		* 
 		**/
 		public var token : String = null;
 
@@ -50,53 +48,50 @@ package com.kaltura.vo
 
 		/**
 		* Creation time as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* Update time as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/**
 		* Application token status
-		* 
 		* @see com.kaltura.types.KalturaAppTokenStatus
 		**/
 		public var status : int = int.MIN_VALUE;
 
 		/**
 		* Expiry time of current token (unix timestamp in seconds)
-		* 
 		**/
 		public var expiry : int = int.MIN_VALUE;
 
 		/**
 		* Type of KS (Kaltura Session) that created using the current token
-		* 
 		* @see com.kaltura.types.KalturaSessionType
 		**/
 		public var sessionType : int = int.MIN_VALUE;
 
 		/**
 		* User id of KS (Kaltura Session) that created using the current token
-		* 
 		**/
 		public var sessionUserId : String = null;
 
 		/**
 		* Expiry duration of KS (Kaltura Session) that created using the current token (in seconds)
-		* 
 		**/
 		public var sessionDuration : int = int.MIN_VALUE;
 
 		/**
 		* Comma separated privileges to be applied on KS (Kaltura Session) that created using the current token
-		* 
 		**/
 		public var sessionPrivileges : String = null;
+
+		/**
+		* @see com.kaltura.types.KalturaAppTokenHashType
+		**/
+		public var hashType : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -110,6 +105,7 @@ package com.kaltura.vo
 			arr.push('sessionUserId');
 			arr.push('sessionDuration');
 			arr.push('sessionPrivileges');
+			arr.push('hashType');
 			return arr;
 		}
 

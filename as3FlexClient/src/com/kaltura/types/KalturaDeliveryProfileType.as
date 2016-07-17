@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -31,6 +31,8 @@ package com.kaltura.types
 	{
 		public static const EDGE_CAST_HTTP : String = 'edgeCast.EDGE_CAST_HTTP';
 		public static const EDGE_CAST_RTMP : String = 'edgeCast.EDGE_CAST_RTMP';
+		public static const FORENSIC_WATERMARK_APPLE_HTTP : String = 'forensicWatermark.FORENSIC_WATERMARK_APPLE_HTTP';
+		public static const FORENSIC_WATERMARK_DASH : String = 'forensicWatermark.FORENSIC_WATERMARK_DASH';
 		public static const KONTIKI_HTTP : String = 'kontiki.KONTIKI_HTTP';
 		public static const UPLYNK_HTTP : String = 'uplynk.UPLYNK_HTTP';
 		public static const UPLYNK_RTMP : String = 'uplynk.UPLYNK_RTMP';
@@ -74,6 +76,7 @@ package com.kaltura.types
 		public static const LIVE_HDS : String = '1002';
 		public static const LIVE_DASH : String = '1003';
 		public static const LIVE_RTMP : String = '1005';
+		public static const LIVE_HLS_TO_MULTICAST : String = '1006';
 		public static const LIVE_AKAMAI_HDS : String = '1013';
 	}
 }

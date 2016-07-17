@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,39 +34,33 @@ package com.kaltura.vo
 	{
 		/**
 		* Search keywords to filter objects
-		* 
 		**/
 		public var keywords : String = null;
 
 		/**
 		* Search keywords in onjects tags
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var searchInTags : Boolean;
 
 		/**
 		* Search keywords in onjects admin tags
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var searchInAdminTags : Boolean;
 
 		/**
 		* Search onjects in specified categories
-		* 
 		**/
 		public var categories : String = null;
 
 		/**
 		* Time zone offset in minutes
-		* 
 		**/
 		public var timeZoneOffset : int = int.MIN_VALUE;
 
 		/**
 		* Aggregated results according to interval
-		* 
 		* @see com.kaltura.types.KalturaReportInterval
 		**/
 		public var interval : String = null;

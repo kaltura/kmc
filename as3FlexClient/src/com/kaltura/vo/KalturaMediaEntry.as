@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,70 +34,59 @@ package com.kaltura.vo
 	{
 		/**
 		* The media type of the entry
-		* 
 		* @see com.kaltura.types.KalturaMediaType
 		**/
 		public var mediaType : int = int.MIN_VALUE;
 
 		/**
 		* Override the default conversion quality
-		* 
 		**/
 		public var conversionQuality : String = null;
 
 		/**
 		* The source type of the entry
-		* 
 		* @see com.kaltura.types.KalturaSourceType
 		**/
 		public var sourceType : String = null;
 
 		/**
 		* The search provider type used to import this entry
-		* 
 		* @see com.kaltura.types.KalturaSearchProviderType
 		**/
 		public var searchProviderType : int = int.MIN_VALUE;
 
 		/**
 		* The ID of the media in the importing site
-		* 
 		**/
 		public var searchProviderId : String = null;
 
 		/**
 		* The user name used for credits
-		* 
 		**/
 		public var creditUserName : String = null;
 
 		/**
 		* The URL for credits
-		* 
 		**/
 		public var creditUrl : String = null;
 
 		/**
 		* The media date extracted from EXIF data (For images) as Unix timestamp (In seconds)
-		* 
 		**/
 		public var mediaDate : int = int.MIN_VALUE;
 
 		/**
 		* The URL used for playback. This is not the download URL.
-		* 
 		**/
 		public var dataUrl : String = null;
 
 		/**
 		* Comma separated flavor params ids that exists for this media entry
-		* 
 		**/
 		public var flavorParamsIds : String = null;
 
 		/**
 		* True if trim action is disabled for this entry
-		* 
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var isTrimDisabled : int = int.MIN_VALUE;

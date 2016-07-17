@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -50,7 +50,6 @@ package com.kaltura.vo
 		* Use this field to pass dynamic data for searching
 		* For example - if you set this field to "mymovies_$partner_id"
 		* The $partner_id will be automatically replcaed with your real partner Id
-		* 
 		**/
 		public var extraData : String = null;
 

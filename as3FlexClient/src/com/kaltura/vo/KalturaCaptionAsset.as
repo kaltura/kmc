@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,56 +34,53 @@ package com.kaltura.vo
 	{
 		/**
 		* The Caption Params used to create this Caption Asset
-		* 
 		**/
 		public var captionParamsId : int = int.MIN_VALUE;
 
 		/**
 		* The language of the caption asset content
-		* 
 		* @see com.kaltura.types.KalturaLanguage
 		**/
 		public var language : String = null;
 
 		/**
 		* The language of the caption asset content
-		* 
 		* @see com.kaltura.types.KalturaLanguageCode
 		**/
 		public var languageCode : String = null;
 
 		/**
 		* Is default caption asset of the entry
-		* 
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var isDefault : int = int.MIN_VALUE;
 
 		/**
 		* Friendly label
-		* 
 		**/
 		public var label : String = null;
 
 		/**
 		* The caption format
-		* 
 		* @see com.kaltura.types.KalturaCaptionType
 		**/
 		public var format : String = null;
 
 		/**
 		* The status of the asset
-		* 
 		* @see com.kaltura.types.KalturaCaptionAssetStatus
 		**/
 		public var status : int = int.MIN_VALUE;
 
 		/**
 		* The parent id of the asset
-		* 
 		**/
 		public var parentId : String = null;
+
+		/**
+		* The Accuracy of the caption content
+		**/
+		public var accuracy : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -92,6 +89,7 @@ package com.kaltura.vo
 			arr.push('language');
 			arr.push('isDefault');
 			arr.push('label');
+			arr.push('accuracy');
 			return arr;
 		}
 

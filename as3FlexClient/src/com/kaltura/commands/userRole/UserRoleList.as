@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -36,7 +36,6 @@ package com.kaltura.commands.userRole
 	* Lists user role objects that are associated with an account.
 	* Blocked user roles are listed unless you use a filter to exclude them.
 	* Deleted user roles are not listed unless you use a filter to include them.
-	* 
 	**/
 	public class UserRoleList extends KalturaCall
 	{

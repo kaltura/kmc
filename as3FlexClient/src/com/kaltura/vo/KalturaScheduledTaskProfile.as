@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -61,20 +61,17 @@ package com.kaltura.vo
 
 		/**
 		* The type of engine to use to list objects using the given "objectFilter"
-		* 
 		* @see com.kaltura.types.KalturaObjectFilterEngineType
 		**/
 		public var objectFilterEngineType : String = null;
 
 		/**
 		* A filter object (inherits KalturaFilter) that is used to list objects for scheduled tasks
-		* 
 		**/
 		public var objectFilter : KalturaFilter;
 
 		/**
 		* A list of tasks to execute on the founded objects
-		* 
 		**/
 		public var objectTasks : Array = null;
 
@@ -92,7 +89,6 @@ package com.kaltura.vo
 
 		/**
 		* The maximum number of result count allowed to be processed by this profile per execution
-		* 
 		**/
 		public var maxTotalCountAllowed : int = int.MIN_VALUE;
 

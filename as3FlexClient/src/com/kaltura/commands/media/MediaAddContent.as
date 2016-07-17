@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,6 @@ package com.kaltura.commands.media
 	/**
 	* Add content to media entry which is not yet associated with content (therefore is in status NO_CONTENT).
 	* If the requirement is to replace the entry's associated content, use action updateContent.
-	* 
 	**/
 	public class MediaAddContent extends KalturaCall
 	{

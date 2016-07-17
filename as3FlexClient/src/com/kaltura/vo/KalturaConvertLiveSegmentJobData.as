@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,6 @@ package com.kaltura.vo
 	{
 		/**
 		* Live stream entry id
-		* 
 		**/
 		public var entryId : String = null;
 
@@ -44,34 +43,34 @@ package com.kaltura.vo
 
 		/**
 		* Primary or secondary media server
-		* 
-		* @see com.kaltura.types.KalturaMediaServerIndex
+		* @see com.kaltura.types.KalturaEntryServerNodeType
 		**/
-		public var mediaServerIndex : int = int.MIN_VALUE;
+		public var mediaServerIndex : String = null;
 
 		/**
 		* The index of the file within the entry
-		* 
 		**/
 		public var fileIndex : int = int.MIN_VALUE;
 
 		/**
 		* The recorded live media
-		* 
 		**/
 		public var srcFilePath : String = null;
 
 		/**
 		* The output file
-		* 
 		**/
 		public var destFilePath : String = null;
 
 		/**
 		* Duration of the live entry including all recorded segments including the current
-		* 
 		**/
 		public var endTime : Number = Number.NEGATIVE_INFINITY;
+
+		/**
+		* The data output file
+		**/
+		public var destDataFilePath : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -84,6 +83,7 @@ package com.kaltura.vo
 			arr.push('srcFilePath');
 			arr.push('destFilePath');
 			arr.push('endTime');
+			arr.push('destDataFilePath');
 			return arr;
 		}
 

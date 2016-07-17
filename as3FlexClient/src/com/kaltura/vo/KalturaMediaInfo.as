@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,104 +34,87 @@ package com.kaltura.vo
 	{
 		/**
 		* The id of the media info
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
 		/**
 		* The id of the related flavor asset
-		* 
 		**/
 		public var flavorAssetId : String = null;
 
 		/**
 		* The file size
-		* 
 		**/
 		public var fileSize : int = int.MIN_VALUE;
 
 		/**
 		* The container format
-		* 
 		**/
 		public var containerFormat : String = null;
 
 		/**
 		* The container id
-		* 
 		**/
 		public var containerId : String = null;
 
 		/**
 		* The container profile
-		* 
 		**/
 		public var containerProfile : String = null;
 
 		/**
 		* The container duration
-		* 
 		**/
 		public var containerDuration : int = int.MIN_VALUE;
 
 		/**
 		* The container bit rate
-		* 
 		**/
 		public var containerBitRate : int = int.MIN_VALUE;
 
 		/**
 		* The video format
-		* 
 		**/
 		public var videoFormat : String = null;
 
 		/**
 		* The video codec id
-		* 
 		**/
 		public var videoCodecId : String = null;
 
 		/**
 		* The video duration
-		* 
 		**/
 		public var videoDuration : int = int.MIN_VALUE;
 
 		/**
 		* The video bit rate
-		* 
 		**/
 		public var videoBitRate : int = int.MIN_VALUE;
 
 		/**
 		* The video bit rate mode
-		* 
 		* @see com.kaltura.types.KalturaBitRateMode
 		**/
 		public var videoBitRateMode : int = int.MIN_VALUE;
 
 		/**
 		* The video width
-		* 
 		**/
 		public var videoWidth : int = int.MIN_VALUE;
 
 		/**
 		* The video height
-		* 
 		**/
 		public var videoHeight : int = int.MIN_VALUE;
 
 		/**
 		* The video frame rate
-		* 
 		**/
 		public var videoFrameRate : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* The video display aspect ratio (dar)
-		* 
 		**/
 		public var videoDar : Number = Number.NEGATIVE_INFINITY;
 
@@ -141,62 +124,52 @@ package com.kaltura.vo
 
 		/**
 		* The audio format
-		* 
 		**/
 		public var audioFormat : String = null;
 
 		/**
 		* The audio codec id
-		* 
 		**/
 		public var audioCodecId : String = null;
 
 		/**
 		* The audio duration
-		* 
 		**/
 		public var audioDuration : int = int.MIN_VALUE;
 
 		/**
 		* The audio bit rate
-		* 
 		**/
 		public var audioBitRate : int = int.MIN_VALUE;
 
 		/**
 		* The audio bit rate mode
-		* 
 		* @see com.kaltura.types.KalturaBitRateMode
 		**/
 		public var audioBitRateMode : int = int.MIN_VALUE;
 
 		/**
 		* The number of audio channels
-		* 
 		**/
 		public var audioChannels : int = int.MIN_VALUE;
 
 		/**
 		* The audio sampling rate
-		* 
 		**/
 		public var audioSamplingRate : int = int.MIN_VALUE;
 
 		/**
 		* The audio resolution
-		* 
 		**/
 		public var audioResolution : int = int.MIN_VALUE;
 
 		/**
 		* The writing library
-		* 
 		**/
 		public var writingLib : String = null;
 
 		/**
 		* The data as returned by the mediainfo command line
-		* 
 		**/
 		public var rawData : String = null;
 
@@ -219,6 +192,10 @@ package com.kaltura.vo
 		/**
 		**/
 		public var contentStreams : String = null;
+
+		/**
+		**/
+		public var complexityValue : int = int.MIN_VALUE;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -259,6 +236,7 @@ package com.kaltura.vo
 			arr.push('multiStream');
 			arr.push('isFastStart');
 			arr.push('contentStreams');
+			arr.push('complexityValue');
 			return arr;
 		}
 

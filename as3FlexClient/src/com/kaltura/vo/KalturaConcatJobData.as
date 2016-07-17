@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,33 +34,33 @@ package com.kaltura.vo
 	{
 		/**
 		* Source files to be concatenated
-		* 
 		**/
 		public var srcFiles : Array = null;
 
 		/**
 		* Output file
-		* 
 		**/
 		public var destFilePath : String = null;
 
 		/**
 		* Flavor asset to be ingested with the output
-		* 
 		**/
 		public var flavorAssetId : String = null;
 
 		/**
 		* Clipping offset in seconds
-		* 
 		**/
 		public var offset : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* Clipping duration in seconds
-		* 
 		**/
 		public var duration : Number = Number.NEGATIVE_INFINITY;
+
+		/**
+		* duration of the concated video
+		**/
+		public var concatenatedDuration : Number = Number.NEGATIVE_INFINITY;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -71,6 +71,7 @@ package com.kaltura.vo
 			arr.push('flavorAssetId');
 			arr.push('offset');
 			arr.push('duration');
+			arr.push('concatenatedDuration');
 			return arr;
 		}
 

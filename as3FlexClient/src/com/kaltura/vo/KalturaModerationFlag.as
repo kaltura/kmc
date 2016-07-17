@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,6 @@ package com.kaltura.vo
 	{
 		/**
 		* Moderation flag id
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
@@ -44,39 +43,33 @@ package com.kaltura.vo
 
 		/**
 		* The user id that added the moderation flag
-		* 
 		**/
 		public var userId : String = null;
 
 		/**
 		* The type of the moderation flag (entry or user)
-		* 
 		* @see com.kaltura.types.KalturaModerationObjectType
 		**/
 		public var moderationObjectType : String = null;
 
 		/**
 		* If moderation flag is set for entry, this is the flagged entry id
-		* 
 		**/
 		public var flaggedEntryId : String = null;
 
 		/**
 		* If moderation flag is set for user, this is the flagged user id
-		* 
 		**/
 		public var flaggedUserId : String = null;
 
 		/**
 		* The moderation flag status
-		* 
 		* @see com.kaltura.types.KalturaModerationFlagStatus
 		**/
 		public var status : String = null;
 
 		/**
 		* The comment that was added to the flag
-		* 
 		**/
 		public var comments : String = null;
 

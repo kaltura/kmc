@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -38,7 +38,6 @@ package com.kaltura.vo
 	{
 		/**
 		* The id of the Delivery
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
@@ -48,38 +47,32 @@ package com.kaltura.vo
 
 		/**
 		* The name of the Delivery
-		* 
 		**/
 		public var name : String = null;
 
 		/**
 		* Delivery type
-		* 
 		* @see com.kaltura.types.KalturaDeliveryProfileType
 		**/
 		public var type : String = null;
 
 		/**
 		* System name of the delivery
-		* 
 		**/
 		public var systemName : String = null;
 
 		/**
 		* The description of the Delivery
-		* 
 		**/
 		public var description : String = null;
 
 		/**
 		* Creation time as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* Update time as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 
@@ -94,7 +87,6 @@ package com.kaltura.vo
 
 		/**
 		* the host part of the url
-		* 
 		**/
 		public var hostName : String = null;
 
@@ -113,28 +105,29 @@ package com.kaltura.vo
 
 		/**
 		* True if this is the systemwide default for the protocol
-		* 
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var isDefault : int = int.MIN_VALUE;
 
 		/**
 		* the object from which this object was cloned (or 0)
-		* 
 		**/
 		public var parentId : int = int.MIN_VALUE;
 
 		/**
 		* Comma separated list of supported media protocols. f.i. rtmpe
-		* 
 		**/
 		public var mediaProtocols : String = null;
 
 		/**
 		* priority used for ordering similar delivery profiles
-		* 
 		**/
 		public var priority : int = int.MIN_VALUE;
+
+		/**
+		* Extra query string parameters that should be added to the url
+		**/
+		public var extraParams : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -154,6 +147,7 @@ package com.kaltura.vo
 			arr.push('tokenizer');
 			arr.push('mediaProtocols');
 			arr.push('priority');
+			arr.push('extraParams');
 			return arr;
 		}
 

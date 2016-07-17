@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -35,6 +35,7 @@ package com.kaltura.types
 		public static const CROSS_KALTURA : String = 'crossKalturaDistribution.CROSS_KALTURA';
 		public static const DAILYMOTION : String = 'dailymotionDistribution.DAILYMOTION';
 		public static const DOUBLECLICK : String = 'doubleClickDistribution.DOUBLECLICK';
+		public static const FACEBOOK : String = 'facebookDistribution.FACEBOOK';
 		public static const FREEWHEEL : String = 'freewheelDistribution.FREEWHEEL';
 		public static const FREEWHEEL_GENERIC : String = 'freewheelGenericDistribution.FREEWHEEL_GENERIC';
 		public static const FTP : String = 'ftpDistribution.FTP';

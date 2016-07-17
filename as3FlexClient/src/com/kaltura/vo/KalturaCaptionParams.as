@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,34 +34,29 @@ package com.kaltura.vo
 	{
 		/**
 		* The language of the caption content
-		* 
 		* @see com.kaltura.types.KalturaLanguage
 		**/
 		public var language : String = null;
 
 		/**
 		* Is default caption asset of the entry
-		* 
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var isDefault : int = int.MIN_VALUE;
 
 		/**
 		* Friendly label
-		* 
 		**/
 		public var label : String = null;
 
 		/**
 		* The caption format
-		* 
 		* @see com.kaltura.types.KalturaCaptionType
 		**/
 		public var format : String = null;
 
 		/**
 		* Id of the caption params or the flavor params to be used as source for the caption creation
-		* 
 		**/
 		public var sourceParamsId : int = int.MIN_VALUE;
 

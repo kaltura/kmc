@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,13 +34,11 @@ package com.kaltura.vo
 	{
 		/**
 		* This filter should be in use for retrieving only a specific quiz entry (identified by its entryId).
-		* 
 		**/
 		public var entryIdEqual : String = null;
 
 		/**
 		* This filter should be in use for retrieving few specific quiz entries (string should include comma separated list of entryId strings).
-		* 
 		**/
 		public var entryIdIn : String = null;
 

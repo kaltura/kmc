@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,37 +34,31 @@ package com.kaltura.vo
 	{
 		/**
 		* Package total allowed bandwidth and storage
-		* 
 		**/
 		public var packageBandwidthAndStorage : int = int.MIN_VALUE;
 
 		/**
 		* Partner total hosting in GB on the disk
-		* 
 		**/
 		public var hosting : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* Partner total bandwidth in GB
-		* 
 		**/
 		public var bandwidth : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* total usage in GB - including bandwidth and storage
-		* 
 		**/
 		public var usage : int = int.MIN_VALUE;
 
 		/**
 		* Percent of usage out of partner's package. if usage is 5GB and package is 10GB, this value will be 50
-		* 
 		**/
 		public var usagePercent : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* date when partner reached the limit of his package (timestamp)
-		* 
 		**/
 		public var reachedLimitDate : int = int.MIN_VALUE;
 

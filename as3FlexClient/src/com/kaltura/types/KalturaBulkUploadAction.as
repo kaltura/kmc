@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,6 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaBulkUploadAction
 	{
+		public static const CANCEL : String = 'scheduleBulkUpload.CANCEL';
 		public static const ADD : String = '1';
 		public static const UPDATE : String = '2';
 		public static const DELETE : String = '3';

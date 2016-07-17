@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -36,5 +36,7 @@ package com.kaltura.types
 		public static const ADD_TO_STORAGE : String = '4';
 		public static const LIMIT_DELIVERY_PROFILES : String = '5';
 		public static const SERVE_FROM_REMOTE_SERVER : String = '6';
+		public static const REQUEST_HOST_REGEX : String = '7';
+		public static const LIMIT_THUMBNAIL_CAPTURE : String = '8';
 	}
 }

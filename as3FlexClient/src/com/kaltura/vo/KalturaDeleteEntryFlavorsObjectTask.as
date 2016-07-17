@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,14 +34,12 @@ package com.kaltura.vo
 	{
 		/**
 		* The logic to use to choose the flavors for deletion
-		* 
 		* @see com.kaltura.types.KalturaDeleteFlavorsLogicType
 		**/
 		public var deleteType : int = int.MIN_VALUE;
 
 		/**
 		* Comma separated list of flavor param ids to delete or keep
-		* 
 		**/
 		public var flavorParamsIds : String = null;
 

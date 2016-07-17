@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,55 +34,46 @@ package com.kaltura.vo
 	{
 		/**
 		* The email address associated with the Upload User, used to authorize the incoming request.
-		* 
 		**/
 		public var username : String = null;
 
 		/**
 		* The password used in association with the email to determine if the Upload User is authorized the incoming request.
-		* 
 		**/
 		public var password : String = null;
 
 		/**
 		* The name of the Domain that the Upload User should have access to, Used for authentication.
-		* 
 		**/
 		public var domainName : String = null;
 
 		/**
 		* The Channel GUID assigned to this Publication Rule. Must be a valid Channel in the Domain that was used in authentication.
-		* 
 		**/
 		public var channelGuid : String = null;
 
 		/**
 		* The API host URL that the Upload User should have access to, Used for HTTP content submission.
-		* 
 		**/
 		public var apiHostUrl : String = null;
 
 		/**
 		* The GUID of the Customer Domain in the Unicorn system obtained by contacting your Unicorn representative.
-		* 
 		**/
 		public var domainGuid : String = null;
 
 		/**
 		* The GUID for the application in which to record metrics and enforce business rules obtained through your Unicorn representative.
-		* 
 		**/
 		public var adFreeApplicationGuid : String = null;
 
 		/**
 		* The flavor-params that will be used for the remote asset.
-		* 
 		**/
 		public var remoteAssetParamsId : int = int.MIN_VALUE;
 
 		/**
 		* The remote storage that should be used for the remote asset.
-		* 
 		**/
 		public var storageProfileId : String = null;
 

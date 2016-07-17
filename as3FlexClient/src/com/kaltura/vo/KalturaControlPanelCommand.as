@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,106 +34,89 @@ package com.kaltura.vo
 	{
 		/**
 		* The id of the Category
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
 		/**
 		* Creation date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* Creator name
-		* 
 		**/
 		public var createdBy : String = null;
 
 		/**
 		* Update date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/**
 		* Updater name
-		* 
 		**/
 		public var updatedBy : String = null;
 
 		/**
 		* Creator id
-		* 
 		**/
 		public var createdById : int = int.MIN_VALUE;
 
 		/**
 		* The id of the scheduler that the command refers to
-		* 
 		**/
 		public var schedulerId : int = int.MIN_VALUE;
 
 		/**
 		* The id of the scheduler worker that the command refers to
-		* 
 		**/
 		public var workerId : int = int.MIN_VALUE;
 
 		/**
 		* The id of the scheduler worker as configured in the ini file
-		* 
 		**/
 		public var workerConfiguredId : int = int.MIN_VALUE;
 
 		/**
 		* The name of the scheduler worker that the command refers to
-		* 
 		**/
 		public var workerName : int = int.MIN_VALUE;
 
 		/**
 		* The index of the batch process that the command refers to
-		* 
 		**/
 		public var batchIndex : int = int.MIN_VALUE;
 
 		/**
 		* The command type - stop / start / config
-		* 
 		* @see com.kaltura.types.KalturaControlPanelCommandType
 		**/
 		public var type : int = int.MIN_VALUE;
 
 		/**
 		* The command target type - data center / scheduler / job / job type
-		* 
 		* @see com.kaltura.types.KalturaControlPanelCommandTargetType
 		**/
 		public var targetType : int = int.MIN_VALUE;
 
 		/**
 		* The command status
-		* 
 		* @see com.kaltura.types.KalturaControlPanelCommandStatus
 		**/
 		public var status : int = int.MIN_VALUE;
 
 		/**
 		* The reason for the command
-		* 
 		**/
 		public var cause : String = null;
 
 		/**
 		* Command description
-		* 
 		**/
 		public var description : String = null;
 
 		/**
 		* Error description
-		* 
 		**/
 		public var errorDescription : String = null;
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,6 @@ package com.kaltura.vo
 	{
 		/**
 		* Unique identifier
-		* 
 		**/
 		public var id : String = null;
 
@@ -44,37 +43,31 @@ package com.kaltura.vo
 
 		/**
 		* Segment creation date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* Segment update date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/**
 		* Segment name
-		* 
 		**/
 		public var name : String = null;
 
 		/**
 		* Segment description
-		* 
 		**/
 		public var description : String = null;
 
 		/**
 		* Segment tags
-		* 
 		**/
 		public var tags : String = null;
 
 		/**
 		* Segment could be associated with the main stream, as additional stream or as overlay
-		* 
 		* @see com.kaltura.types.KalturaLiveChannelSegmentType
 		**/
 		public var type : String = null;
@@ -86,38 +79,32 @@ package com.kaltura.vo
 
 		/**
 		* Live channel id
-		* 
 		**/
 		public var channelId : String = null;
 
 		/**
 		* Entry id to be played
-		* 
 		**/
 		public var entryId : String = null;
 
 		/**
 		* Segment start time trigger type
-		* 
 		* @see com.kaltura.types.KalturaLiveChannelSegmentTriggerType
 		**/
 		public var triggerType : String = null;
 
 		/**
 		* Live channel segment that the trigger relates to
-		* 
 		**/
 		public var triggerSegmentId : String = null;
 
 		/**
 		* Segment play start time, in mili-seconds, according to trigger type
-		* 
 		**/
 		public var startTime : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* Segment play duration time, in mili-seconds
-		* 
 		**/
 		public var duration : Number = Number.NEGATIVE_INFINITY;
 

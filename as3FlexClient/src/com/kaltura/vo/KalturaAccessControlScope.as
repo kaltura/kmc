@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,43 +34,36 @@ package com.kaltura.vo
 	{
 		/**
 		* URL to be used to test domain conditions.
-		* 
 		**/
 		public var referrer : String = null;
 
 		/**
 		* IP to be used to test geographic location conditions.
-		* 
 		**/
 		public var ip : String = null;
 
 		/**
 		* Kaltura session to be used to test session and user conditions.
-		* 
 		**/
 		public var ks : String = null;
 
 		/**
 		* Browser or client application to be used to test agent conditions.
-		* 
 		**/
 		public var userAgent : String = null;
 
 		/**
 		* Unix timestamp (In seconds) to be used to test entry scheduling, keep null to use now.
-		* 
 		**/
 		public var time : int = int.MIN_VALUE;
 
 		/**
 		* Indicates what contexts should be tested. No contexts means any context.
-		* 
 		**/
 		public var contexts : Array = null;
 
 		/**
 		* Array of hashes to pass to the access control profile scope
-		* 
 		**/
 		public var hashes : Array = null;
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,56 +34,47 @@ package com.kaltura.vo
 	{
 		/**
 		* Upload token unique ID
-		* 
 		**/
 		public var id : String = null;
 
 		/**
 		* Partner ID of the upload token
-		* 
 		**/
 		public var partnerId : int = int.MIN_VALUE;
 
 		/**
 		* User id for the upload token
-		* 
 		**/
 		public var userId : String = null;
 
 		/**
 		* Status of the upload token
-		* 
 		* @see com.kaltura.types.KalturaUploadTokenStatus
 		**/
 		public var status : int = int.MIN_VALUE;
 
 		/**
 		* Name of the file for the upload token, can be empty when the upload token is created and will be updated internally after the file is uploaded
-		* 
 		**/
 		public var fileName : String = null;
 
 		/**
 		* File size in bytes, can be empty when the upload token is created and will be updated internally after the file is uploaded
-		* 
 		**/
 		public var fileSize : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* Uploaded file size in bytes, can be used to identify how many bytes were uploaded before resuming
-		* 
 		**/
 		public var uploadedFileSize : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* Creation date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* Last update date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 

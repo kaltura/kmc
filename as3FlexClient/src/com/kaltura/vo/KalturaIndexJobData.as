@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -36,19 +36,21 @@ package com.kaltura.vo
 	{
 		/**
 		* The filter should return the list of objects that need to be reindexed.
-		* 
 		**/
 		public var filter : KalturaFilter;
 
 		/**
 		* Indicates the last id that reindexed, used when the batch crached, to re-run from the last crash point.
-		* 
 		**/
 		public var lastIndexId : int = int.MIN_VALUE;
 
 		/**
+		* Indicates the last depth that reindexed, used when the batch crached, to re-run from the last crash point.
+		**/
+		public var lastIndexDepth : int = int.MIN_VALUE;
+
+		/**
 		* Indicates that the object columns and attributes values should be recalculated before reindexed.
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var shouldUpdate : Boolean;
@@ -59,6 +61,7 @@ package com.kaltura.vo
 			arr = super.getUpdateableParamKeys();
 			arr.push('filter');
 			arr.push('lastIndexId');
+			arr.push('lastIndexDepth');
 			arr.push('shouldUpdate');
 			return arr;
 		}

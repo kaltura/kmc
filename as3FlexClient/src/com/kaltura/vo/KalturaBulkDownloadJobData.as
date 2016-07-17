@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,19 +34,16 @@ package com.kaltura.vo
 	{
 		/**
 		* Comma separated list of entry ids
-		* 
 		**/
 		public var entryIds : String = null;
 
 		/**
 		* Flavor params id to use for conversion
-		* 
 		**/
 		public var flavorParamsId : int = int.MIN_VALUE;
 
 		/**
 		* The id of the requesting user
-		* 
 		**/
 		public var puserId : String = null;
 

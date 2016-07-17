@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -42,44 +42,37 @@ package com.kaltura.vo
 
 		/**
 		* End time in milliseconds
-		* 
 		**/
 		public var endTime : int = int.MIN_VALUE;
 
 		/**
 		* Duration in milliseconds
-		* 
 		**/
 		public var duration : int = int.MIN_VALUE;
 
 		/**
 		* Depth in the tree
-		* 
 		**/
 		public var depth : int = int.MIN_VALUE;
 
 		/**
 		* Number of all descendants
-		* 
 		**/
 		public var childrenCount : int = int.MIN_VALUE;
 
 		/**
 		* Number of children, first generation only.
-		* 
 		**/
 		public var directChildrenCount : int = int.MIN_VALUE;
 
 		/**
 		* Is the annotation public.
-		* 
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var isPublic : int = int.MIN_VALUE;
 
 		/**
 		* Should the cue point get indexed on the entry.
-		* 
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var searchableOnEntry : int = int.MIN_VALUE;

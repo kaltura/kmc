@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -33,7 +33,14 @@ package com.kaltura.commands.uploadToken
 
 	/**
 	* Upload a file using the upload token id, returns an error on failure (an exception will be thrown when using one of the Kaltura clients)
-	* 
+	* Chunks can be uploaded in parallel and they will be appended according to their resumeAt position.
+	* A parallel upload session should have three stages:
+	* 1. A single upload with resume=false and finalChunk=false
+	* 2. Parallel upload requests each with resume=true,finalChunk=false and the expected resumetAt position.
+	* If a chunk fails to upload it can be re-uploaded.
+	* 3. After all of the chunks have been uploaded a final chunk (can be of zero size) should be uploaded
+	* with resume=true, finalChunk=true and the expected resumeAt position. In case an UPLOAD_TOKEN_CANNOT_MATCH_EXPECTED_SIZE exception
+	* has been returned (indicating not all of the chunks were appended yet) the final request can be retried.
 	**/
 	public class UploadTokenUpload extends KalturaFileCall
 	{

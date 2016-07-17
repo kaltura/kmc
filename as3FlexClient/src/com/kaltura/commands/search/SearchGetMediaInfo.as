@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,6 @@ package com.kaltura.commands.search
 	/**
 	* Retrieve extra information about media found in search action
 	* Some providers return only part of the fields needed to create entry from, use this action to get the rest of the fields.
-	* 
 	**/
 	public class SearchGetMediaInfo extends KalturaCall
 	{

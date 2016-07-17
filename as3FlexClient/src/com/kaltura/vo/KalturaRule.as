@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -33,35 +33,46 @@ package com.kaltura.vo
 	public dynamic class KalturaRule extends BaseFlexVo
 	{
 		/**
+		* Short Rule Description
+		**/
+		public var description : String = null;
+
+		/**
+		* Rule Custom Data to allow saving rule specific information
+		**/
+		public var ruleData : String = null;
+
+		/**
 		* Message to be thrown to the player in case the rule is fulfilled
-		* 
 		**/
 		public var message : String = null;
 
 		/**
 		* Actions to be performed by the player in case the rule is fulfilled
-		* 
 		**/
 		public var actions : Array = null;
 
 		/**
 		* Conditions to validate the rule
-		* 
 		**/
 		public var conditions : Array = null;
 
 		/**
 		* Indicates what contexts should be tested by this rule
-		* 
 		**/
 		public var contexts : Array = null;
 
 		/**
 		* Indicates that this rule is enough and no need to continue checking the rest of the rules
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var stopProcessing : Boolean;
+
+		/**
+		* Indicates if we should force ks validation for admin ks users as well
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var forceAdminValidation : int = int.MIN_VALUE;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -70,11 +81,14 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
+			arr.push('description');
+			arr.push('ruleData');
 			arr.push('message');
 			arr.push('actions');
 			arr.push('conditions');
 			arr.push('contexts');
 			arr.push('stopProcessing');
+			arr.push('forceAdminValidation');
 			return arr;
 		}
 

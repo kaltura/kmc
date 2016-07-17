@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -118,7 +118,6 @@ package com.kaltura.vo
 
 		/**
 		* The id of the bulk upload job that initiated this job
-		* 
 		**/
 		public var bulkJobId : int = int.MIN_VALUE;
 
@@ -128,25 +127,21 @@ package com.kaltura.vo
 
 		/**
 		* When one job creates another - the parent should set this parentJobId to be its own id.
-		* 
 		**/
 		public var parentJobId : int = int.MIN_VALUE;
 
 		/**
 		* The id of the root parent job
-		* 
 		**/
 		public var rootJobId : int = int.MIN_VALUE;
 
 		/**
 		* The time that the job was pulled from the queue
-		* 
 		**/
 		public var queueTime : int = int.MIN_VALUE;
 
 		/**
 		* The time that the job was finished or closed as failed
-		* 
 		**/
 		public var finishTime : int = int.MIN_VALUE;
 

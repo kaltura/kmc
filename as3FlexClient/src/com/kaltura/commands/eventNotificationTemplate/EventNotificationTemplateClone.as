@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -32,8 +32,7 @@ package com.kaltura.commands.eventNotificationTemplate
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	* Allows you to clone exiting event notification template object and create a new one with similar configuration
-	* 
+	* This action allows registering to various backend event. Use this action to create notifications that will react to events such as new video was uploaded or metadata field was updated. To see the list of available event types, call the listTemplates action.
 	**/
 	public class EventNotificationTemplateClone extends KalturaCall
 	{

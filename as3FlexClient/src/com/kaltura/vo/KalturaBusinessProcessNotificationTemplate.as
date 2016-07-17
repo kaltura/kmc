@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,19 +34,16 @@ package com.kaltura.vo
 	{
 		/**
 		* Define the integrated BPM server id
-		* 
 		**/
 		public var serverId : int = int.MIN_VALUE;
 
 		/**
 		* Define the integrated BPM process id
-		* 
 		**/
 		public var processId : String = null;
 
 		/**
 		* Code to load the main triggering object
-		* 
 		**/
 		public var mainObjectCode : String = null;
 

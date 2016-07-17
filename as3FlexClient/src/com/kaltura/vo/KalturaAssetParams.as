@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,6 @@ package com.kaltura.vo
 	{
 		/**
 		* The id of the Flavor Params
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
@@ -44,69 +43,58 @@ package com.kaltura.vo
 
 		/**
 		* The name of the Flavor Params
-		* 
 		**/
 		public var name : String = null;
 
 		/**
 		* System name of the Flavor Params
-		* 
 		**/
 		public var systemName : String = null;
 
 		/**
 		* The description of the Flavor Params
-		* 
 		**/
 		public var description : String = null;
 
 		/**
 		* Creation date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* True if those Flavor Params are part of system defaults
-		* 
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var isSystemDefault : int = int.MIN_VALUE;
 
 		/**
 		* The Flavor Params tags are used to identify the flavor for different usage (e.g. web, hd, mobile)
-		* 
 		**/
 		public var tags : String = null;
 
 		/**
 		* Array of partner permisison names that required for using this asset params
-		* 
 		**/
 		public var requiredPermissions : Array = null;
 
 		/**
 		* Id of remote storage profile that used to get the source, zero indicates Kaltura data center
-		* 
 		**/
 		public var sourceRemoteStorageProfileId : int = int.MIN_VALUE;
 
 		/**
 		* Comma seperated ids of remote storage profiles that the flavor distributed to, the distribution done by the conversion engine
-		* 
 		**/
 		public var remoteStorageProfileIds : int = int.MIN_VALUE;
 
 		/**
 		* Media parser type to be used for post-conversion validation
-		* 
 		* @see com.kaltura.types.KalturaMediaParserType
 		**/
 		public var mediaParserType : String = null;
 
 		/**
 		* Comma seperated ids of source flavor params this flavor is created from
-		* 
 		**/
 		public var sourceAssetParamsIds : String = null;
 

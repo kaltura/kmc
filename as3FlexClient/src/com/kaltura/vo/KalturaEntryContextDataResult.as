@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -73,13 +73,11 @@ package com.kaltura.vo
 
 		/**
 		* http/rtmp/hdnetwork
-		* 
 		**/
 		public var streamerType : String = null;
 
 		/**
 		* http/https, rtmp/rtmpe
-		* 
 		**/
 		public var mediaProtocol : String = null;
 
@@ -89,25 +87,26 @@ package com.kaltura.vo
 
 		/**
 		* Array of messages as received from the access control rules that invalidated
-		* 
 		**/
 		public var accessControlMessages : Array = null;
 
 		/**
 		* Array of actions as received from the access control rules that invalidated
-		* 
 		**/
 		public var accessControlActions : Array = null;
 
 		/**
 		* Array of allowed flavor assets according to access control limitations and requested tags
-		* 
 		**/
 		public var flavorAssets : Array = null;
 
 		/**
+		* The duration of the entry in milliseconds
+		**/
+		public var msDuration : int = int.MIN_VALUE;
+
+		/**
 		* Array of allowed flavor assets according to access control limitations and requested tags
-		* 
 		**/
 		public var pluginData : Object = null;
 
@@ -129,6 +128,7 @@ package com.kaltura.vo
 			arr.push('accessControlMessages');
 			arr.push('accessControlActions');
 			arr.push('flavorAssets');
+			arr.push('msDuration');
 			arr.push('pluginData');
 			return arr;
 		}

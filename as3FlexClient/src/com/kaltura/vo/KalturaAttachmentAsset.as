@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,26 +34,22 @@ package com.kaltura.vo
 	{
 		/**
 		* The filename of the attachment asset content
-		* 
 		**/
 		public var filename : String = null;
 
 		/**
 		* Attachment asset title
-		* 
 		**/
 		public var title : String = null;
 
 		/**
 		* The attachment format
-		* 
 		* @see com.kaltura.types.KalturaAttachmentType
 		**/
 		public var format : String = null;
 
 		/**
 		* The status of the asset
-		* 
 		* @see com.kaltura.types.KalturaAttachmentAssetStatus
 		**/
 		public var status : int = int.MIN_VALUE;

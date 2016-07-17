@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,6 +29,8 @@ package com.kaltura.types
 {
 	public class KalturaBulkUploadObjectType
 	{
+		public static const SCHEDULE_EVENT : String = 'scheduleBulkUpload.SCHEDULE_EVENT';
+		public static const SCHEDULE_RESOURCE : String = 'scheduleBulkUpload.SCHEDULE_RESOURCE';
 		public static const ENTRY : String = '1';
 		public static const CATEGORY : String = '2';
 		public static const USER : String = '3';

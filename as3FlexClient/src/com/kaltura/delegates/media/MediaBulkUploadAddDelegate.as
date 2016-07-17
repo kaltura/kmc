@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -71,7 +71,7 @@ package com.kaltura.delegates.media
 			
 			//create the service request for normal calls
 			var variables:String = decodeURIComponent(call.args.toString());
-			var req:String = _config.protocol + _config.domain + "/" + _config.srvUrl + "?service=" + call.service + "&action=" + call.action + "&" + variables;
+			var req:String = _config.protocol + _config.domain + "/" + _config.srvUrl + "/service/" + call.service + "/action/" + call.action + "?" + variables;
 			if ((call as MediaBulkUploadAdd).fileData is FileReference) {
 				(call as MediaBulkUploadAdd).fileData.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA,onDataComplete);
 				var urlRequest:URLRequest = new URLRequest(req);

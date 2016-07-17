@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -38,32 +38,27 @@ package com.kaltura.vo
 
 		/**
 		* Indicates if a thumbnail should be created
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var createThumb : Boolean;
 
 		/**
 		* The path of the created thumbnail
-		* 
 		**/
 		public var thumbPath : String = null;
 
 		/**
 		* The position of the thumbnail in the media file
-		* 
 		**/
 		public var thumbOffset : int = int.MIN_VALUE;
 
 		/**
 		* The height of the movie, will be used to comapare if this thumbnail is the best we can have
-		* 
 		**/
 		public var thumbHeight : int = int.MIN_VALUE;
 
 		/**
 		* The bit rate of the movie, will be used to comapare if this thumbnail is the best we can have
-		* 
 		**/
 		public var thumbBitrate : int = int.MIN_VALUE;
 

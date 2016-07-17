@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,20 +34,19 @@ package com.kaltura.commands.report
 
 	/**
 	* report getTable action allows to get a graph data for a specific report.
-	* 
 	**/
 	public class ReportGetTable extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		* @param reportType int
+		* @param reportType String
 		* @param reportInputFilter KalturaReportInputFilter
 		* @param pager KalturaFilterPager
 		* @param order String
 		* @param objectIds String
 		**/
-		public function ReportGetTable( reportType : int,reportInputFilter : KalturaReportInputFilter,pager : KalturaFilterPager,order : String = null,objectIds : String = null )
+		public function ReportGetTable( reportType : String,reportInputFilter : KalturaReportInputFilter,pager : KalturaFilterPager,order : String = null,objectIds : String = null )
 		{
 			service= 'report';
 			action= 'getTable';

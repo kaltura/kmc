@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,19 +34,16 @@ package com.kaltura.vo
 	{
 		/**
 		* Auto generated 10 characters alphanumeric string
-		* 
 		**/
 		public var id : String = null;
 
 		/**
 		* Entry name (Min 1 chars)
-		* 
 		**/
 		public var name : String = null;
 
 		/**
 		* Entry description
-		* 
 		**/
 		public var description : String = null;
 
@@ -56,37 +53,31 @@ package com.kaltura.vo
 
 		/**
 		* The ID of the user who is the owner of this entry
-		* 
 		**/
 		public var userId : String = null;
 
 		/**
 		* The ID of the user who created this entry
-		* 
 		**/
 		public var creatorId : String = null;
 
 		/**
 		* Entry tags
-		* 
 		**/
 		public var tags : String = null;
 
 		/**
 		* Entry admin tags can be updated only by administrators
-		* 
 		**/
 		public var adminTags : String = null;
 
 		/**
 		* Comma separated list of full names of categories to which this entry belongs. Only categories that don't have entitlement (privacy context) are listed, to retrieve the full list of categories, use the categoryEntry.list action.
-		* 
 		**/
 		public var categories : String = null;
 
 		/**
 		* Comma separated list of ids of categories to which this entry belongs. Only categories that don't have entitlement (privacy context) are listed, to retrieve the full list of categories, use the categoryEntry.list action.
-		* 
 		**/
 		public var categoriesIds : String = null;
 
@@ -97,51 +88,43 @@ package com.kaltura.vo
 
 		/**
 		* Entry moderation status
-		* 
 		* @see com.kaltura.types.KalturaEntryModerationStatus
 		**/
 		public var moderationStatus : int = int.MIN_VALUE;
 
 		/**
 		* Number of moderation requests waiting for this entry
-		* 
 		**/
 		public var moderationCount : int = int.MIN_VALUE;
 
 		/**
 		* The type of the entry, this is auto filled by the derived entry object
-		* 
 		* @see com.kaltura.types.KalturaEntryType
 		**/
 		public var type : String = null;
 
 		/**
 		* Entry creation date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* Entry update date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/**
 		* The calculated average rank. rank = totalRank / votes
-		* 
 		**/
 		public var rank : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* The sum of all rank values submitted to the baseEntry.anonymousRank action
-		* 
 		**/
 		public var totalRank : int = int.MIN_VALUE;
 
 		/**
 		* A count of all requests made to the baseEntry.anonymousRank action
-		* 
 		**/
 		public var votes : int = int.MIN_VALUE;
 
@@ -151,137 +134,120 @@ package com.kaltura.vo
 
 		/**
 		* Can be used to store various partner related data as a string
-		* 
 		**/
 		public var partnerData : String = null;
 
 		/**
 		* Download URL for the entry
-		* 
 		**/
 		public var downloadUrl : String = null;
 
 		/**
 		* Indexed search text for full text search
-		* 
 		**/
 		public var searchText : String = null;
 
 		/**
 		* License type used for this entry
-		* 
 		* @see com.kaltura.types.KalturaLicenseType
 		**/
 		public var licenseType : int = int.MIN_VALUE;
 
 		/**
 		* Version of the entry data
-		* 
 		**/
 		public var version : int = int.MIN_VALUE;
 
 		/**
 		* Thumbnail URL
-		* 
 		**/
 		public var thumbnailUrl : String = null;
 
 		/**
 		* The Access Control ID assigned to this entry (null when not set, send -1 to remove)
-		* 
 		**/
 		public var accessControlId : int = int.MIN_VALUE;
 
 		/**
 		* Entry scheduling start date (null when not set, send -1 to remove)
-		* 
 		**/
 		public var startDate : int = int.MIN_VALUE;
 
 		/**
 		* Entry scheduling end date (null when not set, send -1 to remove)
-		* 
 		**/
 		public var endDate : int = int.MIN_VALUE;
 
 		/**
 		* Entry external reference id
-		* 
 		**/
 		public var referenceId : String = null;
 
 		/**
 		* ID of temporary entry that will replace this entry when it's approved and ready for replacement
-		* 
 		**/
 		public var replacingEntryId : String = null;
 
 		/**
 		* ID of the entry that will be replaced when the replacement approved and this entry is ready
-		* 
 		**/
 		public var replacedEntryId : String = null;
 
 		/**
 		* Status of the replacement readiness and approval
-		* 
 		* @see com.kaltura.types.KalturaEntryReplacementStatus
 		**/
 		public var replacementStatus : String = null;
 
 		/**
 		* Can be used to store various partner related data as a numeric value
-		* 
 		**/
 		public var partnerSortValue : int = int.MIN_VALUE;
 
 		/**
 		* Override the default ingestion profile
-		* 
 		**/
 		public var conversionProfileId : int = int.MIN_VALUE;
 
 		/**
 		* IF not empty, points to an entry ID the should replace this current entry's id.
-		* 
 		**/
 		public var redirectEntryId : String = null;
 
 		/**
 		* ID of source root entry, used for clipped, skipped and cropped entries that created from another entry
-		* 
 		**/
 		public var rootEntryId : String = null;
 
 		/**
 		* ID of source root entry, used for defining entires association
-		* 
 		**/
 		public var parentEntryId : String = null;
 
 		/**
 		* clipping, skipping and cropping attributes that used to create this entry
-		* 
 		**/
 		public var operationAttributes : Array = null;
 
 		/**
 		* list of user ids that are entitled to edit the entry (no server enforcement) The difference between entitledUsersEdit and entitledUsersPublish is applicative only
-		* 
 		**/
 		public var entitledUsersEdit : String = null;
 
 		/**
 		* list of user ids that are entitled to publish the entry (no server enforcement) The difference between entitledUsersEdit and entitledUsersPublish is applicative only
-		* 
 		**/
 		public var entitledUsersPublish : String = null;
 
 		/**
 		* Comma seperated string of the capabilities of the entry. Any capability needed can be added to this list.
-		* 
 		**/
 		public var capabilities : String = null;
+
+		/**
+		* Template entry id
+		**/
+		public var templateEntryId : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -323,6 +289,7 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('creatorId');
+			arr.push('templateEntryId');
 			return arr;
 		}
 

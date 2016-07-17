@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -30,6 +30,7 @@ package com.kaltura.types
 	public class KalturaPlaybackProtocol
 	{
 		public static const APPLE_HTTP : String = 'applehttp';
+		public static const APPLE_HTTP_TO_MC : String = 'applehttp_to_mc';
 		public static const AUTO : String = 'auto';
 		public static const AKAMAI_HD : String = 'hdnetwork';
 		public static const AKAMAI_HDS : String = 'hdnetworkmanifest';

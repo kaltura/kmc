@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,20 +34,17 @@ package com.kaltura.vo
 	{
 		/**
 		* Return the list of categoryUser that are not inherited from parent category - only the direct categoryUsers.
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var categoryDirectMembers : Boolean;
 
 		/**
 		* Free text search on user id or screen name
-		* 
 		**/
 		public var freeText : String = null;
 
 		/**
 		* Return a list of categoryUser that related to the userId in this field by groups
-		* 
 		**/
 		public var relatedGroupsByUserId : String = null;
 

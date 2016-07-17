@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,49 +34,41 @@ package com.kaltura.vo
 	{
 		/**
 		* Number of plays
-		* 
 		**/
 		public var plays : int = int.MIN_VALUE;
 
 		/**
 		* Number of views
-		* 
 		**/
 		public var views : int = int.MIN_VALUE;
 
 		/**
 		* The last time the entry was played
-		* 
 		**/
 		public var lastPlayedAt : int = int.MIN_VALUE;
 
 		/**
 		* The width in pixels
-		* 
 		**/
 		public var width : int = int.MIN_VALUE;
 
 		/**
 		* The height in pixels
-		* 
 		**/
 		public var height : int = int.MIN_VALUE;
 
 		/**
 		* The duration in seconds
-		* 
 		**/
 		public var duration : int = int.MIN_VALUE;
 
 		/**
 		* The duration in miliseconds
-		* 
 		**/
 		public var msDuration : int = int.MIN_VALUE;
 
 		/**
 		* The duration type (short for 0-4 mins, medium for 4-20 mins, long for 20+ mins)
-		* 
 		* @see com.kaltura.types.KalturaDurationType
 		**/
 		public var durationType : String = null;

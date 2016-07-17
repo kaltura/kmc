@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -42,6 +42,10 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var metadataProfileIdIn : String = null;
+
+		/**
+		**/
 		public var metadataProfileVersionEqual : int = int.MIN_VALUE;
 
 		/**
@@ -54,7 +58,6 @@ package com.kaltura.vo
 
 		/**
 		* When null, default is KalturaMetadataObjectType::ENTRY
-		* 
 		* @see com.kaltura.types.KalturaMetadataObjectType
 		**/
 		public var metadataObjectTypeEqual : String = null;
@@ -110,6 +113,7 @@ package com.kaltura.vo
 			arr = super.getUpdateableParamKeys();
 			arr.push('partnerIdEqual');
 			arr.push('metadataProfileIdEqual');
+			arr.push('metadataProfileIdIn');
 			arr.push('metadataProfileVersionEqual');
 			arr.push('metadataProfileVersionGreaterThanOrEqual');
 			arr.push('metadataProfileVersionLessThanOrEqual');

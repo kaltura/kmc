@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -33,18 +33,17 @@ package com.kaltura.commands.report
 
 	/**
 	* report getTotal action allows to get a graph data for a specific report.
-	* 
 	**/
 	public class ReportGetTotal extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		* @param reportType int
+		* @param reportType String
 		* @param reportInputFilter KalturaReportInputFilter
 		* @param objectIds String
 		**/
-		public function ReportGetTotal( reportType : int,reportInputFilter : KalturaReportInputFilter,objectIds : String = null )
+		public function ReportGetTotal( reportType : String,reportInputFilter : KalturaReportInputFilter,objectIds : String = null )
 		{
 			service= 'report';
 			action= 'getTotal';

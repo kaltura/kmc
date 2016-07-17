@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -47,26 +47,22 @@ package com.kaltura.vo
 		/**
 		* link a playlist that will set what content the feed will include
 		* if empty, all content will be included in feed
-		* 
 		**/
 		public var playlistId : String = null;
 
 		/**
 		* feed name
-		* 
 		**/
 		public var name : String = null;
 
 		/**
 		* feed status
-		* 
 		* @see com.kaltura.types.KalturaSyndicationFeedStatus
 		**/
 		public var status : int = int.MIN_VALUE;
 
 		/**
 		* feed type
-		* 
 		* @see com.kaltura.types.KalturaSyndicationFeedType
 		**/
 		public var type : int = int.MIN_VALUE;
@@ -74,13 +70,11 @@ package com.kaltura.vo
 		/**
 		* Base URL for each video, on the partners site
 		* This is required by all syndication types.
-		* 
 		**/
 		public var landingPage : String = null;
 
 		/**
 		* Creation date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
@@ -89,14 +83,12 @@ package com.kaltura.vo
 		* or just to provide a link to the landing page.
 		* it is applied on the video-player_loc property in the XML (google)
 		* and addes media-player tag (yahoo)
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var allowEmbed : Boolean;
 
 		/**
 		* Select a uiconf ID as player skin to include in the kwidget url
-		* 
 		**/
 		public var playerUiconfId : int = int.MIN_VALUE;
 
@@ -129,22 +121,24 @@ package com.kaltura.vo
 
 		/**
 		* Should enforce entitlement on feed entries
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var enforceEntitlement : Boolean;
 
 		/**
 		* Set privacy context for search entries that assiged to private and public categories within a category privacy context.
-		* 
 		**/
 		public var privacyContext : String = null;
 
 		/**
 		* Update date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
+
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var useCategoryEntries : Boolean;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -166,6 +160,7 @@ package com.kaltura.vo
 			arr.push('entriesOrderBy');
 			arr.push('enforceEntitlement');
 			arr.push('privacyContext');
+			arr.push('useCategoryEntries');
 			return arr;
 		}
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -38,58 +38,49 @@ package com.kaltura.vo
 
 		/**
 		* User id
-		* 
 		**/
 		public var userId : String = null;
 
 		/**
 		* Partner id
-		* 
 		**/
 		public var partnerId : int = int.MIN_VALUE;
 
 		/**
 		* Permission level
-		* 
 		* @see com.kaltura.types.KalturaCategoryUserPermissionLevel
 		**/
 		public var permissionLevel : int = int.MIN_VALUE;
 
 		/**
 		* Status
-		* 
 		* @see com.kaltura.types.KalturaCategoryUserStatus
 		**/
 		public var status : int = int.MIN_VALUE;
 
 		/**
 		* CategoryUser creation date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* CategoryUser update date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/**
 		* Update method can be either manual or automatic to distinguish between manual operations (for example in KMC) on automatic - using bulk upload
-		* 
 		* @see com.kaltura.types.KalturaUpdateMethodType
 		**/
 		public var updateMethod : int = int.MIN_VALUE;
 
 		/**
 		* The full ids of the Category
-		* 
 		**/
 		public var categoryFullIds : String = null;
 
 		/**
 		* Set of category-related permissions for the current category user.
-		* 
 		**/
 		public var permissionNames : String = null;
 

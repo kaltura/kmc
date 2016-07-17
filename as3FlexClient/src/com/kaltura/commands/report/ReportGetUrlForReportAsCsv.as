@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,6 @@ package com.kaltura.commands.report
 
 	/**
 	* will create a Csv file for the given report and return the URL to access it
-	* 
 	**/
 	public class ReportGetUrlForReportAsCsv extends KalturaCall
 	{
@@ -44,14 +43,14 @@ package com.kaltura.commands.report
 		* @param reportTitle String
 		* @param reportText String
 		* @param headers String
-		* @param reportType int
+		* @param reportType String
 		* @param reportInputFilter KalturaReportInputFilter
 		* @param dimension String
 		* @param pager KalturaFilterPager
 		* @param order String
 		* @param objectIds String
 		**/
-		public function ReportGetUrlForReportAsCsv( reportTitle : String,reportText : String,headers : String,reportType : int,reportInputFilter : KalturaReportInputFilter,dimension : String = null,pager : KalturaFilterPager=null,order : String = null,objectIds : String = null )
+		public function ReportGetUrlForReportAsCsv( reportTitle : String,reportText : String,headers : String,reportType : String,reportInputFilter : KalturaReportInputFilter,dimension : String = null,pager : KalturaFilterPager=null,order : String = null,objectIds : String = null )
 		{
 			service= 'report';
 			action= 'getUrlForReportAsCsv';

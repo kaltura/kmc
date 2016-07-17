@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -37,7 +37,6 @@ package com.kaltura.vo
 		* XML if the playlistType is dynamic
 		* text if the playlistType is static
 		* url if the playlistType is mRss
-		* 
 		**/
 		public var playlistContent : String = null;
 
@@ -47,38 +46,32 @@ package com.kaltura.vo
 
 		/**
 		* Maximum count of results to be returned in playlist execution
-		* 
 		**/
 		public var totalResults : int = int.MIN_VALUE;
 
 		/**
 		* Type of playlist
-		* 
 		* @see com.kaltura.types.KalturaPlaylistType
 		**/
 		public var playlistType : int = int.MIN_VALUE;
 
 		/**
 		* Number of plays
-		* 
 		**/
 		public var plays : int = int.MIN_VALUE;
 
 		/**
 		* Number of views
-		* 
 		**/
 		public var views : int = int.MIN_VALUE;
 
 		/**
 		* The duration in seconds
-		* 
 		**/
 		public var duration : int = int.MIN_VALUE;
 
 		/**
 		* The url for this playlist
-		* 
 		**/
 		public var executeUrl : String = null;
 

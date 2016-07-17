@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,19 +34,16 @@ package com.kaltura.vo
 	{
 		/**
 		* The stream id as provided by the provider
-		* 
 		**/
 		public var streamRemoteId : String = null;
 
 		/**
 		* The backup stream id as provided by the provider
-		* 
 		**/
 		public var streamRemoteBackupId : String = null;
 
 		/**
 		* Array of supported bitrates
-		* 
 		**/
 		public var bitrates : Array = null;
 
@@ -72,45 +69,43 @@ package com.kaltura.vo
 
 		/**
 		* The stream url
-		* 
 		**/
 		public var streamUrl : String = null;
 
 		/**
 		* HLS URL - URL for live stream playback on mobile device
-		* 
 		**/
 		public var hlsStreamUrl : String = null;
 
 		/**
 		* URL Manager to handle the live stream URL (for instance, add token)
-		* 
 		**/
 		public var urlManager : String = null;
 
 		/**
 		* The broadcast primary ip
-		* 
 		**/
 		public var encodingIP1 : String = null;
 
 		/**
 		* The broadcast secondary ip
-		* 
 		**/
 		public var encodingIP2 : String = null;
 
 		/**
 		* The broadcast password
-		* 
 		**/
 		public var streamPassword : String = null;
 
 		/**
 		* The broadcast username
-		* 
 		**/
 		public var streamUsername : String = null;
+
+		/**
+		* The Streams primary server node id
+		**/
+		public var primaryServerNodeId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
 		{

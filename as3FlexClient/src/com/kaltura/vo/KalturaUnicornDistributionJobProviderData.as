@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,32 +34,27 @@ package com.kaltura.vo
 	{
 		/**
 		* The Catalog GUID the video is in or will be ingested into.
-		* 
 		**/
 		public var catalogGuid : String = null;
 
 		/**
 		* The Title assigned to the video. The Foreign Key will be used if no title is provided.
-		* 
 		**/
 		public var title : String = null;
 
 		/**
 		* Indicates that the media content changed and therefore the job should wait for HTTP callback notification to be closed.
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var mediaChanged : Boolean;
 
 		/**
 		* Flavor asset version.
-		* 
 		**/
 		public var flavorAssetVersion : String = null;
 
 		/**
 		* The schema and host name to the Kaltura server, e.g. http://www.kaltura.com
-		* 
 		**/
 		public var notificationBaseUrl : String = null;
 

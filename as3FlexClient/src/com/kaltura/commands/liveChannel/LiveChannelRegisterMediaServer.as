@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -32,7 +32,6 @@ package com.kaltura.commands.liveChannel
 
 	/**
 	* Register media server to live entry
-	* 
 	**/
 	public class LiveChannelRegisterMediaServer extends KalturaCall
 	{
@@ -41,10 +40,11 @@ package com.kaltura.commands.liveChannel
 		/**
 		* @param entryId String
 		* @param hostname String
-		* @param mediaServerIndex int
+		* @param mediaServerIndex String
 		* @param applicationName String
+		* @param liveEntryStatus int
 		**/
-		public function LiveChannelRegisterMediaServer( entryId : String,hostname : String,mediaServerIndex : int,applicationName : String = null )
+		public function LiveChannelRegisterMediaServer( entryId : String,hostname : String,mediaServerIndex : String,applicationName : String = null,liveEntryStatus : int=1 )
 		{
 			service= 'livechannel';
 			action= 'registerMediaServer';
@@ -60,6 +60,8 @@ package com.kaltura.commands.liveChannel
 			valueArr.push(mediaServerIndex);
 			keyArr.push('applicationName');
 			valueArr.push(applicationName);
+			keyArr.push('liveEntryStatus');
+			valueArr.push(liveEntryStatus);
 			applySchema(keyArr, valueArr);
 		}
 

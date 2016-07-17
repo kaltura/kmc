@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -38,13 +38,11 @@ package com.kaltura.vo
 	{
 		/**
 		* Recipient e-mail address
-		* 
 		**/
 		public var email : KalturaStringValue;
 
 		/**
 		* Recipient name
-		* 
 		**/
 		public var name : KalturaStringValue;
 

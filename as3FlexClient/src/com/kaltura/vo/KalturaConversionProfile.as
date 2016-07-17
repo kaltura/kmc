@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -36,7 +36,6 @@ package com.kaltura.vo
 	{
 		/**
 		* The id of the Conversion Profile
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
@@ -56,93 +55,78 @@ package com.kaltura.vo
 
 		/**
 		* The name of the Conversion Profile
-		* 
 		**/
 		public var name : String = null;
 
 		/**
 		* System name of the Conversion Profile
-		* 
 		**/
 		public var systemName : String = null;
 
 		/**
 		* Comma separated tags
-		* 
 		**/
 		public var tags : String = null;
 
 		/**
 		* The description of the Conversion Profile
-		* 
 		**/
 		public var description : String = null;
 
 		/**
 		* ID of the default entry to be used for template data
-		* 
 		**/
 		public var defaultEntryId : String = null;
 
 		/**
 		* Creation date as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* List of included flavor ids (comma separated)
-		* 
 		**/
 		public var flavorParamsIds : String = null;
 
 		/**
 		* Indicates that this conversion profile is system default
-		* 
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var isDefault : int = int.MIN_VALUE;
 
 		/**
 		* Indicates that this conversion profile is partner default
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var isPartnerDefault : Boolean;
 
 		/**
 		* Cropping dimensions
-		* 
 		**/
 		public var cropDimensions : KalturaCropDimensions;
 
 		/**
 		* Clipping start position (in miliseconds)
-		* 
 		**/
 		public var clipStart : int = int.MIN_VALUE;
 
 		/**
 		* Clipping duration (in miliseconds)
-		* 
 		**/
 		public var clipDuration : int = int.MIN_VALUE;
 
 		/**
 		* XSL to transform ingestion MRSS XML
-		* 
 		**/
 		public var xslTransformation : String = null;
 
 		/**
 		* ID of default storage profile to be used for linked net-storage file syncs
-		* 
 		**/
 		public var storageProfileId : int = int.MIN_VALUE;
 
 		/**
 		* Media parser type to be used for extract media
-		* 
 		* @see com.kaltura.types.KalturaMediaParserType
 		**/
 		public var mediaParserType : String = null;

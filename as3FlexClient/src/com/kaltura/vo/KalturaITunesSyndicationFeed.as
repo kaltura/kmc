@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,37 +34,31 @@ package com.kaltura.vo
 	{
 		/**
 		* feed description
-		* 
 		**/
 		public var feedDescription : String = null;
 
 		/**
 		* feed language
-		* 
 		**/
 		public var language : String = null;
 
 		/**
 		* feed landing page (i.e publisher website)
-		* 
 		**/
 		public var feedLandingPage : String = null;
 
 		/**
 		* author/publisher name
-		* 
 		**/
 		public var ownerName : String = null;
 
 		/**
 		* publisher email
-		* 
 		**/
 		public var ownerEmail : String = null;
 
 		/**
 		* podcast thumbnail
-		* 
 		**/
 		public var feedImageUrl : String = null;
 
@@ -84,7 +78,6 @@ package com.kaltura.vo
 
 		/**
 		* true in case you want to enfore the palylist order on the
-		* 
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var enforceOrder : int = int.MIN_VALUE;

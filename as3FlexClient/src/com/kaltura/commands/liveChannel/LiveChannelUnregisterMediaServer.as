@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -32,7 +32,6 @@ package com.kaltura.commands.liveChannel
 
 	/**
 	* Unregister media server from live entry
-	* 
 	**/
 	public class LiveChannelUnregisterMediaServer extends KalturaCall
 	{
@@ -41,9 +40,9 @@ package com.kaltura.commands.liveChannel
 		/**
 		* @param entryId String
 		* @param hostname String
-		* @param mediaServerIndex int
+		* @param mediaServerIndex String
 		**/
-		public function LiveChannelUnregisterMediaServer( entryId : String,hostname : String,mediaServerIndex : int )
+		public function LiveChannelUnregisterMediaServer( entryId : String,hostname : String,mediaServerIndex : String )
 		{
 			service= 'livechannel';
 			action= 'unregisterMediaServer';

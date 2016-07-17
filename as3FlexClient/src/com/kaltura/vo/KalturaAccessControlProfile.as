@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,6 @@ package com.kaltura.vo
 	{
 		/**
 		* The id of the Access Control Profile
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
@@ -44,44 +43,37 @@ package com.kaltura.vo
 
 		/**
 		* The name of the Access Control Profile
-		* 
 		**/
 		public var name : String = null;
 
 		/**
 		* System name of the Access Control Profile
-		* 
 		**/
 		public var systemName : String = null;
 
 		/**
 		* The description of the Access Control Profile
-		* 
 		**/
 		public var description : String = null;
 
 		/**
 		* Creation time as Unix timestamp (In seconds)
-		* 
 		**/
 		public var createdAt : int = int.MIN_VALUE;
 
 		/**
 		* Update time as Unix timestamp (In seconds)
-		* 
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/**
 		* True if this access control profile is the partner default
-		* 
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var isDefault : int = int.MIN_VALUE;
 
 		/**
 		* Array of access control rules
-		* 
 		**/
 		public var rules : Array = null;
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,21 +34,18 @@ package com.kaltura.vo
 	{
 		/**
 		* category id
-		* 
 		**/
 		public var categoryId : int = int.MIN_VALUE;
 
 		/**
 		* Saves the last category entry creation date that was updated
 		* In case of crash the batch will restart from that point
-		* 
 		**/
 		public var lastUpdatedCategoryEntryCreatedAt : int = int.MIN_VALUE;
 
 		/**
 		* Saves the last sub category creation date that was updated
 		* In case of crash the batch will restart from that point
-		* 
 		**/
 		public var lastUpdatedCategoryCreatedAt : int = int.MIN_VALUE;
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -38,7 +38,6 @@ package com.kaltura.vo
 
 		/**
 		* Array of key value ui related objects
-		* 
 		**/
 		public var uiAttributes : Array = null;
 
@@ -62,6 +61,16 @@ package com.kaltura.vo
 		**/
 		public var showCorrectAfterSubmission : int = int.MIN_VALUE;
 
+		/**
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var allowDownload : int = int.MIN_VALUE;
+
+		/**
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var showGradeAfterSubmission : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -74,6 +83,8 @@ package com.kaltura.vo
 			arr.push('showCorrectKeyOnAnswer');
 			arr.push('allowAnswerUpdate');
 			arr.push('showCorrectAfterSubmission');
+			arr.push('allowDownload');
+			arr.push('showGradeAfterSubmission');
 			return arr;
 		}
 

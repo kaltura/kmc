@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,51 +34,43 @@ package com.kaltura.vo
 	{
 		/**
 		* The id of the Category
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
 		/**
 		* The configured id of the scheduler
-		* 
 		**/
 		public var schedulerConfiguredId : int = int.MIN_VALUE;
 
 		/**
 		* The configured id of the job worker
-		* 
 		**/
 		public var workerConfiguredId : int = int.MIN_VALUE;
 
 		/**
 		* The type of the job worker.
-		* 
 		* @see com.kaltura.types.KalturaBatchJobType
 		**/
 		public var workerType : String = null;
 
 		/**
 		* The status type
-		* 
 		* @see com.kaltura.types.KalturaSchedulerStatusType
 		**/
 		public var type : int = int.MIN_VALUE;
 
 		/**
 		* The status value
-		* 
 		**/
 		public var value : int = int.MIN_VALUE;
 
 		/**
 		* The id of the scheduler
-		* 
 		**/
 		public var schedulerId : int = int.MIN_VALUE;
 
 		/**
 		* The id of the worker
-		* 
 		**/
 		public var workerId : int = int.MIN_VALUE;
 

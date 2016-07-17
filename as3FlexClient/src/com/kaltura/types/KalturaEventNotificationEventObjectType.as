@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -31,6 +31,7 @@ package com.kaltura.types
 	{
 		public static const AD_CUE_POINT : String = 'adCuePointEventNotifications.AdCuePoint';
 		public static const ANNOTATION : String = 'annotationEventNotifications.Annotation';
+		public static const ATTACHMENT_ASSET : String = 'attachmentAssetEventNotifications.AttachmentAsset';
 		public static const CAPTION_ASSET : String = 'captionAssetEventNotifications.CaptionAsset';
 		public static const CODE_CUE_POINT : String = 'codeCuePointEventNotifications.CodeCuePoint';
 		public static const DISTRIBUTION_PROFILE : String = 'contentDistributionEventNotifications.DistributionProfile';
@@ -39,6 +40,7 @@ package com.kaltura.types
 		public static const DROP_FOLDER : String = 'dropFolderEventNotifications.DropFolder';
 		public static const DROP_FOLDER_FILE : String = 'dropFolderEventNotifications.DropFolderFile';
 		public static const METADATA : String = 'metadataEventNotifications.Metadata';
+		public static const TRANSCRIPT_ASSET : String = 'transcriptAssetEventNotifications.TranscriptAsset';
 		public static const ENTRY : String = '1';
 		public static const CATEGORY : String = '2';
 		public static const ASSET : String = '3';

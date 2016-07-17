@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -68,6 +68,21 @@ package com.kaltura.vo
 		**/
 		public var cPlatformTvSeriesField : String = null;
 
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var shouldIncludeCuePoints : Boolean;
+
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var shouldIncludeCaptions : Boolean;
+
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var shouldAddThumbExtension : Boolean;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -80,6 +95,9 @@ package com.kaltura.vo
 			arr.push('itemLink');
 			arr.push('cPlatformTvSeries');
 			arr.push('cPlatformTvSeriesField');
+			arr.push('shouldIncludeCuePoints');
+			arr.push('shouldIncludeCaptions');
+			arr.push('shouldAddThumbExtension');
 			return arr;
 		}
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -75,7 +75,6 @@ package com.kaltura.vo
 
 		/**
 		* Can be used to store various partner related data as a string
-		* 
 		**/
 		public var partnerData : String = null;
 
@@ -85,23 +84,24 @@ package com.kaltura.vo
 
 		/**
 		* Should enforce entitlement on feed entries
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var enforceEntitlement : Boolean;
 
 		/**
 		* Set privacy context for search entries that assiged to private and public categories within a category privacy context.
-		* 
 		**/
 		public var privacyContext : String = null;
 
 		/**
 		* Addes the HTML5 script line to the widget's embed code
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var addEmbedHtml5Support : Boolean;
+
+		/**
+		**/
+		public var roles : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -119,6 +119,7 @@ package com.kaltura.vo
 			arr.push('enforceEntitlement');
 			arr.push('privacyContext');
 			arr.push('addEmbedHtml5Support');
+			arr.push('roles');
 			return arr;
 		}
 

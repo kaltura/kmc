@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,6 @@ package com.kaltura.commands.search
 	* Search for media given a specific URL
 	* Kaltura supports a searchURL action on some of the media providers.
 	* This action will return a KalturaSearchResult object based on a given URL (assuming the media provider is supported)
-	* 
 	**/
 	public class SearchSearchUrl extends KalturaCall
 	{

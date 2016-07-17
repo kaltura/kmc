@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,19 +34,16 @@ package com.kaltura.vo
 	{
 		/**
 		* The local file path of the video asset that needs to be distributed
-		* 
 		**/
 		public var localAssetFilePath : String = null;
 
 		/**
 		* The remote URL of the video asset that was distributed
-		* 
 		**/
 		public var remoteAssetUrl : String = null;
 
 		/**
 		* The file name of the remote video asset that was distributed
-		* 
 		**/
 		public var remoteAssetFileName : String = null;
 

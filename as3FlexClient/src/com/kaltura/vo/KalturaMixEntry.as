@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,21 +34,18 @@ package com.kaltura.vo
 	{
 		/**
 		* Indicates whether the user has submited a real thumbnail to the mix (Not the one that was generated automaticaly)
-		* 
 		* @see com.kaltura.types.kalturaBoolean
 		**/
 		public var hasRealThumbnail : Boolean;
 
 		/**
 		* The editor type used to edit the metadata
-		* 
 		* @see com.kaltura.types.KalturaEditorType
 		**/
 		public var editorType : int = int.MIN_VALUE;
 
 		/**
 		* The xml data of the mix
-		* 
 		**/
 		public var dataContent : String = null;
 

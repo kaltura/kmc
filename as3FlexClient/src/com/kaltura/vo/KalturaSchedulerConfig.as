@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,85 +34,71 @@ package com.kaltura.vo
 	{
 		/**
 		* The id of the Category
-		* 
 		**/
 		public var id : int = int.MIN_VALUE;
 
 		/**
 		* Creator name
-		* 
 		**/
 		public var createdBy : String = null;
 
 		/**
 		* Updater name
-		* 
 		**/
 		public var updatedBy : String = null;
 
 		/**
 		* Id of the control panel command that created this config item
-		* 
 		**/
 		public var commandId : String = null;
 
 		/**
 		* The status of the control panel command
-		* 
 		**/
 		public var commandStatus : String = null;
 
 		/**
 		* The id of the scheduler
-		* 
 		**/
 		public var schedulerId : int = int.MIN_VALUE;
 
 		/**
 		* The configured id of the scheduler
-		* 
 		**/
 		public var schedulerConfiguredId : int = int.MIN_VALUE;
 
 		/**
 		* The name of the scheduler
-		* 
 		**/
 		public var schedulerName : String = null;
 
 		/**
 		* The id of the job worker
-		* 
 		**/
 		public var workerId : int = int.MIN_VALUE;
 
 		/**
 		* The configured id of the job worker
-		* 
 		**/
 		public var workerConfiguredId : int = int.MIN_VALUE;
 
 		/**
 		* The name of the job worker
-		* 
 		**/
 		public var workerName : String = null;
 
 		/**
 		* The name of the variable
-		* 
 		**/
 		public var variable : String = null;
 
 		/**
 		* The part of the variable
-		* 
 		**/
 		public var variablePart : String = null;
 
 		/**
 		* The value of the variable
-		* 
 		**/
 		public var value : String = null;
 

@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2015  Kaltura Inc.
+// Copyright (C) 2006-2016  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -176,13 +176,11 @@ package com.kaltura.vo
 
 		/**
 		* http/rtmp/hdnetwork
-		* 
 		**/
 		public var streamerType : String = null;
 
 		/**
 		* http/https, rtmp/rtmpe
-		* 
 		**/
 		public var mediaProtocol : String = null;
 
@@ -192,7 +190,6 @@ package com.kaltura.vo
 
 		/**
 		* Unix timestamp (In seconds)
-		* 
 		**/
 		public var extendedFreeTrailExpiryDate : int = int.MIN_VALUE;
 
@@ -303,6 +300,15 @@ package com.kaltura.vo
 		**/
 		public var liveThumbEntryId : String = null;
 
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var timeAlignedRenditions : Boolean;
+
+		/**
+		**/
+		public var htmlPurifierBehaviour : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -371,6 +377,8 @@ package com.kaltura.vo
 			arr.push('language');
 			arr.push('audioThumbEntryId');
 			arr.push('liveThumbEntryId');
+			arr.push('timeAlignedRenditions');
+			arr.push('htmlPurifierBehaviour');
 			return arr;
 		}
 
