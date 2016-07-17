@@ -276,7 +276,21 @@
 			 * get upload type (csv / xml) by file extension
 			 * */
 			protected function getUploadType(item:Object, column:DataGridColumn):String {
-				var ext:String = item.bulkUploadType == KalturaBulkUploadType.CSV ? 'csv' : 'xml';
+				var ext:String = 'txt';
+				switch (item.bulkUploadType) {
+					case KalturaBulkUploadType.CSV:
+						ext = 'csv';
+						break;
+					case KalturaBulkUploadType.XML:
+					case KalturaBulkUploadType.DROP_FOLDER_XML:
+						ext = 'xml';
+						break;
+					case KalturaBulkUploadType.ICAL:
+					case KalturaBulkUploadType.DROP_FOLDER_ICAL:
+						ext = 'ics';
+						break;
+				}
+		
 				var res:String = resourceManager.getString('cms', ext);
 				if (res) {
 					return res;
@@ -296,7 +310,7 @@
 			
 			
 			public function getUploadObjectType(str:String):String {
-				var result:String = '';
+				var result:String = resourceManager.getString('cms', 'other');
 				switch (str) {
 					case KalturaBulkUploadObjectType.CATEGORY:
 						result = resourceManager.getString('cms', 'categories');
