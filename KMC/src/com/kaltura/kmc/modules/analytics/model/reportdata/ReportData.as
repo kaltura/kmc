@@ -12,7 +12,7 @@ package com.kaltura.kmc.modules.analytics.model.reportdata {
 		 * report type
 		 * @see com.kaltura.types.KalturaReportType
 		 * */
-		public var type:int;
+		public var type:String;
 
 
 		/**

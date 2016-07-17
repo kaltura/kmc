@@ -9,8 +9,8 @@ package com.kaltura.kmc.modules.analytics.control
 		
 		public var currentPage : int = 1;
 		public var currentSize : int = ReportData.DEF_PAGER_SIZE;
-		public var reportType : int;
-		public function PageEvent(type:String , currentPage : int , currentSize : int , reportType : int, bubbles:Boolean=false, cancelable:Boolean=false)
+		public var reportType : String;
+		public function PageEvent(type:String , currentPage : int , currentSize : int , reportType : String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super(type, bubbles, cancelable);
 			this.currentPage = currentPage;

@@ -11,6 +11,7 @@ package com.kaltura.kmc.modules.dashboard {
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.events.KmcNavigationEvent;
 	import com.kaltura.kmc.modules.KmcModule;
+	import com.kaltura.types.KalturaReportType;
 	import com.kaltura.vo.KalturaPartner;
 	import com.kaltura.vo.KalturaPartnerStatistics;
 	import com.kaltura.vo.KalturaPartnerUsage;
@@ -204,7 +205,7 @@ package com.kaltura.kmc.modules.dashboard {
 			krif.fromDay = dateFormatter.format(new Date(today.time - 30*ONE_DAY));
 			krif.timeZoneOffset = today.timezoneOffset;
 
-			var reportGetGraphs:ReportGetGraphs = new ReportGetGraphs(1, krif, 'sum_time_viewed'); //  sum_time_viewed count_plays
+			var reportGetGraphs:ReportGetGraphs = new ReportGetGraphs(KalturaReportType.TOP_CONTENT, krif, 'sum_time_viewed'); //  sum_time_viewed count_plays
 
 			reportGetGraphs.addEventListener(KalturaEvent.COMPLETE, result);
 			reportGetGraphs.addEventListener(KalturaEvent.FAILED, fault);

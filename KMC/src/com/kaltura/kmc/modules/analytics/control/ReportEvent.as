@@ -11,7 +11,7 @@ package com.kaltura.kmc.modules.analytics.control
 		public static const EXPORT_TO_EXCEL : String = "analytics_exporttoExcel";
 		public static const GET_BASE_TOTALS : String = "analytics_getBaseTotals";
 		
-		public var reportType : int;
+		public var reportType : String;
 		public var screenType : int;
 		public var orderBy : String;
 		public var getTable : Boolean; 
@@ -22,7 +22,7 @@ package com.kaltura.kmc.modules.analytics.control
 		public var addGraphTotals:Boolean;
 		
 		public function ReportEvent( type:String, 
-									 reportType : int ,
+									 reportType : String ,
 									 screenType : int = -1,
 									 orderBy : String = '',
 									 getTable : Boolean = true, 
