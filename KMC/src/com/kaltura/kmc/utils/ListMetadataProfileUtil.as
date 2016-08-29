@@ -39,8 +39,13 @@ package com.kaltura.kmc.utils
 					metadataProfile.downloadUrl = context.kc.protocol + context.kc.domain + KMCMetadataProfileVO.serveURL + "/ks/" + context.kc.ks + "/id/" + recievedProfile.id;
 					//parses only profiles that were created from KMC
 					if (!(recievedProfile.createMode) || (recievedProfile.createMode == KalturaMetadataProfileCreateMode.KMC)) {
-						metadataProfile.xsd = new XML(recievedProfile.xsd);
-						metadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(metadataProfile.xsd);
+						try {
+							metadataProfile.xsd = new XML(recievedProfile.xsd);
+							metadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(metadataProfile.xsd);
+						}
+						catch (er:Error) {
+							metadataProfile.profileDisabled = true;	
+						}
 					}
 					//none KMC profile
 					else {
