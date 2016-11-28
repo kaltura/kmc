@@ -2,10 +2,11 @@
 <!---
 live streaming control tab of EntryDetailsWin
 -->
-<mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
-		   implements="com.kaltura.edw.business.IDrilldownPanel"
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
 		   xmlns:control="com.kaltura.edw.control.*"
-		   label="{resourceManager.getString('drilldown', 'liveStream')}" xmlns:live="com.kaltura.edw.view.live.*">
+		   xmlns:live="com.kaltura.edw.view.live.*"
+		   width="100%" height="100%" label="{resourceManager.getString('drilldown', 'liveStream')}"
+		   implements="com.kaltura.edw.business.IDrilldownPanel" layout="vertical">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="panelDataSaved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -16,6 +17,7 @@ live streaming control tab of EntryDetailsWin
 			import com.kaltura.edw.business.KedJSGate;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.constants.PanelConsts;
+			import com.kaltura.edw.control.events.LiveEvent;
 			import com.kaltura.edw.control.events.ProfileEvent;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
@@ -32,6 +34,8 @@ live streaming control tab of EntryDetailsWin
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 
 			
@@ -364,117 +368,166 @@ live streaming control tab of EntryDetailsWin
 				return name.replace('%i', '1');
 			}
 			
+		
+			protected function regenerateToken(event:MouseEvent):void
+			{
+				Alert.show(resourceManager.getString('drilldown', 'confirmRegenerateToken'), 
+					resourceManager.getString('drilldown', 'confirmRegenerateTokenTitle'), 
+					Alert.YES|Alert.NO, this, alertHandler, null, Alert.NO);
+			}
+			
+			private function alertHandler(event:CloseEvent):void
+			{
+				if(event.detail == Alert.YES) {
+					// disaptch event that will trigger the regenerate command
+					var e:LiveEvent = new LiveEvent(LiveEvent.REGENERATE_LIVE_TOKEN);
+					e.data = _selectedEntry.id;
+					controller.dispatch(e);
+				}
+			}
+			
 		]]>
 	</mx:Script>
 	<control:LivestreamTabController id="controller"/>
 	
-	<mx:VBox width="100%" styleName="noPadding" visible="{_selectedEntry.sourceType != KalturaSourceType.MANUAL_LIVE_STREAM}"
-			 includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.MANUAL_LIVE_STREAM}">
-		<mx:Label text="{resourceManager.getString('drilldown', 'brodcastingSettings')}" styleName="drillDownLabel"/>
-		<mx:Text width="100%" htmlText="{resourceManager.getString('drilldown', 'broadcastingText')}" link="onHelp(event)"/>
+	<mx:VBox visible="{_selectedEntry.sourceType != KalturaSourceType.MANUAL_LIVE_STREAM}"
+			 width="100%"
+			 includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.MANUAL_LIVE_STREAM}"
+			 styleName="noPadding">
+		<mx:Label styleName="drillDownLabel"
+				  text="{resourceManager.getString('drilldown', 'brodcastingSettings')}"/>
+		<mx:Text width="100%" htmlText="{resourceManager.getString('drilldown', 'broadcastingText')}"
+				 link="onHelp(event)"/>
 		<mx:Spacer height="20"/>
 	
 		<!-- broadcast urls -->
 		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('drilldown', 'Broadcastingurls')}" styleName="drillDownLabel"/>
-			<mx:Button styleName="help" click="{onRollOver(1)}" buttonMode="true"/>
+			<mx:Label styleName="drillDownLabel"
+					  text="{resourceManager.getString('drilldown', 'Broadcastingurls')}"/>
+			<mx:Button buttonMode="true" click="{onRollOver(1)}" styleName="help"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%">
+			<mx:Label width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+					  styleName="drillDownLabel"
+					  text="{resourceManager.getString('drilldown', 'PrimaryURL')}"/>
+			<mx:Label id="primaryUrl" width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}"
+					  selectable="true" styleName="drillDownSubLabel"
+					  text="{_selectedEntry.primaryBroadcastingUrl}" truncateToFit="false"/>
 		</mx:HBox>
 	
 		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('drilldown', 'PrimaryURL')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:Label id="primaryUrl" text="{_selectedEntry.primaryBroadcastingUrl}" selectable="true" truncateToFit="false"
-					  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
-		</mx:HBox>
-	
-		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('drilldown', 'BackupURL')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:Label id="backupUrl" text="{_selectedEntry.secondaryBroadcastingUrl}" selectable="true" truncateToFit="false"
-					  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+			<mx:Label width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+					  styleName="drillDownLabel"
+					  text="{resourceManager.getString('drilldown', 'BackupURL')}"/>
+			<mx:Label id="backupUrl" width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}"
+					  selectable="true" styleName="drillDownSubLabel"
+					  text="{_selectedEntry.secondaryBroadcastingUrl}" truncateToFit="false"/>
 			<mx:Spacer width="30"/>
 		</mx:HBox>
+		
+		<mx:HBox width="100%">
+			<mx:Label width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+					  styleName="drillDownLabel"
+					  text=""/>
+			<mx:Button label="{resourceManager.getString('drilldown', 'regenerateLiveToken')}"
+					   click="regenerateToken(event)"/>
+		</mx:HBox>
 	
+		
 		<mx:VBox width="100%">
 			<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('drilldown', 'streamName')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:Label id="streamName" text="{fixStreamName(_selectedEntry.streamName)}" selectable="true" truncateToFit="false"
-						  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+				<mx:Label width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+						  styleName="drillDownLabel"
+						  text="{resourceManager.getString('drilldown', 'streamName')}"/>
+				<mx:Label id="streamName" width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}"
+						  selectable="true" styleName="drillDownSubLabel"
+						  text="{fixStreamName(_selectedEntry.streamName)}" truncateToFit="false"/>
 			</mx:HBox>
 			<mx:HBox>
-				<mx:Label text="" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:Text text="{resourceManager.getString('drilldown', 'streamNameNote')}" selectable="true" truncateToFit="false"
-						  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+				<mx:Label width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+						  styleName="drillDownLabel" text=""/>
+				<mx:Text width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" selectable="true"
+						 styleName="drillDownSubLabel"
+						 text="{resourceManager.getString('drilldown', 'streamNameNote')}"
+						 truncateToFit="false"/>
 			</mx:HBox>
 		</mx:VBox>
 	
 		<mx:Spacer height="20"/>
 		
 		<!-- Kaltura - rtsp urls -->
-		<live:RtspInfo styleName="noPadding" width="100%" selectedEntry="{_selectedEntry}"
-					   visible="false"
-					   includeInLayout="false" />
+		<live:RtspInfo visible="false" width="100%" includeInLayout="false"
+					   selectedEntry="{_selectedEntry}" styleName="noPadding"/>
 	
 		<!-- stream config - Akamai -->
-		<live:AkamaiStreamConfig styleName="noPadding" width="100%" selectedEntry="{_selectedEntry}"
-				 visible="{_selectedEntry.sourceType == KalturaSourceType.AKAMAI_UNIVERSAL_LIVE}"
-				 includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.AKAMAI_UNIVERSAL_LIVE}" />
+		<live:AkamaiStreamConfig visible="{_selectedEntry.sourceType == KalturaSourceType.AKAMAI_UNIVERSAL_LIVE}"
+								 width="100%"
+								 includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.AKAMAI_UNIVERSAL_LIVE}"
+								 selectedEntry="{_selectedEntry}" styleName="noPadding"/>
 		
 		<!-- stream config - Kaltura -->
-		<live:KalturaStreamConfig styleName="noPadding" width="100%" selectedEntry="{_selectedEntry}"
-				 visible="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
-				 includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}" />
+		<live:KalturaStreamConfig visible="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
+								  width="100%"
+								  includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
+								  selectedEntry="{_selectedEntry}" styleName="noPadding"/>
 		
 		<!-- bitrate config -->
-		<live:BitrateConfig id="bitrateConfig" width="100%" extrainfo="onRollOver(3)"
+		<live:BitrateConfig id="bitrateConfig"
 							visible="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}"
-							includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}" />
+							width="100%" extrainfo="onRollOver(3)"
+							includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}"/>
 			
 		<!-- conv prof -->
-		<live:ConversionProfileConfig id="convprofConfig" width="100%" selectedEntry="{_selectedEntry}" 
-									  profiles="{liveProfiles}"
+		<live:ConversionProfileConfig id="convprofConfig"
 									  visible="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
-									  includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}" />
+									  width="100%"
+									  includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
+									  profiles="{liveProfiles}" selectedEntry="{_selectedEntry}"/>
 		
 		<!-- broadcast credentials -->
-		<mx:HBox width="100%" visible="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}"
+		<mx:HBox visible="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}" width="100%"
 				 includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}">
-			<mx:Label text="{resourceManager.getString('drilldown', 'broadcastinCredential')}" styleName="drillDownLabel"/>
-			<mx:Button styleName="help" click="{onRollOver(2)}" buttonMode="true"/>			
+			<mx:Label styleName="drillDownLabel"
+					  text="{resourceManager.getString('drilldown', 'broadcastinCredential')}"/>
+			<mx:Button buttonMode="true" click="{onRollOver(2)}" styleName="help"/>			
 		</mx:HBox>
 	
-		<mx:HBox width="100%" visible="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}"
+		<mx:HBox visible="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}" width="100%"
 				 includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}">
-			<mx:Label text="{resourceManager.getString('drilldown', 'userName')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:Label id="userName" text="{_selectedEntry.streamUsername}" selectable="true" 
-					  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+			<mx:Label width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}" styleName="drillDownLabel"
+					  text="{resourceManager.getString('drilldown', 'userName')}"/>
+			<mx:Label id="userName" width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}"
+					  selectable="true" styleName="drillDownSubLabel"
+					  text="{_selectedEntry.streamUsername}"/>
 			<mx:Spacer width="30"/>
 		</mx:HBox>
 	
-		<mx:HBox width="100%" visible="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}"
+		<mx:HBox visible="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}" width="100%"
 				 includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}">
-			<mx:Label text="{resourceManager.getString('drilldown', 'password')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:Label id="password" text="{_selectedEntry.streamPassword}" selectable="true"
-					  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+			<mx:Label width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}" styleName="drillDownLabel"
+					  text="{resourceManager.getString('drilldown', 'password')}"/>
+			<mx:Label id="password" width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}"
+					  selectable="true" styleName="drillDownSubLabel"
+					  text="{_selectedEntry.streamPassword}"/>
 		</mx:HBox>
 	
 		<mx:Spacer height="20"/>
 	
 		<!-- IPs -->
-		<live:IPsConfig width="100%" selectedEntry="{_selectedEntry}" 
-						visible="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}"
-						includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}" />
+		<live:IPsConfig visible="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}"
+						width="100%"
+						includeInLayout="{_selectedEntry.sourceType != KalturaSourceType.LIVE_STREAM}"
+						selectedEntry="{_selectedEntry}"/>
 		
 		<mx:HBox width="100%" styleName="noPadding">
-			<mx:Button id="exportBtn" label="{resourceManager.getString('drilldown', 'exportToFme')}" click="{fmeExport()}"/>
-			<mx:LinkButton styleName="liveReportsButton" label="{resourceManager.getString('drilldown', 'openLiveReport')}" 
-						   visible="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM &amp;&amp; showLiveReportsButton}"
+			<mx:Button id="exportBtn" label="{resourceManager.getString('drilldown', 'exportToFme')}"
+					   click="{fmeExport()}"/>
+			<mx:LinkButton visible="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM &amp;&amp; showLiveReportsButton}"
+						   label="{resourceManager.getString('drilldown', 'openLiveReport')}"
+						   click="openLiveReport(event)"
 						   includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM &amp;&amp; showLiveReportsButton}"
-						   click="openLiveReport(event)"/>
+						   styleName="liveReportsButton"/>
 		</mx:HBox>
 	</mx:VBox>
 	
