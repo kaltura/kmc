@@ -37,6 +37,11 @@ package com.kaltura.vo
 		**/
 		public var keepManualThumbnails : int = int.MIN_VALUE;
 
+		/**
+		* Array of plugin replacement options
+		**/
+		public var pluginOptionItems : Array = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -45,6 +50,7 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('keepManualThumbnails');
+			arr.push('pluginOptionItems');
 			return arr;
 		}
 
@@ -67,6 +73,9 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'pluginOptionItems':
+					result = 'KalturaPluginReplacementOptionsItem';
+					break;
 			}
 			return result;
 		}

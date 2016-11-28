@@ -91,6 +91,11 @@ package com.kaltura.vo
 		**/
 		public var language : String = null;
 
+		/**
+		* The label of the flavor asset
+		**/
+		public var label : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;

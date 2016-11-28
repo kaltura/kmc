@@ -33,5 +33,6 @@ package com.kaltura.types
 		public static const PLAYABLE : int = 1;
 		public static const BROADCASTING : int = 2;
 		public static const AUTHENTICATED : int = 3;
+		public static const MARKED_FOR_DELETION : int = 4;
 	}
 }

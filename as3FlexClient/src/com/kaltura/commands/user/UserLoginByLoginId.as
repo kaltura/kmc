@@ -43,8 +43,9 @@ package com.kaltura.commands.user
 		* @param partnerId int
 		* @param expiry int
 		* @param privileges String
+		* @param otp String
 		**/
-		public function UserLoginByLoginId( loginId : String,password : String,partnerId : int=int.MIN_VALUE,expiry : int=86400,privileges : String='*' )
+		public function UserLoginByLoginId( loginId : String,password : String,partnerId : int=int.MIN_VALUE,expiry : int=86400,privileges : String='*',otp : String = null )
 		{
 			service= 'user';
 			action= 'loginByLoginId';
@@ -62,6 +63,8 @@ package com.kaltura.commands.user
 			valueArr.push(expiry);
 			keyArr.push('privileges');
 			valueArr.push(privileges);
+			keyArr.push('otp');
+			valueArr.push(otp);
 			applySchema(keyArr, valueArr);
 		}
 

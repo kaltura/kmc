@@ -40,18 +40,12 @@ package com.kaltura.vo
 		**/
 		public var rootDir : String = null;
 
-		/**
-		* @see com.kaltura.types.kalturaBoolean
-		**/
-		public var limitIpAddress : Boolean;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('keyPairId');
 			arr.push('rootDir');
-			arr.push('limitIpAddress');
 			return arr;
 		}
 

@@ -74,6 +74,11 @@ package com.kaltura.vo
 		**/
 		public var type : String = null;
 
+		/**
+		* The dc of the server
+		**/
+		public var dc : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -84,6 +89,7 @@ package com.kaltura.vo
 			arr.push('name');
 			arr.push('systemName');
 			arr.push('description');
+			arr.push('dc');
 			return arr;
 		}
 

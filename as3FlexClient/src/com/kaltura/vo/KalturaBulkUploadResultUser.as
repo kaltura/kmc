@@ -84,6 +84,10 @@ package com.kaltura.vo
 		**/
 		public var lastName : String = null;
 
+		/**
+		**/
+		public var group : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -101,6 +105,7 @@ package com.kaltura.vo
 			arr.push('gender');
 			arr.push('firstName');
 			arr.push('lastName');
+			arr.push('group');
 			return arr;
 		}
 

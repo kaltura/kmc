@@ -32,10 +32,22 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaBusinessProcessServerFilter extends KalturaBusinessProcessServerBaseFilter
 	{
+		/**
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var currentDcOrExternal : int = int.MIN_VALUE;
+
+		/**
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var currentDc : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('currentDcOrExternal');
+			arr.push('currentDc');
 			return arr;
 		}
 

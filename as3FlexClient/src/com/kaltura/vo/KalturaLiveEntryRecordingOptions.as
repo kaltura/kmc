@@ -47,6 +47,11 @@ package com.kaltura.vo
 		**/
 		public var shouldCopyThumbnail : int = int.MIN_VALUE;
 
+		/**
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var shouldMakeHidden : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -57,6 +62,7 @@ package com.kaltura.vo
 			arr.push('shouldCopyEntitlement');
 			arr.push('shouldCopyScheduling');
 			arr.push('shouldCopyThumbnail');
+			arr.push('shouldMakeHidden');
 			return arr;
 		}
 

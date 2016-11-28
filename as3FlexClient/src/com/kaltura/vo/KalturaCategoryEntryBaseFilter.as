@@ -69,6 +69,14 @@ package com.kaltura.vo
 		**/
 		public var statusIn : String = null;
 
+		/**
+		**/
+		public var creatorUserIdEqual : String = null;
+
+		/**
+		**/
+		public var creatorUserIdIn : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -82,6 +90,8 @@ package com.kaltura.vo
 			arr.push('categoryFullIdsStartsWith');
 			arr.push('statusEqual');
 			arr.push('statusIn');
+			arr.push('creatorUserIdEqual');
+			arr.push('creatorUserIdIn');
 			return arr;
 		}
 

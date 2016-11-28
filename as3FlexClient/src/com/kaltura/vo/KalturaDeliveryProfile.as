@@ -27,6 +27,8 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
+	import com.kaltura.vo.KalturaAssetFilter;
+
 	import com.kaltura.vo.KalturaUrlTokenizer;
 
 	import com.kaltura.vo.KalturaUrlRecognizer;
@@ -129,6 +131,11 @@ package com.kaltura.vo
 		**/
 		public var extraParams : String = null;
 
+		/**
+		* A filter that can be used to include additional assets in the URL (e.g. captions)
+		**/
+		public var supplementaryAssetsFilter : KalturaAssetFilter;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -148,6 +155,7 @@ package com.kaltura.vo
 			arr.push('mediaProtocols');
 			arr.push('priority');
 			arr.push('extraParams');
+			arr.push('supplementaryAssetsFilter');
 			return arr;
 		}
 
@@ -174,6 +182,9 @@ package com.kaltura.vo
 					result = '';
 					break;
 				case 'tokenizer':
+					result = '';
+					break;
+				case 'supplementaryAssetsFilter':
 					result = '';
 					break;
 			}

@@ -47,6 +47,16 @@ package com.kaltura.vo
 		**/
 		public var entryId : String = null;
 
+		/**
+		* Voicebase API key to fetch transcript tokens
+		**/
+		public var voicebaseApiKey : String = null;
+
+		/**
+		* Voicebase API password to fetch transcript tokens
+		**/
+		public var voicebaseApiPassword : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -54,6 +64,8 @@ package com.kaltura.vo
 			arr.push('metadataProfileId');
 			arr.push('transcriptAssetId');
 			arr.push('entryId');
+			arr.push('voicebaseApiKey');
+			arr.push('voicebaseApiPassword');
 			return arr;
 		}
 

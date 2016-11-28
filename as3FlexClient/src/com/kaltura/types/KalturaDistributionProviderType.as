@@ -46,6 +46,7 @@ package com.kaltura.types
 		public static const MSN : String = 'msnDistribution.MSN';
 		public static const NDN : String = 'ndnDistribution.NDN';
 		public static const PODCAST : String = 'podcastDistribution.PODCAST';
+		public static const PUSH_TO_NEWS : String = 'pushToNewsDistribution.PUSH_TO_NEWS';
 		public static const QUICKPLAY : String = 'quickPlayDistribution.QUICKPLAY';
 		public static const SYNACOR_HBO : String = 'synacorHboDistribution.SYNACOR_HBO';
 		public static const TIME_WARNER : String = 'timeWarnerDistribution.TIME_WARNER';

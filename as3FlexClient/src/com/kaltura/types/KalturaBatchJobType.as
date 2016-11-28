@@ -32,6 +32,7 @@ package com.kaltura.types
 		public static const PARSE_MULTI_LANGUAGE_CAPTION_ASSET : String = 'caption.parsemultilanguagecaptionasset';
 		public static const PARSE_CAPTION_ASSET : String = 'captionSearch.parseCaptionAsset';
 		public static const DISTRIBUTION_DELETE : String = 'contentDistribution.DistributionDelete';
+		public static const CONVERT : String = '0';
 		public static const DISTRIBUTION_DISABLE : String = 'contentDistribution.DistributionDisable';
 		public static const DISTRIBUTION_ENABLE : String = 'contentDistribution.DistributionEnable';
 		public static const DISTRIBUTION_FETCH_REPORT : String = 'contentDistribution.DistributionFetchReport';
@@ -39,7 +40,6 @@ package com.kaltura.types
 		public static const DISTRIBUTION_SYNC : String = 'contentDistribution.DistributionSync';
 		public static const DISTRIBUTION_UPDATE : String = 'contentDistribution.DistributionUpdate';
 		public static const DROP_FOLDER_CONTENT_PROCESSOR : String = 'dropFolder.DropFolderContentProcessor';
-		public static const CONVERT : String = '0';
 		public static const DROP_FOLDER_WATCHER : String = 'dropFolder.DropFolderWatcher';
 		public static const EVENT_NOTIFICATION_HANDLER : String = 'eventNotification.EventNotificationHandler';
 		public static const INTEGRATION : String = 'integration.Integration';
@@ -85,5 +85,6 @@ package com.kaltura.types
 		public static const SYNC_CATEGORY_PRIVACY_CONTEXT : String = '39';
 		public static const LIVE_REPORT_EXPORT : String = '40';
 		public static const RECALCULATE_CACHE : String = '41';
+		public static const LIVE_TO_VOD : String = '42';
 	}
 }

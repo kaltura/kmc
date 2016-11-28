@@ -32,10 +32,16 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaScheduleEventResourceFilter extends KalturaScheduleEventResourceBaseFilter
 	{
+		/**
+		* Find event-resource objects that associated with the event, if none found, find by its parent event
+		**/
+		public var eventIdOrItsParentIdEqual : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('eventIdOrItsParentIdEqual');
 			return arr;
 		}
 

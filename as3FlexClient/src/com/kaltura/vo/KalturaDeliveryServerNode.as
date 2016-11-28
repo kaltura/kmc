@@ -33,15 +33,15 @@ package com.kaltura.vo
 	public dynamic class KalturaDeliveryServerNode extends KalturaServerNode
 	{
 		/**
-		* Delivery server playback Domain
+		* Delivery profile ids
 		**/
-		public var playbackDomain : String = null;
+		public var deliveryProfileIds : Array = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('playbackDomain');
+			arr.push('deliveryProfileIds');
 			return arr;
 		}
 
@@ -56,6 +56,9 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'deliveryProfileIds':
+					result = 'KalturaKeyValue';
+					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;

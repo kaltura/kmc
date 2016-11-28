@@ -249,6 +249,12 @@ package com.kaltura.vo
 		**/
 		public var templateEntryId : String = null;
 
+		/**
+		* should we display this entry in search
+		* @see com.kaltura.types.KalturaEntryDisplayInSearchType
+		**/
+		public var displayInSearch : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -278,6 +284,7 @@ package com.kaltura.vo
 			arr.push('operationAttributes');
 			arr.push('entitledUsersEdit');
 			arr.push('entitledUsersPublish');
+			arr.push('displayInSearch');
 			return arr;
 		}
 

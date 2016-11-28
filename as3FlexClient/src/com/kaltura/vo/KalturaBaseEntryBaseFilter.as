@@ -87,6 +87,10 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var userIdNotIn : String = null;
+
+		/**
+		**/
 		public var creatorIdEqual : String = null;
 
 		/**
@@ -389,6 +393,7 @@ package com.kaltura.vo
 			arr.push('partnerIdIn');
 			arr.push('userIdEqual');
 			arr.push('userIdIn');
+			arr.push('userIdNotIn');
 			arr.push('creatorIdEqual');
 			arr.push('tagsLike');
 			arr.push('tagsMultiLikeOr');

@@ -169,6 +169,7 @@ package com.kaltura.vo
 			arr.push('ownerId');
 			arr.push('priority');
 			arr.push('sequence');
+			arr.push('recurrenceType');
 			arr.push('duration');
 			arr.push('contact');
 			arr.push('comment');
@@ -184,7 +185,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
-			arr.push('recurrenceType');
 			return arr;
 		}
 

@@ -131,6 +131,12 @@ package com.kaltura.vo
 		**/
 		public var mediaParserType : String = null;
 
+		/**
+		* Should calculate file conversion complexity
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var calculateComplexity : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -152,6 +158,7 @@ package com.kaltura.vo
 			arr.push('xslTransformation');
 			arr.push('storageProfileId');
 			arr.push('mediaParserType');
+			arr.push('calculateComplexity');
 			return arr;
 		}
 

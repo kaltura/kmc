@@ -42,6 +42,11 @@ package com.kaltura.vo
 		**/
 		public var key : String = null;
 
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var limitIpAddress : Boolean;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -51,6 +56,7 @@ package com.kaltura.vo
 			arr = new Array();
 			arr.push('window');
 			arr.push('key');
+			arr.push('limitIpAddress');
 			return arr;
 		}
 

@@ -32,10 +32,15 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaAssetFilter extends KalturaAssetBaseFilter
 	{
+		/**
+		**/
+		public var typeIn : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('typeIn');
 			return arr;
 		}
 

@@ -168,6 +168,11 @@ package com.kaltura.vo
 		**/
 		public var passPhrase : String = null;
 
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var shouldExportThumbs : Boolean;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -202,6 +207,7 @@ package com.kaltura.vo
 			arr.push('privateKey');
 			arr.push('publicKey');
 			arr.push('passPhrase');
+			arr.push('shouldExportThumbs');
 			return arr;
 		}
 

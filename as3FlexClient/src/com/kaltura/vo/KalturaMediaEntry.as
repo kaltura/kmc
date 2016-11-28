@@ -91,12 +91,18 @@ package com.kaltura.vo
 		**/
 		public var isTrimDisabled : int = int.MIN_VALUE;
 
+		/**
+		* Array of streams that exists on the entry
+		**/
+		public var streams : Array = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('creditUserName');
 			arr.push('creditUrl');
+			arr.push('streams');
 			return arr;
 		}
 
@@ -116,6 +122,9 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'streams':
+					result = 'KalturaStreamContainer';
+					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;

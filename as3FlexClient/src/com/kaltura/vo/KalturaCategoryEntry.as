@@ -57,6 +57,11 @@ package com.kaltura.vo
 		**/
 		public var status : int = int.MIN_VALUE;
 
+		/**
+		* CategroyEntry creator puser ID
+		**/
+		public var creatorUserId : String = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 

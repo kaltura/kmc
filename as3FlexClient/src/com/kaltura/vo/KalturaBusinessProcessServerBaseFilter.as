@@ -95,6 +95,14 @@ package com.kaltura.vo
 		**/
 		public var typeIn : String = null;
 
+		/**
+		**/
+		public var dcEqual : int = int.MIN_VALUE;
+
+		/**
+		**/
+		public var dcEqOrNull : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -114,6 +122,8 @@ package com.kaltura.vo
 			arr.push('statusNotIn');
 			arr.push('typeEqual');
 			arr.push('typeIn');
+			arr.push('dcEqual');
+			arr.push('dcEqOrNull');
 			return arr;
 		}
 

@@ -38,5 +38,6 @@ package com.kaltura.types
 		public static const CONVERT_ENTRY_FLAVORS : String = '4';
 		public static const DELETE_LOCAL_CONTENT : String = '5';
 		public static const STORAGE_EXPORT : String = '6';
+		public static const MODIFY_ENTRY : String = '7';
 	}
 }

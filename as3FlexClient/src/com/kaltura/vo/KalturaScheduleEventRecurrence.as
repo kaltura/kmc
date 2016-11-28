@@ -46,6 +46,11 @@ package com.kaltura.vo
 		public var until : int = int.MIN_VALUE;
 
 		/**
+		* TimeZone String
+		**/
+		public var timeZone : String = null;
+
+		/**
 		**/
 		public var count : int = int.MIN_VALUE;
 
@@ -130,6 +135,7 @@ package com.kaltura.vo
 			arr.push('name');
 			arr.push('frequency');
 			arr.push('until');
+			arr.push('timeZone');
 			arr.push('count');
 			arr.push('interval');
 			arr.push('bySecond');

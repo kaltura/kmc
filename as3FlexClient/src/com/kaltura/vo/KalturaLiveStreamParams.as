@@ -57,6 +57,16 @@ package com.kaltura.vo
 		**/
 		public var codec : String = null;
 
+		/**
+		* Live stream's farme rate
+		**/
+		public var frameRate : int = int.MIN_VALUE;
+
+		/**
+		* Live stream's key frame interval
+		**/
+		public var keyFrameInterval : Number = Number.NEGATIVE_INFINITY;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -69,6 +79,8 @@ package com.kaltura.vo
 			arr.push('width');
 			arr.push('height');
 			arr.push('codec');
+			arr.push('frameRate');
+			arr.push('keyFrameInterval');
 			return arr;
 		}
 

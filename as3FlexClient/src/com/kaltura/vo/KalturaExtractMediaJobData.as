@@ -36,11 +36,29 @@ package com.kaltura.vo
 		**/
 		public var flavorAssetId : String = null;
 
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var calculateComplexity : Boolean;
+
+		/**
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var extractId3Tags : Boolean;
+
+		/**
+		* The data output file
+		**/
+		public var destDataFilePath : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('flavorAssetId');
+			arr.push('calculateComplexity');
+			arr.push('extractId3Tags');
+			arr.push('destDataFilePath');
 			return arr;
 		}
 

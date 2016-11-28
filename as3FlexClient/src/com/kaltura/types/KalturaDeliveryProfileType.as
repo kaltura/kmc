@@ -77,6 +77,10 @@ package com.kaltura.types
 		public static const LIVE_DASH : String = '1003';
 		public static const LIVE_RTMP : String = '1005';
 		public static const LIVE_HLS_TO_MULTICAST : String = '1006';
+		public static const LIVE_PACKAGER_HLS : String = '1007';
+		public static const LIVE_PACKAGER_HDS : String = '1008';
+		public static const LIVE_PACKAGER_DASH : String = '1009';
+		public static const LIVE_PACKAGER_MSS : String = '1010';
 		public static const LIVE_AKAMAI_HDS : String = '1013';
 	}
 }

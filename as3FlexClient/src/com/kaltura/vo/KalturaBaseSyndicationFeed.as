@@ -140,6 +140,11 @@ package com.kaltura.vo
 		**/
 		public var useCategoryEntries : Boolean;
 
+		/**
+		* Feed content-type header value
+		**/
+		public var feedContentTypeHeader : String = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -161,6 +166,7 @@ package com.kaltura.vo
 			arr.push('enforceEntitlement');
 			arr.push('privacyContext');
 			arr.push('useCategoryEntries');
+			arr.push('feedContentTypeHeader');
 			return arr;
 		}
 

@@ -33,9 +33,9 @@ package com.kaltura.vo
 	public dynamic class KalturaEdgeServerNode extends KalturaDeliveryServerNode
 	{
 		/**
-		* Delivery profile ids
+		* Delivery server playback Domain
 		**/
-		public var deliveryProfileIds : Array = null;
+		public var playbackDomain : String = null;
 
 		/**
 		* Overdie edge server default configuration - json format
@@ -46,7 +46,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('deliveryProfileIds');
+			arr.push('playbackDomain');
 			arr.push('config');
 			return arr;
 		}
@@ -62,9 +62,6 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
-				case 'deliveryProfileIds':
-					result = 'KalturaKeyValue';
-					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;
