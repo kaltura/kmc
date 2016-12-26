@@ -224,6 +224,13 @@ package com.kaltura.kmc.modules.account.model {
 			liveCPFilter.typeEqual = KalturaConversionProfileType.LIVE_STREAM;
 				
 		}
+		
+		
+		public function getAllFlavorParams():ArrayCollection {
+			var result:ArrayCollection = new ArrayCollection(this.mediaFlavorsData.source);
+			result.addAll(this.liveFlavorsData);
+			return result;
+		}
 
 
 		/**
