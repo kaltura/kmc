@@ -20,7 +20,7 @@ package com.kaltura.edw.control.commands {
 
 		override public function result(data:Object):void {
 			super.result(data);
-			//TODO update the new entry on the model (so in view)
+			// update the new entry on the model (so in view)
 			var e:KedDataEvent = new KedDataEvent(KedDataEvent.ENTRY_UPDATED);
 			e.data = data.data; // send the updated entry as event data
 			(_model.getDataPack(ContextDataPack) as ContextDataPack).dispatcher.dispatchEvent(e);
