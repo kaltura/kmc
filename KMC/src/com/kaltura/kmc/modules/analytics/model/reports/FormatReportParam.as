@@ -87,6 +87,7 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 				case "deleted_storage":
 				case "transcoding_consumption":
 				case "aggregated_monthly_avg_storage":
+				case "combined_bandwidth_aggregated_storage":
 					var fmtr:NumberFormatter = new NumberFormatter();
 					fmtr.rounding = NumberBaseRoundType.NEAREST;
 					fmtr.precision = 0;
