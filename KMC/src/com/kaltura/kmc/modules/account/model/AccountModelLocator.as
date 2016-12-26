@@ -227,7 +227,7 @@ package com.kaltura.kmc.modules.account.model {
 		
 		
 		public function getAllFlavorParams():ArrayCollection {
-			var result:ArrayCollection = new ArrayCollection(this.mediaFlavorsData.source);
+			var result:ArrayCollection = new ArrayCollection(this.mediaFlavorsData.toArray());
 			result.addAll(this.liveFlavorsData);
 			return result;
 		}
