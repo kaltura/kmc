@@ -37,6 +37,7 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(AccessControlEvent.ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES, DeleteAccessControlProfilesCommand);
 			addCommand(AccessControlEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES, ListAccessControlsCommand);
 			addCommand(AccessControlEvent.ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE, UpdateAccessControlProfileCommand);
+			addCommand(ConversionSettingsEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);		// only triggered for access control flavors restriction
 			
 			// Conversion Profile Events
 			addCommand(ConversionSettingsEvent.ADD_CONVERSION_PROFILE, AddConversionProfileCommand);
@@ -45,7 +46,6 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(ConversionSettingsEvent.LIST_CONVERSION_PROFILES, ListConversionProfilesCommand);
 			addCommand(ConversionSettingsEvent.LIST_LIVE_CONVERSION_PROFILES_AND_FLAVOR_PARAMS, ListLiveConversionProfilesAndFlavorParamsCommand);
 			addCommand(ConversionSettingsEvent.LIST_LIVE_CONVERSION_PROFILES, ListLiveConversionProfilesCommand);
-			addCommand(ConversionSettingsEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);
 			addCommand(ConversionSettingsEvent.LIST_STORAGE_PROFILES, ListStorageProfilesCommand);
 			addCommand(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, UpdateConversionProfileCommand);
 			addCommand(ConversionSettingsEvent.SET_AS_DEFAULT_CONVERSION_PROFILE, SetAsDefaultConversionProfileCommand);
