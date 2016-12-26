@@ -26,6 +26,10 @@ package com.kaltura.edw.control.commands {
 			// don't send categories - we use categoryEntry service to update them in EntryData panel
 			entry.categories = null;
 			entry.categoriesIds = null;
+			// don't send msDuration, we never have any reason to update it.
+			if (entry.msDuration && entry.msDuration != int.MIN_VALUE) {
+				entry.msDuration = int.MIN_VALUE;
+			}
 
 			var mu:BaseEntryUpdate = new BaseEntryUpdate(entry.id, entry);
 			// add listeners and post call
