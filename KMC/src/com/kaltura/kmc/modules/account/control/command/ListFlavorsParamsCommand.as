@@ -26,10 +26,10 @@ package com.kaltura.kmc.modules.account.control.command
 		{
 			var pager:KalturaFilterPager = new KalturaFilterPager();
 			pager.pageSize = DEFAULT_PAGE_SIZE;
-		 	var getListFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
-		 	getListFlavorParams.addEventListener(KalturaEvent.COMPLETE, result);
-			getListFlavorParams.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(getListFlavorParams);	 
+		 	var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
+		 	listFlavorParams.addEventListener(KalturaEvent.COMPLETE, result);
+			listFlavorParams.addEventListener(KalturaEvent.FAILED, fault);
+			_model.context.kc.post(listFlavorParams);	 
 		}
 		
 		public function result(event:Object):void
