@@ -4,14 +4,16 @@
 									 xmlns:renderers="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.*">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.vo.FlavorVO;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
-			import com.kaltura.types.KalturaLimitFlavorsRestrictionType;
-			import com.kaltura.vo.KalturaLimitFlavorsRestriction;
 			import com.kaltura.types.KalturaIpAddressRestrictionType;
+			import com.kaltura.types.KalturaLimitFlavorsRestrictionType;
 			import com.kaltura.vo.AccessControlProfileVO;
+			import com.kaltura.vo.FlavorVO;
 			import com.kaltura.vo.KalturaBaseRestriction;
 			import com.kaltura.vo.KalturaIpAddressRestriction;
+			import com.kaltura.vo.KalturaLimitFlavorsRestriction;
+			
+			import mx.collections.ArrayCollection;
 			
 			private static var _model:AccountModelLocator = AccountModelLocator.getInstance(); 
 			
@@ -58,6 +60,12 @@
 						return flavorVo.kFlavor.name;
 					}
 				}
+				for each (var flavorVo:FlavorVO in _model.liveFlavorsData) {
+					if (flavorVo.kFlavor.id == flavorParamsId) {
+						return flavorVo.kFlavor.name;
+					}
+				}
+				
 				return '';
 			}
 		]]>
