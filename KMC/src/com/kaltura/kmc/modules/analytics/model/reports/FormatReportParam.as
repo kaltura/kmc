@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 	import com.kaltura.utils.KTimeUtil;
 	
 	import mx.formatters.DateFormatter;
+	import mx.formatters.NumberBaseRoundType;
 	import mx.formatters.NumberFormatter;
 	import mx.resources.ResourceManager;
 
@@ -84,8 +85,13 @@ package com.kaltura.kmc.modules.analytics.model.reports {
 				case "peak_storage":
 				case "added_storage":
 				case "deleted_storage":
-					var currValue:Number = Math.ceil(parseFloat(value))
-					return isNaN(currValue) ? ResourceManager.getInstance().getString('analytics', 'n_a') : currValue.toString();
+				case "transcoding_consumption":
+				case "aggregated_monthly_avg_storage":
+					var fmtr:NumberFormatter = new NumberFormatter();
+					fmtr.rounding = NumberBaseRoundType.NEAREST;
+					fmtr.precision = 0;
+					var currValue:Number = parseFloat(value);
+					return isNaN(currValue) ? ResourceManager.getInstance().getString('analytics', 'n_a') : fmtr.format(currValue);
 					break;
 				case "added_msecs":
 				case "deleted_msecs":
