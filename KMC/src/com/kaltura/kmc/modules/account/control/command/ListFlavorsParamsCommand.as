@@ -3,6 +3,7 @@ package com.kaltura.kmc.modules.account.control.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.flavorParams.FlavorParamsList;
+	import com.kaltura.edw.model.util.FlavorParamsUtil;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
@@ -10,12 +11,12 @@ package com.kaltura.kmc.modules.account.control.command
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaFlavorParams;
 	import com.kaltura.vo.KalturaFlavorParamsListResponse;
+	import com.kaltura.vo.KalturaLiveParams;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
-	import com.kaltura.edw.model.util.FlavorParamsUtil;
 	
 	public class ListFlavorsParamsCommand implements ICommand, IResponder
 	{
@@ -24,37 +25,55 @@ package com.kaltura.kmc.modules.account.control.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			var pager:KalturaFilterPager = new KalturaFilterPager();
-			pager.pageSize = DEFAULT_PAGE_SIZE;
-		 	var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
-		 	listFlavorParams.addEventListener(KalturaEvent.COMPLETE, result);
-			listFlavorParams.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(listFlavorParams);	 
+			// only load if we are missing data
+			if (_model.liveFlavorsData.length == 0 || _model.mediaFlavorsData.length == 0) {
+				var pager:KalturaFilterPager = new KalturaFilterPager();
+				pager.pageSize = ListFlavorsParamsCommand.DEFAULT_PAGE_SIZE;
+			 	var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
+			 	listFlavorParams.addEventListener(KalturaEvent.COMPLETE, result);
+				listFlavorParams.addEventListener(KalturaEvent.FAILED, fault);
+				_model.context.kc.post(listFlavorParams);
+			}
+			else {
+				// shortcircuit results - refresh arrays to trigger binding
+				var tmp:ArrayCollection = _model.liveFlavorsData;
+				_model.liveFlavorsData = null;
+				_model.liveFlavorsData = tmp;
+					
+				tmp = _model.mediaFlavorsData;
+				_model.mediaFlavorsData = null;
+				_model.mediaFlavorsData = tmp;
+			}
 		}
+		
 		
 		public function result(event:Object):void
 		{
 			_model.loadingFlag = false;
 			var response:KalturaFlavorParamsListResponse = event.data as KalturaFlavorParamsListResponse;
 			var flavorsParams:Array = FlavorParamsUtil.makeManyFlavorParams(response.objects);
-			var tempArrCol:ArrayCollection = new ArrayCollection();
+			
+			var mediaFlvorsTmpArrCol:ArrayCollection = new ArrayCollection();
+			var liveFlvorsTmpArrCol:ArrayCollection = new ArrayCollection();
+			
 			var flavor:FlavorVO;
-			for each(var kFlavor:Object in flavorsParams)
-			{
-				if (kFlavor is KalturaFlavorParams) {
-					flavor = new FlavorVO();
-					flavor.kFlavor = kFlavor as KalturaFlavorParams;
-					tempArrCol.addItem(flavor);
+			for each(var kFlavor:KalturaFlavorParams in flavorsParams) {
+				// separate live flavorparams from all other flavor params
+				flavor = new FlavorVO();
+				flavor.kFlavor = kFlavor;
+				if (kFlavor is KalturaLiveParams) {
+					liveFlvorsTmpArrCol.addItem(flavor);
+				}
+				else {
+					mediaFlvorsTmpArrCol.addItem(flavor);
 				}
 			}
 			
-			_model.mediaFlavorsData = tempArrCol
+			_model.mediaFlavorsData = mediaFlvorsTmpArrCol;
+			_model.liveFlavorsData = liveFlvorsTmpArrCol;
+			
 		}
 		
-		private function clearOldData():void
-		{
-			_model.mediaFlavorsData.removeAll();
-		}
 		
 		public function fault(info:Object):void
 		{
