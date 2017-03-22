@@ -56,7 +56,7 @@ package com.kaltura.edw.components.et
 		
 		private static function formatTime(offset:Number):String {
 			var df:DateFormatter = new DateFormatter();
-			df.formatString = ResourceManager.getInstance().getString('cms', 'h_m_s_ms');
+			df.formatString = ResourceManager.getInstance().getString('drilldown', 'h_m_s_ms');
 			var dt:Date = new Date();
 			dt.hours = dt.minutes = dt.seconds = 0;
 			dt.milliseconds = offset;
