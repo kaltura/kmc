@@ -107,6 +107,11 @@ package com.kaltura.vo
 		**/
 		public var liveStatus : int = int.MIN_VALUE;
 
+		/**
+		* The chunk duration value in milliseconds
+		**/
+		public var segmentDuration : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -122,6 +127,7 @@ package com.kaltura.vo
 			arr.push('publishConfigurations');
 			arr.push('currentBroadcastStartTime');
 			arr.push('recordingOptions');
+			arr.push('segmentDuration');
 			return arr;
 		}
 

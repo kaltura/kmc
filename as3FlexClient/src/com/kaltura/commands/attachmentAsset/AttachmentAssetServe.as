@@ -27,6 +27,7 @@
 // ===================================================================================================
 package com.kaltura.commands.attachmentAsset
 {
+		import com.kaltura.vo.KalturaAttachmentServeOptions;
 	import com.kaltura.delegates.attachmentAsset.AttachmentAssetServeDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -39,8 +40,9 @@ package com.kaltura.commands.attachmentAsset
 		
 		/**
 		* @param attachmentAssetId String
+		* @param serveOptions KalturaAttachmentServeOptions
 		**/
-		public function AttachmentAssetServe( attachmentAssetId : String )
+		public function AttachmentAssetServe( attachmentAssetId : String,serveOptions : KalturaAttachmentServeOptions=null )
 		{
 			service= 'attachment_attachmentasset';
 			action= 'serve';
@@ -50,6 +52,11 @@ package com.kaltura.commands.attachmentAsset
 			var keyValArr : Array = new Array();
 			keyArr.push('attachmentAssetId');
 			valueArr.push(attachmentAssetId);
+			if (serveOptions) { 
+				keyValArr = kalturaObject2Arrays(serveOptions, 'serveOptions');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			} 
 			applySchema(keyArr, valueArr);
 		}
 

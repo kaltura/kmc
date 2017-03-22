@@ -33,12 +33,12 @@ package com.kaltura.vo
 	public dynamic class KalturaAnalyticsFilter extends BaseFlexVo
 	{
 		/**
-		* Query start time (in local time)
+		* Query start time (in local time) MM/dd/yyyy HH:mi
 		**/
 		public var from_time : String = null;
 
 		/**
-		* Query end time (in local time)
+		* Query end time (in local time) MM/dd/yyyy HH:mi
 		**/
 		public var to_time : String = null;
 
@@ -62,6 +62,11 @@ package com.kaltura.vo
 		**/
 		public var filters : Array = null;
 
+		/**
+		* Query order by metric/dimension
+		**/
+		public var orderBy : String = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -75,6 +80,7 @@ package com.kaltura.vo
 			arr.push('utcOffset');
 			arr.push('dimensions');
 			arr.push('filters');
+			arr.push('orderBy');
 			return arr;
 		}
 

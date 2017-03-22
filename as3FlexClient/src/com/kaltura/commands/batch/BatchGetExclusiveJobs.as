@@ -45,9 +45,9 @@ package com.kaltura.commands.batch
 		* @param numberOfJobs int
 		* @param filter KalturaBatchJobFilter
 		* @param jobType String
-		* @param maxOffset int
+		* @param maxJobToPullForCache int
 		**/
-		public function BatchGetExclusiveJobs( lockKey : KalturaExclusiveLockKey,maxExecutionTime : int,numberOfJobs : int,filter : KalturaBatchJobFilter=null,jobType : String = null,maxOffset : int=int.MIN_VALUE )
+		public function BatchGetExclusiveJobs( lockKey : KalturaExclusiveLockKey,maxExecutionTime : int,numberOfJobs : int,filter : KalturaBatchJobFilter=null,jobType : String = null,maxJobToPullForCache : int=0 )
 		{
 			service= 'batch';
 			action= 'getExclusiveJobs';
@@ -69,8 +69,8 @@ package com.kaltura.commands.batch
 			} 
 			keyArr.push('jobType');
 			valueArr.push(jobType);
-			keyArr.push('maxOffset');
-			valueArr.push(maxOffset);
+			keyArr.push('maxJobToPullForCache');
+			valueArr.push(maxJobToPullForCache);
 			applySchema(keyArr, valueArr);
 		}
 

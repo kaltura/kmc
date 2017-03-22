@@ -49,6 +49,12 @@ package com.kaltura.vo
 		**/
 		public var language : String = null;
 
+		/**
+		* The provider of the transcript
+		* @see com.kaltura.types.KalturaTranscriptProviderType
+		**/
+		public var providerType : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -56,6 +62,7 @@ package com.kaltura.vo
 			arr.push('accuracy');
 			arr.push('humanVerified');
 			arr.push('language');
+			arr.push('providerType');
 			return arr;
 		}
 

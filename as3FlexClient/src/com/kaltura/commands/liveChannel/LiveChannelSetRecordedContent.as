@@ -43,8 +43,9 @@ package com.kaltura.commands.liveChannel
 		* @param mediaServerIndex String
 		* @param resource KalturaDataCenterContentResource
 		* @param duration Number
+		* @param recordedEntryId String
 		**/
-		public function LiveChannelSetRecordedContent( entryId : String,mediaServerIndex : String,resource : KalturaDataCenterContentResource,duration : Number )
+		public function LiveChannelSetRecordedContent( entryId : String,mediaServerIndex : String,resource : KalturaDataCenterContentResource,duration : Number,recordedEntryId : String = null )
 		{
 			service= 'livechannel';
 			action= 'setRecordedContent';
@@ -61,6 +62,8 @@ package com.kaltura.commands.liveChannel
 				valueArr = valueArr.concat(keyValArr[1]);
 			keyArr.push('duration');
 			valueArr.push(duration);
+			keyArr.push('recordedEntryId');
+			valueArr.push(recordedEntryId);
 			applySchema(keyArr, valueArr);
 		}
 

@@ -33,6 +33,16 @@ package com.kaltura.vo
 	public dynamic class KalturaPushNotificationTemplate extends KalturaEventNotificationTemplate
 	{
 		/**
+		* Define the content dynamic parameters
+		**/
+		public var queueNameParameters : Array = null;
+
+		/**
+		* Define the content dynamic parameters
+		**/
+		public var queueKeyParameters : Array = null;
+
+		/**
 		* Kaltura API object type
 		**/
 		public var apiObjectType : String = null;
@@ -52,6 +62,8 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('queueNameParameters');
+			arr.push('queueKeyParameters');
 			arr.push('apiObjectType');
 			arr.push('objectFormat');
 			arr.push('responseProfileId');
@@ -69,6 +81,12 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'queueNameParameters':
+					result = 'KalturaPushEventNotificationParameter';
+					break;
+				case 'queueKeyParameters':
+					result = 'KalturaPushEventNotificationParameter';
+					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;

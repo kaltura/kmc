@@ -48,6 +48,11 @@ package com.kaltura.vo
 		public var message : String = null;
 
 		/**
+		* Code to be thrown to the player in case the rule is fulfilled
+		**/
+		public var code : String = null;
+
+		/**
 		* Actions to be performed by the player in case the rule is fulfilled
 		**/
 		public var actions : Array = null;
@@ -84,6 +89,7 @@ package com.kaltura.vo
 			arr.push('description');
 			arr.push('ruleData');
 			arr.push('message');
+			arr.push('code');
 			arr.push('actions');
 			arr.push('conditions');
 			arr.push('contexts');

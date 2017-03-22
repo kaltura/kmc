@@ -28,6 +28,7 @@
 package com.kaltura.commands.analytics
 {
 		import com.kaltura.vo.KalturaAnalyticsFilter;
+		import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.delegates.analytics.AnalyticsQueryDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -40,8 +41,9 @@ package com.kaltura.commands.analytics
 		
 		/**
 		* @param filter KalturaAnalyticsFilter
+		* @param pager KalturaFilterPager
 		**/
-		public function AnalyticsQuery( filter : KalturaAnalyticsFilter )
+		public function AnalyticsQuery( filter : KalturaAnalyticsFilter,pager : KalturaFilterPager=null )
 		{
 			service= 'analytics';
 			action= 'query';
@@ -52,6 +54,11 @@ package com.kaltura.commands.analytics
 				keyValArr = kalturaObject2Arrays(filter, 'filter');
 				keyArr = keyArr.concat(keyValArr[0]);
 				valueArr = valueArr.concat(keyValArr[1]);
+			if (pager) { 
+				keyValArr = kalturaObject2Arrays(pager, 'pager');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			} 
 			applySchema(keyArr, valueArr);
 		}
 

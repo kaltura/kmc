@@ -25,62 +25,34 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.systemPartner
 {
-	import com.kaltura.vo.KalturaFilter;
+	import com.kaltura.delegates.systemPartner.SystemPartnerGetPackagesVerticalDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaDrmDeviceBaseFilter extends KalturaFilter
+	/**
+	**/
+	public class SystemPartnerGetPackagesVertical extends KalturaCall
 	{
+		public var filterFields : String;
+		
 		/**
 		**/
-		public var partnerIdEqual : int = int.MIN_VALUE;
-
-		/**
-		**/
-		public var partnerIdIn : String = null;
-
-		/**
-		**/
-		public var deviceIdLike : String = null;
-
-		/**
-		* @see com.kaltura.types.KalturaDrmProviderType
-		**/
-		public var providerEqual : String = null;
-
-		/**
-		**/
-		public var providerIn : String = null;
-
-		override public function getUpdateableParamKeys():Array
+		public function SystemPartnerGetPackagesVertical(  )
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('partnerIdEqual');
-			arr.push('partnerIdIn');
-			arr.push('deviceIdLike');
-			arr.push('providerEqual');
-			arr.push('providerIn');
-			return arr;
+			service= 'systempartner_systempartner';
+			action= 'getPackagesVertical';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			applySchema(keyArr, valueArr);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
-		}
-
-		override public function getElementType(arrayName:String):String
-		{
-			var result:String = '';
-			switch (arrayName) {
-				default:
-					result = super.getElementType(arrayName);
-					break;
-			}
-			return result;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new SystemPartnerGetPackagesVerticalDelegate( this , config );
 		}
 	}
 }

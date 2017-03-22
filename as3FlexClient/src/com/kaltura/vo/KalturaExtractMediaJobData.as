@@ -51,6 +51,10 @@ package com.kaltura.vo
 		**/
 		public var destDataFilePath : String = null;
 
+		/**
+		**/
+		public var detectGOP : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -59,6 +63,7 @@ package com.kaltura.vo
 			arr.push('calculateComplexity');
 			arr.push('extractId3Tags');
 			arr.push('destDataFilePath');
+			arr.push('detectGOP');
 			return arr;
 		}
 

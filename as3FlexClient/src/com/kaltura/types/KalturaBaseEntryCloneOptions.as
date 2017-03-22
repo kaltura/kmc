@@ -35,5 +35,7 @@ package com.kaltura.types
 		public static const THUMB_CUE_POINTS : String = 'thumbCuePoint.THUMB_CUE_POINTS';
 		public static const USERS : String = '1';
 		public static const CATEGORIES : String = '2';
+		public static const CHILD_ENTRIES : String = '3';
+		public static const ACCESS_CONTROL : String = '4';
 	}
 }

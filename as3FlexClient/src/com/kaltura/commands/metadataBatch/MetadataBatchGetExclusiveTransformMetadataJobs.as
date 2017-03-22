@@ -44,9 +44,9 @@ package com.kaltura.commands.metadataBatch
 		* @param maxExecutionTime int
 		* @param numberOfJobs int
 		* @param filter KalturaBatchJobFilter
-		* @param maxOffset int
+		* @param maxJobToPull int
 		**/
-		public function MetadataBatchGetExclusiveTransformMetadataJobs( lockKey : KalturaExclusiveLockKey,maxExecutionTime : int,numberOfJobs : int,filter : KalturaBatchJobFilter=null,maxOffset : int=int.MIN_VALUE )
+		public function MetadataBatchGetExclusiveTransformMetadataJobs( lockKey : KalturaExclusiveLockKey,maxExecutionTime : int,numberOfJobs : int,filter : KalturaBatchJobFilter=null,maxJobToPull : int=int.MIN_VALUE )
 		{
 			service= 'metadata_metadatabatch';
 			action= 'getExclusiveTransformMetadataJobs';
@@ -66,8 +66,8 @@ package com.kaltura.commands.metadataBatch
 				keyArr = keyArr.concat(keyValArr[0]);
 				valueArr = valueArr.concat(keyValArr[1]);
 			} 
-			keyArr.push('maxOffset');
-			valueArr.push(maxOffset);
+			keyArr.push('maxJobToPull');
+			valueArr.push(maxJobToPull);
 			applySchema(keyArr, valueArr);
 		}
 

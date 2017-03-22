@@ -43,6 +43,7 @@ package com.kaltura.types
 		public static const RECORDED_LIVE : String = '34';
 		public static const CLIP : String = '35';
 		public static const KALTURA_RECORDED_LIVE : String = '36';
+		public static const LECTURE_CAPTURE : String = '37';
 		public static const LIVE_STREAM_ONTEXTDATA_CAPTIONS : String = '42';
 	}
 }

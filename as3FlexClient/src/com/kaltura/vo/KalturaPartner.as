@@ -304,6 +304,7 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('additionalParams');
+			arr.push('partnerParentId');
 			return arr;
 		}
 

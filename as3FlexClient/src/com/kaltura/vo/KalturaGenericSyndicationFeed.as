@@ -27,6 +27,8 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
+	import com.kaltura.vo.KalturaBaseEntryFilter;
+
 	import com.kaltura.vo.KalturaBaseSyndicationFeed;
 
 	[Bindable]
@@ -42,12 +44,24 @@ package com.kaltura.vo
 		**/
 		public var feedLandingPage : String = null;
 
+		/**
+		* entry filter
+		**/
+		public var entryFilter : KalturaBaseEntryFilter;
+
+		/**
+		* page size
+		**/
+		public var pageSize : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('feedDescription');
 			arr.push('feedLandingPage');
+			arr.push('entryFilter');
+			arr.push('pageSize');
 			return arr;
 		}
 
@@ -62,6 +76,9 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'entryFilter':
+					result = '';
+					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;

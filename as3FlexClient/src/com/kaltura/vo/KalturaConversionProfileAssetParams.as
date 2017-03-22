@@ -85,6 +85,10 @@ package com.kaltura.vo
 		**/
 		public var twoPass : int = int.MIN_VALUE;
 
+		/**
+		**/
+		public var tags : String = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -100,6 +104,7 @@ package com.kaltura.vo
 			arr.push('isEncrypted');
 			arr.push('contentAwareness');
 			arr.push('twoPass');
+			arr.push('tags');
 			return arr;
 		}
 

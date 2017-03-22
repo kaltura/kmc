@@ -40,8 +40,9 @@ package com.kaltura.commands.liveConversionProfile
 		/**
 		* @param streamName String
 		* @param hostname String
+		* @param extraParams String
 		**/
-		public function LiveConversionProfileServe( streamName : String,hostname : String = null )
+		public function LiveConversionProfileServe( streamName : String,hostname : String = null,extraParams : String = null )
 		{
 			service= 'wowza_liveconversionprofile';
 			action= 'serve';
@@ -53,6 +54,8 @@ package com.kaltura.commands.liveConversionProfile
 			valueArr.push(streamName);
 			keyArr.push('hostname');
 			valueArr.push(hostname);
+			keyArr.push('extraParams');
+			valueArr.push(extraParams);
 			applySchema(keyArr, valueArr);
 		}
 

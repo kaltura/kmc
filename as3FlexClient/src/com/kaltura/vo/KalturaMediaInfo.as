@@ -197,6 +197,10 @@ package com.kaltura.vo
 		**/
 		public var complexityValue : int = int.MIN_VALUE;
 
+		/**
+		**/
+		public var maxGOP : Number = Number.NEGATIVE_INFINITY;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -237,6 +241,7 @@ package com.kaltura.vo
 			arr.push('isFastStart');
 			arr.push('contentStreams');
 			arr.push('complexityValue');
+			arr.push('maxGOP');
 			return arr;
 		}
 

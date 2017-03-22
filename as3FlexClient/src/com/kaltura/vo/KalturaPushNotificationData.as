@@ -34,7 +34,11 @@ package com.kaltura.vo
 	{
 		/**
 		**/
-		public var key : String = null;
+		public var queueName : String = null;
+
+		/**
+		**/
+		public var queueKey : String = null;
 
 		/**
 		**/

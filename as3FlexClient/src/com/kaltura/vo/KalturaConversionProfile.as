@@ -137,6 +137,22 @@ package com.kaltura.vo
 		**/
 		public var calculateComplexity : int = int.MIN_VALUE;
 
+		/**
+		* Defines the tags that should be used to define 'collective'/group/multi-flavor processing,
+		* like 'mbr' or 'ism'
+		**/
+		public var collectionTags : String = null;
+
+		/**
+		* JSON string with array of "condition,profile-id" pairs.
+		**/
+		public var conditionalProfiles : String = null;
+
+		/**
+		* When set, the ExtractMedia job should detect the source file GOP using this value as the max calculated period
+		**/
+		public var detectGOP : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -159,6 +175,9 @@ package com.kaltura.vo
 			arr.push('storageProfileId');
 			arr.push('mediaParserType');
 			arr.push('calculateComplexity');
+			arr.push('collectionTags');
+			arr.push('conditionalProfiles');
+			arr.push('detectGOP');
 			return arr;
 		}
 

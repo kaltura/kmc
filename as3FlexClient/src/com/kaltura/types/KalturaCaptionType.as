@@ -32,5 +32,6 @@ package com.kaltura.types
 		public static const SRT : String = '1';
 		public static const DFXP : String = '2';
 		public static const WEBVTT : String = '3';
+		public static const CAP : String = '4';
 	}
 }

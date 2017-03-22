@@ -159,6 +159,10 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var forcedKeyFramesMode : int = int.MIN_VALUE;
+
+		/**
+		**/
 		public var isCropIMX : int = int.MIN_VALUE;
 
 		/**
@@ -232,6 +236,7 @@ package com.kaltura.vo
 			arr.push('multiStream');
 			arr.push('anamorphicPixels');
 			arr.push('isAvoidForcedKeyFrames');
+			arr.push('forcedKeyFramesMode');
 			arr.push('isCropIMX');
 			arr.push('optimizationPolicy');
 			arr.push('maxFrameRate');

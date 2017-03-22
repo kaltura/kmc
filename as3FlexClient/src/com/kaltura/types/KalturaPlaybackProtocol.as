@@ -42,5 +42,6 @@ package com.kaltura.types
 		public static const RTMP : String = 'rtmp';
 		public static const RTSP : String = 'rtsp';
 		public static const SILVER_LIGHT : String = 'sl';
+		public static const URL : String = 'url';
 	}
 }

@@ -25,36 +25,43 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.baseEntry
 {
-	import com.kaltura.vo.KalturaDrmDeviceBaseFilter;
+		import com.kaltura.vo.KalturaPlaybackContextOptions;
+	import com.kaltura.delegates.baseEntry.BaseEntryGetPlaybackContextDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaDrmDeviceFilter extends KalturaDrmDeviceBaseFilter
+	/**
+	* This action delivers all data relevant for player
+	**/
+	public class BaseEntryGetPlaybackContext extends KalturaCall
 	{
-		override public function getUpdateableParamKeys():Array
+		public var filterFields : String;
+		
+		/**
+		* @param entryId String
+		* @param contextDataParams KalturaPlaybackContextOptions
+		**/
+		public function BaseEntryGetPlaybackContext( entryId : String,contextDataParams : KalturaPlaybackContextOptions )
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			return arr;
+			service= 'baseentry';
+			action= 'getPlaybackContext';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('entryId');
+			valueArr.push(entryId);
+				keyValArr = kalturaObject2Arrays(contextDataParams, 'contextDataParams');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
-		}
-
-		override public function getElementType(arrayName:String):String
-		{
-			var result:String = '';
-			switch (arrayName) {
-				default:
-					result = super.getElementType(arrayName);
-					break;
-			}
-			return result;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new BaseEntryGetPlaybackContextDelegate( this , config );
 		}
 	}
 }

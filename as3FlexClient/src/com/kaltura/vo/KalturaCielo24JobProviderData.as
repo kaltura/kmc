@@ -84,6 +84,11 @@ package com.kaltura.vo
 		**/
 		public var replaceMediaContent : Boolean;
 
+		/**
+		* additional parameters to send to Cielo24
+		**/
+		public var additionalParameters : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -95,6 +100,7 @@ package com.kaltura.vo
 			arr.push('fidelity');
 			arr.push('spokenLanguage');
 			arr.push('replaceMediaContent');
+			arr.push('additionalParameters');
 			return arr;
 		}
 

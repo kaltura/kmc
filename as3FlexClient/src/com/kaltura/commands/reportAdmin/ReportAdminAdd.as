@@ -25,11 +25,39 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.commands.reportAdmin
 {
-	public class KalturaDrmDeviceOrderBy
+		import com.kaltura.vo.KalturaReport;
+	import com.kaltura.delegates.reportAdmin.ReportAdminAddDelegate;
+	import com.kaltura.net.KalturaCall;
+
+	/**
+	**/
+	public class ReportAdminAdd extends KalturaCall
 	{
-		public static const CREATED_AT_ASC : String = '+createdAt';
-		public static const CREATED_AT_DESC : String = '-createdAt';
+		public var filterFields : String;
+		
+		/**
+		* @param report KalturaReport
+		**/
+		public function ReportAdminAdd( report : KalturaReport )
+		{
+			service= 'adminconsole_reportadmin';
+			action= 'add';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+				keyValArr = kalturaObject2Arrays(report, 'report');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
+		}
+
+		override public function execute() : void
+		{
+			setRequestArgument('filterFields', filterFields);
+			delegate = new ReportAdminAddDelegate( this , config );
+		}
 	}
 }

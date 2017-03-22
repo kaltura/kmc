@@ -35,5 +35,7 @@ package com.kaltura.types
 		public static const TUBE_MOGUL : int = 4;
 		public static const KALTURA : int = 5;
 		public static const KALTURA_XSLT : int = 6;
+		public static const ROKU_DIRECT_PUBLISHER : int = 7;
+		public static const OPERA_TV_SNAP : int = 8;
 	}
 }

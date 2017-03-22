@@ -27,6 +27,7 @@
 // ===================================================================================================
 package com.kaltura.commands.eventNotificationTemplate
 {
+		import com.kaltura.vo.KalturaPushNotificationParams;
 	import com.kaltura.delegates.eventNotificationTemplate.EventNotificationTemplateRegisterDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -39,9 +40,9 @@ package com.kaltura.commands.eventNotificationTemplate
 		
 		/**
 		* @param notificationTemplateSystemName String
-		* @param userParamsArray Array
+		* @param pushNotificationParams KalturaPushNotificationParams
 		**/
-		public function EventNotificationTemplateRegister( notificationTemplateSystemName : String,userParamsArray : Array )
+		public function EventNotificationTemplateRegister( notificationTemplateSystemName : String,pushNotificationParams : KalturaPushNotificationParams )
 		{
 			service= 'eventnotification_eventnotificationtemplate';
 			action= 'register';
@@ -51,7 +52,7 @@ package com.kaltura.commands.eventNotificationTemplate
 			var keyValArr : Array = new Array();
 			keyArr.push('notificationTemplateSystemName');
 			valueArr.push(notificationTemplateSystemName);
-				keyValArr = extractArray(userParamsArray,'userParamsArray');
+				keyValArr = kalturaObject2Arrays(pushNotificationParams, 'pushNotificationParams');
 				keyArr = keyArr.concat(keyValArr[0]);
 				valueArr = valueArr.concat(keyValArr[1]);
 			applySchema(keyArr, valueArr);
