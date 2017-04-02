@@ -25,39 +25,36 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.reportAdmin
+package com.kaltura.vo
 {
-		import com.kaltura.vo.KalturaReport;
-	import com.kaltura.delegates.reportAdmin.ReportAdminAddDelegate;
-	import com.kaltura.net.KalturaCall;
+	import com.kaltura.vo.KalturaConstantXsltSyndicationFeed;
 
-	/**
-	**/
-	public class ReportAdminAdd extends KalturaCall
+	[Bindable]
+	public dynamic class KalturaRokuSyndicationFeed extends KalturaConstantXsltSyndicationFeed
 	{
-		public var filterFields : String;
-		
-		/**
-		* @param report KalturaReport
-		**/
-		public function ReportAdminAdd( report : KalturaReport )
+		override public function getUpdateableParamKeys():Array
 		{
-			service= 'adminconsole_reportadmin';
-			action= 'add';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-				keyValArr = kalturaObject2Arrays(report, 'report');
-				keyArr = keyArr.concat(keyValArr[0]);
-				valueArr = valueArr.concat(keyValArr[1]);
-			applySchema(keyArr, valueArr);
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			return arr;
 		}
 
-		override public function execute() : void
+		override public function getInsertableParamKeys():Array
 		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new ReportAdminAddDelegate( this , config );
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }

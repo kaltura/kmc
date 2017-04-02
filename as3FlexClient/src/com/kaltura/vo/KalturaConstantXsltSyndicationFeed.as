@@ -25,19 +25,36 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.delegates.uiConfAdmin
+package com.kaltura.vo
 {
-	import com.kaltura.config.KalturaConfig;
-	import com.kaltura.net.KalturaCall;
-	import com.kaltura.delegates.WebDelegateBase;
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.vo.KalturaGenericXsltSyndicationFeed;
 
-	public class UiConfAdminUpdateDelegate extends WebDelegateBase
+	[Bindable]
+	public dynamic class KalturaConstantXsltSyndicationFeed extends KalturaGenericXsltSyndicationFeed
 	{
-		public function UiConfAdminUpdateDelegate(call:KalturaCall, config:KalturaConfig)
+		override public function getUpdateableParamKeys():Array
 		{
-			super(call, config);
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			return arr;
 		}
 
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
+		}
 	}
 }

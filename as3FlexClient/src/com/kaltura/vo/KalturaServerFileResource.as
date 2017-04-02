@@ -37,11 +37,18 @@ package com.kaltura.vo
 		**/
 		public var localFilePath : String = null;
 
+		/**
+		* Should keep original file (false = mv, true = cp)
+		* @see com.kaltura.types.kalturaBoolean
+		**/
+		public var keepOriginalFile : Boolean;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('localFilePath');
+			arr.push('keepOriginalFile');
 			return arr;
 		}
 

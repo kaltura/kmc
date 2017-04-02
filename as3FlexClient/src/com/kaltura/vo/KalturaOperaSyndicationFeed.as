@@ -25,34 +25,36 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.systemPartner
+package com.kaltura.vo
 {
-	import com.kaltura.delegates.systemPartner.SystemPartnerGetPackagesVerticalDelegate;
-	import com.kaltura.net.KalturaCall;
+	import com.kaltura.vo.KalturaConstantXsltSyndicationFeed;
 
-	/**
-	**/
-	public class SystemPartnerGetPackagesVertical extends KalturaCall
+	[Bindable]
+	public dynamic class KalturaOperaSyndicationFeed extends KalturaConstantXsltSyndicationFeed
 	{
-		public var filterFields : String;
-		
-		/**
-		**/
-		public function SystemPartnerGetPackagesVertical(  )
+		override public function getUpdateableParamKeys():Array
 		{
-			service= 'systempartner_systempartner';
-			action= 'getPackagesVertical';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			applySchema(keyArr, valueArr);
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			return arr;
 		}
 
-		override public function execute() : void
+		override public function getInsertableParamKeys():Array
 		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new SystemPartnerGetPackagesVerticalDelegate( this , config );
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }
