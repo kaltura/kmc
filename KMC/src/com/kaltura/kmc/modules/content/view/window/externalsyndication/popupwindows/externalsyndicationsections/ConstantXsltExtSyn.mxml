@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+Roku or Opera syndication details.
+used as part of <Code>ExternalSyndicationPopUpWindow</code>
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.kmc.modules.content.view.interfaces.IExternalSyndicationFeed"
+		 width="100%">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaSyndicationFeedType;
+			import com.kaltura.vo.KalturaBaseSyndicationFeed;
+			import com.kaltura.vo.KalturaOperaSyndicationFeed;
+			import com.kaltura.vo.KalturaRokuSyndicationFeed;
+			
+						
+			/**
+			 * KalturaSyndicationFeedType.ROKU_DIRECT_PUBLISHER | KalturaSyndicationFeedType.OPERA_TV_SNAP
+			 * */
+			public var feedType:int;
+			
+			private var _syndication:KalturaBaseSyndicationFeed;
+			
+			
+			public function validate():Boolean {
+				return true;
+			}
+			
+			public function get syndication():KalturaBaseSyndicationFeed {
+				if (!_syndication) {
+					switch (feedType) {
+						case KalturaSyndicationFeedType.ROKU_DIRECT_PUBLISHER:
+							_syndication = new KalturaRokuSyndicationFeed();
+							break;
+						case KalturaSyndicationFeedType.OPERA_TV_SNAP:
+							_syndication = new KalturaOperaSyndicationFeed();
+							break;
+					}
+				}
+				return _syndication;
+			}
+			
+			public function set syndication(syndication:KalturaBaseSyndicationFeed):void {
+				_syndication = syndication;
+			}
+			
+			
+			
+			
+			
+			
+			
+		]]>
+	</mx:Script>
+</mx:VBox>
