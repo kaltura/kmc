@@ -33,7 +33,7 @@ package com.kaltura.edw.business
 											  previewOnly:Boolean, is_playlist:Boolean, uiconfId:String, live_bitrates:Array,
 											  duration:int, thumbnail:String):void {
 			//			kmc.preview_embed.doPreviewEmbed(id, name, description, previewOnly, is_playlist, uiconf id, live_bitrates);
-			ExternalInterface.call(functionName, entryId, entryName, entryDescription, previewOnly, is_playlist, uiconfId,
+			ExternalInterface.call(functionName, entryId, escape(entryName), escape(entryDescription), previewOnly, is_playlist, uiconfId,
 				live_bitrates, duration, thumbnail);
 		}
 		
