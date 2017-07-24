@@ -32,7 +32,7 @@ package com.kaltura.edw.control.commands.flavor
 			flavorDetails.sizeKB = obj.flavorAsset.size;
 			flavorDetails.status = ResourceManager.getInstance().getString('cms','readyStatus');
 			
-			ExternalInterface.call("kmc.preview_embed.doFlavorPreview", obj.entryId, (_model.getDataPack(EntryDataPack)as EntryDataPack).selectedEntry.name , flavorDetails);
+			ExternalInterface.call("kmc.preview_embed.doFlavorPreview", obj.entryId, escape((_model.getDataPack(EntryDataPack)as EntryDataPack).selectedEntry.name) , flavorDetails);
 		}
 	}
 }
