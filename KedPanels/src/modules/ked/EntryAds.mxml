@@ -193,6 +193,7 @@
 			private var _playheadPosition:Number;
 			
 			private var _doValidation:Boolean = false;
+			private var _inTransition:Boolean;
 			
 			
 			/**
@@ -616,9 +617,18 @@
 						_counter = 0;
 						break;
 					case KClipEventTypes.SELECTED_ASSET_CHANGED:
+						_inTransition = true;
 						focusManager.setFocus(tiName);
-					case KClipEventTypes.CUE_POINT_CHANGED:
 						showCuePointDetails(e["data"]);
+						_inTransition = false;
+						break;
+					case KClipEventTypes.CUE_POINT_CHANGED:
+						if (e["data"].id == _selectedCuePoint.id) {
+							showCuePointDetails(e["data"]);
+						}
+						else {
+							trace("ignoring update for",e["data"].id); 
+						}
 						break;
 					case KClipEventTypes.CLIPPER_ERROR:
 						onKClipError(e["data"]);
@@ -761,6 +771,10 @@
 			
 			
 			private function updateCuePointData(e:Event):void {
+				if (_inTransition) {
+					trace("dropping update for ", _selectedCuePoint.id);
+					return;
+				}
 				// timing
 				_selectedCuePoint.startTime = teTiming.getTimeAsSeconds() * 1000;
 				// name
