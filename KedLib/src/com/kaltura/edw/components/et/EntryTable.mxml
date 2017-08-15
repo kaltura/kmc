@@ -12,6 +12,7 @@
 		[Event(name="showDetails", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
 		[Event(name="openPreview", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
 		[Event(name="deleteEntry", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
+		[Event(name="openLiveDashboard", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
 		[Event(name="approveEntry", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
 		[Event(name="rejectEntry", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
 	</mx:Metadata>
@@ -593,6 +594,31 @@
 				e.data = entry;
 				dispatchEvent(e);
 			}
+			
+			/**
+			 * request opening live dashboard popup for an entry.
+			 * @param item	either a KalturaBaseEntry or an event whose target.data is a KalturaBaseEntry.
+			 *
+			 * @internal
+			 * the event is probably from the preview IR of the table and the other option is left for backwards compat.
+			 * */
+			public function openLiveDashboard(item:Object):void {
+				var entry:KalturaBaseEntry;
+				if (item is Event) {
+					entry = item.target.data as KalturaBaseEntry;
+				}
+				else {
+					entry = item as KalturaBaseEntry;
+				}
+
+				var e:EntryTableEvent = new EntryTableEvent(EntryTableEvent.LIVE_DASHBOARD);
+				e.data = entry;
+				dispatchEvent(e);
+			}
+			
+			
+			
+			
 
 
 			public function deselectAll(event:Event = null):void {
@@ -613,6 +639,7 @@
 				addEventListener(EntryTableActions.EMBED, preview, false, 0, true);
 				addEventListener(EntryTableActions.EDIT, openEditEntry, false, 0, true);
 				addEventListener(EntryTableActions.DELETE, deleteEntry, false, 0, true);
+				addEventListener(EntryTableActions.LIVE_DASHBOARD, openLiveDashboard, false, 0, true);
 				addEventListener(EntryTableActions.APPROVE, approveEntry, false, 0, true);
 				addEventListener(EntryTableActions.REJECT, rejectEntry, false, 0, true);
 

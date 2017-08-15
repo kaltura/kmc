@@ -56,6 +56,18 @@ package com.kaltura.kmc.modules.content.business
 		}
 		
 		
+		/**
+		 * open live dashboard window 
+		 * @param event
+		 */
+		public function showLiveDashboard(event:EntryTableEvent):void {
+			var entry:KalturaBaseEntry = event.data as KalturaBaseEntry;
+			var cgEvent:KMCEntryEvent;
+			cgEvent = new KMCEntryEvent(KMCEntryEvent.SHOW_LIVE_DASHBOARD, entry as KalturaBaseEntry);
+			cgEvent.dispatch();
+		}
+		
+		
 		public function showEntryDetailsHandler(event:EntryTableEvent):void {
 			var entry:KalturaBaseEntry = event.data as KalturaBaseEntry;
 			var et:EntryTable = event.target as EntryTable;

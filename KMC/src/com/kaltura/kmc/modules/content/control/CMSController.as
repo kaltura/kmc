@@ -28,6 +28,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(KMCEntryEvent.ADD_PLAYLIST, AddEntryCommand);
 			addCommand(KMCEntryEvent.GET_PLAYLIST, GetPlaylistCommand);
 			addCommand(KMCEntryEvent.PREVIEW, PreviewCommand);
+			addCommand(KMCEntryEvent.SHOW_LIVE_DASHBOARD, OpenLiveDashboardCommand);
 
 			//on the fly playlist event
 			addCommand(SetPlaylistTypeEvent.MANUAL_PLAYLIST, SetPlaylistTypeCommand);

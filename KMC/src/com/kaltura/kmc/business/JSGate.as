@@ -19,6 +19,11 @@ package com.kaltura.kmc.business
 //			ExternalInterface.call("kmc.functions.openClipApp", entryId, mode);
 		}
 		
+		
+		public static function OpenLiveDashboard(entryId:String):void {
+			ExternalInterface.call("kmc.functions.openLiveDashboard", entryId);
+		}
+		
 		/**
 		 * ks expired 
 		 */

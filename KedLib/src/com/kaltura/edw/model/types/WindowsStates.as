@@ -76,6 +76,8 @@ package com.kaltura.edw.model.types
 		
 		public static const PREVIEW : String = "preview";
 		
+		public static const LIVE_DASHBOARD : String = "liveDashboard";
+		
 		public static const CHANGE_ENTRY_OWNER_WINDOW : String = "changeEntryOwnerWindow";
 		
 		/**

@@ -7,5 +7,6 @@ package com.kaltura.edw.components.et.business
 		public static const DELETE:String = 'delete';
 		public static const APPROVE:String = 'approve';
 		public static const REJECT:String = 'reject';
+		public static const LIVE_DASHBOARD:String = 'livedashboard'; 
 	}
 }

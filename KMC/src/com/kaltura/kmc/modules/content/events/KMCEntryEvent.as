@@ -23,6 +23,7 @@ package com.kaltura.kmc.modules.content.events
 		public static const GET_RULE_BASED_PLAYLIST : String = "content_getRuleBasedPlaylist";
 		public static const RESET_RULE_BASED_DATA : String = "content_resetRuleBasedData";
 		public static const PREVIEW : String = "content_preview";
+		public static const SHOW_LIVE_DASHBOARD : String = "content_show_live_dashboard";
 		
 		
 		

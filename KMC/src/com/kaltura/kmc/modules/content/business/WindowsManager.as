@@ -251,6 +251,9 @@ package com.kaltura.kmc.modules.content.business
 					case WindowsStates.PREVIEW:
 						openPreviewEmbed();
 						break;
+					case WindowsStates.LIVE_DASHBOARD:
+						openLiveDashboard();
+						break;
 					case WindowsStates.CATEGORY_DETAILS_WINDOW:
 						var catDetails:CategoryDetailsWin;
 						currentPopUp = catDetails = new CategoryDetailsWin();
@@ -703,7 +706,17 @@ package com.kaltura.kmc.modules.content.business
 			}
 			model.windowState = WindowsStates.NONE;
 		}
-
+		
+		
+		/**
+		 * Open live dashboard for a live entry. <br>
+		 * */
+		private function openLiveDashboard():void {
+			var entry:KalturaBaseEntry = _entryData.selectedEntry;
+			JSGate.OpenLiveDashboard(entry.id);
+			model.windowState = WindowsStates.NONE;
+		}
+		
 		
 		private function handleChangeEntryOwnerEvents(e:Event):void {
 			switch (e.type) {

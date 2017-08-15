@@ -6,6 +6,7 @@
 			import com.kaltura.edw.components.et.EntryTable;
 			import com.kaltura.edw.components.et.business.EntryTableActions;
 			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaSourceType;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaLiveStreamEntry;
 			
@@ -61,6 +62,11 @@
 								// remove "edit"
 								a.splice(1, 1);
 							}
+						}
+						if (value is KalturaLiveStreamEntry && 
+							(value as KalturaLiveStreamEntry).sourceType ==  KalturaSourceType.LIVE_STREAM) {
+							// add live dashboard
+							a.push(EntryTableActions.LIVE_DASHBOARD);
 						}
 						
 					}

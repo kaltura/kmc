@@ -26,6 +26,12 @@ package com.kaltura.edw.components.et.events
 		 * "data" attribute holds the required entry
 		 */		
 		public static const DELETE_ENTRY:String = "deleteEntry";
+		
+		/**
+		 * open live dashboard with required entry
+		 * "data" attribute holds the required entry
+		 */		
+		public static const LIVE_DASHBOARD:String = "openLiveDashboard";
 
 		/**
 		 * approve entry moderation

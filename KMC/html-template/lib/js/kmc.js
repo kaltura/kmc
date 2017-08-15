@@ -36,6 +36,9 @@ kmc.functions = {
 	},
 	openLiveAnalytics : function() {
 		alert('open live analytics!');
+	},
+	openLiveDashboard : function() {
+		alert('open live dashboard!');
 	}
 };
 
