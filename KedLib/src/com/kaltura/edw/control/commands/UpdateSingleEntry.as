@@ -8,8 +8,11 @@ package com.kaltura.edw.control.commands {
 	import com.kaltura.types.KalturaEntryStatus;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaLiveStreamEntry;
+	import com.kaltura.vo.KalturaStreamContainer;
 
 	public class UpdateSingleEntry extends KedCommand {
+		
+		private var dummy: KalturaStreamContainer;
 		
 		private var _event:KedEntryEvent;
 
