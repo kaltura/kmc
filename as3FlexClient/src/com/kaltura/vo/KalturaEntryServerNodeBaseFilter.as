@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -27,10 +27,10 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaRelatedFilter;
+	import com.kaltura.vo.KalturaFilter;
 
 	[Bindable]
-	public dynamic class KalturaEntryServerNodeBaseFilter extends KalturaRelatedFilter
+	public dynamic class KalturaEntryServerNodeBaseFilter extends KalturaFilter
 	{
 		/**
 		**/
@@ -46,11 +46,11 @@ package com.kaltura.vo
 
 		/**
 		**/
-		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
+		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
 		**/
-		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
+		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
 		**/
@@ -81,8 +81,8 @@ package com.kaltura.vo
 			arr.push('entryIdEqual');
 			arr.push('entryIdIn');
 			arr.push('serverNodeIdEqual');
-			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
+			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('updatedAtGreaterThanOrEqual');
 			arr.push('updatedAtLessThanOrEqual');
 			arr.push('statusEqual');

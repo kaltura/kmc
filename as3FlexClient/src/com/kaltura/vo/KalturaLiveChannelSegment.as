@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -35,7 +35,7 @@ package com.kaltura.vo
 		/**
 		* Unique identifier
 		**/
-		public var id : String = null;
+		public var id : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		**/
@@ -96,7 +96,7 @@ package com.kaltura.vo
 		/**
 		* Live channel segment that the trigger relates to
 		**/
-		public var triggerSegmentId : String = null;
+		public var triggerSegmentId : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* Segment play start time, in mili-seconds, according to trigger type

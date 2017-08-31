@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,8 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
+	import com.kaltura.vo.KalturaEntryReplacementOptions;
+
 	import com.kaltura.vo.KalturaCropDimensions;
 
 	import com.kaltura.vo.BaseFlexVo;
@@ -153,6 +155,16 @@ package com.kaltura.vo
 		**/
 		public var detectGOP : int = int.MIN_VALUE;
 
+		/**
+		* XSL to transform ingestion Media Info XML
+		**/
+		public var mediaInfoXslTransformation : String = null;
+
+		/**
+		* Default replacement options to be applied to entries
+		**/
+		public var defaultReplacementOptions : KalturaEntryReplacementOptions;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -178,6 +190,8 @@ package com.kaltura.vo
 			arr.push('collectionTags');
 			arr.push('conditionalProfiles');
 			arr.push('detectGOP');
+			arr.push('mediaInfoXslTransformation');
+			arr.push('defaultReplacementOptions');
 			return arr;
 		}
 
@@ -202,6 +216,9 @@ package com.kaltura.vo
 			var result:String = '';
 			switch (arrayName) {
 				case 'cropDimensions':
+					result = '';
+					break;
+				case 'defaultReplacementOptions':
 					result = '';
 					break;
 			}

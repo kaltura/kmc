@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -57,6 +57,16 @@ package com.kaltura.vo
 		**/
 		public var distributedCuePoints : String = null;
 
+		/**
+		* Key-value array where the keys are IDs of distributed thumb cue points in the source account and the values are the matching IDs in the target account
+		**/
+		public var distributedThumbCuePoints : String = null;
+
+		/**
+		* Key-value array where the keys are IDs of distributed timed thumb assets in the source account and the values are the matching IDs in the target account
+		**/
+		public var distributedTimedThumbAssets : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -66,6 +76,8 @@ package com.kaltura.vo
 			arr.push('distributedMetadata');
 			arr.push('distributedCaptionAssets');
 			arr.push('distributedCuePoints');
+			arr.push('distributedThumbCuePoints');
+			arr.push('distributedTimedThumbAssets');
 			return arr;
 		}
 

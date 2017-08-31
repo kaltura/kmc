@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -39,11 +39,10 @@ package com.kaltura.commands.dropFolder
 		
 		/**
 		* @param dropFolderId int
-		* @param status int
 		* @param errorCode String
 		* @param errorDescription String
 		**/
-		public function DropFolderFreeExclusiveDropFolder( dropFolderId : int,status : int,errorCode : String = null,errorDescription : String = null )
+		public function DropFolderFreeExclusiveDropFolder( dropFolderId : int,errorCode : String = null,errorDescription : String = null )
 		{
 			service= 'dropfolder_dropfolder';
 			action= 'freeExclusiveDropFolder';
@@ -53,8 +52,6 @@ package com.kaltura.commands.dropFolder
 			var keyValArr : Array = new Array();
 			keyArr.push('dropFolderId');
 			valueArr.push(dropFolderId);
-			keyArr.push('status');
-			valueArr.push(status);
 			keyArr.push('errorCode');
 			valueArr.push(errorCode);
 			keyArr.push('errorDescription');

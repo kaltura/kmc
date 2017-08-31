@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -44,8 +44,9 @@ package com.kaltura.commands.liveChannel
 		* @param resource KalturaDataCenterContentResource
 		* @param duration Number
 		* @param recordedEntryId String
+		* @param flavorParamsId int
 		**/
-		public function LiveChannelSetRecordedContent( entryId : String,mediaServerIndex : String,resource : KalturaDataCenterContentResource,duration : Number,recordedEntryId : String = null )
+		public function LiveChannelSetRecordedContent( entryId : String,mediaServerIndex : String,resource : KalturaDataCenterContentResource,duration : Number,recordedEntryId : String = null,flavorParamsId : int=int.MIN_VALUE )
 		{
 			service= 'livechannel';
 			action= 'setRecordedContent';
@@ -64,6 +65,8 @@ package com.kaltura.commands.liveChannel
 			valueArr.push(duration);
 			keyArr.push('recordedEntryId');
 			valueArr.push(recordedEntryId);
+			keyArr.push('flavorParamsId');
+			valueArr.push(flavorParamsId);
 			applySchema(keyArr, valueArr);
 		}
 

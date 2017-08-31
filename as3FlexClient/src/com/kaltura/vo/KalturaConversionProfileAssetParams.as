@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -81,6 +81,10 @@ package com.kaltura.vo
 		public var contentAwareness : Number = Number.NEGATIVE_INFINITY;
 
 		/**
+		**/
+		public var chunkedEncodeMode : int = int.MIN_VALUE;
+
+		/**
 		* @see com.kaltura.types.KalturaNullableBoolean
 		**/
 		public var twoPass : int = int.MIN_VALUE;
@@ -103,6 +107,7 @@ package com.kaltura.vo
 			arr.push('deletePolicy');
 			arr.push('isEncrypted');
 			arr.push('contentAwareness');
+			arr.push('chunkedEncodeMode');
 			arr.push('twoPass');
 			arr.push('tags');
 			return arr;

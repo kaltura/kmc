@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -35,6 +35,7 @@ package com.kaltura.types
 		public static const AC3 : String = 'ac3';
 		public static const AMRNB : String = 'amrnb';
 		public static const COPY : String = 'copy';
+		public static const EAC3 : String = 'eac3';
 		public static const MP3 : String = 'mp3';
 		public static const MPEG2 : String = 'mpeg2';
 		public static const PCM : String = 'pcm';

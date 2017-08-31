@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -30,5 +30,7 @@ package com.kaltura.types
 	public class KalturaGeoCoderType
 	{
 		public static const KALTURA : String = '1';
+		public static const MAX_MIND : String = '2';
+		public static const DIGITAL_ELEMENT : String = '3';
 	}
 }

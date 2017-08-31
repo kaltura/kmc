@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -80,6 +80,10 @@ package com.kaltura.vo
 		**/
 		public var resourceSystemNamesLike : String = null;
 
+		/**
+		**/
+		public var resourceIdEqual : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -96,6 +100,7 @@ package com.kaltura.vo
 			arr.push('templateEntryCategoriesIdsLike');
 			arr.push('resourceSystemNamesMultiLikeAnd');
 			arr.push('resourceSystemNamesLike');
+			arr.push('resourceIdEqual');
 			return arr;
 		}
 

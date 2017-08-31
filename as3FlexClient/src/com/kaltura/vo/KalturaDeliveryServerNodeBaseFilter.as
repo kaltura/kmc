@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -32,25 +32,10 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaDeliveryServerNodeBaseFilter extends KalturaServerNodeFilter
 	{
-		/**
-		**/
-		public var playbackDomainLike : String = null;
-
-		/**
-		**/
-		public var playbackDomainMultiLikeOr : String = null;
-
-		/**
-		**/
-		public var playbackDomainMultiLikeAnd : String = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('playbackDomainLike');
-			arr.push('playbackDomainMultiLikeOr');
-			arr.push('playbackDomainMultiLikeAnd');
 			return arr;
 		}
 

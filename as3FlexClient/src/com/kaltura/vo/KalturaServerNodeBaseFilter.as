@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -132,11 +132,15 @@ package com.kaltura.vo
 
 		/**
 		**/
-		public var parentIdEqual : int = int.MIN_VALUE;
+		public var parentIdLike : String = null;
 
 		/**
 		**/
-		public var parentIdIn : String = null;
+		public var parentIdMultiLikeOr : String = null;
+
+		/**
+		**/
+		public var parentIdMultiLikeAnd : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -166,8 +170,9 @@ package com.kaltura.vo
 			arr.push('tagsMultiLikeAnd');
 			arr.push('dcEqual');
 			arr.push('dcIn');
-			arr.push('parentIdEqual');
-			arr.push('parentIdIn');
+			arr.push('parentIdLike');
+			arr.push('parentIdMultiLikeOr');
+			arr.push('parentIdMultiLikeAnd');
 			return arr;
 		}
 

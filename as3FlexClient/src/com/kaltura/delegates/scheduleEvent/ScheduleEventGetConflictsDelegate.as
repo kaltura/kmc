@@ -8,7 +8,7 @@
 // to do with audio, video, and animation what Wiki platfroms allow them to do with
 // text.
 //
-// Copyright (C) 2006-2016  Kaltura Inc.
+// Copyright (C) 2006-2017  Kaltura Inc.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -27,10 +27,6 @@
 // ===================================================================================================
 package com.kaltura.delegates.scheduleEvent
 {
-	import com.kaltura.vo.KalturaScheduleEvent;KalturaScheduleEvent;;
-
-	import com.kaltura.core.KClassFactory;
-
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
@@ -41,18 +37,6 @@ package com.kaltura.delegates.scheduleEvent
 		public function ScheduleEventGetConflictsDelegate(call:KalturaCall, config:KalturaConfig)
 		{
 			super(call, config);
-		}
-
-		override public function parse(result:XML) : *
-		{
-			var arr : Array = new Array();
-			for( var i:int=0; i<result.result.children().length() ; i++)
-			{
-				var cls : Class = getDefinitionByName('com.kaltura.vo.'+ result.result.children()[i].objectType) as Class;
-				var obj : * = (new KClassFactory( cls )).newInstanceFromXML( XMLList(result.result.children()[i]) );
-				arr.push(obj);
-			}
-			return arr;
 		}
 
 	}
