@@ -175,16 +175,17 @@
 
 
 
-			public function downloadFile(filePath:String, fileNmae:String):void {
+			public function downloadFile(filePath:String, fileName:String):void {
 //				_fm.fr = new FileReference();
 //				_fm.downloadFile(filePath, "Download", fileNmae);
+				fileName = fileName.replace(/\/|\\|\:|\*|\?|\"|\<|\>|\|\%/, '');
 				var request:URLRequest = new URLRequest(filePath);
 				var fr:FileReference = new FileReference();
 				fr.addEventListener(Event.CANCEL, downloadHandler);
 				fr.addEventListener(Event.COMPLETE, downloadHandler);
 				fr.addEventListener(IOErrorEvent.IO_ERROR, downloadHandler);
 				fr.addEventListener(SecurityErrorEvent.SECURITY_ERROR, downloadHandler);
-				fr.download(request, fileNmae);
+				fr.download(request, fileName);
 			}
 			
 			private function downloadHandler(e:Event):void {
