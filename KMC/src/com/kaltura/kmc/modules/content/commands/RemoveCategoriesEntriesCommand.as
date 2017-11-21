@@ -18,16 +18,18 @@ package com.kaltura.kmc.modules.content.commands
 
 	public class RemoveCategoriesEntriesCommand extends KalturaCommand {
 		
-		override public function execute(event:CairngormEvent):void {
-			_model.increaseLoadCounter();
-			
-			var e:EntriesEvent = event as EntriesEvent;
-			var categories:Array = e.data as Array; // elements are KalturaCategories
-			// for each entry, if it has the category remove it.
-			var entries:Array = _model.selectedEntries;
-			
+		
+		private static const CHUNK_SIZE:int = 50;
+		private var _calls:Array; 
+		
+		
+		/**
+		 * crete the list of categoryEntry.delete calls that should be executed
+		 * according to given entries and categories
+		 * */
+		private function genenrateCallsList(entries:Array, categories:Array):Array {
+			var calls:Array = [];
 			var ced:CategoryEntryDelete;
-			var mr:MultiRequest = new MultiRequest();
 			var kce:KalturaCategoryEntry;
 			for each (var kbe:KalturaBaseEntry in entries) {
 				for each (var kc:KalturaCategory in categories) {
@@ -35,20 +37,42 @@ package com.kaltura.kmc.modules.content.commands
 						kce = _model.selectedEntriesCategoriesKObjects[i] as KalturaCategoryEntry;
 						if (kce.entryId == kbe.id && kce.categoryId == kc.id) {
 							ced = new CategoryEntryDelete(kbe.id, kc.id);
-							mr.addAction(ced);
+							calls.push(ced);
 							_model.selectedEntriesCategoriesKObjects.splice(i, 1);
 							break;
 						}
 					}
 				}
 			}
-			
-			_model.selectedEntriesCategoriesKObjects = null;
+			return calls;
+		}
+		
+		
+		/**
+		 * send an MR with up-to-CHUNK_SIZE next calls
+		 * */ 
+		private function issueNextCall() {
+			_model.increaseLoadCounter();
+			var mr:MultiRequest = new MultiRequest();
+			mr.actions = _calls.splice(0, CHUNK_SIZE);
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(mr);
-			
 		}
+		
+		
+		override public function execute(event:CairngormEvent):void {
+			// for each entry, if it has the category remove it.
+			// split calls array to chunks of CHUNK_SIZE calls per MR
+			var e:EntriesEvent = event as EntriesEvent;
+			var categories:Array = e.data as Array; // elements are KalturaCategories
+			var entries:Array = _model.selectedEntries;
+			
+			_calls = this.genenrateCallsList(entries, categories);
+			_model.selectedEntriesCategoriesKObjects = null;
+			issueNextCall(); 
+		}
+		
 		
 		override public function result(data:Object):void {
 			super.result(data);
@@ -91,6 +115,15 @@ package com.kaltura.kmc.modules.content.commands
 					}
 				}	
 			}
+			if (_calls.length > 0) {
+				issueNextCall();
+			}
+			else {
+				allChunksDone();
+			}
+		}
+		
+		private function allChunksDone():void {
 			var searchEvent:KMCSearchEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES , _model.listableVo  );
 			searchEvent.dispatch();
 		}
