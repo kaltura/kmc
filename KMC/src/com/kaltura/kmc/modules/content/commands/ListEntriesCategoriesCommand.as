@@ -109,6 +109,7 @@ package com.kaltura.kmc.modules.content.commands
 				else {
 					// no more categoryEntries to list
 					if (_categoryEntries.length) {
+						_model.selectedEntriesCategoriesKObjects = _categoryEntries;
 						_uniqueCategories = processCategoryEntries();
 						_lastObjectIndex = 0;
 						listCategoriesChunk();

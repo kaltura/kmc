@@ -172,6 +172,7 @@ package com.kaltura.kmc.modules.content.model {
 		 * all the categories to which the selected entries are assigned (||, not &&) 
 		 */
 		public var selectedEntriesCategories:ArrayCollection;
+		public var selectedEntriesCategoriesKObjects:Array;
 
 		/**
 		 * current open window (popup) 
