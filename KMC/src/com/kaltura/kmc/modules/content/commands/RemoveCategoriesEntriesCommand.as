@@ -9,6 +9,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaCategory;
+	import com.kaltura.vo.KalturaCategoryEntry;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -27,14 +28,22 @@ package com.kaltura.kmc.modules.content.commands
 			
 			var ced:CategoryEntryDelete;
 			var mr:MultiRequest = new MultiRequest();
+			var kce:KalturaCategoryEntry;
 			for each (var kbe:KalturaBaseEntry in entries) {
 				for each (var kc:KalturaCategory in categories) {
-					ced = new CategoryEntryDelete(kbe.id, kc.id);
-					mr.addAction(ced);
+					for (var i:int = 0; i<_model.selectedEntriesCategoriesKObjects.length; i++) {
+						kce = _model.selectedEntriesCategoriesKObjects[i] as KalturaCategoryEntry;
+						if (kce.entryId == kbe.id && kce.categoryId == kc.id) {
+							ced = new CategoryEntryDelete(kbe.id, kc.id);
+							mr.addAction(ced);
+							_model.selectedEntriesCategoriesKObjects.splice(i, 1);
+							break;
+						}
+					}
 				}
 			}
 			
-			
+			_model.selectedEntriesCategoriesKObjects = null;
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(mr);
