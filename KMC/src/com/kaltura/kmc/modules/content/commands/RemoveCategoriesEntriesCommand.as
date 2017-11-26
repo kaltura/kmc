@@ -51,7 +51,7 @@ package com.kaltura.kmc.modules.content.commands
 		/**
 		 * send an MR with up-to-CHUNK_SIZE next calls
 		 * */ 
-		private function issueNextCall() {
+		private function issueNextCall():void {
 			_model.increaseLoadCounter();
 			var mr:MultiRequest = new MultiRequest();
 			mr.actions = _calls.splice(0, CHUNK_SIZE);
