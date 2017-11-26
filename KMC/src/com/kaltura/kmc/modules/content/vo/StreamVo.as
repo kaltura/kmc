@@ -57,6 +57,11 @@ package com.kaltura.kmc.modules.content.vo
 		 */
 		public var conversionProfileId:int;
 		
+		/**
+		 * ! explicit live
+		 */
+		public var autoStartStreaming:Boolean;
+		
 		
 		/* manual stream specific fields */
 		public var flashHDSURL:String;
