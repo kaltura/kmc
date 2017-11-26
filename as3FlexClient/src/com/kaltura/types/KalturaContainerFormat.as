@@ -29,34 +29,34 @@ package com.kaltura.types
 {
 	public class KalturaContainerFormat
 	{
-		public static const _3GP : String = '3gp';
-		public static const APPLEHTTP : String = 'applehttp';
-		public static const AVI : String = 'avi';
-		public static const BMP : String = 'bmp';
-		public static const COPY : String = 'copy';
-		public static const FLV : String = 'flv';
-		public static const HLS : String = 'hls';
-		public static const ISMA : String = 'isma';
-		public static const ISMV : String = 'ismv';
-		public static const JPG : String = 'jpg';
-		public static const M2TS : String = 'm2ts';
-		public static const M4V : String = 'm4v';
-		public static const MKV : String = 'mkv';
-		public static const MOV : String = 'mov';
-		public static const MP3 : String = 'mp3';
-		public static const MP4 : String = 'mp4';
-		public static const MPEG : String = 'mpeg';
-		public static const MPEGTS : String = 'mpegts';
-		public static const MXF : String = 'mxf';
-		public static const OGG : String = 'ogg';
-		public static const OGV : String = 'ogv';
-		public static const PDF : String = 'pdf';
-		public static const PNG : String = 'png';
-		public static const SWF : String = 'swf';
-		public static const WAV : String = 'wav';
-		public static const WEBM : String = 'webm';
-		public static const WMA : String = 'wma';
-		public static const WMV : String = 'wmv';
-		public static const WVM : String = 'wvm';
+		public static const _3GP : String = "3gp";
+		public static const APPLEHTTP : String = "applehttp";
+		public static const AVI : String = "avi";
+		public static const BMP : String = "bmp";
+		public static const COPY : String = "copy";
+		public static const FLV : String = "flv";
+		public static const HLS : String = "hls";
+		public static const ISMA : String = "isma";
+		public static const ISMV : String = "ismv";
+		public static const JPG : String = "jpg";
+		public static const M2TS : String = "m2ts";
+		public static const M4V : String = "m4v";
+		public static const MKV : String = "mkv";
+		public static const MOV : String = "mov";
+		public static const MP3 : String = "mp3";
+		public static const MP4 : String = "mp4";
+		public static const MPEG : String = "mpeg";
+		public static const MPEGTS : String = "mpegts";
+		public static const MXF : String = "mxf";
+		public static const OGG : String = "ogg";
+		public static const OGV : String = "ogv";
+		public static const PDF : String = "pdf";
+		public static const PNG : String = "png";
+		public static const SWF : String = "swf";
+		public static const WAV : String = "wav";
+		public static const WEBM : String = "webm";
+		public static const WMA : String = "wma";
+		public static const WMV : String = "wmv";
+		public static const WVM : String = "wvm";
 	}
 }

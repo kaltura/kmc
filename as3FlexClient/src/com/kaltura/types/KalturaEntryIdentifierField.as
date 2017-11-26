@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaEntryIdentifierField
 	{
-		public static const ID : String = 'id';
-		public static const REFERENCE_ID : String = 'referenceId';
+		public static const ID : String = "id";
+		public static const REFERENCE_ID : String = "referenceId";
 	}
 }

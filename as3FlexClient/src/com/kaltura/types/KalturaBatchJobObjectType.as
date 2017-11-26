@@ -29,14 +29,14 @@ package com.kaltura.types
 {
 	public class KalturaBatchJobObjectType
 	{
-		public static const ENTRY_DISTRIBUTION : String = 'contentDistribution.EntryDistribution';
-		public static const DROP_FOLDER_FILE : String = 'dropFolderXmlBulkUpload.DropFolderFile';
-		public static const METADATA : String = 'metadata.Metadata';
-		public static const METADATA_PROFILE : String = 'metadata.MetadataProfile';
-		public static const SCHEDULED_TASK_PROFILE : String = 'scheduledTask.ScheduledTaskProfile';
-		public static const ENTRY : String = '1';
-		public static const CATEGORY : String = '2';
-		public static const FILE_SYNC : String = '3';
-		public static const ASSET : String = '4';
+		public static const ENTRY_DISTRIBUTION : String = "contentDistribution.EntryDistribution";
+		public static const DROP_FOLDER_FILE : String = "dropFolderXmlBulkUpload.DropFolderFile";
+		public static const METADATA : String = "metadata.Metadata";
+		public static const METADATA_PROFILE : String = "metadata.MetadataProfile";
+		public static const SCHEDULED_TASK_PROFILE : String = "scheduledTask.ScheduledTaskProfile";
+		public static const ENTRY : String = "1";
+		public static const CATEGORY : String = "2";
+		public static const FILE_SYNC : String = "3";
+		public static const ASSET : String = "4";
 	}
 }

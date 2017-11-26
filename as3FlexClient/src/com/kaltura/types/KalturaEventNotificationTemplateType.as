@@ -29,11 +29,11 @@ package com.kaltura.types
 {
 	public class KalturaEventNotificationTemplateType
 	{
-		public static const BPM_ABORT : String = 'businessProcessNotification.BusinessProcessAbort';
-		public static const BPM_SIGNAL : String = 'businessProcessNotification.BusinessProcessSignal';
-		public static const BPM_START : String = 'businessProcessNotification.BusinessProcessStart';
-		public static const EMAIL : String = 'emailNotification.Email';
-		public static const HTTP : String = 'httpNotification.Http';
-		public static const PUSH : String = 'pushNotification.Push';
+		public static const BPM_ABORT : String = "businessProcessNotification.BusinessProcessAbort";
+		public static const BPM_SIGNAL : String = "businessProcessNotification.BusinessProcessSignal";
+		public static const BPM_START : String = "businessProcessNotification.BusinessProcessStart";
+		public static const EMAIL : String = "emailNotification.Email";
+		public static const HTTP : String = "httpNotification.Http";
+		public static const PUSH : String = "pushNotification.Push";
 	}
 }

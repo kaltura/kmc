@@ -37,6 +37,10 @@ package com.kaltura.vo
 		public var fileSyncLocalPath : String = null;
 
 		/**
+		**/
+		public var fileEncryptionKey : String = null;
+
+		/**
 		* The translated path as used by the scheduler
 		**/
 		public var fileSyncRemoteUrl : String = null;
@@ -53,6 +57,7 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('fileSyncLocalPath');
+			arr.push('fileEncryptionKey');
 			arr.push('fileSyncRemoteUrl');
 			arr.push('fileSyncObjectSubType');
 			return arr;

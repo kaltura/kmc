@@ -29,33 +29,33 @@ package com.kaltura.types
 {
 	public class KalturaReportType
 	{
-		public static const QUIZ : String = 'quiz.QUIZ';
-		public static const QUIZ_AGGREGATE_BY_QUESTION : String = 'quiz.QUIZ_AGGREGATE_BY_QUESTION';
-		public static const QUIZ_USER_AGGREGATE_BY_QUESTION : String = 'quiz.QUIZ_USER_AGGREGATE_BY_QUESTION';
-		public static const QUIZ_USER_PERCENTAGE : String = 'quiz.QUIZ_USER_PERCENTAGE';
-		public static const TOP_CONTENT : String = '1';
-		public static const CONTENT_DROPOFF : String = '2';
-		public static const CONTENT_INTERACTIONS : String = '3';
-		public static const MAP_OVERLAY : String = '4';
-		public static const TOP_CONTRIBUTORS : String = '5';
-		public static const TOP_SYNDICATION : String = '6';
-		public static const CONTENT_CONTRIBUTIONS : String = '7';
-		public static const USER_ENGAGEMENT : String = '11';
-		public static const SPEFICIC_USER_ENGAGEMENT : String = '12';
-		public static const USER_TOP_CONTENT : String = '13';
-		public static const USER_CONTENT_DROPOFF : String = '14';
-		public static const USER_CONTENT_INTERACTIONS : String = '15';
-		public static const APPLICATIONS : String = '16';
-		public static const USER_USAGE : String = '17';
-		public static const SPECIFIC_USER_USAGE : String = '18';
-		public static const VAR_USAGE : String = '19';
-		public static const TOP_CREATORS : String = '20';
-		public static const PLATFORMS : String = '21';
-		public static const OPERATION_SYSTEM : String = '22';
-		public static const BROWSERS : String = '23';
-		public static const LIVE : String = '24';
-		public static const TOP_PLAYBACK_CONTEXT : String = '25';
-		public static const VPAAS_USAGE : String = '26';
-		public static const PARTNER_USAGE : String = '201';
+		public static const QUIZ : String = "quiz.QUIZ";
+		public static const QUIZ_AGGREGATE_BY_QUESTION : String = "quiz.QUIZ_AGGREGATE_BY_QUESTION";
+		public static const QUIZ_USER_AGGREGATE_BY_QUESTION : String = "quiz.QUIZ_USER_AGGREGATE_BY_QUESTION";
+		public static const QUIZ_USER_PERCENTAGE : String = "quiz.QUIZ_USER_PERCENTAGE";
+		public static const TOP_CONTENT : String = "1";
+		public static const CONTENT_DROPOFF : String = "2";
+		public static const CONTENT_INTERACTIONS : String = "3";
+		public static const MAP_OVERLAY : String = "4";
+		public static const TOP_CONTRIBUTORS : String = "5";
+		public static const TOP_SYNDICATION : String = "6";
+		public static const CONTENT_CONTRIBUTIONS : String = "7";
+		public static const USER_ENGAGEMENT : String = "11";
+		public static const SPECIFIC_USER_ENGAGEMENT : String = "12";
+		public static const USER_TOP_CONTENT : String = "13";
+		public static const USER_CONTENT_DROPOFF : String = "14";
+		public static const USER_CONTENT_INTERACTIONS : String = "15";
+		public static const APPLICATIONS : String = "16";
+		public static const USER_USAGE : String = "17";
+		public static const SPECIFIC_USER_USAGE : String = "18";
+		public static const VAR_USAGE : String = "19";
+		public static const TOP_CREATORS : String = "20";
+		public static const PLATFORMS : String = "21";
+		public static const OPERATING_SYSTEM : String = "22";
+		public static const BROWSERS : String = "23";
+		public static const LIVE : String = "24";
+		public static const TOP_PLAYBACK_CONTEXT : String = "25";
+		public static const VPAAS_USAGE : String = "26";
+		public static const PARTNER_USAGE : String = "201";
 	}
 }

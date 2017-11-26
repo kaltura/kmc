@@ -53,6 +53,11 @@ package com.kaltura.vo
 		public var message : String = null;
 
 		/**
+		* The footer of the message to send in the notification mail
+		**/
+		public var footer : String = null;
+
+		/**
 		* The basic link for the KMC site
 		**/
 		public var link : String = null;
@@ -71,6 +76,7 @@ package com.kaltura.vo
 			arr.push('sender');
 			arr.push('subject');
 			arr.push('message');
+			arr.push('footer');
 			arr.push('link');
 			arr.push('sendToUsers');
 			return arr;

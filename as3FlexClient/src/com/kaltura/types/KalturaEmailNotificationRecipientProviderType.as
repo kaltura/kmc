@@ -29,8 +29,8 @@ package com.kaltura.types
 {
 	public class KalturaEmailNotificationRecipientProviderType
 	{
-		public static const STATIC_LIST : String = '1';
-		public static const CATEGORY : String = '2';
-		public static const USER : String = '3';
+		public static const STATIC_LIST : String = "1";
+		public static const CATEGORY : String = "2";
+		public static const USER : String = "3";
 	}
 }

@@ -54,6 +54,11 @@ package com.kaltura.vo
 		**/
 		public var code : String = null;
 
+		/**
+		* An array of pattern-replacement pairs used for data string regex replacements
+		**/
+		public var dataStringReplacements : Array = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -62,6 +67,7 @@ package com.kaltura.vo
 			arr.push('format');
 			arr.push('ignoreNull');
 			arr.push('code');
+			arr.push('dataStringReplacements');
 			return arr;
 		}
 
@@ -76,6 +82,9 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'dataStringReplacements':
+					result = 'KalturaKeyValue';
+					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;

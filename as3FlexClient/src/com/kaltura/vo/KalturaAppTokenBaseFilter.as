@@ -65,6 +65,10 @@ package com.kaltura.vo
 		**/
 		public var statusIn : String = null;
 
+		/**
+		**/
+		public var sessionUserIdEqual : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -77,6 +81,7 @@ package com.kaltura.vo
 			arr.push('updatedAtLessThanOrEqual');
 			arr.push('statusEqual');
 			arr.push('statusIn');
+			arr.push('sessionUserIdEqual');
 			return arr;
 		}
 

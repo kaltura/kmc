@@ -29,6 +29,6 @@ package com.kaltura.types
 {
 	public class KalturaFileAssetObjectType
 	{
-		public static const UI_CONF : String = '2';
+		public static const UI_CONF : String = "2";
 	}
 }

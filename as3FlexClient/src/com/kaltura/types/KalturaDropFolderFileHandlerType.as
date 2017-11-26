@@ -29,8 +29,8 @@ package com.kaltura.types
 {
 	public class KalturaDropFolderFileHandlerType
 	{
-		public static const XML : String = 'dropFolderXmlBulkUpload.XML';
-		public static const ICAL : String = 'scheduleDropFolder.ICAL';
-		public static const CONTENT : String = '1';
+		public static const XML : String = "dropFolderXmlBulkUpload.XML";
+		public static const ICAL : String = "scheduleDropFolder.ICAL";
+		public static const CONTENT : String = "1";
 	}
 }

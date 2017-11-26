@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaEventType
 	{
-		public static const BROADCAST_START : String = '1';
-		public static const BROADCAST_END : String = '2';
+		public static const BROADCAST_START : String = "1";
+		public static const BROADCAST_END : String = "2";
 	}
 }

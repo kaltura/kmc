@@ -29,26 +29,26 @@ package com.kaltura.types
 {
 	public class KalturaConditionType
 	{
-		public static const ABC_WATERMARK : String = 'abcScreenersWatermarkAccessControl.abcWatermark';
-		public static const EVENT_NOTIFICATION_FIELD : String = 'eventNotification.BooleanField';
-		public static const EVENT_NOTIFICATION_OBJECT_CHANGED : String = 'eventNotification.ObjectChanged';
-		public static const METADATA_FIELD_CHANGED : String = 'metadata.FieldChanged';
-		public static const METADATA_FIELD_COMPARE : String = 'metadata.FieldCompare';
-		public static const METADATA_FIELD_MATCH : String = 'metadata.FieldMatch';
-		public static const AUTHENTICATED : String = '1';
-		public static const COUNTRY : String = '2';
-		public static const IP_ADDRESS : String = '3';
-		public static const SITE : String = '4';
-		public static const USER_AGENT : String = '5';
-		public static const FIELD_MATCH : String = '6';
-		public static const FIELD_COMPARE : String = '7';
-		public static const ASSET_PROPERTIES_COMPARE : String = '8';
-		public static const USER_ROLE : String = '9';
-		public static const GEO_DISTANCE : String = '10';
-		public static const OR_OPERATOR : String = '11';
-		public static const HASH : String = '12';
-		public static const DELIVERY_PROFILE : String = '13';
-		public static const ACTIVE_EDGE_VALIDATE : String = '14';
-		public static const ANONYMOUS_IP : String = '15';
+		public static const ABC_WATERMARK : String = "abcScreenersWatermarkAccessControl.abcWatermark";
+		public static const EVENT_NOTIFICATION_FIELD : String = "eventNotification.BooleanField";
+		public static const EVENT_NOTIFICATION_OBJECT_CHANGED : String = "eventNotification.ObjectChanged";
+		public static const METADATA_FIELD_CHANGED : String = "metadata.FieldChanged";
+		public static const METADATA_FIELD_COMPARE : String = "metadata.FieldCompare";
+		public static const METADATA_FIELD_MATCH : String = "metadata.FieldMatch";
+		public static const AUTHENTICATED : String = "1";
+		public static const COUNTRY : String = "2";
+		public static const IP_ADDRESS : String = "3";
+		public static const SITE : String = "4";
+		public static const USER_AGENT : String = "5";
+		public static const FIELD_MATCH : String = "6";
+		public static const FIELD_COMPARE : String = "7";
+		public static const ASSET_PROPERTIES_COMPARE : String = "8";
+		public static const USER_ROLE : String = "9";
+		public static const GEO_DISTANCE : String = "10";
+		public static const OR_OPERATOR : String = "11";
+		public static const HASH : String = "12";
+		public static const DELIVERY_PROFILE : String = "13";
+		public static const ACTIVE_EDGE_VALIDATE : String = "14";
+		public static const ANONYMOUS_IP : String = "15";
 	}
 }

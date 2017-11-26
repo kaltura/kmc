@@ -29,10 +29,10 @@ package com.kaltura.types
 {
 	public class KalturaLiveReportType
 	{
-		public static const ENTRY_GEO_TIME_LINE : String = 'ENTRY_GEO_TIME_LINE';
-		public static const ENTRY_SYNDICATION_TOTAL : String = 'ENTRY_SYNDICATION_TOTAL';
-		public static const ENTRY_TIME_LINE : String = 'ENTRY_TIME_LINE';
-		public static const ENTRY_TOTAL : String = 'ENTRY_TOTAL';
-		public static const PARTNER_TOTAL : String = 'PARTNER_TOTAL';
+		public static const ENTRY_GEO_TIME_LINE : String = "ENTRY_GEO_TIME_LINE";
+		public static const ENTRY_SYNDICATION_TOTAL : String = "ENTRY_SYNDICATION_TOTAL";
+		public static const ENTRY_TIME_LINE : String = "ENTRY_TIME_LINE";
+		public static const ENTRY_TOTAL : String = "ENTRY_TOTAL";
+		public static const PARTNER_TOTAL : String = "PARTNER_TOTAL";
 	}
 }

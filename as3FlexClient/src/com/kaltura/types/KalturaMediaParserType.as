@@ -29,8 +29,8 @@ package com.kaltura.types
 {
 	public class KalturaMediaParserType
 	{
-		public static const MEDIAINFO : String = '0';
-		public static const REMOTE_MEDIAINFO : String = 'remoteMediaInfo.RemoteMediaInfo';
-		public static const FFMPEG : String = '1';
+		public static const MEDIAINFO : String = "0";
+		public static const REMOTE_MEDIAINFO : String = "remoteMediaInfo.RemoteMediaInfo";
+		public static const FFMPEG : String = "1";
 	}
 }

@@ -29,12 +29,12 @@ package com.kaltura.types
 {
 	public class KalturaBulkUploadObjectType
 	{
-		public static const SCHEDULE_EVENT : String = 'scheduleBulkUpload.SCHEDULE_EVENT';
-		public static const SCHEDULE_RESOURCE : String = 'scheduleBulkUpload.SCHEDULE_RESOURCE';
-		public static const ENTRY : String = '1';
-		public static const CATEGORY : String = '2';
-		public static const USER : String = '3';
-		public static const CATEGORY_USER : String = '4';
-		public static const CATEGORY_ENTRY : String = '5';
+		public static const SCHEDULE_EVENT : String = "scheduleBulkUpload.SCHEDULE_EVENT";
+		public static const SCHEDULE_RESOURCE : String = "scheduleBulkUpload.SCHEDULE_RESOURCE";
+		public static const ENTRY : String = "1";
+		public static const CATEGORY : String = "2";
+		public static const USER : String = "3";
+		public static const CATEGORY_USER : String = "4";
+		public static const CATEGORY_ENTRY : String = "5";
 	}
 }

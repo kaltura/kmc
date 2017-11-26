@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaEntryServerNodeType
 	{
-		public static const LIVE_PRIMARY : String = '0';
-		public static const LIVE_BACKUP : String = '1';
+		public static const LIVE_PRIMARY : String = "0";
+		public static const LIVE_BACKUP : String = "1";
 	}
 }

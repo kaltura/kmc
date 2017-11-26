@@ -40,6 +40,11 @@ package com.kaltura.vo
 		**/
 		public var duration : int = int.MIN_VALUE;
 
+		/**
+		* @see com.kaltura.types.KalturaEntryServerNodeRecordingStatus
+		**/
+		public var recordingStatus : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -49,6 +54,7 @@ package com.kaltura.vo
 			arr = new Array();
 			arr.push('recordedEntryId');
 			arr.push('duration');
+			arr.push('recordingStatus');
 			return arr;
 		}
 

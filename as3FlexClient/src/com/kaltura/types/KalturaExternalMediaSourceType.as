@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaExternalMediaSourceType
 	{
-		public static const INTERCALL : String = 'InterCall';
-		public static const YOUTUBE : String = 'YouTube';
+		public static const INTERCALL : String = "InterCall";
+		public static const YOUTUBE : String = "YouTube";
 	}
 }

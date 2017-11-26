@@ -29,11 +29,11 @@ package com.kaltura.types
 {
 	public class KalturaContextType
 	{
-		public static const PLAY : String = '1';
-		public static const DOWNLOAD : String = '2';
-		public static const THUMBNAIL : String = '3';
-		public static const METADATA : String = '4';
-		public static const EXPORT : String = '5';
-		public static const SERVE : String = '6';
+		public static const PLAY : String = "1";
+		public static const DOWNLOAD : String = "2";
+		public static const THUMBNAIL : String = "3";
+		public static const METADATA : String = "4";
+		public static const EXPORT : String = "5";
+		public static const SERVE : String = "6";
 	}
 }

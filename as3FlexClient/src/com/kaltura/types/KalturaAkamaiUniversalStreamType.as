@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaAkamaiUniversalStreamType
 	{
-		public static const HD_IPHONE_IPAD_LIVE : String = 'HD iPhone/iPad Live';
-		public static const UNIVERSAL_STREAMING_LIVE : String = 'Universal Streaming Live';
+		public static const HD_IPHONE_IPAD_LIVE : String = "HD iPhone/iPad Live";
+		public static const UNIVERSAL_STREAMING_LIVE : String = "Universal Streaming Live";
 	}
 }

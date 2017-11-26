@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaTaggedObjectType
 	{
-		public static const ENTRY : String = '1';
-		public static const CATEGORY : String = '2';
+		public static const ENTRY : String = "1";
+		public static const CATEGORY : String = "2";
 	}
 }

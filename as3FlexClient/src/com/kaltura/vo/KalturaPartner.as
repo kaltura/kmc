@@ -258,6 +258,10 @@ package com.kaltura.vo
 		**/
 		public var timeAlignedRenditions : Boolean;
 
+		/**
+		**/
+		public var eSearchLanguages : Array = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -295,6 +299,7 @@ package com.kaltura.vo
 			arr.push('state');
 			arr.push('partnerParentId');
 			arr.push('referenceId');
+			arr.push('eSearchLanguages');
 			return arr;
 		}
 
@@ -326,6 +331,9 @@ package com.kaltura.vo
 					break;
 				case 'embedCodeTypes':
 					result = 'KalturaPlayerEmbedCodeType';
+					break;
+				case 'eSearchLanguages':
+					result = 'KalturaESearchLanguageItem';
 					break;
 			}
 			return result;

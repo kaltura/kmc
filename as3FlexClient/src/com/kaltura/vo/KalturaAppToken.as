@@ -93,6 +93,10 @@ package com.kaltura.vo
 		**/
 		public var hashType : String = null;
 
+		/**
+		**/
+		public var description : String = null;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -106,6 +110,7 @@ package com.kaltura.vo
 			arr.push('sessionDuration');
 			arr.push('sessionPrivileges');
 			arr.push('hashType');
+			arr.push('description');
 			return arr;
 		}
 

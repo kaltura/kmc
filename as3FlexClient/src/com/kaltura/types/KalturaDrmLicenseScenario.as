@@ -29,9 +29,9 @@ package com.kaltura.types
 {
 	public class KalturaDrmLicenseScenario
 	{
-		public static const PROTECTION : String = 'playReady.PROTECTION';
-		public static const PURCHASE : String = 'playReady.PURCHASE';
-		public static const RENTAL : String = 'playReady.RENTAL';
-		public static const SUBSCRIPTION : String = 'playReady.SUBSCRIPTION';
+		public static const PROTECTION : String = "playReady.PROTECTION";
+		public static const PURCHASE : String = "playReady.PURCHASE";
+		public static const RENTAL : String = "playReady.RENTAL";
+		public static const SUBSCRIPTION : String = "playReady.SUBSCRIPTION";
 	}
 }

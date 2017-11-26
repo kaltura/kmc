@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaActivitiBusinessProcessServerProtocol
 	{
-		public static const HTTP : String = 'http';
-		public static const HTTPS : String = 'https';
+		public static const HTTP : String = "http";
+		public static const HTTPS : String = "https";
 	}
 }

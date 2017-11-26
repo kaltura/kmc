@@ -112,6 +112,21 @@ package com.kaltura.vo
 		**/
 		public var segmentDuration : int = int.MIN_VALUE;
 
+		/**
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var explicitLive : int = int.MIN_VALUE;
+
+		/**
+		* @see com.kaltura.types.KalturaViewMode
+		**/
+		public var viewMode : int = int.MIN_VALUE;
+
+		/**
+		* @see com.kaltura.types.KalturaRecordingStatus
+		**/
+		public var recordingStatus : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -128,6 +143,9 @@ package com.kaltura.vo
 			arr.push('currentBroadcastStartTime');
 			arr.push('recordingOptions');
 			arr.push('segmentDuration');
+			arr.push('explicitLive');
+			arr.push('viewMode');
+			arr.push('recordingStatus');
 			return arr;
 		}
 

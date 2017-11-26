@@ -29,6 +29,6 @@ package com.kaltura.types
 {
 	public class KalturaObjectFilterEngineType
 	{
-		public static const ENTRY : String = '1';
+		public static const ENTRY : String = "1";
 	}
 }

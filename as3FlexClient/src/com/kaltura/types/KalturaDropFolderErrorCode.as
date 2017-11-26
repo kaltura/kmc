@@ -29,11 +29,11 @@ package com.kaltura.types
 {
 	public class KalturaDropFolderErrorCode
 	{
-		public static const ERROR_CONNECT : String = '1';
-		public static const ERROR_AUTENTICATE : String = '2';
-		public static const ERROR_GET_PHISICAL_FILE_LIST : String = '3';
-		public static const ERROR_GET_DB_FILE_LIST : String = '4';
-		public static const DROP_FOLDER_APP_ERROR : String = '5';
-		public static const CONTENT_MATCH_POLICY_UNDEFINED : String = '6';
+		public static const ERROR_CONNECT : String = "1";
+		public static const ERROR_AUTENTICATE : String = "2";
+		public static const ERROR_GET_PHISICAL_FILE_LIST : String = "3";
+		public static const ERROR_GET_DB_FILE_LIST : String = "4";
+		public static const DROP_FOLDER_APP_ERROR : String = "5";
+		public static const CONTENT_MATCH_POLICY_UNDEFINED : String = "6";
 	}
 }

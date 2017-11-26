@@ -29,10 +29,10 @@ package com.kaltura.types
 {
 	public class KalturaDrmSchemeName
 	{
-		public static const PLAYREADY_CENC : String = 'drm.PLAYREADY_CENC';
-		public static const WIDEVINE_CENC : String = 'drm.WIDEVINE_CENC';
-		public static const FAIRPLAY : String = 'fairplay.FAIRPLAY';
-		public static const PLAYREADY : String = 'playReady.PLAYREADY';
-		public static const WIDEVINE : String = 'widevine.WIDEVINE';
+		public static const PLAYREADY_CENC : String = "drm.PLAYREADY_CENC";
+		public static const WIDEVINE_CENC : String = "drm.WIDEVINE_CENC";
+		public static const FAIRPLAY : String = "fairplay.FAIRPLAY";
+		public static const PLAYREADY : String = "playReady.PLAYREADY";
+		public static const WIDEVINE : String = "widevine.WIDEVINE";
 	}
 }

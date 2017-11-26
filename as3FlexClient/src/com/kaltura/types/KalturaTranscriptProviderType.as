@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaTranscriptProviderType
 	{
-		public static const CIELO24 : String = 'cielo24.Cielo24';
-		public static const VOICEBASE : String = 'voicebase.Voicebase';
+		public static const CIELO24 : String = "cielo24.Cielo24";
+		public static const VOICEBASE : String = "voicebase.Voicebase";
 	}
 }

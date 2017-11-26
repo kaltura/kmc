@@ -35,7 +35,7 @@ package com.kaltura.vo
 		/**
 		* Auto generated numeric identifier
 		**/
-		public var id : int = int.MIN_VALUE;
+		public var id : Number = Number.NEGATIVE_INFINITY;
 
 		/**
 		* Unique system name

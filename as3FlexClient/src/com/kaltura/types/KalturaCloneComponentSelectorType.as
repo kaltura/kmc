@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaCloneComponentSelectorType
 	{
-		public static const INCLUDE_COMPONENT : String = '0';
-		public static const EXCLUDE_COMPONENT : String = '1';
+		public static const INCLUDE_COMPONENT : String = "0";
+		public static const EXCLUDE_COMPONENT : String = "1";
 	}
 }

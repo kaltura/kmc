@@ -29,8 +29,8 @@ package com.kaltura.types
 {
 	public class KalturaCielo24Fidelity
 	{
-		public static const MECHANICAL : String = 'MECHANICAL';
-		public static const PREMIUM : String = 'PREMIUM';
-		public static const PROFESSIONAL : String = 'PROFESSIONAL';
+		public static const MECHANICAL : String = "MECHANICAL";
+		public static const PREMIUM : String = "PREMIUM";
+		public static const PROFESSIONAL : String = "PROFESSIONAL";
 	}
 }

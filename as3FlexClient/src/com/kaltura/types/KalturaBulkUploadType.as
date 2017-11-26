@@ -29,11 +29,11 @@ package com.kaltura.types
 {
 	public class KalturaBulkUploadType
 	{
-		public static const CSV : String = 'bulkUploadCsv.CSV';
-		public static const FILTER : String = 'bulkUploadFilter.FILTER';
-		public static const XML : String = 'bulkUploadXml.XML';
-		public static const DROP_FOLDER_XML : String = 'dropFolderXmlBulkUpload.DROP_FOLDER_XML';
-		public static const ICAL : String = 'scheduleBulkUpload.ICAL';
-		public static const DROP_FOLDER_ICAL : String = 'scheduleDropFolder.DROP_FOLDER_ICAL';
+		public static const CSV : String = "bulkUploadCsv.CSV";
+		public static const FILTER : String = "bulkUploadFilter.FILTER";
+		public static const XML : String = "bulkUploadXml.XML";
+		public static const DROP_FOLDER_XML : String = "dropFolderXmlBulkUpload.DROP_FOLDER_XML";
+		public static const ICAL : String = "scheduleBulkUpload.ICAL";
+		public static const DROP_FOLDER_ICAL : String = "scheduleDropFolder.DROP_FOLDER_ICAL";
 	}
 }

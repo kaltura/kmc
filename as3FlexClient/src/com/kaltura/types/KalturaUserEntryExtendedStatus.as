@@ -29,8 +29,8 @@ package com.kaltura.types
 {
 	public class KalturaUserEntryExtendedStatus
 	{
-		public static const PLAYBACK_COMPLETE : String = 'viewHistory.PLAYBACK_COMPLETE';
-		public static const PLAYBACK_STARTED : String = 'viewHistory.PLAYBACK_STARTED';
-		public static const VIEWED : String = 'viewHistory.VIEWED';
+		public static const PLAYBACK_COMPLETE : String = "viewHistory.PLAYBACK_COMPLETE";
+		public static const PLAYBACK_STARTED : String = "viewHistory.PLAYBACK_STARTED";
+		public static const VIEWED : String = "viewHistory.VIEWED";
 	}
 }

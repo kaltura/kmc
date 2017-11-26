@@ -29,19 +29,19 @@ package com.kaltura.types
 {
 	public class KalturaPlaybackProtocol
 	{
-		public static const APPLE_HTTP : String = 'applehttp';
-		public static const APPLE_HTTP_TO_MC : String = 'applehttp_to_mc';
-		public static const AUTO : String = 'auto';
-		public static const AKAMAI_HD : String = 'hdnetwork';
-		public static const AKAMAI_HDS : String = 'hdnetworkmanifest';
-		public static const HDS : String = 'hds';
-		public static const HLS : String = 'hls';
-		public static const HTTP : String = 'http';
-		public static const MPEG_DASH : String = 'mpegdash';
-		public static const MULTICAST_SL : String = 'multicast_silverlight';
-		public static const RTMP : String = 'rtmp';
-		public static const RTSP : String = 'rtsp';
-		public static const SILVER_LIGHT : String = 'sl';
-		public static const URL : String = 'url';
+		public static const APPLE_HTTP : String = "applehttp";
+		public static const APPLE_HTTP_TO_MC : String = "applehttp_to_mc";
+		public static const AUTO : String = "auto";
+		public static const AKAMAI_HD : String = "hdnetwork";
+		public static const AKAMAI_HDS : String = "hdnetworkmanifest";
+		public static const HDS : String = "hds";
+		public static const HLS : String = "hls";
+		public static const HTTP : String = "http";
+		public static const MPEG_DASH : String = "mpegdash";
+		public static const MULTICAST_SL : String = "multicast_silverlight";
+		public static const RTMP : String = "rtmp";
+		public static const RTSP : String = "rtsp";
+		public static const SILVER_LIGHT : String = "sl";
+		public static const URL : String = "url";
 	}
 }

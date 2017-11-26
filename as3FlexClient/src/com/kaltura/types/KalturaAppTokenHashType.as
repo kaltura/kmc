@@ -29,9 +29,9 @@ package com.kaltura.types
 {
 	public class KalturaAppTokenHashType
 	{
-		public static const MD5 : String = 'MD5';
-		public static const SHA1 : String = 'SHA1';
-		public static const SHA256 : String = 'SHA256';
-		public static const SHA512 : String = 'SHA512';
+		public static const MD5 : String = "MD5";
+		public static const SHA1 : String = "SHA1";
+		public static const SHA256 : String = "SHA256";
+		public static const SHA512 : String = "SHA512";
 	}
 }

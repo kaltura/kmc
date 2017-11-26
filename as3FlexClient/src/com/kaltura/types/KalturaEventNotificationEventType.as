@@ -29,19 +29,19 @@ package com.kaltura.types
 {
 	public class KalturaEventNotificationEventType
 	{
-		public static const INTEGRATION_JOB_CLOSED : String = 'integrationEventNotifications.INTEGRATION_JOB_CLOSED';
-		public static const BATCH_JOB_STATUS : String = '1';
-		public static const OBJECT_ADDED : String = '2';
-		public static const OBJECT_CHANGED : String = '3';
-		public static const OBJECT_COPIED : String = '4';
-		public static const OBJECT_CREATED : String = '5';
-		public static const OBJECT_DATA_CHANGED : String = '6';
-		public static const OBJECT_DELETED : String = '7';
-		public static const OBJECT_ERASED : String = '8';
-		public static const OBJECT_READY_FOR_REPLACMENT : String = '9';
-		public static const OBJECT_SAVED : String = '10';
-		public static const OBJECT_UPDATED : String = '11';
-		public static const OBJECT_REPLACED : String = '12';
-		public static const OBJECT_READY_FOR_INDEX : String = '13';
+		public static const INTEGRATION_JOB_CLOSED : String = "integrationEventNotifications.INTEGRATION_JOB_CLOSED";
+		public static const BATCH_JOB_STATUS : String = "1";
+		public static const OBJECT_ADDED : String = "2";
+		public static const OBJECT_CHANGED : String = "3";
+		public static const OBJECT_COPIED : String = "4";
+		public static const OBJECT_CREATED : String = "5";
+		public static const OBJECT_DATA_CHANGED : String = "6";
+		public static const OBJECT_DELETED : String = "7";
+		public static const OBJECT_ERASED : String = "8";
+		public static const OBJECT_READY_FOR_REPLACMENT : String = "9";
+		public static const OBJECT_SAVED : String = "10";
+		public static const OBJECT_UPDATED : String = "11";
+		public static const OBJECT_REPLACED : String = "12";
+		public static const OBJECT_READY_FOR_INDEX : String = "13";
 	}
 }

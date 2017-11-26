@@ -29,13 +29,16 @@ package com.kaltura.types
 {
 	public class KalturaBaseEntryCloneOptions
 	{
-		public static const AD_CUE_POINTS : String = 'adCuePoint.AD_CUE_POINTS';
-		public static const ANNOTATION_CUE_POINTS : String = 'annotation.ANNOTATION_CUE_POINTS';
-		public static const CODE_CUE_POINTS : String = 'codeCuePoint.CODE_CUE_POINTS';
-		public static const THUMB_CUE_POINTS : String = 'thumbCuePoint.THUMB_CUE_POINTS';
-		public static const USERS : String = '1';
-		public static const CATEGORIES : String = '2';
-		public static const CHILD_ENTRIES : String = '3';
-		public static const ACCESS_CONTROL : String = '4';
+		public static const AD_CUE_POINTS : String = "adCuePoint.AD_CUE_POINTS";
+		public static const ANNOTATION_CUE_POINTS : String = "annotation.ANNOTATION_CUE_POINTS";
+		public static const CODE_CUE_POINTS : String = "codeCuePoint.CODE_CUE_POINTS";
+		public static const THUMB_CUE_POINTS : String = "thumbCuePoint.THUMB_CUE_POINTS";
+		public static const USERS : String = "1";
+		public static const CATEGORIES : String = "2";
+		public static const CHILD_ENTRIES : String = "3";
+		public static const ACCESS_CONTROL : String = "4";
+		public static const METADATA : String = "5";
+		public static const FLAVORS : String = "6";
+		public static const CAPTIONS : String = "7";
 	}
 }

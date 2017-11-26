@@ -29,13 +29,13 @@ package com.kaltura.types
 {
 	public class KalturaScheduledTaskProfileOrderBy
 	{
-		public static const CREATED_AT_ASC : String = '+createdAt';
-		public static const ID_ASC : String = '+id';
-		public static const LAST_EXECUTION_STARTED_AT_ASC : String = '+lastExecutionStartedAt';
-		public static const UPDATED_AT_ASC : String = '+updatedAt';
-		public static const CREATED_AT_DESC : String = '-createdAt';
-		public static const ID_DESC : String = '-id';
-		public static const LAST_EXECUTION_STARTED_AT_DESC : String = '-lastExecutionStartedAt';
-		public static const UPDATED_AT_DESC : String = '-updatedAt';
+		public static const CREATED_AT_ASC : String = "+createdAt";
+		public static const ID_ASC : String = "+id";
+		public static const LAST_EXECUTION_STARTED_AT_ASC : String = "+lastExecutionStartedAt";
+		public static const UPDATED_AT_ASC : String = "+updatedAt";
+		public static const CREATED_AT_DESC : String = "-createdAt";
+		public static const ID_DESC : String = "-id";
+		public static const LAST_EXECUTION_STARTED_AT_DESC : String = "-lastExecutionStartedAt";
+		public static const UPDATED_AT_DESC : String = "-updatedAt";
 	}
 }

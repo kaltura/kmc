@@ -29,17 +29,17 @@ package com.kaltura.types
 {
 	public class KalturaRecordScheduleEventOrderBy
 	{
-		public static const CREATED_AT_ASC : String = '+createdAt';
-		public static const END_DATE_ASC : String = '+endDate';
-		public static const PRIORITY_ASC : String = '+priority';
-		public static const START_DATE_ASC : String = '+startDate';
-		public static const SUMMARY_ASC : String = '+summary';
-		public static const UPDATED_AT_ASC : String = '+updatedAt';
-		public static const CREATED_AT_DESC : String = '-createdAt';
-		public static const END_DATE_DESC : String = '-endDate';
-		public static const PRIORITY_DESC : String = '-priority';
-		public static const START_DATE_DESC : String = '-startDate';
-		public static const SUMMARY_DESC : String = '-summary';
-		public static const UPDATED_AT_DESC : String = '-updatedAt';
+		public static const CREATED_AT_ASC : String = "+createdAt";
+		public static const END_DATE_ASC : String = "+endDate";
+		public static const PRIORITY_ASC : String = "+priority";
+		public static const START_DATE_ASC : String = "+startDate";
+		public static const SUMMARY_ASC : String = "+summary";
+		public static const UPDATED_AT_ASC : String = "+updatedAt";
+		public static const CREATED_AT_DESC : String = "-createdAt";
+		public static const END_DATE_DESC : String = "-endDate";
+		public static const PRIORITY_DESC : String = "-priority";
+		public static const START_DATE_DESC : String = "-startDate";
+		public static const SUMMARY_DESC : String = "-summary";
+		public static const UPDATED_AT_DESC : String = "-updatedAt";
 	}
 }

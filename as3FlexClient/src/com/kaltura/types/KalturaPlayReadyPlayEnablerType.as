@@ -29,12 +29,12 @@ package com.kaltura.types
 {
 	public class KalturaPlayReadyPlayEnablerType
 	{
-		public static const HELIX : String = '002F9772-38A0-43E5-9F79-0F6361DCC62A';
-		public static const HDCP_WIVU : String = '1B4542E3-B5CF-4C99-B3BA-829AF46C92F8';
-		public static const AIRPLAY : String = '5ABF0F0D-DC29-4B82-9982-FD8E57525BFC';
-		public static const UNKNOWN : String = '786627D8-C2A6-44BE-8F88-08AE255B01A';
-		public static const HDCP_MIRACAST : String = 'A340C256-0941-4D4C-AD1D-0B6735C0CB24';
-		public static const UNKNOWN_520 : String = 'B621D91F-EDCC-4035-8D4B-DC71760D43E9';
-		public static const DTCP : String = 'D685030B-0F4F-43A6-BBAD-356F1EA0049A';
+		public static const HELIX : String = "002F9772-38A0-43E5-9F79-0F6361DCC62A";
+		public static const HDCP_WIVU : String = "1B4542E3-B5CF-4C99-B3BA-829AF46C92F8";
+		public static const AIRPLAY : String = "5ABF0F0D-DC29-4B82-9982-FD8E57525BFC";
+		public static const UNKNOWN : String = "786627D8-C2A6-44BE-8F88-08AE255B01A";
+		public static const HDCP_MIRACAST : String = "A340C256-0941-4D4C-AD1D-0B6735C0CB24";
+		public static const UNKNOWN_520 : String = "B621D91F-EDCC-4035-8D4B-DC71760D43E9";
+		public static const DTCP : String = "D685030B-0F4F-43A6-BBAD-356F1EA0049A";
 	}
 }

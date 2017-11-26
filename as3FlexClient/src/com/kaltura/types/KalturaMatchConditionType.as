@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaMatchConditionType
 	{
-		public static const MATCH_ANY : String = '1';
-		public static const MATCH_ALL : String = '2';
+		public static const MATCH_ANY : String = "1";
+		public static const MATCH_ALL : String = "2";
 	}
 }

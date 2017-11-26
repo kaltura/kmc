@@ -29,11 +29,11 @@ package com.kaltura.types
 {
 	public class KalturaServerNodeOrderBy
 	{
-		public static const CREATED_AT_ASC : String = '+createdAt';
-		public static const HEARTBEAT_TIME_ASC : String = '+heartbeatTime';
-		public static const UPDATED_AT_ASC : String = '+updatedAt';
-		public static const CREATED_AT_DESC : String = '-createdAt';
-		public static const HEARTBEAT_TIME_DESC : String = '-heartbeatTime';
-		public static const UPDATED_AT_DESC : String = '-updatedAt';
+		public static const CREATED_AT_ASC : String = "+createdAt";
+		public static const HEARTBEAT_TIME_ASC : String = "+heartbeatTime";
+		public static const UPDATED_AT_ASC : String = "+updatedAt";
+		public static const CREATED_AT_DESC : String = "-createdAt";
+		public static const HEARTBEAT_TIME_DESC : String = "-heartbeatTime";
+		public static const UPDATED_AT_DESC : String = "-updatedAt";
 	}
 }

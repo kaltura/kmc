@@ -29,12 +29,12 @@ package com.kaltura.types
 {
 	public class KalturaDropFolderType
 	{
-		public static const FEED : String = 'FeedDropFolder.FEED';
-		public static const WEBEX : String = 'WebexDropFolder.WEBEX';
-		public static const LOCAL : String = '1';
-		public static const FTP : String = '2';
-		public static const SCP : String = '3';
-		public static const SFTP : String = '4';
-		public static const S3 : String = '6';
+		public static const FEED : String = "FeedDropFolder.FEED";
+		public static const WEBEX : String = "WebexDropFolder.WEBEX";
+		public static const LOCAL : String = "1";
+		public static const FTP : String = "2";
+		public static const SCP : String = "3";
+		public static const SFTP : String = "4";
+		public static const S3 : String = "6";
 	}
 }

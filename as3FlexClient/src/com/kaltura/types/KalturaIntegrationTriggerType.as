@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaIntegrationTriggerType
 	{
-		public static const BPM_EVENT_NOTIFICATION : String = 'bpmEventNotificationIntegration.BpmEventNotification';
-		public static const MANUAL : String = '1';
+		public static const BPM_EVENT_NOTIFICATION : String = "bpmEventNotificationIntegration.BpmEventNotification";
+		public static const MANUAL : String = "1";
 	}
 }

@@ -31,6 +31,7 @@ package com.kaltura.commands.liveStream
 	import com.kaltura.net.KalturaCall;
 
 	/**
+	* Create recorded entry id if it doesn't exist and make sure it happens on the DC that the live entry was created on.
 	**/
 	public class LiveStreamCreateRecordedEntry extends KalturaCall
 	{

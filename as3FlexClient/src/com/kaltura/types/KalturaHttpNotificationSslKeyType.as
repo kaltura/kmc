@@ -29,8 +29,8 @@ package com.kaltura.types
 {
 	public class KalturaHttpNotificationSslKeyType
 	{
-		public static const DER : String = 'DER';
-		public static const ENG : String = 'ENG';
-		public static const PEM : String = 'PEM';
+		public static const DER : String = "DER";
+		public static const ENG : String = "ENG";
+		public static const PEM : String = "PEM";
 	}
 }

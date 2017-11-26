@@ -27,6 +27,8 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
+	import com.kaltura.vo.KalturaFileContainer;
+
 	import com.kaltura.vo.KalturaJobData;
 
 	[Bindable]
@@ -34,7 +36,7 @@ package com.kaltura.vo
 	{
 		/**
 		**/
-		public var srcFileSyncLocalPath : String = null;
+		public var fileContainer : KalturaFileContainer;
 
 		/**
 		* The translated path as used by the scheduler
@@ -70,7 +72,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('srcFileSyncLocalPath');
+			arr.push('fileContainer');
 			arr.push('actualSrcFileSyncLocalPath');
 			arr.push('srcFileSyncRemoteUrl');
 			arr.push('thumbParamsOutputId');
@@ -92,6 +94,9 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'fileContainer':
+					result = '';
+					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;

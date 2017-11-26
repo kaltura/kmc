@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaConversionProfileType
 	{
-		public static const MEDIA : String = '1';
-		public static const LIVE_STREAM : String = '2';
+		public static const MEDIA : String = "1";
+		public static const LIVE_STREAM : String = "2";
 	}
 }

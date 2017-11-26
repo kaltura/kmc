@@ -29,6 +29,6 @@ package com.kaltura.types
 {
 	public class KalturaPlayReadyDigitalAudioOPId
 	{
-		public static const SCMS : String = '6D5CFA59-C250-4426-930E-FAC72C8FCFA6';
+		public static const SCMS : String = "6D5CFA59-C250-4426-930E-FAC72C8FCFA6";
 	}
 }

@@ -29,12 +29,12 @@ package com.kaltura.types
 {
 	public class KalturaScheduleEventRecurrenceDay
 	{
-		public static const FRIDAY : String = 'FR';
-		public static const MONDAY : String = 'MO';
-		public static const SATURDAY : String = 'SA';
-		public static const SUNDAY : String = 'SU';
-		public static const THURSDAY : String = 'TH';
-		public static const TUESDAY : String = 'TU';
-		public static const WEDNESDAY : String = 'WE';
+		public static const FRIDAY : String = "FR";
+		public static const MONDAY : String = "MO";
+		public static const SATURDAY : String = "SA";
+		public static const SUNDAY : String = "SU";
+		public static const THURSDAY : String = "TH";
+		public static const TUESDAY : String = "TU";
+		public static const WEDNESDAY : String = "WE";
 	}
 }

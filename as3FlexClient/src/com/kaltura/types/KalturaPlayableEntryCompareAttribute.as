@@ -29,23 +29,23 @@ package com.kaltura.types
 {
 	public class KalturaPlayableEntryCompareAttribute
 	{
-		public static const ACCESS_CONTROL_ID : String = 'accessControlId';
-		public static const CREATED_AT : String = 'createdAt';
-		public static const END_DATE : String = 'endDate';
-		public static const LAST_PLAYED_AT : String = 'lastPlayedAt';
-		public static const MODERATION_COUNT : String = 'moderationCount';
-		public static const MODERATION_STATUS : String = 'moderationStatus';
-		public static const MS_DURATION : String = 'msDuration';
-		public static const PARTNER_ID : String = 'partnerId';
-		public static const PARTNER_SORT_VALUE : String = 'partnerSortValue';
-		public static const PLAYS : String = 'plays';
-		public static const RANK : String = 'rank';
-		public static const REPLACEMENT_STATUS : String = 'replacementStatus';
-		public static const START_DATE : String = 'startDate';
-		public static const STATUS : String = 'status';
-		public static const TOTAL_RANK : String = 'totalRank';
-		public static const TYPE : String = 'type';
-		public static const UPDATED_AT : String = 'updatedAt';
-		public static const VIEWS : String = 'views';
+		public static const ACCESS_CONTROL_ID : String = "accessControlId";
+		public static const CREATED_AT : String = "createdAt";
+		public static const END_DATE : String = "endDate";
+		public static const LAST_PLAYED_AT : String = "lastPlayedAt";
+		public static const MODERATION_COUNT : String = "moderationCount";
+		public static const MODERATION_STATUS : String = "moderationStatus";
+		public static const MS_DURATION : String = "msDuration";
+		public static const PARTNER_ID : String = "partnerId";
+		public static const PARTNER_SORT_VALUE : String = "partnerSortValue";
+		public static const PLAYS : String = "plays";
+		public static const RANK : String = "rank";
+		public static const REPLACEMENT_STATUS : String = "replacementStatus";
+		public static const START_DATE : String = "startDate";
+		public static const STATUS : String = "status";
+		public static const TOTAL_RANK : String = "totalRank";
+		public static const TYPE : String = "type";
+		public static const UPDATED_AT : String = "updatedAt";
+		public static const VIEWS : String = "views";
 	}
 }

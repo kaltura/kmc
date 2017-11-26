@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaUserEntryType
 	{
-		public static const QUIZ : String = 'quiz.QUIZ';
-		public static const VIEW_HISTORY : String = 'viewHistory.VIEW_HISTORY';
+		public static const QUIZ : String = "quiz.QUIZ";
+		public static const VIEW_HISTORY : String = "viewHistory.VIEW_HISTORY";
 	}
 }

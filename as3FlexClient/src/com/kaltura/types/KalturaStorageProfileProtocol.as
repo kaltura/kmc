@@ -29,12 +29,12 @@ package com.kaltura.types
 {
 	public class KalturaStorageProfileProtocol
 	{
-		public static const KONTIKI : String = 'kontiki.KONTIKI';
-		public static const KALTURA_DC : String = '0';
-		public static const FTP : String = '1';
-		public static const SCP : String = '2';
-		public static const SFTP : String = '3';
-		public static const S3 : String = '6';
-		public static const LOCAL : String = '7';
+		public static const KONTIKI : String = "kontiki.KONTIKI";
+		public static const KALTURA_DC : String = "0";
+		public static const FTP : String = "1";
+		public static const SCP : String = "2";
+		public static const SFTP : String = "3";
+		public static const S3 : String = "6";
+		public static const LOCAL : String = "7";
 	}
 }

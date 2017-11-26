@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaEmailNotificationFormat
 	{
-		public static const HTML : String = '1';
-		public static const TEXT : String = '2';
+		public static const HTML : String = "1";
+		public static const TEXT : String = "2";
 	}
 }

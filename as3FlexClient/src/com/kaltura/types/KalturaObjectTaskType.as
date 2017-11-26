@@ -29,16 +29,16 @@ package com.kaltura.types
 {
 	public class KalturaObjectTaskType
 	{
-		public static const DISTRIBUTE : String = 'scheduledTaskContentDistribution.Distribute';
-		public static const DISPATCH_EVENT_NOTIFICATION : String = 'scheduledTaskEventNotification.DispatchEventNotification';
-		public static const EXECUTE_METADATA_XSLT : String = 'scheduledTaskMetadata.ExecuteMetadataXslt';
-		public static const DELETE_ENTRY : String = '1';
-		public static const MODIFY_CATEGORIES : String = '2';
-		public static const DELETE_ENTRY_FLAVORS : String = '3';
-		public static const CONVERT_ENTRY_FLAVORS : String = '4';
-		public static const DELETE_LOCAL_CONTENT : String = '5';
-		public static const STORAGE_EXPORT : String = '6';
-		public static const MODIFY_ENTRY : String = '7';
-		public static const MAIL_NOTIFICATION : String = '8';
+		public static const DISTRIBUTE : String = "scheduledTaskContentDistribution.Distribute";
+		public static const DISPATCH_EVENT_NOTIFICATION : String = "scheduledTaskEventNotification.DispatchEventNotification";
+		public static const EXECUTE_METADATA_XSLT : String = "scheduledTaskMetadata.ExecuteMetadataXslt";
+		public static const DELETE_ENTRY : String = "1";
+		public static const MODIFY_CATEGORIES : String = "2";
+		public static const DELETE_ENTRY_FLAVORS : String = "3";
+		public static const CONVERT_ENTRY_FLAVORS : String = "4";
+		public static const DELETE_LOCAL_CONTENT : String = "5";
+		public static const STORAGE_EXPORT : String = "6";
+		public static const MODIFY_ENTRY : String = "7";
+		public static const MAIL_NOTIFICATION : String = "8";
 	}
 }

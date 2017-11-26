@@ -29,9 +29,9 @@ package com.kaltura.types
 {
 	public class KalturaLiveChannelSegmentTriggerType
 	{
-		public static const CHANNEL_RELATIVE : String = '1';
-		public static const ABSOLUTE_TIME : String = '2';
-		public static const SEGMENT_START_RELATIVE : String = '3';
-		public static const SEGMENT_END_RELATIVE : String = '4';
+		public static const CHANNEL_RELATIVE : String = "1";
+		public static const ABSOLUTE_TIME : String = "2";
+		public static const SEGMENT_START_RELATIVE : String = "3";
+		public static const SEGMENT_END_RELATIVE : String = "4";
 	}
 }

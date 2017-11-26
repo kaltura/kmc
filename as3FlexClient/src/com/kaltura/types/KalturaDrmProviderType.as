@@ -29,9 +29,9 @@ package com.kaltura.types
 {
 	public class KalturaDrmProviderType
 	{
-		public static const FAIRPLAY : String = 'fairplay.FAIRPLAY';
-		public static const PLAY_READY : String = 'playReady.PLAY_READY';
-		public static const WIDEVINE : String = 'widevine.WIDEVINE';
-		public static const CENC : String = '1';
+		public static const FAIRPLAY : String = "fairplay.FAIRPLAY";
+		public static const PLAY_READY : String = "playReady.PLAY_READY";
+		public static const WIDEVINE : String = "widevine.WIDEVINE";
+		public static const CENC : String = "1";
 	}
 }

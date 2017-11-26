@@ -31,6 +31,8 @@ package com.kaltura.vo
 
 	import com.kaltura.vo.KalturaStringValue;
 
+	import com.kaltura.vo.KalturaStringValue;
+
 	import com.kaltura.vo.KalturaEmailNotificationRecipientProvider;
 
 	[Bindable]
@@ -42,6 +44,11 @@ package com.kaltura.vo
 		public var categoryId : KalturaStringValue;
 
 		/**
+		* The IDs of the categories whose subscribers should receive the email notification.
+		**/
+		public var categoryIds : KalturaStringValue;
+
+		/**
 		**/
 		public var categoryUserFilter : KalturaCategoryUserProviderFilter;
 
@@ -50,6 +57,7 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('categoryId');
+			arr.push('categoryIds');
 			arr.push('categoryUserFilter');
 			return arr;
 		}
@@ -66,6 +74,9 @@ package com.kaltura.vo
 			var result:String = '';
 			switch (arrayName) {
 				case 'categoryId':
+					result = '';
+					break;
+				case 'categoryIds':
 					result = '';
 					break;
 				case 'categoryUserFilter':

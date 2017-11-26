@@ -29,21 +29,21 @@ package com.kaltura.types
 {
 	public class KalturaSourceType
 	{
-		public static const LIMELIGHT_LIVE : String = 'limeLight.LIVE_STREAM';
-		public static const VELOCIX_LIVE : String = 'velocix.VELOCIX_LIVE';
-		public static const FILE : String = '1';
-		public static const WEBCAM : String = '2';
-		public static const URL : String = '5';
-		public static const SEARCH_PROVIDER : String = '6';
-		public static const AKAMAI_LIVE : String = '29';
-		public static const MANUAL_LIVE_STREAM : String = '30';
-		public static const AKAMAI_UNIVERSAL_LIVE : String = '31';
-		public static const LIVE_STREAM : String = '32';
-		public static const LIVE_CHANNEL : String = '33';
-		public static const RECORDED_LIVE : String = '34';
-		public static const CLIP : String = '35';
-		public static const KALTURA_RECORDED_LIVE : String = '36';
-		public static const LECTURE_CAPTURE : String = '37';
-		public static const LIVE_STREAM_ONTEXTDATA_CAPTIONS : String = '42';
+		public static const LIMELIGHT_LIVE : String = "limeLight.LIVE_STREAM";
+		public static const VELOCIX_LIVE : String = "velocix.VELOCIX_LIVE";
+		public static const FILE : String = "1";
+		public static const WEBCAM : String = "2";
+		public static const URL : String = "5";
+		public static const SEARCH_PROVIDER : String = "6";
+		public static const AKAMAI_LIVE : String = "29";
+		public static const MANUAL_LIVE_STREAM : String = "30";
+		public static const AKAMAI_UNIVERSAL_LIVE : String = "31";
+		public static const LIVE_STREAM : String = "32";
+		public static const LIVE_CHANNEL : String = "33";
+		public static const RECORDED_LIVE : String = "34";
+		public static const CLIP : String = "35";
+		public static const KALTURA_RECORDED_LIVE : String = "36";
+		public static const LECTURE_CAPTURE : String = "37";
+		public static const LIVE_STREAM_ONTEXTDATA_CAPTIONS : String = "42";
 	}
 }

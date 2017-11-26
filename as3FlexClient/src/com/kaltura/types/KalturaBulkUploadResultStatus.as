@@ -29,8 +29,8 @@ package com.kaltura.types
 {
 	public class KalturaBulkUploadResultStatus
 	{
-		public static const ERROR : String = '1';
-		public static const OK : String = '2';
-		public static const IN_PROGRESS : String = '3';
+		public static const ERROR : String = "1";
+		public static const OK : String = "2";
+		public static const IN_PROGRESS : String = "3";
 	}
 }

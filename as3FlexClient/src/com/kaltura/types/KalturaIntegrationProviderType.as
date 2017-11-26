@@ -29,9 +29,9 @@ package com.kaltura.types
 {
 	public class KalturaIntegrationProviderType
 	{
-		public static const CIELO24 : String = 'cielo24.Cielo24';
-		public static const DEXTER : String = 'dexterIntegration.Dexter';
-		public static const EXAMPLE : String = 'exampleIntegration.Example';
-		public static const VOICEBASE : String = 'voicebase.Voicebase';
+		public static const CIELO24 : String = "cielo24.Cielo24";
+		public static const DEXTER : String = "dexterIntegration.Dexter";
+		public static const EXAMPLE : String = "exampleIntegration.Example";
+		public static const VOICEBASE : String = "voicebase.Voicebase";
 	}
 }

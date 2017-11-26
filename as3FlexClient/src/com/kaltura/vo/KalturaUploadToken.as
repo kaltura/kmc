@@ -78,6 +78,17 @@ package com.kaltura.vo
 		**/
 		public var updatedAt : int = int.MIN_VALUE;
 
+		/**
+		* Upload url - to explicitly determine to which domain to adress the uploadToken->upload call
+		**/
+		public var uploadUrl : String = null;
+
+		/**
+		* autoFinalize - Should the upload be finalized once the file size on disk matches the file size reproted when adding the upload token.
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var autoFinalize : int = int.MIN_VALUE;
+
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -97,6 +108,7 @@ package com.kaltura.vo
 			arr = new Array();
 			arr.push('fileName');
 			arr.push('fileSize');
+			arr.push('autoFinalize');
 			return arr;
 		}
 

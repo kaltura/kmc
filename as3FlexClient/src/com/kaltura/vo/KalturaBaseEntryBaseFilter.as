@@ -356,6 +356,14 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var entitledUsersViewMatchAnd : String = null;
+
+		/**
+		**/
+		public var entitledUsersViewMatchOr : String = null;
+
+		/**
+		**/
 		public var tagsNameMultiLikeOr : String = null;
 
 		/**
@@ -454,6 +462,8 @@ package com.kaltura.vo
 			arr.push('entitledUsersEditMatchOr');
 			arr.push('entitledUsersPublishMatchAnd');
 			arr.push('entitledUsersPublishMatchOr');
+			arr.push('entitledUsersViewMatchAnd');
+			arr.push('entitledUsersViewMatchOr');
 			arr.push('tagsNameMultiLikeOr');
 			arr.push('tagsAdminTagsMultiLikeOr');
 			arr.push('tagsAdminTagsNameMultiLikeOr');

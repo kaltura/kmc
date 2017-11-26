@@ -29,9 +29,9 @@ package com.kaltura.types
 {
 	public class KalturaCaptureSpaceHashAlgorithm
 	{
-		public static const MD5 : String = 'md5';
-		public static const SHA1 : String = 'sha1';
-		public static const SHA256 : String = 'sha256';
-		public static const SHA512 : String = 'sha512';
+		public static const MD5 : String = "md5";
+		public static const SHA1 : String = "sha1";
+		public static const SHA256 : String = "sha256";
+		public static const SHA512 : String = "sha512";
 	}
 }

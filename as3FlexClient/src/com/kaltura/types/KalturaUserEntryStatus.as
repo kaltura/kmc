@@ -29,8 +29,8 @@ package com.kaltura.types
 {
 	public class KalturaUserEntryStatus
 	{
-		public static const QUIZ_SUBMITTED : String = 'quiz.3';
-		public static const ACTIVE : String = '1';
-		public static const DELETED : String = '2';
+		public static const QUIZ_SUBMITTED : String = "quiz.3";
+		public static const ACTIVE : String = "1";
+		public static const DELETED : String = "2";
 	}
 }

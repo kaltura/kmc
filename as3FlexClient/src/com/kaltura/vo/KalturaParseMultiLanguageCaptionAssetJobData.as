@@ -44,6 +44,10 @@ package com.kaltura.vo
 		**/
 		public var fileLocation : String = null;
 
+		/**
+		**/
+		public var fileEncryptionKey : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -51,6 +55,7 @@ package com.kaltura.vo
 			arr.push('multiLanaguageCaptionAssetId');
 			arr.push('entryId');
 			arr.push('fileLocation');
+			arr.push('fileEncryptionKey');
 			return arr;
 		}
 

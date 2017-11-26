@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaCielo24Priority
 	{
-		public static const PRIORITY : String = 'PRIORITY';
-		public static const STANDARD : String = 'STANDARD';
+		public static const PRIORITY : String = "PRIORITY";
+		public static const STANDARD : String = "STANDARD";
 	}
 }

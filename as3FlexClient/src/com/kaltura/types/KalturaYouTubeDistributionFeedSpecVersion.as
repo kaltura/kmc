@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaYouTubeDistributionFeedSpecVersion
 	{
-		public static const VERSION_1 : String = '1';
-		public static const VERSION_2 : String = '2';
+		public static const VERSION_1 : String = "1";
+		public static const VERSION_2 : String = "2";
 	}
 }

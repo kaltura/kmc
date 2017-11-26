@@ -32,7 +32,7 @@ package com.kaltura.commands.liveStream
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	* Sey recorded video to live entry
+	* Set recorded video to live entry
 	**/
 	public class LiveStreamSetRecordedContent extends KalturaCall
 	{

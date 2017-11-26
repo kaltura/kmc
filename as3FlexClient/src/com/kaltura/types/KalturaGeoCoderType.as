@@ -29,8 +29,8 @@ package com.kaltura.types
 {
 	public class KalturaGeoCoderType
 	{
-		public static const KALTURA : String = '1';
-		public static const MAX_MIND : String = '2';
-		public static const DIGITAL_ELEMENT : String = '3';
+		public static const KALTURA : String = "1";
+		public static const MAX_MIND : String = "2";
+		public static const DIGITAL_ELEMENT : String = "3";
 	}
 }

@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaServerNodeType
 	{
-		public static const WOWZA_MEDIA_SERVER : String = 'wowza.WOWZA_MEDIA_SERVER';
-		public static const EDGE : String = '1';
+		public static const WOWZA_MEDIA_SERVER : String = "wowza.WOWZA_MEDIA_SERVER";
+		public static const EDGE : String = "1";
 	}
 }

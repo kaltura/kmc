@@ -29,11 +29,11 @@ package com.kaltura.types
 {
 	public class KalturaLiveChannelSegmentOrderBy
 	{
-		public static const CREATED_AT_ASC : String = '+createdAt';
-		public static const START_TIME_ASC : String = '+startTime';
-		public static const UPDATED_AT_ASC : String = '+updatedAt';
-		public static const CREATED_AT_DESC : String = '-createdAt';
-		public static const START_TIME_DESC : String = '-startTime';
-		public static const UPDATED_AT_DESC : String = '-updatedAt';
+		public static const CREATED_AT_ASC : String = "+createdAt";
+		public static const START_TIME_ASC : String = "+startTime";
+		public static const UPDATED_AT_ASC : String = "+updatedAt";
+		public static const CREATED_AT_DESC : String = "-createdAt";
+		public static const START_TIME_DESC : String = "-startTime";
+		public static const UPDATED_AT_DESC : String = "-updatedAt";
 	}
 }

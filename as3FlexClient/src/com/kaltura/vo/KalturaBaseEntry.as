@@ -230,14 +230,19 @@ package com.kaltura.vo
 		public var operationAttributes : Array = null;
 
 		/**
-		* list of user ids that are entitled to edit the entry (no server enforcement) The difference between entitledUsersEdit and entitledUsersPublish is applicative only
+		* list of user ids that are entitled to edit the entry (no server enforcement) The difference between entitledUsersEdit, entitledUsersPublish and entitledUsersView is applicative only
 		**/
 		public var entitledUsersEdit : String = null;
 
 		/**
-		* list of user ids that are entitled to publish the entry (no server enforcement) The difference between entitledUsersEdit and entitledUsersPublish is applicative only
+		* list of user ids that are entitled to publish the entry (no server enforcement) The difference between entitledUsersEdit, entitledUsersPublish and entitledUsersView is applicative only
 		**/
 		public var entitledUsersPublish : String = null;
+
+		/**
+		* list of user ids that are entitled to view the entry (no server enforcement) The difference between entitledUsersEdit, entitledUsersPublish and entitledUsersView is applicative only
+		**/
+		public var entitledUsersView : String = null;
 
 		/**
 		* Comma seperated string of the capabilities of the entry. Any capability needed can be added to this list.
@@ -284,6 +289,7 @@ package com.kaltura.vo
 			arr.push('operationAttributes');
 			arr.push('entitledUsersEdit');
 			arr.push('entitledUsersPublish');
+			arr.push('entitledUsersView');
 			arr.push('displayInSearch');
 			return arr;
 		}

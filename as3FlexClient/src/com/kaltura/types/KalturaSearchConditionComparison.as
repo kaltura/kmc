@@ -29,11 +29,11 @@ package com.kaltura.types
 {
 	public class KalturaSearchConditionComparison
 	{
-		public static const EQUAL : String = '1';
-		public static const GREATER_THAN : String = '2';
-		public static const GREATER_THAN_OR_EQUAL : String = '3';
-		public static const LESS_THAN : String = '4';
-		public static const LESS_THAN_OR_EQUAL : String = '5';
-		public static const NOT_EQUAL : String = '6';
+		public static const EQUAL : String = "1";
+		public static const GREATER_THAN : String = "2";
+		public static const GREATER_THAN_OR_EQUAL : String = "3";
+		public static const LESS_THAN : String = "4";
+		public static const LESS_THAN_OR_EQUAL : String = "5";
+		public static const NOT_EQUAL : String = "6";
 	}
 }

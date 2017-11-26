@@ -29,10 +29,10 @@ package com.kaltura.types
 {
 	public class KalturaFileAssetStatus
 	{
-		public static const PENDING : String = '0';
-		public static const UPLOADING : String = '1';
-		public static const READY : String = '2';
-		public static const DELETED : String = '3';
-		public static const ERROR : String = '4';
+		public static const PENDING : String = "0";
+		public static const UPLOADING : String = "1";
+		public static const READY : String = "2";
+		public static const DELETED : String = "3";
+		public static const ERROR : String = "4";
 	}
 }

@@ -27,6 +27,8 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
+	import com.kaltura.vo.KalturaFileContainer;
+
 	import com.kaltura.vo.KalturaJobData;
 
 	[Bindable]
@@ -34,7 +36,7 @@ package com.kaltura.vo
 	{
 		/**
 		**/
-		public var srcFilePath : String = null;
+		public var fileContainer : KalturaFileContainer;
 
 		/**
 		**/
@@ -54,7 +56,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('srcFilePath');
+			arr.push('fileContainer');
 			arr.push('flavorAssetId');
 			arr.push('scanResult');
 			arr.push('virusFoundAction');
@@ -72,6 +74,9 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'fileContainer':
+					result = '';
+					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;

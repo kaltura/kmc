@@ -29,9 +29,9 @@ package com.kaltura.types
 {
 	public class KalturaAmazonS3StorageProfileFilesPermissionLevel
 	{
-		public static const ACL_AUTHENTICATED_READ : String = 'authenticated-read';
-		public static const ACL_PRIVATE : String = 'private';
-		public static const ACL_PUBLIC_READ : String = 'public-read';
-		public static const ACL_PUBLIC_READ_WRITE : String = 'public-read-write';
+		public static const ACL_AUTHENTICATED_READ : String = "authenticated-read";
+		public static const ACL_PRIVATE : String = "private";
+		public static const ACL_PUBLIC_READ : String = "public-read";
+		public static const ACL_PUBLIC_READ_WRITE : String = "public-read-write";
 	}
 }

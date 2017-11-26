@@ -29,12 +29,12 @@ package com.kaltura.types
 {
 	public class KalturaBulkUploadAction
 	{
-		public static const CANCEL : String = 'scheduleBulkUpload.CANCEL';
-		public static const ADD : String = '1';
-		public static const UPDATE : String = '2';
-		public static const DELETE : String = '3';
-		public static const REPLACE : String = '4';
-		public static const TRANSFORM_XSLT : String = '5';
-		public static const ADD_OR_UPDATE : String = '6';
+		public static const CANCEL : String = "scheduleBulkUpload.CANCEL";
+		public static const ADD : String = "1";
+		public static const UPDATE : String = "2";
+		public static const DELETE : String = "3";
+		public static const REPLACE : String = "4";
+		public static const TRANSFORM_XSLT : String = "5";
+		public static const ADD_OR_UPDATE : String = "6";
 	}
 }

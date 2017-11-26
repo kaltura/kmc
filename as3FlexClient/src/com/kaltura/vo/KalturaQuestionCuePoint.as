@@ -35,7 +35,7 @@ package com.kaltura.vo
 		/**
 		* Array of key value answerKey->optionAnswer objects
 		**/
-		public var optionalAnswers : Object = null;
+		public var optionalAnswers : Array = null;
 
 		/**
 		**/

@@ -32,10 +32,16 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaLiveStreamScheduleEvent extends KalturaEntryScheduleEvent
 	{
+		/**
+		* Defines the expected audience.
+		**/
+		public var projectedAudience : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('projectedAudience');
 			return arr;
 		}
 

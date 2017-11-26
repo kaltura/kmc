@@ -29,18 +29,18 @@ package com.kaltura.types
 {
 	public class KalturaPlaylistMatchAttribute
 	{
-		public static const ADMIN_TAGS : String = 'adminTags';
-		public static const CATEGORIES_IDS : String = 'categoriesIds';
-		public static const CREATOR_ID : String = 'creatorId';
-		public static const DESCRIPTION : String = 'description';
-		public static const GROUP_ID : String = 'groupId';
-		public static const ID : String = 'id';
-		public static const NAME : String = 'name';
-		public static const REFERENCE_ID : String = 'referenceId';
-		public static const REPLACED_ENTRY_ID : String = 'replacedEntryId';
-		public static const REPLACING_ENTRY_ID : String = 'replacingEntryId';
-		public static const SEARCH_TEXT : String = 'searchText';
-		public static const TAGS : String = 'tags';
-		public static const USER_ID : String = 'userId';
+		public static const ADMIN_TAGS : String = "adminTags";
+		public static const CATEGORIES_IDS : String = "categoriesIds";
+		public static const CREATOR_ID : String = "creatorId";
+		public static const DESCRIPTION : String = "description";
+		public static const GROUP_ID : String = "groupId";
+		public static const ID : String = "id";
+		public static const NAME : String = "name";
+		public static const REFERENCE_ID : String = "referenceId";
+		public static const REPLACED_ENTRY_ID : String = "replacedEntryId";
+		public static const REPLACING_ENTRY_ID : String = "replacingEntryId";
+		public static const SEARCH_TEXT : String = "searchText";
+		public static const TAGS : String = "tags";
+		public static const USER_ID : String = "userId";
 	}
 }

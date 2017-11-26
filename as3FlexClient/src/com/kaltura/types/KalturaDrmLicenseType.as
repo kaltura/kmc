@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaDrmLicenseType
 	{
-		public static const NON_PERSISTENT : String = 'playReady.NON_PERSISTENT';
-		public static const PERSISTENT : String = 'playReady.PERSISTENT';
+		public static const NON_PERSISTENT : String = "playReady.NON_PERSISTENT";
+		public static const PERSISTENT : String = "playReady.PERSISTENT";
 	}
 }

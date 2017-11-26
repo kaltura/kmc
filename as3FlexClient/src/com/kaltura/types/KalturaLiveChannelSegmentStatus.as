@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaLiveChannelSegmentStatus
 	{
-		public static const ACTIVE : String = '2';
-		public static const DELETED : String = '3';
+		public static const ACTIVE : String = "2";
+		public static const DELETED : String = "3";
 	}
 }

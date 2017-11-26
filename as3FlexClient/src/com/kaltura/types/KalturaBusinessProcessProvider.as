@@ -29,6 +29,6 @@ package com.kaltura.types
 {
 	public class KalturaBusinessProcessProvider
 	{
-		public static const ACTIVITI : String = 'activitiBusinessProcessNotification.Activiti';
+		public static const ACTIVITI : String = "activitiBusinessProcessNotification.Activiti";
 	}
 }

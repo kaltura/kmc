@@ -96,12 +96,19 @@ package com.kaltura.vo
 		**/
 		public var label : String = null;
 
+		/**
+		* Is default flavor asset of the entry (This field will be taken into account selectign which audio flavor will be selected as default)
+		* @see com.kaltura.types.KalturaNullableBoolean
+		**/
+		public var isDefault : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('language');
 			arr.push('label');
+			arr.push('isDefault');
 			return arr;
 		}
 

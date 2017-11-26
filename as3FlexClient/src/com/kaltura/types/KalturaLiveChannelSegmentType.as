@@ -29,6 +29,6 @@ package com.kaltura.types
 {
 	public class KalturaLiveChannelSegmentType
 	{
-		public static const VIDEO_AND_AUDIO : String = '1';
+		public static const VIDEO_AND_AUDIO : String = "1";
 	}
 }

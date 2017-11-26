@@ -79,6 +79,11 @@ package com.kaltura.vo
 		**/
 		public var replaceMediaContent : Boolean;
 
+		/**
+		* additional parameters to send to VoiceBase
+		**/
+		public var additionalParameters : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;

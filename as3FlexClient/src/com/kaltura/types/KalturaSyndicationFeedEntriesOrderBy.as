@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaSyndicationFeedEntriesOrderBy
 	{
-		public static const CREATED_AT_DESC : String = '-createdAt';
-		public static const RECENT : String = 'recent';
+		public static const CREATED_AT_DESC : String = "-createdAt";
+		public static const RECENT : String = "recent";
 	}
 }

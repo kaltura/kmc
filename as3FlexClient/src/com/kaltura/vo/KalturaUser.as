@@ -235,6 +235,8 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('password');
+			arr.push('loginEnabled');
+			arr.push('isAccountOwner');
 			return arr;
 		}
 

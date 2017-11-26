@@ -29,6 +29,6 @@ package com.kaltura.types
 {
 	public class KalturaPushNotificationCommandType
 	{
-		public static const CLEAR_QUEUE : String = 'CLEAR_QUEUE';
+		public static const CLEAR_QUEUE : String = "CLEAR_QUEUE";
 	}
 }

@@ -46,6 +46,10 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var encryptionKey : String = null;
+
+		/**
+		**/
 		public var remoteId : String = null;
 
 		/**
@@ -71,6 +75,7 @@ package com.kaltura.vo
 			arr.push('language');
 			arr.push('label');
 			arr.push('filePath');
+			arr.push('encryptionKey');
 			arr.push('remoteId');
 			arr.push('action');
 			arr.push('version');

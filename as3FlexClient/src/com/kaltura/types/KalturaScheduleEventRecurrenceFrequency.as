@@ -29,12 +29,12 @@ package com.kaltura.types
 {
 	public class KalturaScheduleEventRecurrenceFrequency
 	{
-		public static const DAILY : String = 'days';
-		public static const HOURLY : String = 'hours';
-		public static const MINUTELY : String = 'minutes';
-		public static const MONTHLY : String = 'months';
-		public static const SECONDLY : String = 'seconds';
-		public static const WEEKLY : String = 'weeks';
-		public static const YEARLY : String = 'years';
+		public static const DAILY : String = "days";
+		public static const HOURLY : String = "hours";
+		public static const MINUTELY : String = "minutes";
+		public static const MONTHLY : String = "months";
+		public static const SECONDLY : String = "seconds";
+		public static const WEEKLY : String = "weeks";
+		public static const YEARLY : String = "years";
 	}
 }

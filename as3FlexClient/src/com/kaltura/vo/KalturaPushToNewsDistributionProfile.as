@@ -69,6 +69,10 @@ package com.kaltura.vo
 		**/
 		public var bodyXslt : String = null;
 
+		/**
+		**/
+		public var recentNewsTimeInterval : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -81,6 +85,7 @@ package com.kaltura.vo
 			arr.push('password');
 			arr.push('certificateKey');
 			arr.push('bodyXslt');
+			arr.push('recentNewsTimeInterval');
 			return arr;
 		}
 

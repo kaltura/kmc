@@ -29,9 +29,9 @@ package com.kaltura.types
 {
 	public class KalturaPlayReadyProfileOrderBy
 	{
-		public static const ID_ASC : String = '+id';
-		public static const NAME_ASC : String = '+name';
-		public static const ID_DESC : String = '-id';
-		public static const NAME_DESC : String = '-name';
+		public static const ID_ASC : String = "+id";
+		public static const NAME_ASC : String = "+name";
+		public static const ID_DESC : String = "-id";
+		public static const NAME_DESC : String = "-name";
 	}
 }
