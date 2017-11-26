@@ -8,6 +8,18 @@
 			
 			[Bindable]
 			public var selectedEntry:KalturaLiveStreamEntry;
+			
+			public function getAutoStartStreaming(): Boolean {
+				return autoStream.selected;
+			}
+			
+			public function isChanged():Boolean {
+				//NOTE: autoStream.selected is the OPPOSITE of entry.explicitLive!!
+				return autoStream.selected == selectedEntry.explicitLive;
+			}
+			
+			
+			
 		]]>
 	</mx:Script>
 	<mx:Label text="{resourceManager.getString('drilldown', 'streamCfg')}" styleName="drillDownLabel"/>
@@ -31,6 +43,13 @@
 		<mx:Label text="{resourceManager.getString('drilldown', 'recordStatus')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
 				  styleName="drillDownLabel"/>
 		<mx:Label id="recordStatus" text="{EntryLiveStreamingHelper.getRecordStatus(selectedEntry)}" selectable="true" 
+				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('drilldown', 'autoStream')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+				  styleName="drillDownLabel"/>
+		<mx:CheckBox id="autoStream" selected="{!selectedEntry.explicitLive}" 
 				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
 	</mx:HBox>
 	

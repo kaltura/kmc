@@ -26,6 +26,7 @@ live streaming control tab of EntryDetailsWin
 			import com.kaltura.edw.view.EntryDetailsWin;
 			import com.kaltura.edw.view.window.SettingsExample;
 			import com.kaltura.kmvc.model.IDataPackRepository;
+			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.types.KalturaSourceType;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaLiveStreamBitrate;
@@ -147,7 +148,7 @@ live streaming control tab of EntryDetailsWin
 				var result:Boolean;
 				if (_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM) {
 					// get from conversion profile panel
-					result = convprofConfig.isChanged(); 
+					result = convprofConfig.isChanged() || streamConfig.isChanged(); 
 				}
 				else {
 					// get from bitrates panel
@@ -161,8 +162,16 @@ live streaming control tab of EntryDetailsWin
 
 			public function save():void {
 				if (_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM) {
-				// get from conversion profile panel
+					// get from conversion profile panel
 					_selectedEntry.conversionProfileId = convprofConfig.getSelectedProfile();
+
+					// explicit live
+					if (streamConfig.getAutoStartStreaming()) {
+						_selectedEntry.explicitLive = KalturaNullableBoolean.FALSE_VALUE;	
+					}
+					else {
+						_selectedEntry.explicitLive = KalturaNullableBoolean.TRUE_VALUE;
+					}
 				}
 				else {
 				// get from bitrates panel
@@ -469,7 +478,8 @@ live streaming control tab of EntryDetailsWin
 								 selectedEntry="{_selectedEntry}" styleName="noPadding"/>
 		
 		<!-- stream config - Kaltura -->
-		<live:KalturaStreamConfig visible="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
+		<live:KalturaStreamConfig id="streamConfig" 
+								  visible="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
 								  width="100%"
 								  includeInLayout="{_selectedEntry.sourceType == KalturaSourceType.LIVE_STREAM}"
 								  selectedEntry="{_selectedEntry}" styleName="noPadding"/>
