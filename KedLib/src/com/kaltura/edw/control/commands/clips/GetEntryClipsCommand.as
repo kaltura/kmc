@@ -7,6 +7,7 @@ package com.kaltura.edw.control.commands.clips
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaBaseEntryFilter;
 	import com.kaltura.vo.KalturaBaseEntryListResponse;
+	import com.kaltura.vo.KalturaMediaEntryFilter;
 	
 	public class GetEntryClipsCommand extends KedCommand {
 		
@@ -14,7 +15,7 @@ package com.kaltura.edw.control.commands.clips
 		
 		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
-			var f:KalturaBaseEntryFilter = new KalturaBaseEntryFilter();
+			var f:KalturaBaseEntryFilter = new KalturaMediaEntryFilter();
 			f.rootEntryIdEqual = event.data.id;
 			f.orderBy = event.data.orderBy;
 			
