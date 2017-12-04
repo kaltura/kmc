@@ -224,6 +224,7 @@
 							// multicast doesn't support dvr
 							streamVo.dvrEnabled = false;
 						}
+						streamVo.autoStartStreaming = autoStartStreaming.selected;
 						streamVo.recordingEnabled = useRecKaltura.selected;
 						streamVo.recordingType = recordingType.selectedItem.value;
 						streamVo.conversionProfileId = conversionProfileId;
@@ -320,6 +321,11 @@
 				<mx:Text text="{resourceManager.getString('live', 'enableRecording')}" width="100%" />
 				<mx:ComboBox id="recordingType" enabled="{useRecKaltura.selected}" 
 							 dataProvider="{recordingOptions}" width="290" />
+			</mx:HBox>
+			<mx:HBox width="100%" visible="{streamType.selectedItem.value == StreamVo.STREAM_TYPE_KALTURA}"
+					 includeInLayout="{streamType.selectedItem.value == StreamVo.STREAM_TYPE_KALTURA}">
+				<mx:CheckBox id="autoStartStreaming" selected="false"/>
+				<mx:Text text="{resourceManager.getString('live', 'autoStartStreaming')}" width="100%" />
 			</mx:HBox>
 		</mx:VBox>
 		

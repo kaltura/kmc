@@ -15,6 +15,7 @@ package com.kaltura.kmc.modules.content.commands.live {
 	import com.kaltura.types.KalturaDVRStatus;
 	import com.kaltura.types.KalturaLivePublishStatus;
 	import com.kaltura.types.KalturaMediaType;
+	import com.kaltura.types.KalturaNullableBoolean;
 	import com.kaltura.types.KalturaPlaybackProtocol;
 	import com.kaltura.types.KalturaRecordStatus;
 	import com.kaltura.types.KalturaSourceType;
@@ -115,6 +116,13 @@ package com.kaltura.kmc.modules.content.commands.live {
 			}
 			
 			liveEntry.conversionProfileId = streamVo.conversionProfileId;
+			
+			if (streamVo.autoStartStreaming) {
+				liveEntry.explicitLive = KalturaNullableBoolean.FALSE_VALUE;
+			}
+			else {
+				liveEntry.explicitLive = KalturaNullableBoolean.TRUE_VALUE;
+			}
 		}
 		
 		

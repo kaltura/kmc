@@ -13,7 +13,7 @@ package com.kaltura.edw.vo
 		/**
 		 * item id  
 		 */
-		private var _value:String;
+		private var _value:*;
 		
 		/**
 		 * item label, i.e to show in combobox 
@@ -37,7 +37,7 @@ package com.kaltura.edw.vo
 		 * @param key	key in resource bundle
 		 * @param resourceBundleName	name of resource bundle containing the key
 		 */
-		public function LocalizedVo(value:String, key:String, resourceBundleName:String) {
+		public function LocalizedVo(value:*, key:String, resourceBundleName:String) {
 			_value = value;
 			_key = key;
 			_resourceBundleName = resourceBundleName;

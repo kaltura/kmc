@@ -1,13 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="vbox1_creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.EntryLiveStreamingHelper;
+			import com.kaltura.edw.vo.LocalizedVo;
 			import com.kaltura.types.KalturaDVRStatus;
+			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.vo.KalturaLiveStreamEntry;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			private var _autoStreamDp:Array; 
 			
 			[Bindable]
 			public var selectedEntry:KalturaLiveStreamEntry;
+			
+			public function getAutoStartStreaming(): Boolean {
+				if (autoStream.selectedItem) {
+					return autoStream.selectedItem.value;
+				}
+				else {
+					return !selectedEntry.explicitLive;
+				}
+			}
+			
+			public function isChanged():Boolean {
+				//NOTE: autoStream.selected is the OPPOSITE of entry.explicitLive!!
+				if (autoStream.selectedItem) {
+					return autoStream.selectedItem.value == selectedEntry.explicitLive;
+				}
+				return false;
+			}
+			
+			
+			
+			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
+			{
+				_autoStreamDp = [
+					new LocalizedVo(false, 'disabled', 'drilldown'),
+					new LocalizedVo(true, 'enabled', 'drilldown')
+				];
+				
+				BindingUtils.bindSetter(selectInitialValue, this, "selectedEntry");
+				if (selectedEntry) {
+					selectInitialValue(selectedEntry);
+					
+				}
+			}
+			
+			private function selectInitialValue(entry:KalturaLiveStreamEntry):void {
+				if (entry.explicitLive == KalturaNullableBoolean.TRUE_VALUE) {
+					autoStream.selectedIndex = 0;
+				}
+				else {
+					autoStream.selectedIndex = 1;
+				}
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:Label text="{resourceManager.getString('drilldown', 'streamCfg')}" styleName="drillDownLabel"/>
@@ -31,6 +82,13 @@
 		<mx:Label text="{resourceManager.getString('drilldown', 'recordStatus')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
 				  styleName="drillDownLabel"/>
 		<mx:Label id="recordStatus" text="{EntryLiveStreamingHelper.getRecordStatus(selectedEntry)}" selectable="true" 
+				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('drilldown', 'autoStream')}" width="{EntryLiveStreamingHelper.PREFIXES_WIDTH}"
+				  styleName="drillDownLabel"/>
+		<mx:ComboBox id="autoStream" dataProvider="{_autoStreamDp}" labelField="name"
 				  width="{EntryLiveStreamingHelper.BROADCASTING_WIDTH}" styleName="drillDownSubLabel"/>
 	</mx:HBox>
 	
