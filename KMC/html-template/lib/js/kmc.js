@@ -34,6 +34,9 @@ kmc.functions = {
 	openStudio : function() {
 		alert("open studio");
 	},
+	openStudioV3 : function() {
+		alert("open studio v3");
+	},
 	openLiveAnalytics : function() {
 		alert('open live analytics!');
 	},
