@@ -57,7 +57,7 @@ package com.kaltura.edw.vo
 			return _label;
 		}
 
-		public function get value():String
+		public function get value():*
 		{
 			return _value;
 		}
