@@ -86,7 +86,7 @@ package com.kaltura.edw.business {
 					duration = (selectedEntry as KalturaMediaEntry).duration;
 				}
 				KedJSGate.doPreviewEmbed(context.openPlayerFunc, selectedEntry.id, selectedEntry.name, selectedEntry.description, 
-					previewOnly, false, null, bitrates, duration, selectedEntry.thumbnailUrl);
+					previewOnly, false, null, bitrates, duration, selectedEntry.thumbnailUrl, selectedEntry.createdAt);
 			}
 			GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED, GoogleAnalyticsConsts.CONTENT);
 			KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_OPEN_PREVIEW_AND_EMBED, "content>Open Preview and Embed");

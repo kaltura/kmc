@@ -28,13 +28,14 @@ package com.kaltura.edw.business
 		 * @param live_bitrates		list of bitrate objects {bitrate, width, height}
 		 * @param duration			entry duration (only for single player, not playlist)
 		 * @param thumbnail			entry thumbnail (only for single player, not playlist)
+		 * @param creationDate		entry creation date, unix timestamp (only for single player, not playlist)
 		 */
 		public static function doPreviewEmbed(functionName:String, entryId:String, entryName:String, entryDescription:String, 
 											  previewOnly:Boolean, is_playlist:Boolean, uiconfId:String, live_bitrates:Array,
-											  duration:int, thumbnail:String):void {
+											  duration:int, thumbnail:String, creationDate:int):void {
 			//			kmc.preview_embed.doPreviewEmbed(id, name, description, previewOnly, is_playlist, uiconf id, live_bitrates);
 			ExternalInterface.call(functionName, entryId, escape(entryName), escape(entryDescription), previewOnly, is_playlist, uiconfId,
-				live_bitrates, duration, thumbnail);
+				live_bitrates, duration, thumbnail, creationDate);
 		}
 		
 		/**
