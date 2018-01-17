@@ -195,6 +195,11 @@
 			private var _doValidation:Boolean = false;
 			private var _inTransition:Boolean;
 			
+			/**
+			 * set by RnP, allow setting vast cuepoints without ad tag url
+			 * */
+			public var allowVastWithoutAdTag:Boolean = true;
+			
 			
 			/**
 			 * validate all the cuepoints on kClip
@@ -847,8 +852,8 @@
 				else if (showUI) {
 					teDuration.errorString = "";
 				}
-				// for vast - url is mandatory
-				if (cp.protocolType == KalturaAdProtocolType.VAST && !cp.sourceUrl) {
+				// for vast - url may be mandatory
+				if (cp.protocolType == KalturaAdProtocolType.VAST && !cp.sourceUrl && !this.allowVastWithoutAdTag) {
 					if (showUI) {
 						tiUrl.errorString = resourceManager.getString('drilldown', 'ads_err_vast_no_source');
 					}
