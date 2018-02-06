@@ -52,6 +52,10 @@ package com.kaltura.vo
 		**/
 		public var captionAssetId : String = null;
 
+		/**
+		**/
+		public var label : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -61,6 +65,7 @@ package com.kaltura.vo
 			arr.push('endsAt');
 			arr.push('language');
 			arr.push('captionAssetId');
+			arr.push('label');
 			return arr;
 		}
 

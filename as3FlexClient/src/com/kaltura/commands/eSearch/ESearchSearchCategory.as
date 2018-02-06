@@ -27,7 +27,7 @@
 // ===================================================================================================
 package com.kaltura.commands.eSearch
 {
-		import com.kaltura.vo.KalturaESearchParams;
+		import com.kaltura.vo.KalturaESearchCategoryParams;
 		import com.kaltura.vo.KalturaPager;
 	import com.kaltura.delegates.eSearch.ESearchSearchCategoryDelegate;
 	import com.kaltura.net.KalturaCall;
@@ -39,10 +39,10 @@ package com.kaltura.commands.eSearch
 		public var filterFields : String;
 		
 		/**
-		* @param searchParams KalturaESearchParams
+		* @param searchParams KalturaESearchCategoryParams
 		* @param pager KalturaPager
 		**/
-		public function ESearchSearchCategory( searchParams : KalturaESearchParams,pager : KalturaPager=null )
+		public function ESearchSearchCategory( searchParams : KalturaESearchCategoryParams,pager : KalturaPager=null )
 		{
 			service= 'elasticsearch_esearch';
 			action= 'searchCategory';

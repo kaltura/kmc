@@ -50,5 +50,6 @@ package com.kaltura.types
 		public static const DELIVERY_PROFILE : String = "13";
 		public static const ACTIVE_EDGE_VALIDATE : String = "14";
 		public static const ANONYMOUS_IP : String = "15";
+		public static const ASSET_TYPE : String = "16";
 	}
 }

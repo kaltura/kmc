@@ -25,35 +25,46 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.delegates.eSearch
+package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaKeyValue;KalturaKeyValue;;
+	import com.kaltura.vo.KalturaESearchOrderByItem;
 
-	import com.kaltura.core.KClassFactory;
-
-	import com.kaltura.config.KalturaConfig;
-	import com.kaltura.net.KalturaCall;
-	import com.kaltura.delegates.WebDelegateBase;
-	import flash.utils.getDefinitionByName;
-
-	public class ESearchGetAllowedSearchTypesDelegate extends WebDelegateBase
+	[Bindable]
+	public dynamic class KalturaESearchMetadataOrderByItem extends KalturaESearchOrderByItem
 	{
-		public function ESearchGetAllowedSearchTypesDelegate(call:KalturaCall, config:KalturaConfig)
-		{
-			super(call, config);
-		}
+		/**
+		**/
+		public var xpath : String = null;
 
-		override public function parse(result:XML) : *
+		/**
+		**/
+		public var metadataProfileId : int = int.MIN_VALUE;
+
+		override public function getUpdateableParamKeys():Array
 		{
-			var arr : Array = new Array();
-			for( var i:int=0; i<result.result.children().length() ; i++)
-			{
-				var cls : Class = getDefinitionByName('com.kaltura.vo.'+ result.result.children()[i].objectType) as Class;
-				var obj : * = (new KClassFactory( cls )).newInstanceFromXML( XMLList(result.result.children()[i]) );
-				arr.push(obj);
-			}
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			arr.push('xpath');
+			arr.push('metadataProfileId');
 			return arr;
 		}
 
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
+		}
 	}
 }

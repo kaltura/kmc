@@ -29,8 +29,8 @@ package com.kaltura.types
 {
 	public class KalturaESearchCaptionFieldName
 	{
-		public static const CAPTION_CONTENT : String = "caption_assets.lines.content";
-		public static const CAPTION_END_TIME : String = "caption_assets.lines.end_time";
-		public static const CAPTION_START_TIME : String = "caption_assets.lines.start_time";
+		public static const CONTENT : String = "content";
+		public static const END_TIME : String = "end_time";
+		public static const START_TIME : String = "start_time";
 	}
 }

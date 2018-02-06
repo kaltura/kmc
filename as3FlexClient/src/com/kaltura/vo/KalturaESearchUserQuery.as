@@ -27,26 +27,20 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaESearchBaseItem;
+	import com.kaltura.vo.KalturaESearchUserBaseItem;
 
 	[Bindable]
-	public dynamic class KalturaESearchOperator extends KalturaESearchBaseItem
+	public dynamic class KalturaESearchUserQuery extends KalturaESearchUserBaseItem
 	{
 		/**
-		* @see com.kaltura.types.KalturaESearchOperatorType
 		**/
-		public var operator : int = int.MIN_VALUE;
-
-		/**
-		**/
-		public var searchItems : Array = null;
+		public var eSearchQuery : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('operator');
-			arr.push('searchItems');
+			arr.push('eSearchQuery');
 			return arr;
 		}
 
@@ -61,9 +55,6 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
-				case 'searchItems':
-					result = 'KalturaESearchBaseItem';
-					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;

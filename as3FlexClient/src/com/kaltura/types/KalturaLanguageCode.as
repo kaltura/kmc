@@ -174,6 +174,8 @@ package com.kaltura.types
 		public static const YI : String = "yi";
 		public static const YO : String = "yo";
 		public static const ZH : String = "zh";
+		public static const ZH_HANS : String = "zh_s";
+		public static const ZH_HANT : String = "zh_t";
 		public static const ZU : String = "zu";
 	}
 }

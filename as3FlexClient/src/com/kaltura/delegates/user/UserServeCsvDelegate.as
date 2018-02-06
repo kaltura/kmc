@@ -25,41 +25,24 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.delegates.user
 {
-	import com.kaltura.vo.KalturaESearchBaseItem;
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	[Bindable]
-	public dynamic class KalturaESearchQuery extends KalturaESearchBaseItem
+	public class UserServeCsvDelegate extends WebDelegateBase
 	{
-		/**
-		**/
-		public var eSearchQuery : String = null;
-
-		override public function getUpdateableParamKeys():Array
+		public function UserServeCsvDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('eSearchQuery');
-			return arr;
+			super(call, config);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function parse(result:XML) : *
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
+			return result.result.toString();
 		}
 
-		override public function getElementType(arrayName:String):String
-		{
-			var result:String = '';
-			switch (arrayName) {
-				default:
-					result = super.getElementType(arrayName);
-					break;
-			}
-			return result;
-		}
 	}
 }

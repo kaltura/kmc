@@ -27,10 +27,10 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaESearchItem;
+	import com.kaltura.vo.KalturaESearchAbstractUserItem;
 
 	[Bindable]
-	public dynamic class KalturaESearchUserItem extends KalturaESearchItem
+	public dynamic class KalturaESearchUserItem extends KalturaESearchAbstractUserItem
 	{
 		/**
 		* @see com.kaltura.types.KalturaESearchUserFieldName

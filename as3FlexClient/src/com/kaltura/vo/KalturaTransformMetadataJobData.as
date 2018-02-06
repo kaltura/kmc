@@ -27,6 +27,10 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
+	import com.kaltura.vo.KalturaFileContainer;
+
+	import com.kaltura.vo.KalturaFileContainer;
+
 	import com.kaltura.vo.KalturaJobData;
 
 	[Bindable]
@@ -34,7 +38,7 @@ package com.kaltura.vo
 	{
 		/**
 		**/
-		public var srcXslPath : String = null;
+		public var srcXsl : KalturaFileContainer;
 
 		/**
 		**/
@@ -46,7 +50,7 @@ package com.kaltura.vo
 
 		/**
 		**/
-		public var destXsdPath : String = null;
+		public var destXsd : KalturaFileContainer;
 
 		/**
 		**/
@@ -56,10 +60,10 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('srcXslPath');
+			arr.push('srcXsl');
 			arr.push('srcVersion');
 			arr.push('destVersion');
-			arr.push('destXsdPath');
+			arr.push('destXsd');
 			arr.push('metadataProfileId');
 			return arr;
 		}
@@ -75,6 +79,12 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'srcXsl':
+					result = '';
+					break;
+				case 'destXsd':
+					result = '';
+					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;

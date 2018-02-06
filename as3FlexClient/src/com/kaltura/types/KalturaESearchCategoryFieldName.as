@@ -29,31 +29,31 @@ package com.kaltura.types
 {
 	public class KalturaESearchCategoryFieldName
 	{
-		public static const CATEGORY_CONTRIBUTION_POLICY : String = "contribution_policy";
-		public static const CATEGORY_CREATED_AT : String = "created_at";
-		public static const CATEGORY_DEPTH : String = "depth";
-		public static const CATEGORY_DESCRIPTION : String = "description";
-		public static const CATEGORY_DIRECT_ENTRIES_COUNT : String = "direct_entries_count";
-		public static const CATEGORY_DIRECT_SUB_CATEGORIES_COUNT : String = "direct_sub_categories_count";
-		public static const CATEGORY_DISPLAY_IN_SEARCH : String = "display_in_search";
-		public static const CATEGORY_ENTRIES_COUNT : String = "entries_count";
-		public static const CATEGORY_FULL_IDS : String = "full_ids";
-		public static const CATEGORY_FULL_NAME : String = "full_name";
-		public static const CATEGORY_INHERITANCE_TYPE : String = "inheritance_type";
-		public static const CATEGORY_INHERITED_PARENT_ID : String = "inherited_parent_id";
-		public static const CATEGORY_KUSER_ID : String = "kuser_id";
-		public static const CATEGORY_KUSER_IDS : String = "kuser_ids";
-		public static const CATEGORY_MEMBERS_COUNT : String = "members_count";
-		public static const CATEGORY_MODERATION : String = "moderation";
-		public static const CATEGORY_NAME : String = "name";
-		public static const CATEGORY_PARENT_ID : String = "parent_id";
-		public static const CATEGORY_PENDING_ENTRIES_COUNT : String = "pending_entries_count";
-		public static const CATEGORY_PENDING_MEMBERS_COUNT : String = "pending_members_count";
-		public static const CATEGORY_PRIVACY : String = "privacy";
-		public static const CATEGORY_PRIVACY_CONTEXT : String = "privacy_context";
-		public static const CATEGORY_PRIVACY_CONTEXTS : String = "privacy_contexts";
-		public static const CATEGORY_REFERENCE_ID : String = "reference_id";
-		public static const CATEGORY_TAGS : String = "tags";
-		public static const CATEGORY_UPDATED_AT : String = "updated_at";
+		public static const CONTRIBUTION_POLICY : String = "contribution_policy";
+		public static const CREATED_AT : String = "created_at";
+		public static const DEPTH : String = "depth";
+		public static const DESCRIPTION : String = "description";
+		public static const DIRECT_ENTRIES_COUNT : String = "direct_entries_count";
+		public static const DIRECT_SUB_CATEGORIES_COUNT : String = "direct_sub_categories_count";
+		public static const DISPLAY_IN_SEARCH : String = "display_in_search";
+		public static const ENTRIES_COUNT : String = "entries_count";
+		public static const FULL_IDS : String = "full_ids";
+		public static const FULL_NAME : String = "full_name";
+		public static const INHERITANCE_TYPE : String = "inheritance_type";
+		public static const INHERITED_PARENT_ID : String = "inherited_parent_id";
+		public static const MEMBERS_COUNT : String = "members_count";
+		public static const MODERATION : String = "moderation";
+		public static const NAME : String = "name";
+		public static const PARENT_ID : String = "parent_id";
+		public static const PENDING_ENTRIES_COUNT : String = "pending_entries_count";
+		public static const PENDING_MEMBERS_COUNT : String = "pending_members_count";
+		public static const PRIVACY : String = "privacy";
+		public static const PRIVACY_CONTEXT : String = "privacy_context";
+		public static const PRIVACY_CONTEXTS : String = "privacy_contexts";
+		public static const REFERENCE_ID : String = "reference_id";
+		public static const TAGS : String = "tags";
+		public static const UPDATED_AT : String = "updated_at";
+		public static const USER_ID : String = "user_id";
+		public static const USER_IDS : String = "user_ids";
 	}
 }

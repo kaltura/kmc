@@ -67,6 +67,10 @@ package com.kaltura.vo
 
 		/**
 		**/
+		public var srcFileEncryptionKey : String = null;
+
+		/**
+		**/
 		public var srcFileSyncId : String = null;
 
 		/**
@@ -85,6 +89,7 @@ package com.kaltura.vo
 			arr.push('serverPassPhrase');
 			arr.push('ftpPassiveMode');
 			arr.push('srcFileSyncLocalPath');
+			arr.push('srcFileEncryptionKey');
 			arr.push('srcFileSyncId');
 			arr.push('destFileSyncStoredPath');
 			return arr;

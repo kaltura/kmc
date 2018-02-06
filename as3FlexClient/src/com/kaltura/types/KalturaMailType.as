@@ -71,5 +71,6 @@ package com.kaltura.types
 		public static const MAIL_TYPE_LIVE_REPORT_EXPORT_SUCCESS : String = "130";
 		public static const MAIL_TYPE_LIVE_REPORT_EXPORT_FAILURE : String = "131";
 		public static const MAIL_TYPE_LIVE_REPORT_EXPORT_ABORT : String = "132";
+		public static const MAIL_TYPE_USERS_CSV : String = "133";
 	}
 }

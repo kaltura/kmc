@@ -45,6 +45,11 @@ package com.kaltura.vo
 		public var relatedObjectTypeIn : String = null;
 
 		/**
+		* @see com.kaltura.types.KalturaBeaconObjectTypes
+		**/
+		public var relatedObjectTypeEqual : String = null;
+
+		/**
 		**/
 		public var eventTypeIn : String = null;
 
@@ -59,6 +64,7 @@ package com.kaltura.vo
 			arr.push('updatedAtGreaterThanOrEqual');
 			arr.push('updatedAtLessThanOrEqual');
 			arr.push('relatedObjectTypeIn');
+			arr.push('relatedObjectTypeEqual');
 			arr.push('eventTypeIn');
 			arr.push('objectIdIn');
 			return arr;

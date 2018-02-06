@@ -34,7 +34,7 @@ package com.kaltura.vo
 	{
 		/**
 		**/
-		public var highlight : String = null;
+		public var highlight : Array = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -66,6 +66,9 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'highlight':
+					result = 'KalturaESearchHighlight';
+					break;
 			}
 			return result;
 		}

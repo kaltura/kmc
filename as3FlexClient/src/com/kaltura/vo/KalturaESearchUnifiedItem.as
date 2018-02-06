@@ -27,10 +27,10 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaESearchItem;
+	import com.kaltura.vo.KalturaESearchAbstractEntryItem;
 
 	[Bindable]
-	public dynamic class KalturaESearchUnifiedItem extends KalturaESearchItem
+	public dynamic class KalturaESearchUnifiedItem extends KalturaESearchAbstractEntryItem
 	{
 		override public function getUpdateableParamKeys():Array
 		{

@@ -50,7 +50,7 @@ package com.kaltura.vo
 
 		/**
 		**/
-		public var tags : String = null;
+		public var tags : Array = null;
 
 		/**
 		**/
@@ -70,7 +70,7 @@ package com.kaltura.vo
 
 		/**
 		**/
-		public var answers : String = null;
+		public var answers : Array = null;
 
 		/**
 		**/
@@ -79,6 +79,10 @@ package com.kaltura.vo
 		/**
 		**/
 		public var explanation : String = null;
+
+		/**
+		**/
+		public var assetId : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -96,6 +100,7 @@ package com.kaltura.vo
 			arr.push('answers');
 			arr.push('hint');
 			arr.push('explanation');
+			arr.push('assetId');
 			return arr;
 		}
 
@@ -110,6 +115,12 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'tags':
+					result = 'KalturaString';
+					break;
+				case 'answers':
+					result = 'KalturaString';
+					break;
 				default:
 					result = super.getElementType(arrayName);
 					break;

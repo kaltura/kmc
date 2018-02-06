@@ -25,51 +25,49 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.user
 {
-	import com.kaltura.vo.KalturaESearchItem;
+		import com.kaltura.vo.KalturaUserFilter;
+	import com.kaltura.delegates.user.UserExportToCsvDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaESearchMetadataItem extends KalturaESearchItem
+	/**
+	* add batch job that sends an email with a link to download an updated CSV that contains list of users
+	**/
+	public class UserExportToCsv extends KalturaCall
 	{
+		public var filterFields : String;
+		
 		/**
+		* @param filter KalturaUserFilter
+		* @param metadataProfileId int
+		* @param additionalFields Array
 		**/
-		public var xpath : String = null;
-
-		/**
-		**/
-		public var metadataProfileId : int = int.MIN_VALUE;
-
-		/**
-		**/
-		public var metadataFieldId : int = int.MIN_VALUE;
-
-		override public function getUpdateableParamKeys():Array
+		public function UserExportToCsv( filter : KalturaUserFilter,metadataProfileId : int=int.MIN_VALUE,additionalFields : Array=null )
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('xpath');
-			arr.push('metadataProfileId');
-			arr.push('metadataFieldId');
-			return arr;
+			service= 'user';
+			action= 'exportToCsv';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+				keyValArr = kalturaObject2Arrays(filter, 'filter');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			keyArr.push('metadataProfileId');
+			valueArr.push(metadataProfileId);
+			if (additionalFields) { 
+				keyValArr = extractArray(additionalFields,'additionalFields');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			} 
+			applySchema(keyArr, valueArr);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
-		}
-
-		override public function getElementType(arrayName:String):String
-		{
-			var result:String = '';
-			switch (arrayName) {
-				default:
-					result = super.getElementType(arrayName);
-					break;
-			}
-			return result;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new UserExportToCsvDelegate( this , config );
 		}
 	}
 }

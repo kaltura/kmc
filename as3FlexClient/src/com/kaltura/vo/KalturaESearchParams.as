@@ -29,17 +29,11 @@ package com.kaltura.vo
 {
 	import com.kaltura.vo.KalturaESearchOrderBy;
 
-	import com.kaltura.vo.KalturaESearchOperator;
-
 	import com.kaltura.vo.BaseFlexVo;
 
 	[Bindable]
 	public dynamic class KalturaESearchParams extends BaseFlexVo
 	{
-		/**
-		**/
-		public var searchOperator : KalturaESearchOperator;
-
 		/**
 		**/
 		public var objectStatuses : String = null;
@@ -52,11 +46,6 @@ package com.kaltura.vo
 		**/
 		public var orderBy : KalturaESearchOrderBy;
 
-		/**
-		* @see com.kaltura.types.kalturaBoolean
-		**/
-		public var useHighlight : Boolean;
-
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 
@@ -64,11 +53,9 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
-			arr.push('searchOperator');
 			arr.push('objectStatuses');
 			arr.push('objectId');
 			arr.push('orderBy');
-			arr.push('useHighlight');
 			return arr;
 		}
 
@@ -91,9 +78,6 @@ package com.kaltura.vo
 		{
 			var result:String = '';
 			switch (arrayName) {
-				case 'searchOperator':
-					result = '';
-					break;
 				case 'orderBy':
 					result = '';
 					break;

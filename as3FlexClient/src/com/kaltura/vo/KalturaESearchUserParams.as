@@ -25,39 +25,46 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.eSearch
+package com.kaltura.vo
 {
-		import com.kaltura.vo.KalturaESearchItem;
-	import com.kaltura.delegates.eSearch.ESearchGetAllowedSearchTypesDelegate;
-	import com.kaltura.net.KalturaCall;
+	import com.kaltura.vo.KalturaESearchUserOperator;
 
-	/**
-	**/
-	public class ESearchGetAllowedSearchTypes extends KalturaCall
+	import com.kaltura.vo.KalturaESearchParams;
+
+	[Bindable]
+	public dynamic class KalturaESearchUserParams extends KalturaESearchParams
 	{
-		public var filterFields : String;
-		
 		/**
-		* @param searchItem KalturaESearchItem
 		**/
-		public function ESearchGetAllowedSearchTypes( searchItem : KalturaESearchItem )
-		{
-			service= 'elasticsearch_esearch';
-			action= 'getAllowedSearchTypes';
+		public var searchOperator : KalturaESearchUserOperator;
 
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-				keyValArr = kalturaObject2Arrays(searchItem, 'searchItem');
-				keyArr = keyArr.concat(keyValArr[0]);
-				valueArr = valueArr.concat(keyValArr[1]);
-			applySchema(keyArr, valueArr);
+		override public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			arr.push('searchOperator');
+			return arr;
 		}
 
-		override public function execute() : void
+		override public function getInsertableParamKeys():Array
 		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new ESearchGetAllowedSearchTypesDelegate( this , config );
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
+		override public function getElementType(arrayName:String):String
+		{
+			var result:String = '';
+			switch (arrayName) {
+				case 'searchOperator':
+					result = '';
+					break;
+				default:
+					result = super.getElementType(arrayName);
+					break;
+			}
+			return result;
 		}
 	}
 }
