@@ -49,11 +49,6 @@ package com.kaltura.vo
 		**/
 		public var explanation : String = null;
 
-		/**
-		* @see com.kaltura.types.KalturaQuestionType
-		**/
-		public var questionType : int = int.MIN_VALUE;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -62,7 +57,6 @@ package com.kaltura.vo
 			arr.push('hint');
 			arr.push('question');
 			arr.push('explanation');
-			arr.push('questionType');
 			return arr;
 		}
 

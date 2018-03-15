@@ -32,6 +32,7 @@ package com.kaltura.types
 		public static const PARSE_MULTI_LANGUAGE_CAPTION_ASSET : String = "caption.parsemultilanguagecaptionasset";
 		public static const PARSE_CAPTION_ASSET : String = "captionSearch.parseCaptionAsset";
 		public static const DISTRIBUTION_DELETE : String = "contentDistribution.DistributionDelete";
+		public static const CONVERT : String = "0";
 		public static const DISTRIBUTION_DISABLE : String = "contentDistribution.DistributionDisable";
 		public static const DISTRIBUTION_ENABLE : String = "contentDistribution.DistributionEnable";
 		public static const DISTRIBUTION_FETCH_REPORT : String = "contentDistribution.DistributionFetchReport";
@@ -41,7 +42,6 @@ package com.kaltura.types
 		public static const DROP_FOLDER_CONTENT_PROCESSOR : String = "dropFolder.DropFolderContentProcessor";
 		public static const DROP_FOLDER_WATCHER : String = "dropFolder.DropFolderWatcher";
 		public static const EVENT_NOTIFICATION_HANDLER : String = "eventNotification.EventNotificationHandler";
-		public static const CONVERT : String = "0";
 		public static const INTEGRATION : String = "integration.Integration";
 		public static const SCHEDULED_TASK : String = "scheduledTask.ScheduledTask";
 		public static const INDEX_TAGS : String = "tagSearch.IndexTagsByPrivacyContext";
@@ -88,7 +88,5 @@ package com.kaltura.types
 		public static const LIVE_TO_VOD : String = "42";
 		public static const COPY_CAPTIONS : String = "43";
 		public static const CHUNKED_ENCODE_JOB_SCHEDULER : String = "44";
-		public static const SERVER_NODE_MONITOR : String = "45";
-		public static const USERS_CSV : String = "46";
 	}
 }

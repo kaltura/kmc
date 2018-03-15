@@ -27,50 +27,53 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.BaseFlexVo;
+	import com.kaltura.vo.KalturaESearchRange;
+
+	import com.kaltura.vo.KalturaESearchBaseItem;
 
 	[Bindable]
-	public dynamic class KalturaCsvAdditionalFieldInfo extends BaseFlexVo
+	public dynamic class KalturaESearchItem extends KalturaESearchBaseItem
 	{
 		/**
 		**/
-		public var fieldName : String = null;
+		public var searchTerm : String = null;
+
+		/**
+		* @see com.kaltura.types.KalturaESearchItemType
+		**/
+		public var itemType : int = int.MIN_VALUE;
 
 		/**
 		**/
-		public var xpath : String = null;
+		public var range : KalturaESearchRange;
 
-		/** 
-		* a list of attributes which may be updated on this object 
-		**/ 
-		public function getUpdateableParamKeys():Array
+		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
-			arr = new Array();
-			arr.push('fieldName');
-			arr.push('xpath');
+			arr = super.getUpdateableParamKeys();
+			arr.push('searchTerm');
+			arr.push('itemType');
+			arr.push('range');
 			return arr;
 		}
 
-		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		**/ 
-		public function getInsertableParamKeys():Array
+		override public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
-			arr = new Array();
+			arr = super.getInsertableParamKeys();
 			return arr;
 		}
 
-		/** 
-		* get the expected type of array elements 
-		* @param arrayName 	 name of an attribute of type array of the current object 
-		* @return 	 un-qualified class name 
-		**/ 
-		public function getElementType(arrayName:String):String
+		override public function getElementType(arrayName:String):String
 		{
 			var result:String = '';
 			switch (arrayName) {
+				case 'range':
+					result = '';
+					break;
+				default:
+					result = super.getElementType(arrayName);
+					break;
 			}
 			return result;
 		}

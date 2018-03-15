@@ -29,14 +29,12 @@ package com.kaltura.types
 {
 	public class KalturaESearchEntryOrderByFieldName
 	{
-		public static const CREATED_AT : String = "created_at";
-		public static const END_DATE : String = "end_date";
-		public static const LAST_PLAYED_AT : String = "last_played_at";
-		public static const NAME : String = "name";
-		public static const PLAYS : String = "plays";
-		public static const START_DATE : String = "start_date";
-		public static const UPDATED_AT : String = "updated_at";
-		public static const VIEWS : String = "views";
-		public static const VOTES : String = "votes";
+		public static const ENTRY_CREATED_AT : String = "created_at";
+		public static const ENTRY_END_DATE : String = "end_date";
+		public static const ENTRY_NAME : String = "name.keyword";
+		public static const ENTRY_START_DATE : String = "start_date";
+		public static const ENTRY_UPDATED_AT : String = "updated_at";
+		public static const ENTRY_VIEWS : String = "views";
+		public static const ENTRY_VOTES : String = "votes";
 	}
 }

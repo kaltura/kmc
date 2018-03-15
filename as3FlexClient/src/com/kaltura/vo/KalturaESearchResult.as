@@ -38,7 +38,7 @@ package com.kaltura.vo
 
 		/**
 		**/
-		public var highlight : Array = null;
+		public var highlight : String = null;
 
 		/**
 		**/
@@ -78,9 +78,6 @@ package com.kaltura.vo
 			switch (arrayName) {
 				case 'object':
 					result = '';
-					break;
-				case 'highlight':
-					result = 'KalturaESearchHighlight';
 					break;
 				case 'itemsData':
 					result = 'KalturaESearchItemDataResult';

@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaESearchUserOrderByFieldName
 	{
-		public static const CREATED_AT : String = "created_at";
-		public static const UPDATED_AT : String = "updated_at";
+		public static const USER_CREATED_AT : String = "created_at";
+		public static const USER_UPDATED_AT : String = "updated_at";
 	}
 }

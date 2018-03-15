@@ -40,9 +40,8 @@ package com.kaltura.commands.doubleClick
 		* @param distributionProfileId int
 		* @param hash String
 		* @param entryId String
-		* @param version int
 		**/
-		public function DoubleClickGetFeedByEntryId( distributionProfileId : int,hash : String,entryId : String,version : int=2 )
+		public function DoubleClickGetFeedByEntryId( distributionProfileId : int,hash : String,entryId : String )
 		{
 			service= 'doubleclickdistribution_doubleclick';
 			action= 'getFeedByEntryId';
@@ -56,8 +55,6 @@ package com.kaltura.commands.doubleClick
 			valueArr.push(hash);
 			keyArr.push('entryId');
 			valueArr.push(entryId);
-			keyArr.push('version');
-			valueArr.push(version);
 			applySchema(keyArr, valueArr);
 		}
 

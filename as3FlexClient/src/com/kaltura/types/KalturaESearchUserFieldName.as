@@ -29,16 +29,16 @@ package com.kaltura.types
 {
 	public class KalturaESearchUserFieldName
 	{
-		public static const CREATED_AT : String = "created_at";
-		public static const EMAIL : String = "email";
-		public static const FIRST_NAME : String = "first_name";
-		public static const GROUP_IDS : String = "group_ids";
-		public static const LAST_NAME : String = "last_name";
-		public static const PERMISSION_NAMES : String = "permission_names";
-		public static const ROLE_IDS : String = "role_ids";
-		public static const SCREEN_NAME : String = "screen_name";
-		public static const TAGS : String = "tags";
-		public static const UPDATED_AT : String = "updated_at";
-		public static const TYPE : String = "user_type";
+		public static const USER_CREATED_AT : String = "created_at";
+		public static const USER_EMAIL : String = "email";
+		public static const USER_FIRST_NAME : String = "first_name";
+		public static const USER_GROUP_IDS : String = "group_ids";
+		public static const USER_TYPE : String = "kuser_type";
+		public static const USER_LAST_NAME : String = "last_name";
+		public static const USER_PERMISSION_NAMES : String = "permission_names";
+		public static const USER_ROLE_IDS : String = "role_ids";
+		public static const USER_SCREEN_NAME : String = "screen_name";
+		public static const USER_TAGS : String = "tags";
+		public static const USER_UPDATED_AT : String = "updated_at";
 	}
 }

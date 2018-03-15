@@ -29,17 +29,17 @@ package com.kaltura.types
 {
 	public class KalturaESearchCuePointFieldName
 	{
-		public static const ANSWERS : String = "answers";
-		public static const END_TIME : String = "end_time";
-		public static const EXPLANATION : String = "explanation";
-		public static const HINT : String = "hint";
-		public static const ID : String = "id";
-		public static const NAME : String = "name";
-		public static const QUESTION : String = "question";
-		public static const START_TIME : String = "start_time";
-		public static const SUB_TYPE : String = "sub_type";
-		public static const TAGS : String = "tags";
-		public static const TEXT : String = "text";
-		public static const TYPE : String = "type";
+		public static const CUE_POINT_ANSWERS : String = "cue_points.cue_point_answers";
+		public static const CUE_POINT_END_TIME : String = "cue_points.cue_point_end_time";
+		public static const CUE_POINT_EXPLANATION : String = "cue_points.cue_point_explanation";
+		public static const CUE_POINT_HINT : String = "cue_points.cue_point_hint";
+		public static const CUE_POINT_ID : String = "cue_points.cue_point_id";
+		public static const CUE_POINT_NAME : String = "cue_points.cue_point_name";
+		public static const CUE_POINT_QUESTION : String = "cue_points.cue_point_question";
+		public static const CUE_POINT_START_TIME : String = "cue_points.cue_point_start_time";
+		public static const CUE_POINT_SUB_TYPE : String = "cue_points.cue_point_sub_type";
+		public static const CUE_POINT_TAGS : String = "cue_points.cue_point_tags";
+		public static const CUE_POINT_TEXT : String = "cue_points.cue_point_text";
+		public static const CUE_POINT_TYPE : String = "cue_points.cue_point_type";
 	}
 }

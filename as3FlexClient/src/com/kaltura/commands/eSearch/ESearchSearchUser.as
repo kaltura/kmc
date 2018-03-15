@@ -27,7 +27,7 @@
 // ===================================================================================================
 package com.kaltura.commands.eSearch
 {
-		import com.kaltura.vo.KalturaESearchUserParams;
+		import com.kaltura.vo.KalturaESearchParams;
 		import com.kaltura.vo.KalturaPager;
 	import com.kaltura.delegates.eSearch.ESearchSearchUserDelegate;
 	import com.kaltura.net.KalturaCall;
@@ -39,10 +39,10 @@ package com.kaltura.commands.eSearch
 		public var filterFields : String;
 		
 		/**
-		* @param searchParams KalturaESearchUserParams
+		* @param searchParams KalturaESearchParams
 		* @param pager KalturaPager
 		**/
-		public function ESearchSearchUser( searchParams : KalturaESearchUserParams,pager : KalturaPager=null )
+		public function ESearchSearchUser( searchParams : KalturaESearchParams,pager : KalturaPager=null )
 		{
 			service= 'elasticsearch_esearch';
 			action= 'searchUser';

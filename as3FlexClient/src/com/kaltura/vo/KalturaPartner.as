@@ -262,18 +262,6 @@ package com.kaltura.vo
 		**/
 		public var eSearchLanguages : Array = null;
 
-		/**
-		**/
-		public var publisherEnvironmentType : int = int.MIN_VALUE;
-
-		/**
-		**/
-		public var ovpEnvironmentUrl : String = null;
-
-		/**
-		**/
-		public var ottEnvironmentUrl : String = null;
-
 		/** 
 		* a list of attributes which may be updated on this object 
 		**/ 

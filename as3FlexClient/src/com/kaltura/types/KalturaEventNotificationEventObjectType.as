@@ -75,6 +75,5 @@ package com.kaltura.types
 		public static const WIDGET : String = "36";
 		public static const CATEGORYENTRY : String = "37";
 		public static const LIVE_STREAM : String = "38";
-		public static const SERVER_NODE : String = "39";
 	}
 }

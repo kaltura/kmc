@@ -43,9 +43,8 @@ package com.kaltura.commands.doubleClick
 		* @param period int
 		* @param state String
 		* @param ignoreScheduling Boolean
-		* @param version int
 		**/
-		public function DoubleClickGetFeed( distributionProfileId : int,hash : String,page : int=1,period : int=-1,state : String='',ignoreScheduling : Boolean=false,version : int=2 )
+		public function DoubleClickGetFeed( distributionProfileId : int,hash : String,page : int=1,period : int=-1,state : String='',ignoreScheduling : Boolean=false )
 		{
 			service= 'doubleclickdistribution_doubleclick';
 			action= 'getFeed';
@@ -65,8 +64,6 @@ package com.kaltura.commands.doubleClick
 			valueArr.push(state);
 			keyArr.push('ignoreScheduling');
 			valueArr.push(ignoreScheduling);
-			keyArr.push('version');
-			valueArr.push(version);
 			applySchema(keyArr, valueArr);
 		}
 

@@ -25,46 +25,39 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.eSearch
 {
-	import com.kaltura.vo.KalturaESearchUserOperator;
+		import com.kaltura.vo.KalturaESearchItem;
+	import com.kaltura.delegates.eSearch.ESearchGetAllowedSearchTypesDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	import com.kaltura.vo.KalturaESearchParams;
-
-	[Bindable]
-	public dynamic class KalturaESearchUserParams extends KalturaESearchParams
+	/**
+	**/
+	public class ESearchGetAllowedSearchTypes extends KalturaCall
 	{
+		public var filterFields : String;
+		
 		/**
+		* @param searchItem KalturaESearchItem
 		**/
-		public var searchOperator : KalturaESearchUserOperator;
-
-		override public function getUpdateableParamKeys():Array
+		public function ESearchGetAllowedSearchTypes( searchItem : KalturaESearchItem )
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('searchOperator');
-			return arr;
+			service= 'elasticsearch_esearch';
+			action= 'getAllowedSearchTypes';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+				keyValArr = kalturaObject2Arrays(searchItem, 'searchItem');
+				keyArr = keyArr.concat(keyValArr[0]);
+				valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
-		}
-
-		override public function getElementType(arrayName:String):String
-		{
-			var result:String = '';
-			switch (arrayName) {
-				case 'searchOperator':
-					result = '';
-					break;
-				default:
-					result = super.getElementType(arrayName);
-					break;
-			}
-			return result;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new ESearchGetAllowedSearchTypesDelegate( this , config );
 		}
 	}
 }

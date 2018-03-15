@@ -25,46 +25,35 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.delegates.eSearch
 {
-	import com.kaltura.vo.KalturaESearchOrderByItem;
+	import com.kaltura.vo.KalturaKeyValue;KalturaKeyValue;;
 
-	[Bindable]
-	public dynamic class KalturaESearchMetadataOrderByItem extends KalturaESearchOrderByItem
+	import com.kaltura.core.KClassFactory;
+
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
+
+	public class ESearchGetAllowedSearchTypesDelegate extends WebDelegateBase
 	{
-		/**
-		**/
-		public var xpath : String = null;
-
-		/**
-		**/
-		public var metadataProfileId : int = int.MIN_VALUE;
-
-		override public function getUpdateableParamKeys():Array
+		public function ESearchGetAllowedSearchTypesDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('xpath');
-			arr.push('metadataProfileId');
-			return arr;
+			super(call, config);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function parse(result:XML) : *
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
-		}
-
-		override public function getElementType(arrayName:String):String
-		{
-			var result:String = '';
-			switch (arrayName) {
-				default:
-					result = super.getElementType(arrayName);
-					break;
+			var arr : Array = new Array();
+			for( var i:int=0; i<result.result.children().length() ; i++)
+			{
+				var cls : Class = getDefinitionByName('com.kaltura.vo.'+ result.result.children()[i].objectType) as Class;
+				var obj : * = (new KClassFactory( cls )).newInstanceFromXML( XMLList(result.result.children()[i]) );
+				arr.push(obj);
 			}
-			return result;
+			return arr;
 		}
+
 	}
 }

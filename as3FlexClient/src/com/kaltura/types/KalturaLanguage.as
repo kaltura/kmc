@@ -127,8 +127,6 @@ package com.kaltura.types
 		public static const CIC : String = "Chickasaw";
 		public static const CLC : String = "Chilcotin";
 		public static const ZH : String = "Chinese";
-		public static const ZH_HANS : String = "Chinese (Simplified)";
-		public static const ZH_HANT : String = "Chinese (Traditional)";
 		public static const CHN : String = "Chinook jargon";
 		public static const CHP : String = "Chipewyan";
 		public static const CIW : String = "Chippewa";
@@ -573,8 +571,8 @@ package com.kaltura.types
 		public static const WYM : String = "Wymysorys";
 		public static const XH : String = "Xhosa";
 		public static const AME : String = "Yanesha";
-		public static const JI : String = "Yiddish";
 		public static const YI : String = "Yiddish";
+		public static const JI : String = "Yiddish";
 		public static const YO : String = "Yoruba";
 		public static const ZAI : String = "Zapotec Isthmus";
 		public static const DJE : String = "Zarma";
