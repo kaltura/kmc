@@ -217,8 +217,6 @@ package com.kaltura.utils {
 				{label: rm.getString('languages', 'XH'), code: "XH", value:KalturaLanguage.XH},
 				{label: rm.getString('languages', 'YO'), code: "YO", value:KalturaLanguage.YO},
 				{label: rm.getString('languages', 'ZH'), code: "ZH", value:KalturaLanguage.ZH},
-				{label: rm.getString('languages', 'ZH_HANS'), code: "ZH_HANS", value:KalturaLanguage.ZH_HANS},
-				{label: rm.getString('languages', 'ZH_HANT'), code: "ZH_HANT", value:KalturaLanguage.ZH_HANT},
 				{label: rm.getString('languages', 'ZU'), code: "ZU", value:KalturaLanguage.ZU}
 			];
 			tmp.sortOn('label');
